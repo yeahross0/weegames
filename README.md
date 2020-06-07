@@ -15,7 +15,7 @@ Go into the weegames/msvc/lib/. Then go into either the 32-bit or 64-bit directo
 ## Other
 Install SDL https://github.com/Rust-SDL2/rust-sdl2.
 
-Install SFL using their guide https://github.com/jeremyletang/rust-sfml/wiki
+Install SFML using their guide https://github.com/jeremyletang/rust-sfml/wiki
 
 # Running
 Change directory into weegames/weegames and run ``cargo run``
