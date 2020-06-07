@@ -11,8 +11,8 @@ https://www.youtube.com/watch?v=A_GqhZ_7EIw
 
 # Installation
 ## MSVC
-Go into the weegames/msvc/lib/. Then go into either the 32-bit or 64-bit directory depending on what you are using. From there, copy csfml-audio.lib and csfml-system.lib to C:\Users\[USERNAME]\.rustup\toolchains\[RUST_TOOLCHAIN]\lib\rustlib\[MSVC_TOOLCHAIN]\lib.
-## Other
+Go into the weegames/msvc/lib/ directory. Then go into either the 32-bit or 64-bit directory depending on what you are using. From there, copy csfml-audio.lib and csfml-system.lib to C:\Users\[USERNAME]\.rustup\toolchains\[RUST_TOOLCHAIN]\lib\rustlib\[MSVC_TOOLCHAIN]\lib.
+## Other - Mingw or Linux
 Install SDL https://github.com/Rust-SDL2/rust-sdl2.
 
 Install SFML using their guide https://github.com/jeremyletang/rust-sfml/wiki
