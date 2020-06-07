@@ -1,5 +1,5 @@
 # Weegames
-Weegames is a collection of minigames written in Rust with SDL2 (and SFML for audio). Download the windows version at [itch](https://yeahross.itch.io/weegames).
+Weegames is a collection of minigames written in Rust with SDL2 (and SFML for audio). Download the windows version from [itch.io](https://yeahross.itch.io/weegames).
 
 # Screenshots
 ![baby](https://img.itch.zone/aW1hZ2UvNjYyNjQ3LzM1Njg1NjkuanBn/original/EjnlNA.jpg)
@@ -11,7 +11,7 @@ https://www.youtube.com/watch?v=A_GqhZ_7EIw
 
 # Installation
 ## MSVC
-Go into the weegames/msvc/lib/. Then go into either the 32-bit or 64-bit directory. From there, copy csfml-audio and csfml-system to C:\Users\[USERNAME]\.rustup\toolchains\[RUST_TOOLCHAIN]\lib\rustlib\[MSVC_TOOLCHAIN]\lib.
+Go into the weegames/msvc/lib/. Then go into either the 32-bit or 64-bit directory depending on what you are using. From there, copy csfml-audio and csfml-system to C:\Users\[USERNAME]\.rustup\toolchains\[RUST_TOOLCHAIN]\lib\rustlib\[MSVC_TOOLCHAIN]\lib.
 ## Other
 Install SDL https://github.com/Rust-SDL2/rust-sdl2.
 
