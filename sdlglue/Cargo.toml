@@ -1,0 +1,19 @@
+[package]
+name = "sdlglue"
+version = "0.1.0"
+authors = ["Ross <yeahross@protonmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+gl = "0.10.0"
+cgmath = "0.17.0"
+c_str_macro = "1.0.2"
+log = "0.4.8"
+wee-common = { path = "../wee-common" }
+
+[dependencies.sdl2]
+version = "0.33.0"
+default-features = false
+features = ["image", "ttf"]

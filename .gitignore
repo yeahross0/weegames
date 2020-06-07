@@ -1,0 +1,9 @@
+target/
+
+Cargo.lock
+
+/weegames/*.dll
+
+/weegames/games/
+
+.vscode

@@ -1,0 +1,15 @@
+---
+intro_font: 
+  info:
+    - fonts/NotoSerif-SemiBold.ttf
+    - 156
+  outline_width: 1
+ui_font:
+  - fonts/NotoSans-Regular.ttf
+  - 18
+playback_rate:
+  - 1.0
+  - 2.0
+  - 0.1
+volume: 20.0
+render_each_frame: true
