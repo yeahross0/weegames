@@ -1,0 +1,359 @@
+{
+  "format_version": "0.1",
+  "published": true,
+  "objects": [
+    {
+      "name": "ground",
+      "sprite": {
+        "Image": {
+          "name": "abyss-ground"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 1600.0,
+        "height": 900.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": true,
+        "vertical": false
+      },
+      "layer": 2,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "feet",
+      "sprite": {
+        "Image": {
+          "name": "abyss-feet"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 1600.0,
+        "height": 900.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": true,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "orange",
+      "sprite": {
+        "Image": {
+          "name": "orange"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 300.0,
+        "height": 300.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "orange",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": "Mouse"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Release"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "orange",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "SetProperty": {
+                "Timer": {
+                  "time": 20
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "orange",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Size": {
+                  "Shrink": {
+                    "Percent": {
+                      "width": 10.0,
+                      "height": 10.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "orange",
+                "check": "Timer"
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            },
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "splat-transparent"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "man",
+      "sprite": {
+        "Image": {
+          "name": "guitar-man"
+        }
+      },
+      "position": {
+        "x": 304.0,
+        "y": 260.0
+      },
+      "size": {
+        "width": 200.0,
+        "height": 260.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 2,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Area": {
+                    "min": {
+                      "x": 4.0,
+                      "y": 5.0
+                    },
+                    "max": {
+                      "x": 1599.0,
+                      "y": 594.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Roam": {
+                  "movement_type": {
+                    "Reflect": {
+                      "initial_direction": {
+                        "Direction": {
+                          "possible_directions": []
+                        }
+                      },
+                      "movement_handling": "Anywhere"
+                    }
+                  },
+                  "area": {
+                    "min": {
+                      "x": 0.0,
+                      "y": 0.0
+                    },
+                    "max": {
+                      "x": 1600.0,
+                      "y": 900.0
+                    }
+                  },
+                  "speed": {
+                    "Category": "Slow"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "orange",
+                "check": {
+                  "Switch": "SwitchedOff"
+                }
+              }
+            },
+            {
+              "Collision": {
+                "Object": {
+                  "name": "orange"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Win",
+            {
+              "PlaySound": {
+                "name": "eureka-crop-yes"
+              }
+            },
+            {
+              "Effect": "Freeze"
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "orange",
+                "check": {
+                  "Switch": "SwitchedOff"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "WinStatus": "HasBeenLost"
+            }
+          ],
+          "actions": [
+            {
+              "PlaySound": {
+                "name": "groans-crop"
+              }
+            },
+            {
+              "Effect": "Freeze"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "background": [],
+  "asset_files": {
+    "images": {
+      "abyss-feet": "abyss-feet.webp",
+      "guitar-man": "guitar-man.webp",
+      "abyss-ground": "abyss-ground.webp",
+      "splat-transparent": "splat-transparent.webp",
+      "orange": "orange.png"
+    },
+    "audio": {
+      "groans-crop": "groans-crop.ogg",
+      "eureka-crop-yes": "eureka-crop-yes.ogg"
+    },
+    "fonts": {},
+    "music": {
+      "filename": "whales-crop.ogg",
+      "looped": false
+    }
+  },
+  "length": 4.0,
+  "intro_text": "Splat!",
+  "attribution": "splat: https://pixabay.com/vectors/splat-green-mess-splashing-style-42890/\nguitar-man: \nhttps://www.pexels.com/photo/man-playing-red-and-white-electric-guitar-2299499/\nabyss: https://pixabay.com/illustrations/abyss-window-sill-dangerous-2036211/\norange: http://www.clker.com/clipart-3993.html\n\neureka: https://freesound.org/people/cognito%20perceptu/sounds/151604/\n----\ngroan\nhttps://freesound.org/people/FritzSounds/sounds/366297/\n'A Few Groans Of Disappointment' by FritzSounds is licensed under CC BY-NC 3.0\nhttps://creativecommons.org/licenses/by-nc/3.0/legalcode\nI have trimmed the audio.\n----\n----\nwhales\nhttps://freesound.org/people/daveincamas/sounds/45563/\n'DeepCheering' by daveincamas is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\nI have trimmed the audio.\n----"
+}

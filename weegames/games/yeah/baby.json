@@ -1,0 +1,528 @@
+{
+  "format_version": "0.1",
+  "published": true,
+  "objects": [
+    {
+      "name": "man",
+      "sprite": {
+        "Image": {
+          "name": "man"
+        }
+      },
+      "position": {
+        "x": 570.0,
+        "y": 513.0
+      },
+      "size": {
+        "width": 140.0,
+        "height": 276.0
+      },
+      "angle": 0.0,
+      "origin": {
+        "x": 70.0,
+        "y": 276.0
+      },
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 2,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Right",
+                        "Left"
+                      ]
+                    }
+                  },
+                  "speed": {
+                    "Category": "VerySlow"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Angle": "RotateToMouse"
+              }
+            },
+            {
+              "SetProperty": {
+                "Angle": {
+                  "Clamp": {
+                    "min": 270.0,
+                    "max": 90.0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "baby",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Timer": {
+                  "time": 30
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "man",
+                "check": "Timer"
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "baby",
+                "check": {
+                  "Switch": "SwitchedOff"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Area": {
+                  "min": {
+                    "x": 0.0,
+                    "y": 0.0
+                  },
+                  "max": {
+                    "x": 300.0,
+                    "y": 900.0
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Right"
+                      ]
+                    }
+                  },
+                  "speed": {
+                    "Category": "VerySlow"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Area": {
+                  "min": {
+                    "x": 1300.0,
+                    "y": 0.0
+                  },
+                  "max": {
+                    "x": 1600.0,
+                    "y": 900.0
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Left"
+                      ]
+                    }
+                  },
+                  "speed": {
+                    "Category": "VerySlow"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "baby",
+      "sprite": {
+        "Image": {
+          "name": "baby"
+        }
+      },
+      "position": {
+        "x": 445.0,
+        "y": 284.0
+      },
+      "size": {
+        "width": 90.0,
+        "height": 168.0
+      },
+      "angle": 0.0,
+      "origin": {
+        "x": 43.0,
+        "y": 220.0
+      },
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "man"
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Timer": {
+                  "time": 90
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "man"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "man",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Timer": {
+                  "time": 60
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "man"
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "baby",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "man"
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Angle": {
+                  "Match": {
+                    "name": "man"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentAngle",
+                    "distance": {
+                      "x": 0.0,
+                      "y": -125.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "baby",
+                "check": "Timer"
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "baby",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Angle": "Current"
+                  },
+                  "speed": {
+                    "Category": "Fast"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Accelerate": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Down"
+                      ]
+                    }
+                  },
+                  "speed": {
+                    "Value": 0.25
+                  }
+                }
+              }
+            },
+            {
+              "Random": {
+                "random_actions": [
+                  {
+                    "PlaySound": {
+                      "name": "wippee"
+                    }
+                  },
+                  {
+                    "PlaySound": {
+                      "name": "yay"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Area": {
+                  "min": {
+                    "x": -1000.0,
+                    "y": 800.0
+                  },
+                  "max": {
+                    "x": 2600.0,
+                    "y": 1900.0
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose",
+            {
+              "PlaySound": {
+                "name": "oh no"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "WinStatus": "Lost"
+            }
+          ],
+          "actions": [
+            {
+              "Effect": "Freeze"
+            },
+            "StopMusic"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "End"
+            }
+          ],
+          "actions": [
+            "Win"
+          ]
+        }
+      ]
+    }
+  ],
+  "background": [
+    {
+      "sprite": {
+        "Image": {
+          "name": "venice"
+        }
+      },
+      "area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 1600.0,
+          "y": 900.0
+        }
+      }
+    },
+    {
+      "sprite": {
+        "Image": {
+          "name": "trifle"
+        }
+      },
+      "area": {
+        "min": {
+          "x": 300.0,
+          "y": 520.0
+        },
+        "max": {
+          "x": 1291.0,
+          "y": 1042.0
+        }
+      }
+    }
+  ],
+  "asset_files": {
+    "images": {
+      "venice": "venice.jpg",
+      "man": "baby-blue-man.webp",
+      "trifle": "trifle-crop.webp",
+      "baby": "baby-blue-baby.webp"
+    },
+    "audio": {
+      "oh no": "oh-no-2.ogg",
+      "yay": "yippee-yay.ogg",
+      "wippee": "yippee-wippee.ogg"
+    },
+    "fonts": {},
+    "music": {
+      "filename": "peaceful-crop.ogg",
+      "looped": false
+    }
+  },
+  "length": 8.0,
+  "intro_text": "Keepie Uppie",
+  "attribution": "man + baby: https://www.pexels.com/photo/photo-of-man-in-raising-baby-under-blue-sky-1166990/\ntrifle: https://en.wikipedia.org/wiki/File:Trifle-(cream-layer)-profile.jpg\nvenice: https://pixabay.com/photos/venice-italy-history-sea-656232/\n\noh no: https://freesound.org/people/ecfike/sounds/131407/\nyippee: https://freesound.org/people/Topschool/sounds/443493/\n\npeaceful: https://freesound.org/people/DishonoredBlood/sounds/342650/\n"
+}

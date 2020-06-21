@@ -1,0 +1,700 @@
+{
+  "format_version": "0.1",
+  "published": true,
+  "objects": [
+    {
+      "name": "candle",
+      "sprite": {
+        "Image": {
+          "name": "candle-crop"
+        }
+      },
+      "position": {
+        "x": 803.0,
+        "y": 429.0
+      },
+      "size": {
+        "width": 67.5,
+        "height": 164.25
+      },
+      "angle": 0.0,
+      "origin": {
+        "x": 33.75,
+        "y": 164.0
+      },
+      "collision_area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 67.5,
+          "y": 80.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Angle": "RotateToMouse"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "End"
+            }
+          ],
+          "actions": [
+            "Win"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "titanic",
+      "sprite": {
+        "Image": {
+          "name": "titanic-2-crop"
+        }
+      },
+      "position": {
+        "x": 860.0,
+        "y": 108.0
+      },
+      "size": {
+        "width": 91.25,
+        "height": 198.75
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 0.0,
+          "y": 60.0
+        },
+        "max": {
+          "x": 91.25,
+          "y": 198.75
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Random": {
+                  "start": 0,
+                  "end": 60
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "Target": {
+                  "target": {
+                    "Object": {
+                      "name": "candle"
+                    }
+                  },
+                  "target_type": "StopWhenReached",
+                  "offset": {
+                    "x": 0.0,
+                    "y": 160.0
+                  },
+                  "speed": {
+                    "Category": "Slow"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "candle"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "titanic",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Right",
+                        "Left"
+                      ]
+                    }
+                  },
+                  "speed": {
+                    "Category": "Slow"
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "Random": {
+                "random_actions": [
+                  {
+                    "PlaySound": {
+                      "name": "go-away-crop-1"
+                    }
+                  },
+                  {
+                    "PlaySound": {
+                      "name": "go-away-crop-2"
+                    }
+                  },
+                  {
+                    "PlaySound": {
+                      "name": "go-away-crop-3"
+                    }
+                  },
+                  {
+                    "PlaySound": {
+                      "name": "go-away-crop-4"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Area": {
+                  "min": {
+                    "x": 792.0,
+                    "y": 632.0
+                  },
+                  "max": {
+                    "x": 814.0,
+                    "y": 657.0
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose",
+            {
+              "Effect": "Freeze"
+            },
+            {
+              "PlaySound": {
+                "name": "car-crash-crop"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Area": {
+                    "min": {
+                      "x": 190.0,
+                      "y": -200.0
+                    },
+                    "max": {
+                      "x": 1443.0,
+                      "y": -200.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "titanic-2",
+      "sprite": {
+        "Image": {
+          "name": "titanic-2-crop"
+        }
+      },
+      "position": {
+        "x": 860.0,
+        "y": 108.0
+      },
+      "size": {
+        "width": 91.25,
+        "height": 198.75
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 0.0,
+          "y": 60.0
+        },
+        "max": {
+          "x": 91.25,
+          "y": 198.75
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Random": {
+                  "start": 0,
+                  "end": 60
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "Target": {
+                  "target": {
+                    "Object": {
+                      "name": "candle"
+                    }
+                  },
+                  "target_type": "StopWhenReached",
+                  "offset": {
+                    "x": 0.0,
+                    "y": 160.0
+                  },
+                  "speed": {
+                    "Category": "Slow"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "candle"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "titanic-2",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Left",
+                        "Right"
+                      ]
+                    }
+                  },
+                  "speed": {
+                    "Category": "Slow"
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "Random": {
+                "random_actions": [
+                  {
+                    "PlaySound": {
+                      "name": "go-away-crop-1"
+                    }
+                  },
+                  {
+                    "PlaySound": {
+                      "name": "go-away-crop-2"
+                    }
+                  },
+                  {
+                    "PlaySound": {
+                      "name": "go-away-crop-3"
+                    }
+                  },
+                  {
+                    "PlaySound": {
+                      "name": "go-away-crop-4"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Area": {
+                  "min": {
+                    "x": 792.0,
+                    "y": 632.0
+                  },
+                  "max": {
+                    "x": 814.0,
+                    "y": 657.0
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose",
+            {
+              "Effect": "Freeze"
+            },
+            {
+              "PlaySound": {
+                "name": "car-crash-crop"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Area": {
+                    "min": {
+                      "x": 190.0,
+                      "y": -200.0
+                    },
+                    "max": {
+                      "x": 1443.0,
+                      "y": -200.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "titanic-3",
+      "sprite": {
+        "Image": {
+          "name": "titanic-2-crop"
+        }
+      },
+      "position": {
+        "x": 860.0,
+        "y": 108.0
+      },
+      "size": {
+        "width": 91.25,
+        "height": 198.75
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 0.0,
+          "y": 60.0
+        },
+        "max": {
+          "x": 91.25,
+          "y": 198.75
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Random": {
+                  "start": 0,
+                  "end": 60
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "Target": {
+                  "target": {
+                    "Object": {
+                      "name": "candle"
+                    }
+                  },
+                  "target_type": "StopWhenReached",
+                  "offset": {
+                    "x": 0.0,
+                    "y": 160.0
+                  },
+                  "speed": {
+                    "Category": "Slow"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "candle"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "titanic-3",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Left",
+                        "Right"
+                      ]
+                    }
+                  },
+                  "speed": {
+                    "Category": "Slow"
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "Random": {
+                "random_actions": [
+                  {
+                    "PlaySound": {
+                      "name": "go-away-crop-1"
+                    }
+                  },
+                  {
+                    "PlaySound": {
+                      "name": "go-away-crop-2"
+                    }
+                  },
+                  {
+                    "PlaySound": {
+                      "name": "go-away-crop-3"
+                    }
+                  },
+                  {
+                    "PlaySound": {
+                      "name": "go-away-crop-4"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Area": {
+                  "min": {
+                    "x": 792.0,
+                    "y": 632.0
+                  },
+                  "max": {
+                    "x": 814.0,
+                    "y": 657.0
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose",
+            {
+              "Effect": "Freeze"
+            },
+            {
+              "PlaySound": {
+                "name": "car-crash-crop"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Area": {
+                    "min": {
+                      "x": 190.0,
+                      "y": -200.0
+                    },
+                    "max": {
+                      "x": 1443.0,
+                      "y": -200.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "background": [
+    {
+      "sprite": {
+        "Image": {
+          "name": "white-pixel-2"
+        }
+      },
+      "area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 1600.0,
+          "y": 900.0
+        }
+      }
+    },
+    {
+      "sprite": {
+        "Image": {
+          "name": "lighthouse"
+        }
+      },
+      "area": {
+        "min": {
+          "x": 500.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 1100.0,
+          "y": 900.0
+        }
+      }
+    }
+  ],
+  "asset_files": {
+    "images": {
+      "titanic-2-crop": "titanic-2-crop.png",
+      "white-pixel-2": "white-pixel-2.png",
+      "lighthouse": "lighthouse.jpeg",
+      "candle-crop": "candle-crop.webp"
+    },
+    "audio": {
+      "go-away-crop-4": "go-away-crop-4.ogg",
+      "go-away-crop-2": "go-away-crop-2.ogg",
+      "car-crash-crop": "car-crash-crop.ogg",
+      "go-away-crop-1": "go-away-crop-1.ogg",
+      "go-away-crop-3": "go-away-crop-3.ogg"
+    },
+    "fonts": {},
+    "music": {
+      "filename": "sonata-crop.ogg",
+      "looped": false
+    }
+  },
+  "length": 4.0,
+  "intro_text": "Turn Back",
+  "attribution": "titanic: https://openclipart.org/detail/87637/elegant-steam-liner\nlighthouse: https://www.pexels.com/photo/photo-of-lighthouse-on-seaside-during-daytime-3099153/\ncandle: https://pixabay.com/photos/candle-torch-flame-fire-light-1115769/\n\ngo-away: https://freesound.org/people/pyro13djt/sounds/331908/\n----\ncar crash:\nhttps://freesound.org/people/nsstudios/sounds/351513/\n'car crash' by nsstudios is licensed under CC BY-NC 3.0\nhttps://creativecommons.org/licenses/by-nc/3.0/\nI have trimmed the audio.\n----\n----\nsonata\nhttps://freesound.org/people/ShadyDave/sounds/326553/\nThe sonata (Piano loop) by ShadyDave is licenced under CC BY-NC 3.0\nhttps://creativecommons.org/licenses/by-nc/3.0/legalcode\nI trimmed the audio.\n----"
+}

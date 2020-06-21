@@ -1,0 +1,294 @@
+{
+  "format_version": "0.1",
+  "published": true,
+  "objects": [
+    {
+      "name": "hiding",
+      "sprite": {
+        "Image": {
+          "name": "hiding-crop-no-head"
+        }
+      },
+      "position": {
+        "x": 627.0,
+        "y": 448.0
+      },
+      "size": {
+        "width": 770.7143,
+        "height": 914.2857
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "cat",
+      "sprite": {
+        "Image": {
+          "name": "hiding-crop-head"
+        }
+      },
+      "position": {
+        "x": 814.0,
+        "y": 667.0
+      },
+      "size": {
+        "width": 325.0,
+        "height": 624.2857
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 3,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Random": {
+                "random_actions": [
+                  {
+                    "Motion": {
+                      "JumpTo": {
+                        "Point": {
+                          "x": 321.0,
+                          "y": 570.0
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "Motion": {
+                      "JumpTo": {
+                        "Point": {
+                          "x": 788.0,
+                          "y": 588.0
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "Motion": {
+                      "JumpTo": {
+                        "Point": {
+                          "x": 1293.0,
+                          "y": 594.0
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Area": {
+                  "min": {
+                    "x": 169.0,
+                    "y": 538.0
+                  },
+                  "max": {
+                    "x": 446.0,
+                    "y": 757.0
+                  }
+                }
+              }
+            }
+          ],
+          "actions": []
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "cat"
+                    }
+                  },
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Win",
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Up"
+                      ]
+                    }
+                  },
+                  "speed": {
+                    "Category": "VerySlow"
+                  }
+                }
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "meow-crop"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "hiding2",
+      "sprite": {
+        "Image": {
+          "name": "hiding-crop-no-head"
+        }
+      },
+      "position": {
+        "x": 151.0,
+        "y": 452.0
+      },
+      "size": {
+        "width": 770.7143,
+        "height": 914.2857
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "hiding3",
+      "sprite": {
+        "Image": {
+          "name": "hiding-crop-no-head"
+        }
+      },
+      "position": {
+        "x": 1127.0,
+        "y": 449.0
+      },
+      "size": {
+        "width": 770.7143,
+        "height": 914.2857
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 2,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "hand",
+      "sprite": {
+        "Image": {
+          "name": "hand-bad-crop"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 233.125,
+        "height": 382.75
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 4,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": "Mouse"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "background": [
+    {
+      "sprite": {
+        "Image": {
+          "name": "city"
+        }
+      },
+      "area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 1600.0,
+          "y": 900.0
+        }
+      }
+    }
+  ],
+  "asset_files": {
+    "images": {
+      "hiding-crop-head": "hiding-crop-head.webp",
+      "hiding-crop-no-head": "hiding-crop-no-head.webp",
+      "city": "city.webp",
+      "hand-bad-crop": "hand-bad-crop.webp"
+    },
+    "audio": {
+      "meow-crop": "meow-crop.ogg"
+    },
+    "fonts": {},
+    "music": {
+      "filename": "whistling.ogg",
+      "looped": false
+    }
+  },
+  "length": 4.0,
+  "intro_text": "Find them (singular)",
+  "attribution": "hiding: https://pixabay.com/photos/cat-hiding-place-autumn-rust-1040815/\ncity: https://pixabay.com/photos/city-evening-nature-sun-sunset-345609/\nhand: https://www.pexels.com/photo/persons-left-hand-on-window-3723686/\n\nmeow: https://freesound.org/people/deleted_user_7146007/sounds/383427/\n----\nwhistling\nhttps://freesound.org/people/dersuperanton/sounds/433651/\n'Whistling' by dersuperanton is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\n----"
+}

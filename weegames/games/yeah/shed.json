@@ -1,0 +1,309 @@
+{
+  "format_version": "0.1",
+  "published": true,
+  "objects": [
+    {
+      "name": "Man",
+      "sprite": {
+        "Image": {
+          "name": "sliding-crop"
+        }
+      },
+      "position": {
+        "x": 454.0,
+        "y": 8.0
+      },
+      "size": {
+        "width": 244.0,
+        "height": 218.5
+      },
+      "angle": 45.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 50.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 180.0,
+          "y": 200.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Area": {
+                    "min": {
+                      "x": 390.0,
+                      "y": 0.0
+                    },
+                    "max": {
+                      "x": 945.0,
+                      "y": 1.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Roam": {
+                  "movement_type": {
+                    "Reflect": {
+                      "initial_direction": {
+                        "Direction": {
+                          "possible_directions": []
+                        }
+                      },
+                      "movement_handling": "Anywhere"
+                    }
+                  },
+                  "area": {
+                    "min": {
+                      "x": 441.0,
+                      "y": 0.0
+                    },
+                    "max": {
+                      "x": 884.0,
+                      "y": 10.0
+                    }
+                  },
+                  "speed": {
+                    "Category": "Fast"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "left"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Angle": {
+                      "Degrees": 235.0
+                    }
+                  },
+                  "speed": {
+                    "Category": "Fast"
+                  }
+                }
+              }
+            },
+            "Lose"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "right"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Angle": {
+                      "Degrees": 125.0
+                    }
+                  },
+                  "speed": {
+                    "Category": "Fast"
+                  }
+                }
+              }
+            },
+            "Win"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Release"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Down"
+                      ]
+                    }
+                  },
+                  "speed": {
+                    "Category": "Fast"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "WinStatus": "HasBeenLost"
+            }
+          ],
+          "actions": [
+            {
+              "PlaySound": {
+                "name": "robot-bye-bye"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "WinStatus": "HasBeenWon"
+            }
+          ],
+          "actions": [
+            {
+              "PlaySound": {
+                "name": "you-won-robot"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "right",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 885.0,
+        "y": 285.0
+      },
+      "size": {
+        "width": 50.0,
+        "height": 500.0
+      },
+      "angle": 125.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "left",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 466.0,
+        "y": 285.0
+      },
+      "size": {
+        "width": 50.0,
+        "height": 400.0
+      },
+      "angle": 235.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": []
+    }
+  ],
+  "background": [
+    {
+      "sprite": {
+        "Image": {
+          "name": "shed"
+        }
+      },
+      "area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 1600.0,
+          "y": 900.0
+        }
+      }
+    }
+  ],
+  "asset_files": {
+    "images": {
+      "sliding-crop": "sliding-crop.png",
+      "shed": "shed.webp"
+    },
+    "audio": {
+      "robot-bye-bye": "robot-bye-bye.ogg",
+      "you-won-robot": "you-won-robot-crop.ogg"
+    },
+    "fonts": {},
+    "music": {
+      "filename": "lullaby-crop.ogg",
+      "looped": false
+    }
+  },
+  "length": 4.8,
+  "intro_text": "Go Right",
+  "attribution": "sliding: https://commons.wikimedia.org/wiki/File:Stamp_Germany_2003_MiNr2350_Vater-und-Sohn_II.jpg\nshed: https://www.4freephotos.com/Wooden-shed-mountains-6443.html\n\n----\nyou won robot:\nhttps://freesound.org/people/Ionicsmusic/sounds/196870/\n'Race Robot - you won' by Ionicsmusic is released under CC BY-NC 3.0\nhttps://creativecommons.org/licenses/by-nc/3.0/legalcode\n----\n----\nbye bye:\nhttps://freesound.org/people/shadoWisp/sounds/279015/\n'female robotic voice' by shadoWisp is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\n----\n\n----\nlullaby:\nhttps://freesound.org/people/InspectorJ/sounds/412224/\n'Creepy Lullaby, A' by InspectorJ is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\nI have trimmed the audio.\n----"
+}

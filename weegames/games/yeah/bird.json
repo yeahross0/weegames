@@ -1,0 +1,397 @@
+{
+  "format_version": "0.1",
+  "published": true,
+  "objects": [
+    {
+      "name": "Bird Head",
+      "sprite": {
+        "Image": {
+          "name": "bird-transparent-head"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 300.0,
+        "height": 200.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "Bird Head"
+                    }
+                  },
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Bird Head",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": "Mouse"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Release"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Transp",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 2579.0,
+                    "y": 1882.0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 1
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Bird Body"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": -40.0,
+                      "y": -150.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Bird Body",
+      "sprite": {
+        "Image": {
+          "name": "bird-transparent-body"
+        }
+      },
+      "position": {
+        "x": 832.0,
+        "y": 618.0
+      },
+      "size": {
+        "width": 300.0,
+        "height": 300.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 2,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Transp",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "bird-transparent-stretched"
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Size": {
+                  "Value": {
+                    "width": 300.0,
+                    "height": 600.0
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 0.0,
+                      "y": -150.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Area": {
+                    "min": {
+                      "x": 66.0,
+                      "y": 572.0
+                    },
+                    "max": {
+                      "x": 1521.0,
+                      "y": 642.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "eerie-crop"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Transp",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 812.0,
+        "y": 131.0
+      },
+      "size": {
+        "width": 200.0,
+        "height": 200.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Bird Head"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "putrid-heartbeat-crop"
+              }
+            },
+            "Win"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 1
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Bird Head"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 0.0,
+                      "y": -500.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Yep,birds",
+      "sprite": {
+        "Image": {
+          "name": "birds"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 1600.0,
+        "height": 900.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 6,
+      "switch": "Off",
+      "instructions": []
+    }
+  ],
+  "background": [],
+  "asset_files": {
+    "images": {
+      "bird-transparent-body": "bird-transparent-body.webp",
+      "birds": "birds.webp",
+      "bird-transparent-stretched": "bird-transparent-stretched.webp",
+      "bird-transparent-head": "bird-transparent-head.webp"
+    },
+    "audio": {
+      "putrid-heartbeat-crop": "putrid-heartbeat-crop.ogg",
+      "eerie-crop": "eerie-crop.ogg"
+    },
+    "fonts": {},
+    "music": null
+  },
+  "length": 4.0,
+  "intro_text": "fit in",
+  "attribution": "bird: https://avopix.com/photo/18046-bird-animal-white-background\nbirds: https://www.flickr.com/photos/mathiasappel/26665123862/in/photolist-GCiJjS-2b7gvKb-Mma6Pb-NfEEzJ-2bHrof5-VAEZeD-JvMr6M-HzEdHY-SmxoWJ-27YaXgq-2bqFMM9-nKtHWQ-2bqFMTG-26snjDM-28Uzayc-29zYAgs-NK2kt8-2bdFtcL-QbUuAY-2cjLj6H-295xLtL-js38AF-js5wcm-2bdEmAm-2cffV1s-N5LEoR-Fc9Wc-QoVbZ1-a6ZJoL-LBxZ2-26EgPQ1-Ya1AyT-2bdFctG-2bdwQH9-2aVVmxP-8qftQq-a6WRW2-Rt9feS-2b8Atk2-29A2RsV-NMw1Nx-TPHq9U-KG6hLu-2bQS1Ft-25G7sTU-2eVk98F-Zqxzu5-Jb82Qk-Nyydc8-HCy4P1\n\nputrid heartbeat: https://freesound.org/people/Asteroiderer/sounds/439410/\n----\neerie:\nhttps://freesound.org/people/tigersound/sounds/9078/\n'close encounters' by tigersound is licensed under CC BY-NC 3.0\nhttps://creativecommons.org/licenses/by-nc/3.0/legalcode\nI have trimmed the audio.\n----"
+}

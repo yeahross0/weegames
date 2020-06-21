@@ -1,0 +1,817 @@
+{
+  "format_version": "0.1",
+  "published": true,
+  "objects": [
+    {
+      "name": "depressio",
+      "sprite": {
+        "Image": {
+          "name": "depression-crop"
+        }
+      },
+      "position": {
+        "x": 1057.0,
+        "y": 253.0
+      },
+      "size": {
+        "width": 844.0,
+        "height": 484.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "p1-check",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "p2-check",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "p3-check",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "depressio",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Win",
+            {
+              "Random": {
+                "random_actions": [
+                  {
+                    "PlaySound": {
+                      "name": "yippee-wippee"
+                    }
+                  },
+                  {
+                    "PlaySound": {
+                      "name": "yippee-yay"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "puzzle-1",
+      "sprite": {
+        "Image": {
+          "name": "depression-puzzle-1"
+        }
+      },
+      "position": {
+        "x": 316.0,
+        "y": 268.0
+      },
+      "size": {
+        "width": 61.0,
+        "height": 81.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "puzzle-1"
+                    }
+                  },
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "puzzle-1",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": "Mouse"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Release"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "p1-check"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 850.0,
+                    "y": 80.0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Random": {
+                "random_actions": [
+                  {
+                    "Motion": {
+                      "JumpTo": {
+                        "Area": {
+                          "min": {
+                            "x": 40.0,
+                            "y": 56.0
+                          },
+                          "max": {
+                            "x": 574.0,
+                            "y": 828.0
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "Motion": {
+                      "JumpTo": {
+                        "Area": {
+                          "min": {
+                            "x": 142.0,
+                            "y": 589.0
+                          },
+                          "max": {
+                            "x": 1525.0,
+                            "y": 832.0
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "p1-check",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 846.0,
+        "y": 78.0
+      },
+      "size": {
+        "width": 1.0,
+        "height": 1.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "puzzle-1"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "puzzle-2",
+      "sprite": {
+        "Image": {
+          "name": "depression-puzzle-2"
+        }
+      },
+      "position": {
+        "x": 405.0,
+        "y": 266.0
+      },
+      "size": {
+        "width": 118.0,
+        "height": 69.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "puzzle-2"
+                    }
+                  },
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "puzzle-2",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": "Mouse"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Release"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "p2-check"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "p2-check"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Random": {
+                "random_actions": [
+                  {
+                    "Motion": {
+                      "JumpTo": {
+                        "Area": {
+                          "min": {
+                            "x": 40.0,
+                            "y": 56.0
+                          },
+                          "max": {
+                            "x": 574.0,
+                            "y": 828.0
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "Motion": {
+                      "JumpTo": {
+                        "Area": {
+                          "min": {
+                            "x": 142.0,
+                            "y": 589.0
+                          },
+                          "max": {
+                            "x": 1525.0,
+                            "y": 832.0
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "p2-check",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 1341.0,
+        "y": 229.0
+      },
+      "size": {
+        "width": 1.0,
+        "height": 1.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "puzzle-2"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "puzzle-3",
+      "sprite": {
+        "Image": {
+          "name": "depression-puzzle-3"
+        }
+      },
+      "position": {
+        "x": 497.0,
+        "y": 262.0
+      },
+      "size": {
+        "width": 71.0,
+        "height": 102.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "puzzle-3"
+                    }
+                  },
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "puzzle-3",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": "Mouse"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Release"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "p3-check"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "p3-check"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Random": {
+                "random_actions": [
+                  {
+                    "Motion": {
+                      "JumpTo": {
+                        "Area": {
+                          "min": {
+                            "x": 40.0,
+                            "y": 56.0
+                          },
+                          "max": {
+                            "x": 574.0,
+                            "y": 828.0
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "Motion": {
+                      "JumpTo": {
+                        "Area": {
+                          "min": {
+                            "x": 142.0,
+                            "y": 589.0
+                          },
+                          "max": {
+                            "x": 1525.0,
+                            "y": 832.0
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "p3-check",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 1437.0,
+        "y": 454.0
+      },
+      "size": {
+        "width": 1.0,
+        "height": 1.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "puzzle-3"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "background": [
+    {
+      "sprite": {
+        "Colour": {
+          "r": 0.2,
+          "g": 0.2,
+          "b": 0.2,
+          "a": 1.0
+        }
+      },
+      "area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 1600.0,
+          "y": 900.0
+        }
+      }
+    },
+    {
+      "sprite": {
+        "Image": {
+          "name": "fox"
+        }
+      },
+      "area": {
+        "min": {
+          "x": 0.0,
+          "y": 450.0
+        },
+        "max": {
+          "x": 800.0,
+          "y": 900.0
+        }
+      }
+    },
+    {
+      "sprite": {
+        "Image": {
+          "name": "dreamer-dream-mirror"
+        }
+      },
+      "area": {
+        "min": {
+          "x": 550.0,
+          "y": -25.0
+        },
+        "max": {
+          "x": 1550.0,
+          "y": 625.0
+        }
+      }
+    }
+  ],
+  "asset_files": {
+    "images": {
+      "depression-puzzle-3": "depression-puzzle-3.png",
+      "depression-puzzle-1": "depression-puzzle-1.png",
+      "depression-puzzle-2": "depression-puzzle-2.png",
+      "fox": "fox.webp",
+      "dreamer-dream-mirror": "dreamer-dream-mirror.png",
+      "depression-crop": "depression-crop.webp"
+    },
+    "audio": {
+      "yippee-wippee": "yippee-wippee.ogg",
+      "yippee-yay": "yippee-yay.ogg"
+    },
+    "fonts": {},
+    "music": {
+      "filename": "beat.ogg",
+      "looped": false
+    }
+  },
+  "length": 7.0,
+  "intro_text": null,
+  "attribution": "dreamer: https://www.pdclipart.org/\nfox: https://wallpapers.io/photo/9370-fox-red-wallpaper\ndepression: https://pixabay.com/photos/depression-disease-fatigue-burnout-2826711/\n\nyippee: https://freesound.org/people/Topschool/sounds/443493/\n\nbeat: https://freesound.org/people/jerado/sounds/44193/\n"
+}

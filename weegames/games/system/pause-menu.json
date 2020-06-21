@@ -1,0 +1,323 @@
+{
+  "format_version": "0.1",
+  "published": false,
+  "objects": [
+    {
+      "name": "Continue",
+      "sprite": {
+        "Image": {
+          "name": "wasp-continue"
+        }
+      },
+      "position": {
+        "x": 423.0,
+        "y": 437.0
+      },
+      "size": {
+        "width": 653,
+        "height": 576
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 2,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "Continue"
+                    }
+                  },
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Timer": {
+                  "time": 15
+                }
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "squash-crop"
+              }
+            },
+            {
+              "Motion": "Stop"
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Continue",
+                "check": "Timer"
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Swat",
+      "sprite": {
+        "Image": {
+          "name": "fly-swat-up"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 320.0,
+        "height": 640.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Swat",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": "Mouse"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "fly-swat"
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Timer": {
+                  "time": 30
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "swat-crop"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Swat",
+                "check": "Timer"
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "fly-swat-up"
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Quit",
+      "sprite": {
+        "Image": {
+          "name": "wasp-quit"
+        }
+      },
+      "position": {
+        "x": 1177.0,
+        "y": 442.0
+      },
+      "size": {
+        "width": 653,
+        "height": 576
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 2,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "Quit"
+                    }
+                  },
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Timer": {
+                  "time": 15
+                }
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "squash-crop"
+              }
+            },
+            {
+              "Motion": "Stop"
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Quit",
+                "check": "Timer"
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "background": [
+    {
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 1.0
+        }
+      },
+      "area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 1600.0,
+          "y": 900.0
+        }
+      }
+    }
+  ],
+  "asset_files": {
+    "images": {
+      "fly-swat": "fly-swat.webp",
+      "wasp-quit": "wasp-white-quit.webp",
+      "fly-swat-up": "fly-swat-up.webp",
+      "wasp-continue": "wasp-continue.webp"
+    },
+    "audio": {
+      "swat-crop": "swat-crop.ogg",
+      "squash-crop": "squash-crop.ogg"
+    },
+    "fonts": {},
+    "music": null
+  },
+  "length": 4.0,
+  "intro_text": null,
+  "attribution": "fly swat: https://pixabay.com/vectors/fly-swatter-pest-control-swat-29407/\n----\nwasp:\nhttps://commons.wikimedia.org/w/index.php?curid=1999886\n'File:2 wasp 2007-04-25.jpg' by Trounce is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\nI cropped the image and wrote the words 'Continue' and 'Quit' on it.\n----\n\nswat: https://freesound.org/people/poorenglishjuggler/sounds/131461/\n----\nsquash:\nhttps://freesound.org/people/zimbot/sounds/244486/\n'CrushAndGrind' by zimbot is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\nI trimmed the audio.\n----"
+}

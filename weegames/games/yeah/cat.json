@@ -1,0 +1,291 @@
+{
+  "format_version": "0.1",
+  "published": true,
+  "objects": [
+    {
+      "name": "car",
+      "sprite": {
+        "Image": {
+          "name": "car"
+        }
+      },
+      "position": {
+        "x": 1598.0,
+        "y": 202.0
+      },
+      "size": {
+        "width": 173.0,
+        "height": 127.0
+      },
+      "angle": 0.0,
+      "origin": {
+        "x": 86.5,
+        "y": 63.5
+      },
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 3,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "PlaySound": {
+                "name": "lawnmower"
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Area": {
+                    "min": {
+                      "x": 1700.0,
+                      "y": 70.0
+                    },
+                    "max": {
+                      "x": 1900.0,
+                      "y": 160.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Angle": {
+                      "Degrees": 246.0
+                    }
+                  },
+                  "speed": {
+                    "Category": "Slow"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "cat"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Angle": {
+                      "Degrees": 346.0
+                    }
+                  },
+                  "speed": {
+                    "Category": "Normal"
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Angle": {
+                  "Value": 90.0
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "trophy"
+                }
+              }
+            },
+            {
+              "WinStatus": "NotYetWon"
+            }
+          ],
+          "actions": [
+            "Win",
+            {
+              "PlaySound": {
+                "name": "yay"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "trophy",
+      "sprite": {
+        "Image": {
+          "name": "trophy"
+        }
+      },
+      "position": {
+        "x": 835.0,
+        "y": 105.0
+      },
+      "size": {
+        "width": 120.0,
+        "height": 152.0
+      },
+      "angle": 0.0,
+      "origin": {
+        "x": 60.0,
+        "y": 70.0
+      },
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 3,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Area": {
+                    "min": {
+                      "x": 59.0,
+                      "y": 58.0
+                    },
+                    "max": {
+                      "x": 959.0,
+                      "y": 570.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "WinStatus": "Won"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "car"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "cat",
+      "sprite": {
+        "Image": {
+          "name": "cat"
+        }
+      },
+      "position": {
+        "x": 829.5,
+        "y": 388.5
+      },
+      "size": {
+        "width": 249.0,
+        "height": 419.0
+      },
+      "angle": 0.0,
+      "origin": {
+        "x": 124.5,
+        "y": 209.5
+      },
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": "Mouse"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "background": [
+    {
+      "sprite": {
+        "Image": {
+          "name": "cat background"
+        }
+      },
+      "area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 1600.0,
+          "y": 900.0
+        }
+      }
+    }
+  ],
+  "asset_files": {
+    "images": {
+      "cat background": "cat-background-smudged.webp",
+      "car": "car-cropped.webp",
+      "cat": "cat-transparent.png",
+      "trophy": "trophy-win.png"
+    },
+    "audio": {
+      "yay": "yippee-yay.ogg",
+      "lawnmower": "lawnmower-crop.ogg",
+      "wippee": "yippee-wippee.ogg"
+    },
+    "fonts": {},
+    "music": null
+  },
+  "length": 5.0,
+  "intro_text": "Lift Off!",
+  "attribution": "cat: https://pixabay.com/photos/cat-pet-animals-cute-cats-animal-641530/\n----\ncar:\nhttps://commons.wikimedia.org/wiki/File:Ford_Fiesta_Rally_car.JPG\n'Ford Fiesta Rally car'  by 100yen is licensed under CC BY-SA 3.0\nhttps://creativecommons.org/licenses/by-sa/3.0/legalcode\nI have removed the background. I release my changes under CC BY-SA 3.0.\n----\ntrophy: https://pixabay.com/illustrations/trophy-winner-cup-champion-gold-4145177/\nyippee: https://freesound.org/people/Topschool/sounds/443493/\n----\noh no: https://freesound.org/people/ecfike/sounds/131407/\nNot used\n----\n----\nlawnmower:\nhttps://freesound.org/people/gadzooks/sounds/20737/\n'lawnmower' by gadzooks is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\nI have trimmed the audio.\n----"
+}

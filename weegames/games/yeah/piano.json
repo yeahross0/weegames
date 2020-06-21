@@ -1,0 +1,1257 @@
+{
+  "format_version": "0.1",
+  "published": true,
+  "objects": [
+    {
+      "name": "piano",
+      "sprite": {
+        "Image": {
+          "name": "piano-faces"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 1920.0,
+        "height": 1080.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 2,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "cow",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "piano-faces-cow"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "sheep",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "piano-faces-sheep"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "hen",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "piano-faces-hen"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "lady",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "piano-faces-lady"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "cow",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 1.0,
+        "height": 1.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Area": {
+                      "min": {
+                        "x": 353.0,
+                        "y": 14.0
+                      },
+                      "max": {
+                        "x": 558.0,
+                        "y": 896.0
+                      }
+                    }
+                  },
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "moo"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "sheep",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 0.0,
+        "height": 0.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Area": {
+                      "min": {
+                        "x": 575.0,
+                        "y": 1.0
+                      },
+                      "max": {
+                        "x": 792.0,
+                        "y": 899.0
+                      }
+                    }
+                  },
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "PlaySound": {
+                "name": "baa"
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "hen",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 0.0,
+        "height": 0.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Area": {
+                      "min": {
+                        "x": 798.0,
+                        "y": 0.0
+                      },
+                      "max": {
+                        "x": 1020.0,
+                        "y": 897.0
+                      }
+                    }
+                  },
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "cluck"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "lady",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 911.0,
+        "y": 483.0
+      },
+      "size": {
+        "width": 0.0,
+        "height": 0.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Area": {
+                      "min": {
+                        "x": 1030.0,
+                        "y": 1.0
+                      },
+                      "max": {
+                        "x": 1250.0,
+                        "y": 894.0
+                      }
+                    }
+                  },
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "wie-gehts-crop"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "player1",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 1920.0,
+        "height": 1080.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 30
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "chooser",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "PlaySound": {
+                "name": "wie-gehts-crop"
+              }
+            },
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "piano-faces-lady"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 60
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "chooser",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "piano-faces-hen"
+                  }
+                }
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "cluck"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 90
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "chooser",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "piano-faces-cow"
+                  }
+                }
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "moo"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 120
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "chooser",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "PlaySound": {
+                "name": "baa"
+              }
+            },
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "piano-faces-sheep"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 150
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "chooser",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Colour": {
+                    "r": 1.0,
+                    "g": 1.0,
+                    "b": 1.0,
+                    "a": 0.0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "hen",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "lady",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "chooser",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "cow",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "hen",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "chooser",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "sheep",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "cow",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "chooser",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "cow",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "hen",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "lady",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "sheep",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "chooser",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Win",
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "piano-faces-all"
+                  }
+                }
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "cheers"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "WinStatus": "HasBeenLost"
+            },
+            {
+              "CheckProperty": {
+                "name": "chooser",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "PlaySound": {
+                "name": "groans-crop"
+              }
+            },
+            {
+              "Effect": "Freeze"
+            },
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "piano-faces-inverted"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "player2",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 1920.0,
+        "height": 1080.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 60
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "chooser",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "piano-faces-cow"
+                  }
+                }
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "moo"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 90
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "chooser",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "PlaySound": {
+                "name": "baa"
+              }
+            },
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "piano-faces-sheep"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 30
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "chooser",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "piano-faces-hen"
+                  }
+                }
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "cluck"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 120
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "chooser",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "PlaySound": {
+                "name": "wie-gehts-crop"
+              }
+            },
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "piano-faces-lady"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 150
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "chooser",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Colour": {
+                    "r": 1.0,
+                    "g": 1.0,
+                    "b": 1.0,
+                    "a": 0.0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "cow",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "hen",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "chooser",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "sheep",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "cow",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "chooser",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "lady",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "sheep",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "chooser",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "cow",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "sheep",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "hen",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "lady",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "chooser",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Win",
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "piano-faces-all"
+                  }
+                }
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "cheers"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "WinStatus": "HasBeenLost"
+            },
+            {
+              "CheckProperty": {
+                "name": "chooser",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "PlaySound": {
+                "name": "groans-crop"
+              }
+            },
+            {
+              "Effect": "Freeze"
+            },
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "piano-faces-inverted"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "chooser",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 0.0,
+        "height": 0.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            },
+            {
+              "Random": {
+                "chance": 0.5
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "background": [],
+  "asset_files": {
+    "images": {
+      "piano-faces-lady": "piano-faces-lady.webp",
+      "piano-faces-inverted": "piano-faces-inverted.webp",
+      "piano-faces-cow": "piano-faces-cow.webp",
+      "piano-faces-hen": "piano-faces-hen.webp",
+      "piano-faces": "piano-faces.webp",
+      "piano-faces-sheep": "piano-faces-sheep.webp",
+      "piano-faces-all": "piano-faces-all.webp"
+    },
+    "audio": {
+      "groans-crop": "groans-crop.ogg",
+      "wie-gehts-crop": "wie-gehts-crop.ogg",
+      "baa": "baa.ogg",
+      "moo": "moo.ogg",
+      "cheers": "cheers.ogg",
+      "cluck": "cluck-crop.ogg"
+    },
+    "fonts": {},
+    "music": null
+  },
+  "length": 6.019293,
+  "intro_text": "Répétez-vous",
+  "attribution": "piano: http://www.picdrome.com/sports-and-recreation/black-and-white-keys-on-piano-keyboard.webp.php\nlady and hen: https://www.si.edu/object/chndm_1917-4-149-b\nsheep: https://www.si.edu/object/chndm_1912-12-53\ncow: https://www.si.edu/object/chndm_1921-22-388\n\n----\nmoo:\nhttps://freesound.org/people/javapimp/sounds/439168/\n'Kara - Moo' by javapimp is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\n----\nbaa: https://freesound.org/people/esperar/sounds/171149/\ncluck: https://freesound.org/people/esperar/sounds/170808/\nwie gehts: https://freesound.org/people/Roses1401/sounds/424223/\n----\ngroan:\nhttps://freesound.org/people/FritzSounds/sounds/366297/\n'A Few Groans Of Disappointment' by FritzSounds is licensed under CC BY-NC 3.0\nhttps://creativecommons.org/licenses/by-nc/3.0/legalcode\nI have trimmed the audio.\n----\ncheers: https://freesound.org/people/payattention/sounds/82800/"
+}
