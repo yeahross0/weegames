@@ -19,6 +19,3 @@ Install SFML using their guide https://github.com/jeremyletang/rust-sfml/wiki
 
 # Running
 Change directory into weegames/ and run ``cargo run``
-
-# Game Files
-The game files aren't included in the git repository but you can download them from [dropbox](https://www.dropbox.com/sh/l9mwf7jd30zqvqa/AADKCuxDih0DTsL4JQeXbqkUa?dl=1) and place them in weegames/games.
