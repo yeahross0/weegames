@@ -13,7 +13,15 @@ use sdl2::{
     EventPump, VideoSubsystem,
 };
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
-use std::{error::Error, fs, path::Path, process, str, sync::mpsc, thread, time::Instant};
+use std::{
+    error::Error,
+    fs,
+    path::Path,
+    process, str,
+    sync::mpsc,
+    thread,
+    time::{Duration, Instant},
+};
 use walkdir::WalkDir;
 
 use sdlglue::Renderer;
@@ -130,7 +138,7 @@ impl Imgui {
         renderer: &Renderer,
         event_pump: &EventPump,
         last_frame: &mut Instant,
-    ) -> (ImguiFrame, imgui::Ui) {
+    ) -> ImguiFrame {
         self.sdl.prepare_frame(
             self.context.io_mut(),
             &renderer.window,
@@ -139,13 +147,11 @@ impl Imgui {
 
         self.update_time(last_frame);
 
-        (
-            ImguiFrame {
-                sdl: &mut self.sdl,
-                renderer: &mut self.renderer,
-            },
-            self.context.frame(),
-        )
+        ImguiFrame {
+            ui: self.context.frame(),
+            sdl: &mut self.sdl,
+            renderer: &mut self.renderer,
+        }
     }
 
     fn update_time(&mut self, last_frame: &mut Instant) {
@@ -158,14 +164,15 @@ impl Imgui {
 }
 
 struct ImguiFrame<'a> {
+    ui: imgui::Ui<'a>,
     sdl: &'a mut ImguiSdl,
     renderer: &'a mut ImguiRenderer,
 }
 
 impl<'a> ImguiFrame<'a> {
-    fn render(self, renderer: &Renderer, ui: imgui::Ui) {
-        self.sdl.prepare_render(&ui, &renderer.window);
-        self.renderer.render(ui);
+    fn render(self, renderer: &Renderer) {
+        self.sdl.prepare_render(&self.ui, &renderer.window);
+        self.renderer.render(self.ui);
     }
 }
 
@@ -176,7 +183,7 @@ enum GameMode<'a, 'b> {
         games_list: GamesList,
         progress: Progress,
     },
-    //Edit,
+    Edit,
     Prelude,
     Interlude {
         won: bool,
@@ -328,8 +335,9 @@ fn run_main_loop<'a, 'b>(
                     game_mode = GameMode::Prelude;
                     break 'menu_running;
                 }
-                if wee::is_switched_on(&game.objects, "Quit") {
-                    process::exit(0);
+                if wee::is_switched_on(&game.objects, "Edit") {
+                    game_mode = GameMode::Edit;
+                    break 'menu_running;
                 }
             }
         }
@@ -486,7 +494,44 @@ fn run_main_loop<'a, 'b>(
                 }
             }
         }
-        //GameMode::Edit => {}
+        GameMode::Edit => {
+            let mut last_frame = Instant::now();
+            let mut return_to_menu = false;
+            'editor_running: loop {
+                if sdlglue::has_quit(event_pump) {
+                    process::exit(0);
+                }
+                sdlglue::set_fullscreen(renderer, event_pump)?;
+
+                let imgui_frame = imgui.prepare_frame(&renderer, &event_pump, &mut last_frame);
+                let ui = &imgui_frame.ui;
+
+                ui.show_demo_window(&mut true);
+
+                let menu_bar = ui.begin_main_menu_bar();
+                if let Some(bar) = menu_bar {
+                    let menu = ui.begin_menu(im_str!("File"), true);
+                    if let Some(menu) = menu {
+                        if imgui::MenuItem::new(im_str!("Return to Menu")).build(ui) {
+                            game_mode = GameMode::Menu;
+                            return_to_menu = true;
+                        }
+                        menu.end(ui);
+                    }
+                    bar.end(ui);
+                }
+
+                sdlglue::clear_screen(Colour::dull_grey());
+                imgui_frame.render(&renderer);
+                renderer.present();
+
+                thread::sleep(Duration::from_millis(10));
+
+                if return_to_menu {
+                    break 'editor_running;
+                }
+            }
+        }
         GameMode::Error(error) => {
             let mut last_frame = Instant::now();
             let mut do_break = false;
@@ -497,10 +542,10 @@ fn run_main_loop<'a, 'b>(
                 sdlglue::set_fullscreen(renderer, event_pump)?;
                 sdlglue::clear_screen(Colour::dull_grey());
 
-                let (imgui_frame, ui) =
-                    imgui.prepare_frame(&renderer, &event_pump, &mut last_frame);
+                let imgui_frame = imgui.prepare_frame(&renderer, &event_pump, &mut last_frame);
+                let ui = &imgui_frame.ui;
 
-                imgui::Window::new(im_str!("Error")).build(&ui, || {
+                imgui::Window::new(im_str!("Error")).build(ui, || {
                     ui.text(format!("{}", error));
                     if ui.button(im_str!("OK"), [100.0, 50.0]) {
                         do_break = true;
@@ -515,7 +560,7 @@ fn run_main_loop<'a, 'b>(
                     break 'error_running;
                 }
 
-                imgui_frame.render(&renderer, ui);
+                imgui_frame.render(&renderer);
 
                 renderer.present();
             }
@@ -543,7 +588,7 @@ fn main() -> WeeResult<()> {
         video_subsystem
             .window("Wee", INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT)
             .position_centered()
-            .fullscreen()
+            //.fullscreen()
             .opengl()
             .resizable()
             .build()
