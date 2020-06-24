@@ -1,0 +1,275 @@
+{
+  "format_version": "0.1",
+  "published": true,
+  "objects": [
+    {
+      "name": "earthquake",
+      "sprite": {
+        "Image": {
+          "name": "earthquake-middle"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 1600.0,
+        "height": 900.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "back",
+      "sprite": {
+        "Image": {
+          "name": "back"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 600.0,
+        "height": 600.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 180.0,
+          "y": 150.0
+        },
+        "max": {
+          "x": 430.0,
+          "y": 540.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 2,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "Roam": {
+                  "movement_type": {
+                    "Reflect": {
+                      "initial_direction": {
+                        "Direction": {
+                          "possible_directions": []
+                        }
+                      },
+                      "movement_handling": "Anywhere"
+                    }
+                  },
+                  "area": {
+                    "min": {
+                      "x": 99.0,
+                      "y": 124.0
+                    },
+                    "max": {
+                      "x": 1459.0,
+                      "y": 747.0
+                    }
+                  },
+                  "speed": {
+                    "Category": "Normal"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "butterfly",
+      "sprite": {
+        "Image": {
+          "name": "butterfly-itself"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 200.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": "Mouse"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "back"
+                    }
+                  },
+                  "interaction": {
+                    "Button": {
+                      "state": "Release"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Win",
+            {
+              "Effect": "Freeze"
+            },
+            {
+              "PlaySound": {
+                "name": "slap-crop"
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "oi"
+              }
+            },
+            "StopMusic"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Release"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "butterfly",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "PlaySound": {
+                "name": "oh-no-4-crop"
+              }
+            },
+            "Lose",
+            {
+              "Effect": "Freeze"
+            },
+            "StopMusic"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "backg",
+      "sprite": {
+        "Image": {
+          "name": "earthquake"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 1600.0,
+        "height": 900.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 3,
+      "switch": "Off",
+      "instructions": []
+    }
+  ],
+  "background": [],
+  "asset_files": {
+    "images": {
+      "earthquake": "earthquake.webp",
+      "butterfly-itself": "butterfly-itself.png",
+      "earthquake-middle": "earthquake-middle.webp",
+      "back": "back.webp"
+    },
+    "audio": {
+      "slap-crop": "slap-crop.ogg",
+      "oi": "oi.ogg",
+      "oh-no-4-crop": "oh-no-4-crop.ogg"
+    },
+    "fonts": {},
+    "music": {
+      "filename": "dramatic-increase-crop.ogg",
+      "looped": false
+    }
+  },
+  "length": 4.0,
+  "intro_text": "Tattoo!",
+  "attribution": "butterfly: https://pixabay.com/photos/man-move-tattoo-butterfly-distant-538730/\nearthquake: https://pixabay.com/photos/earthquake-rubble-collapse-disaster-1665885/\nback: https://commons.wikimedia.org/wiki/File:Edgar_Germain_Hilaire_Degas_029.jpg\n\nslap: https://freesound.org/people/MootMcnoodles/sounds/444407/\n----\noh no:\nhttps://freesound.org/people/AmeAngelofSin/sounds/168682/\n'evil/sarcastic: Oh no, you don't' by AmeAngelofSin is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\nI have trimmed the audio\n----\noi: https://freesound.org/people/rhink/sounds/245866/\n\n----\ndramatic increase\nhttps://freesound.org/people/tyops/sounds/415123/\n'Dramatic Increasing' by tyops is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\nI have trimmed the audio.\n----"
+}

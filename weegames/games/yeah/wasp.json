@@ -1,0 +1,628 @@
+{
+  "format_version": "0.1",
+  "published": true,
+  "objects": [
+    {
+      "name": "wasp 1",
+      "sprite": {
+        "Image": {
+          "name": "wasp"
+        }
+      },
+      "position": {
+        "x": 550.0,
+        "y": 400.0
+      },
+      "size": {
+        "width": 108.0,
+        "height": 125.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 2,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Area": {
+                    "min": {
+                      "x": 0.0,
+                      "y": 0.0
+                    },
+                    "max": {
+                      "x": 1600.0,
+                      "y": 900.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Roam": {
+                  "movement_type": "Insect",
+                  "area": {
+                    "min": {
+                      "x": 0.0,
+                      "y": 0.0
+                    },
+                    "max": {
+                      "x": 1600.0,
+                      "y": 900.0
+                    }
+                  },
+                  "speed": {
+                    "Category": "Fast"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Collision": {
+                "Object": {
+                  "name": "swat"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "swat",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "wasp 1",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "wasp hit"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": "Stop"
+            },
+            {
+              "PlaySound": {
+                "name": "squash"
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "wasp 2",
+      "sprite": {
+        "Image": {
+          "name": "wasp"
+        }
+      },
+      "position": {
+        "x": 550.0,
+        "y": 400.0
+      },
+      "size": {
+        "width": 108.0,
+        "height": 125.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 2,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Area": {
+                    "min": {
+                      "x": 0.0,
+                      "y": 0.0
+                    },
+                    "max": {
+                      "x": 1600.0,
+                      "y": 900.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Roam": {
+                  "movement_type": "Insect",
+                  "area": {
+                    "min": {
+                      "x": 0.0,
+                      "y": 0.0
+                    },
+                    "max": {
+                      "x": 1600.0,
+                      "y": 900.0
+                    }
+                  },
+                  "speed": {
+                    "Category": "Fast"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Collision": {
+                "Object": {
+                  "name": "swat"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "swat",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "wasp 2",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "wasp hit"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": "Stop"
+            },
+            {
+              "PlaySound": {
+                "name": "squash"
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "wasp 3",
+      "sprite": {
+        "Image": {
+          "name": "wasp"
+        }
+      },
+      "position": {
+        "x": 550.0,
+        "y": 400.0
+      },
+      "size": {
+        "width": 108.0,
+        "height": 125.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 2,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Area": {
+                    "min": {
+                      "x": 0.0,
+                      "y": 0.0
+                    },
+                    "max": {
+                      "x": 1600.0,
+                      "y": 900.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Roam": {
+                  "movement_type": "Insect",
+                  "area": {
+                    "min": {
+                      "x": 0.0,
+                      "y": 0.0
+                    },
+                    "max": {
+                      "x": 1600.0,
+                      "y": 900.0
+                    }
+                  },
+                  "speed": {
+                    "Category": "Fast"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Collision": {
+                "Object": {
+                  "name": "swat"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "swat",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "wasp 3",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "wasp hit"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": "Stop"
+            },
+            {
+              "PlaySound": {
+                "name": "squash"
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "swat",
+      "sprite": {
+        "Image": {
+          "name": "swat up"
+        }
+      },
+      "position": {
+        "x": 550.0,
+        "y": 0.0
+      },
+      "size": {
+        "width": 320.0,
+        "height": 640.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 75.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 250.0,
+          "y": 190.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "swat",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": "Mouse"
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 0.0,
+                      "y": 200.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "swat",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "swat down"
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Timer": {
+                  "time": 60
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "swat"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "swat",
+                "check": "Timer"
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "swat up"
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "wasp 1",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "wasp 2",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "wasp 3",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Win"
+          ]
+        }
+      ]
+    }
+  ],
+  "background": [
+    {
+      "sprite": {
+        "Image": {
+          "name": "cyclists"
+        }
+      },
+      "area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 1600.0,
+          "y": 900.0
+        }
+      }
+    }
+  ],
+  "asset_files": {
+    "images": {
+      "cyclists": "bikes.webp",
+      "wasp hit": "wasp-hit.webp",
+      "swat up": "fly-swat-up.webp",
+      "wasp": "wasp-crop-small.png",
+      "swat down": "fly-swat.webp"
+    },
+    "audio": {
+      "squash": "squash-crop.ogg",
+      "swat": "swat-crop.ogg"
+    },
+    "music": {
+      "filename": "dramatic-beat-crop.ogg",
+      "looped": false
+    },
+    "fonts": {}
+  },
+  "length": 8.0,
+  "intro_text": "χτυπώ",
+  "attribution": "swat: https://pixabay.com/vectors/fly-swatter-pest-control-swat-29407/\n----\nwasp:\nhttps://commons.wikimedia.org/w/index.php?curid=1999886\n'File:2 wasp 2007-04-25.jpg' by Trounce is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\nI cropped the image and fuzzed it.\n----\nbikes: http://www.picdrome.com/sports-and-recreation/gym-upright-cycles.jpg.php\n\nyippee: https://freesound.org/people/Topschool/sounds/443493/\noh-no-2: https://freesound.org/people/ecfike/sounds/131407/\nswat: https://freesound.org/people/poorenglishjuggler/sounds/131461/\n----\nsquash:\nhttps://freesound.org/people/zimbot/sounds/244486/\n'CrushAndGrind' by zimbot is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\nI trimmed the audio.\n----\n\n----\ndramatic beat\nhttps://freesound.org/people/tyops/sounds/462955/\n'Dramatic beat' by tyops is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\nI trimmed the audio."
+}

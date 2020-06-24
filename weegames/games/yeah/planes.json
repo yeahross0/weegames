@@ -1,0 +1,533 @@
+{
+  "format_version": "0.1",
+  "published": true,
+  "objects": [
+    {
+      "name": "plane1",
+      "sprite": {
+        "Image": {
+          "name": "planes-plane"
+        }
+      },
+      "position": {
+        "x": 176.0,
+        "y": 550.0
+      },
+      "size": {
+        "width": 157.0,
+        "height": 63.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Angle": {
+                      "Degrees": 60.0
+                    }
+                  },
+                  "speed": {
+                    "Category": "VerySlow"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "my-plane"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "my-plane",
+      "sprite": {
+        "Image": {
+          "name": "plane-crop"
+        }
+      },
+      "position": {
+        "x": 590.0,
+        "y": 521.0
+      },
+      "size": {
+        "width": 217.0,
+        "height": 97.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 200.0,
+          "y": 97.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "my-plane",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": "Mouse"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "my-plane"
+                    }
+                  },
+                  "interaction": "Hover"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "End"
+            }
+          ],
+          "actions": [
+            "Win"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "WinStatus": "HasBeenLost"
+            }
+          ],
+          "actions": [
+            {
+              "PlaySound": {
+                "name": "car-crash-crop"
+              }
+            },
+            {
+              "Effect": "Freeze"
+            },
+            "StopMusic"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "plane2",
+      "sprite": {
+        "Image": {
+          "name": "planes-plane"
+        }
+      },
+      "position": {
+        "x": 394.0,
+        "y": 336.0
+      },
+      "size": {
+        "width": 157.0,
+        "height": 63.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Angle": {
+                      "Degrees": 60.0
+                    }
+                  },
+                  "speed": {
+                    "Category": "VerySlow"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "my-plane"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "plane3",
+      "sprite": {
+        "Image": {
+          "name": "planes-plane"
+        }
+      },
+      "position": {
+        "x": 812.0,
+        "y": 414.0
+      },
+      "size": {
+        "width": 157.0,
+        "height": 63.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Angle": {
+                      "Degrees": 60.0
+                    }
+                  },
+                  "speed": {
+                    "Category": "VerySlow"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "my-plane"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "plane4",
+      "sprite": {
+        "Image": {
+          "name": "planes-plane"
+        }
+      },
+      "position": {
+        "x": 805.0,
+        "y": 642.0
+      },
+      "size": {
+        "width": 157.0,
+        "height": 63.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Angle": {
+                      "Degrees": 60.0
+                    }
+                  },
+                  "speed": {
+                    "Category": "VerySlow"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "my-plane"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "plane5",
+      "sprite": {
+        "Image": {
+          "name": "planes-plane"
+        }
+      },
+      "position": {
+        "x": 561.0,
+        "y": 821.0
+      },
+      "size": {
+        "width": 157.0,
+        "height": 63.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Angle": {
+                      "Degrees": 60.0
+                    }
+                  },
+                  "speed": {
+                    "Category": "VerySlow"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "my-plane"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "plane6",
+      "sprite": {
+        "Image": {
+          "name": "planes-plane"
+        }
+      },
+      "position": {
+        "x": 89.0,
+        "y": 778.0
+      },
+      "size": {
+        "width": 157.0,
+        "height": 63.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Angle": {
+                      "Degrees": 60.0
+                    }
+                  },
+                  "speed": {
+                    "Category": "VerySlow"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "my-plane"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose"
+          ]
+        }
+      ]
+    }
+  ],
+  "background": [
+    {
+      "sprite": {
+        "Image": {
+          "name": "clear-sky"
+        }
+      },
+      "area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 1600.0,
+          "y": 900.0
+        }
+      }
+    }
+  ],
+  "asset_files": {
+    "images": {
+      "plane-crop": "plane-crop.png",
+      "clear-sky": "clear-sky.webp",
+      "planes-plane": "planes-plane.png"
+    },
+    "audio": {
+      "car-crash-crop": "car-crash-crop.ogg"
+    },
+    "music": {
+      "filename": "f1-car-crop.ogg",
+      "looped": false
+    },
+    "fonts": {}
+  },
+  "length": 4.0,
+  "intro_text": "Vroom!",
+  "attribution": "plane: http://www.picdrome.com/sports-and-recreation/supersonic-fighter-aircraft.jpg.php\nplanes: http://www.picdrome.com/sports-and-recreation/training-aircrafts-in-formation.jpg.php\nclear sky: https://pixabay.com/photos/dandelion-sky-spring-blue-sky-745972/\n\n----\ncar crash:\nhttps://freesound.org/people/nsstudios/sounds/351513/\n'car crash' by nsstudios is licensed under CC BY-NC 3.0\nhttps://creativecommons.org/licenses/by-nc/3.0/\nI have trimmed the audio.\n----\n----\nf1 car:\nhttps://freesound.org/people/stormlord/sounds/38567/\n'Rennwagen1' by stormlord is licensed under  Sampling Plus 1.0\nhttps://creativecommons.org/licenses/sampling+/1.0/legalcode\n----"
+}

@@ -1,0 +1,601 @@
+{
+  "format_version": "0.1",
+  "published": false,
+  "objects": [
+    {
+      "name": "Score",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 300.0
+      },
+      "size": {
+        "width": 1.0,
+        "height": 1.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "DrawText": {
+                "text": "Score: {Score}",
+                "font": "libmono",
+                "colour": {
+                  "r": 1.0,
+                  "g": 1.0,
+                  "b": 1.0,
+                  "a": 1.0
+                },
+                "resize": "MatchText"
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "wasp-blue"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Won",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "wasp-blue"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "wasp-blue",
+      "sprite": {
+        "Image": {
+          "name": "wasp-blue"
+        }
+      },
+      "position": {
+        "x": 664.0,
+        "y": 382.0
+      },
+      "size": {
+        "width": 762.125,
+        "height": 877.625
+      },
+      "angle": -90.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 2,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            },
+            {
+              "CheckProperty": {
+                "name": "Won",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "Roam": {
+                  "movement_type": "Wiggle",
+                  "area": {
+                    "min": {
+                      "x": 197.0,
+                      "y": 28.0
+                    },
+                    "max": {
+                      "x": 1077.0,
+                      "y": 780.0
+                    }
+                  },
+                  "speed": {
+                    "Category": "VerySlow"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "1",
+      "sprite": {
+        "Image": {
+          "name": "wasp-green"
+        }
+      },
+      "position": {
+        "x": 1402.0,
+        "y": 113.0
+      },
+      "size": {
+        "width": 174.2,
+        "height": 200.6
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "Roam": {
+                  "movement_type": "Wiggle",
+                  "area": {
+                    "min": {
+                      "x": 1316.0,
+                      "y": 8.0
+                    },
+                    "max": {
+                      "x": 1485.0,
+                      "y": 205.0
+                    }
+                  },
+                  "speed": {
+                    "Category": "VerySlow"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            },
+            {
+              "CheckProperty": {
+                "name": "1",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "wasp-green-hit"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": "Stop"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2",
+      "sprite": {
+        "Image": {
+          "name": "wasp-green"
+        }
+      },
+      "position": {
+        "x": 1411.0,
+        "y": 335.0
+      },
+      "size": {
+        "width": 174.2,
+        "height": 200.6
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "Roam": {
+                  "movement_type": "Wiggle",
+                  "area": {
+                    "min": {
+                      "x": 1344.0,
+                      "y": 241.0
+                    },
+                    "max": {
+                      "x": 1494.0,
+                      "y": 433.0
+                    }
+                  },
+                  "speed": {
+                    "Category": "VerySlow"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            },
+            {
+              "CheckProperty": {
+                "name": "2",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "wasp-green-hit"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": "Stop"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3",
+      "sprite": {
+        "Image": {
+          "name": "wasp-green"
+        }
+      },
+      "position": {
+        "x": 1421.0,
+        "y": 559.0
+      },
+      "size": {
+        "width": 174.2,
+        "height": 200.6
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "Roam": {
+                  "movement_type": "Wiggle",
+                  "area": {
+                    "min": {
+                      "x": 1352.0,
+                      "y": 453.0
+                    },
+                    "max": {
+                      "x": 1502.0,
+                      "y": 651.0
+                    }
+                  },
+                  "speed": {
+                    "Category": "VerySlow"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            },
+            {
+              "CheckProperty": {
+                "name": "3",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "wasp-green-hit"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": "Stop"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "4",
+      "sprite": {
+        "Image": {
+          "name": "wasp-green"
+        }
+      },
+      "position": {
+        "x": 1427.0,
+        "y": 782.0
+      },
+      "size": {
+        "width": 174.2,
+        "height": 200.6
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "Roam": {
+                  "movement_type": "Wiggle",
+                  "area": {
+                    "min": {
+                      "x": 1353.0,
+                      "y": 683.0
+                    },
+                    "max": {
+                      "x": 1512.0,
+                      "y": 875.0
+                    }
+                  },
+                  "speed": {
+                    "Category": "VerySlow"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            },
+            {
+              "CheckProperty": {
+                "name": "4",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "wasp-green-hit"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": "Stop"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Won",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 0.0,
+        "height": 0.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "PlaySound": {
+                "name": "swat-crop"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            },
+            {
+              "CheckProperty": {
+                "name": "Won",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "PlaySound": {
+                "name": "squash-crop"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "background": [
+    {
+      "sprite": {
+        "Image": {
+          "name": "bloody-hands"
+        }
+      },
+      "area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 1600.0,
+          "y": 900.0
+        }
+      }
+    }
+  ],
+  "asset_files": {
+    "images": {
+      "wasp-green": "wasp-green.webp",
+      "bloody-hands": "bloody-hands.webp",
+      "wasp-green-hit": "wasp-green-hit.webp",
+      "wasp-blue": "wasp-blue.webp"
+    },
+    "audio": {
+      "squash-crop": "squash-crop.ogg",
+      "swat-crop": "swat-crop.ogg"
+    },
+    "fonts": {
+      "libmono": {
+        "filename": "LiberationMono-Regular.ttf",
+        "size": 128.0
+      }
+    },
+    "music": null
+  },
+  "length": 1.0,
+  "intro_text": null,
+  "attribution": "----\nwasp:\nhttps://commons.wikimedia.org/w/index.php?curid=1999886\n'File:2 wasp 2007-04-25.jpg' by Trounce is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\nI changed the colour of the image.\n----\nbloody-hands: https://www.pexels.com/photo/person-s-hands-covered-with-blood-673862/\n\nswat: https://freesound.org/people/poorenglishjuggler/sounds/131461/\n----\nsquash:\nhttps://freesound.org/people/zimbot/sounds/244486/\n'CrushAndGrind' by zimbot is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\nI cropped the audio.\n----\n"
+}

@@ -1,0 +1,143 @@
+{
+  "format_version": "0.1",
+  "published": false,
+  "objects": [
+    {
+      "name": "wasp",
+      "sprite": {
+        "Image": {
+          "name": "wasp-blue-hit"
+        }
+      },
+      "position": {
+        "x": 676.0,
+        "y": 405.0
+      },
+      "size": {
+        "width": 871.0,
+        "height": 1003.0
+      },
+      "angle": -90.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "PlaySound": {
+                "name": "swat-crop"
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "squash-crop"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Score",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 701.0,
+        "y": 371.0
+      },
+      "size": {
+        "width": 1.0,
+        "height": 1.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "DrawText": {
+                "text": "Score: {Score}",
+                "font": "LiberationMono-Regular",
+                "colour": {
+                  "r": 1.0,
+                  "g": 1.0,
+                  "b": 1.0,
+                  "a": 1.0
+                },
+                "resize": "MatchText"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "background": [
+    {
+      "sprite": {
+        "Image": {
+          "name": "bloody-hands"
+        }
+      },
+      "area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 1600.0,
+          "y": 900.0
+        }
+      }
+    }
+  ],
+  "asset_files": {
+    "images": {
+      "wasp-blue-hit": "wasp-blue-hit.webp",
+      "bloody-hands": "bloody-hands.webp"
+    },
+    "audio": {
+      "swat-crop": "swat-crop.ogg",
+      "squash-crop": "squash-crop.ogg"
+    },
+    "fonts": {
+      "LiberationMono-Regular": {
+        "filename": "LiberationMono-Regular.ttf",
+        "size": 128.0
+      }
+    },
+    "music": null
+  },
+  "length": 2.5,
+  "intro_text": null,
+  "attribution": "bloody-hands: https://www.pexels.com/photo/person-s-hands-covered-with-blood-673862/\n----\nwasp:\nhttps://commons.wikimedia.org/w/index.php?curid=1999886\n'File:2 wasp 2007-04-25.jpg' by Trounce is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\nI changed the colour of the image.\n----\n\nswat: https://freesound.org/people/poorenglishjuggler/sounds/131461/\n----\nsquash:\nhttps://freesound.org/people/zimbot/sounds/244486/\n'CrushAndGrind' by zimbot is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\nI cropped the audio.\n----"
+}

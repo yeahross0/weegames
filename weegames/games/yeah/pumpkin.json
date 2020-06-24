@@ -1,0 +1,430 @@
+{
+  "format_version": "0.1",
+  "published": true,
+  "objects": [
+    {
+      "name": "pumpkin top",
+      "sprite": {
+        "Image": {
+          "name": "pumpkin-head"
+        }
+      },
+      "position": {
+        "x": 328.0,
+        "y": 167.0
+      },
+      "size": {
+        "width": 529.0,
+        "height": 198.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "pumpkin top"
+                    }
+                  },
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "pumpkin top",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": "Mouse"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Release"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "candle",
+      "sprite": {
+        "Image": {
+          "name": "candle-crop"
+        }
+      },
+      "position": {
+        "x": 1168.0,
+        "y": 422.0
+      },
+      "size": {
+        "width": 135.0,
+        "height": 328.5
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 2,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "candle"
+                    }
+                  },
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "pumpkin"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "top follow",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "pumpkin top",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "WinStatus": "NotYetWon"
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 1177.0,
+                    "y": 479.0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Release"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "candle",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": "Mouse"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "pumpkin"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "top follow",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Win"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "pumpkin",
+      "sprite": {
+        "Image": {
+          "name": "pumpkin-face"
+        }
+      },
+      "position": {
+        "x": 373.0,
+        "y": 410.0
+      },
+      "size": {
+        "width": 645.0,
+        "height": 535.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "WinStatus": "HasBeenWon"
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "pumpkin-face-lit"
+                  }
+                }
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "boo-crop"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "top follow",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 529.0,
+        "height": 198.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "pumpkin top"
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Area": {
+                  "min": {
+                    "x": 229.0,
+                    "y": 208.0
+                  },
+                  "max": {
+                    "x": 453.0,
+                    "y": 477.0
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "background": [
+    {
+      "sprite": {
+        "Image": {
+          "name": "pumpkin-no-head"
+        }
+      },
+      "area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 1600.0,
+          "y": 900.0
+        }
+      }
+    }
+  ],
+  "asset_files": {
+    "images": {
+      "pumpkin-face": "pumpkin-face.webp",
+      "pumpkin-no-head": "pumpkin-no-head.webp",
+      "pumpkin-head": "pumpkin-head.webp",
+      "candle-crop": "candle-crop.webp",
+      "pumpkin-face-lit": "pumpkin-face-lit.webp"
+    },
+    "audio": {
+      "boo-crop": "boo-crop.ogg"
+    },
+    "fonts": {},
+    "music": {
+      "filename": "nexus-crop.ogg",
+      "looped": false
+    }
+  },
+  "length": 7.0,
+  "intro_text": "Light up",
+  "attribution": "pumpkin: https://www.4freephotos.com/Halloween-lantern-legs-6539.html\ncandle: https://pixabay.com/photos/candle-torch-flame-fire-light-1115769/\n\nboo: https://freesound.org/people/unfa/sounds/187104/\nnexus: https://freesound.org/people/Greek555/sounds/414270/"
+}

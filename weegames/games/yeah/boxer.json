@@ -1,0 +1,304 @@
+{
+  "format_version": "0.1",
+  "published": true,
+  "objects": [
+    {
+      "name": "hand",
+      "sprite": {
+        "Image": {
+          "name": "amusement-crop"
+        }
+      },
+      "position": {
+        "x": 177.0,
+        "y": 621.0
+      },
+      "size": {
+        "width": 295.66666,
+        "height": 528.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 0.0,
+          "y": 50.0
+        },
+        "max": {
+          "x": 295.66666,
+          "y": 528.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "hand",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": "Mouse"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "glove"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose",
+            {
+              "Effect": "Freeze"
+            },
+            {
+              "PlaySound": {
+                "name": "please-dont-crop"
+              }
+            },
+            "StopMusic"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "head"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Win",
+            {
+              "PlaySound": {
+                "name": "ouch-crop"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "hand"
+                    }
+                  },
+                  "interaction": "Hover"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "head",
+      "sprite": {
+        "Image": {
+          "name": "boxer-head"
+        }
+      },
+      "position": {
+        "x": 1242.0,
+        "y": 294.0
+      },
+      "size": {
+        "width": 529.0,
+        "height": 601.5
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 379.0,
+          "y": 601.5
+        }
+      },
+      "flip": {
+        "horizontal": true,
+        "vertical": false
+      },
+      "layer": 2,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "WinStatus": "HasBeenWon"
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "boxer-head-no-eyes"
+                  }
+                }
+              }
+            },
+            {
+              "Effect": "Freeze"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "glove",
+      "sprite": {
+        "Image": {
+          "name": "boxer-hand"
+        }
+      },
+      "position": {
+        "x": 725.0,
+        "y": 474.0
+      },
+      "size": {
+        "width": 417.0,
+        "height": 304.0
+      },
+      "angle": 180.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": true
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Area": {
+                    "min": {
+                      "x": 694.0,
+                      "y": 124.0
+                    },
+                    "max": {
+                      "x": 785.0,
+                      "y": 825.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Roam": {
+                  "movement_type": {
+                    "Reflect": {
+                      "initial_direction": {
+                        "Direction": {
+                          "possible_directions": []
+                        }
+                      },
+                      "movement_handling": "Anywhere"
+                    }
+                  },
+                  "area": {
+                    "min": {
+                      "x": 672.0,
+                      "y": 21.0
+                    },
+                    "max": {
+                      "x": 790.0,
+                      "y": 881.0
+                    }
+                  },
+                  "speed": {
+                    "Category": "Normal"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "background": [
+    {
+      "sprite": {
+        "Image": {
+          "name": "background2"
+        }
+      },
+      "area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 1600.0,
+          "y": 900.0
+        }
+      }
+    }
+  ],
+  "asset_files": {
+    "images": {
+      "background2": "background2.webp",
+      "boxer-head-no-eyes": "boxer-head-no-eyes.webp",
+      "boxer-head": "boxer-head.webp",
+      "boxer-hand": "boxer-hand.webp",
+      "amusement-crop": "amusement-crop.webp"
+    },
+    "audio": {
+      "please-dont-crop": "please-dont-crop.ogg",
+      "ouch-crop": "ouch-crop.ogg"
+    },
+    "fonts": {},
+    "music": {
+      "filename": "space-crop.ogg",
+      "looped": false
+    }
+  },
+  "length": 5.2,
+  "intro_text": "Fight ye",
+  "attribution": "amusement: https://libreshot.com/fairgroung-amusements/\nbackground: https://avopix.com/photo/32078-silhouette-of-mountain-with-galactic-background\nboxer: https://pixabay.com/photos/boxer-fight-sport-boxing-fitness-54512/\n\nplease don't do that: https://freesound.org/people/girlhurl/sounds/339161/\nouch: https://freesound.org/people/girlhurl/sounds/339162/\n\nspace: https://freesound.org/people/MrPork/sounds/271866/\n"
+}

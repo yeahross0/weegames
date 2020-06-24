@@ -1,0 +1,702 @@
+{
+  "format_version": "0.1",
+  "published": true,
+  "objects": [
+    {
+      "name": "monkeys",
+      "sprite": {
+        "Image": {
+          "name": "monkeys"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 1600.0,
+        "height": 900.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "banana1",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "banana-peel"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "banana2",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "banana-peel"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Win"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "WinStatus": "HasBeenWon"
+            }
+          ],
+          "actions": [
+            {
+              "PlaySound": {
+                "name": "monkey-crop"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "banana1",
+      "sprite": {
+        "Image": {
+          "name": "banana"
+        }
+      },
+      "position": {
+        "x": 527.0,
+        "y": -524.0
+      },
+      "size": {
+        "width": 150.0,
+        "height": 110.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Random": {
+                  "start": 0,
+                  "end": 60
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Area": {
+                    "min": {
+                      "x": 33.0,
+                      "y": -134.0
+                    },
+                    "max": {
+                      "x": 809.0,
+                      "y": -130.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Down"
+                      ]
+                    }
+                  },
+                  "speed": {
+                    "Category": "Slow"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "banana1"
+                    }
+                  },
+                  "interaction": "Hover"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "banana1",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": "Mouse"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Release"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            },
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Down"
+                      ]
+                    }
+                  },
+                  "speed": {
+                    "Category": "Slow"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Area": {
+                  "min": {
+                    "x": 1037.0,
+                    "y": 355.0
+                  },
+                  "max": {
+                    "x": 1142.0,
+                    "y": 566.0
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "banana1",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "banana"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "PlaySound": {
+                "name": "crunching"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Area": {
+                  "min": {
+                    "x": 483.0,
+                    "y": 396.0
+                  },
+                  "max": {
+                    "x": 592.0,
+                    "y": 580.0
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "banana1",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "banana"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "PlaySound": {
+                "name": "crunching"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Area": {
+                  "min": {
+                    "x": 483.0,
+                    "y": 396.0
+                  },
+                  "max": {
+                    "x": 592.0,
+                    "y": 580.0
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "banana-peel"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": "Stop"
+            },
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Area": {
+                  "min": {
+                    "x": 1037.0,
+                    "y": 355.0
+                  },
+                  "max": {
+                    "x": 1142.0,
+                    "y": 566.0
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "banana-peel"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": "Stop"
+            },
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "banana2",
+      "sprite": {
+        "Image": {
+          "name": "banana"
+        }
+      },
+      "position": {
+        "x": 1098.0,
+        "y": -524.0
+      },
+      "size": {
+        "width": 150.0,
+        "height": 110.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Random": {
+                  "start": 0,
+                  "end": 60
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Area": {
+                    "min": {
+                      "x": 789.0,
+                      "y": -134.0
+                    },
+                    "max": {
+                      "x": 1506.0,
+                      "y": -130.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Down"
+                      ]
+                    }
+                  },
+                  "speed": {
+                    "Category": "Slow"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "banana2"
+                    }
+                  },
+                  "interaction": "Hover"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "banana2",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": "Mouse"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Release"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            },
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Down"
+                      ]
+                    }
+                  },
+                  "speed": {
+                    "Category": "Slow"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Area": {
+                  "min": {
+                    "x": 483.0,
+                    "y": 396.0
+                  },
+                  "max": {
+                    "x": 592.0,
+                    "y": 580.0
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "banana-peel"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": "Stop"
+            },
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Area": {
+                  "min": {
+                    "x": 1037.0,
+                    "y": 355.0
+                  },
+                  "max": {
+                    "x": 1142.0,
+                    "y": 566.0
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "banana-peel"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": "Stop"
+            },
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Area": {
+                  "min": {
+                    "x": 1037.0,
+                    "y": 355.0
+                  },
+                  "max": {
+                    "x": 1142.0,
+                    "y": 566.0
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "banana2",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "banana"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "PlaySound": {
+                "name": "crunching"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Area": {
+                  "min": {
+                    "x": 483.0,
+                    "y": 396.0
+                  },
+                  "max": {
+                    "x": 592.0,
+                    "y": 580.0
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "banana2",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "banana"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "PlaySound": {
+                "name": "crunching"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "background": [],
+  "asset_files": {
+    "images": {
+      "banana-peel": "banana-peel.png",
+      "banana": "banana.png",
+      "monkeys": "monkeys.webp"
+    },
+    "audio": {
+      "monkey-crop": "monkey-crop.ogg",
+      "crunching": "crunching.ogg"
+    },
+    "fonts": {},
+    "music": {
+      "filename": "techno-beat.ogg",
+      "looped": false
+    }
+  },
+  "length": 4.0,
+  "intro_text": "Essen",
+  "attribution": "monkeys: https://www.4freephotos.com/Monkeys-on-tourist-van-Gibraltar-7190.html\nbanana: https://pixabay.com/vectors/banana-yellow-fruit-isolated-food-25239/\nbanana-peel: https://pixabay.com/vectors/banana-yellow-peel-slip-fruit-30055/\n\nmonkey: https://freesound.org/people/saraonsins/sounds/219816/\ncrunching: https://freesound.org/people/lolamadeus/sounds/144172/\n\ntechno beat: https://freesound.org/people/davidou/sounds/88485/"
+}

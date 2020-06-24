@@ -1,0 +1,221 @@
+{
+  "format_version": "0.1",
+  "published": true,
+  "objects": [
+    {
+      "name": "Notebook",
+      "sprite": {
+        "Image": {
+          "name": "notebook-uncovered-david"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 1600.0,
+        "height": 900.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "WinStatus": "HasBeenWon"
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "notebook-uncovered-david-robot"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "leaf",
+      "sprite": {
+        "Image": {
+          "name": "notebook-leaf-16-9"
+        }
+      },
+      "position": {
+        "x": 964.0,
+        "y": 695.0
+      },
+      "size": {
+        "width": 560.0,
+        "height": 420.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "leaf"
+                    }
+                  },
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "leaf",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": "Mouse"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Release"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Area": {
+                  "min": {
+                    "x": 33.0,
+                    "y": 13.0
+                  },
+                  "max": {
+                    "x": 1595.0,
+                    "y": 322.0
+                  }
+                }
+              }
+            },
+            {
+              "WinStatus": "NotYetWon"
+            }
+          ],
+          "actions": [
+            "Win",
+            {
+              "PlaySound": {
+                "name": "hey-crop"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Area": {
+                  "min": {
+                    "x": 11.0,
+                    "y": 19.0
+                  },
+                  "max": {
+                    "x": 439.0,
+                    "y": 888.0
+                  }
+                }
+              }
+            },
+            {
+              "WinStatus": "NotYetWon"
+            }
+          ],
+          "actions": [
+            {
+              "PlaySound": {
+                "name": "hey-crop"
+              }
+            },
+            "Win"
+          ]
+        }
+      ]
+    }
+  ],
+  "background": [],
+  "asset_files": {
+    "images": {
+      "notebook-uncovered-david-robot": "notebook-uncovered-david-robot.webp",
+      "notebook-uncovered-david": "notebook-uncovered-david3.webp",
+      "notebook-leaf-16-9": "notebook-leaf-16-9.webp"
+    },
+    "audio": {
+      "hey-crop": "hey-crop.ogg"
+    },
+    "fonts": {},
+    "music": null
+  },
+  "length": 3.0,
+  "intro_text": "Disgrace",
+  "attribution": "----\nnotebook:\nhttps://www.4freephotos.com/Notebook-with-open-pages-and-leaves-6810.html\n'Notebook with open pages and leaves' by alegri\n----\ndavid:\nhttps://en.wikipedia.org/wiki/File:%27David%27_by_Michelangelo_Fir_JBU002.jpg\n'File:'David' by Michelangelo Fir JBU002.jpg' by Jörg Bittner Unna is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\nThe image has been adapted into the notebook image.\n----\nrobot:\nhttps://commons.wikimedia.org/wiki/File:Angry_eyebrows_robot_(5231002371).jpg\n'Angry eyebrows robot' by Quinn Dombrowski is licensed under CC BY-SA 2.0\nhttps://creativecommons.org/licenses/by-sa/2.0/legalcode\nThe image has been adapted into the notebook image.\nI release my changes under CC BY-SA 2.0\n----\n\nhey: https://freesound.org/people/esperar/sounds/170786/"
+}

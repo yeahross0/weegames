@@ -1,0 +1,418 @@
+{
+  "format_version": "0.1",
+  "published": true,
+  "objects": [
+    {
+      "name": "Player",
+      "sprite": {
+        "Colour": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 1.0
+        }
+      },
+      "position": {
+        "x": 164.0,
+        "y": 432.0
+      },
+      "size": {
+        "width": 50.0,
+        "height": 200.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": "Mouse"
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "ClampPosition": {
+                    "area": {
+                      "min": {
+                        "x": 150.0,
+                        "y": 125.0
+                      },
+                      "max": {
+                        "x": 150.0,
+                        "y": 775.0
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Ball",
+      "sprite": {
+        "Colour": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 1.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 50.0,
+        "height": 50.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Area": {
+                    "min": {
+                      "x": 678.0,
+                      "y": 212.0
+                    },
+                    "max": {
+                      "x": 897.0,
+                      "y": 708.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Roam": {
+                  "movement_type": {
+                    "Reflect": {
+                      "initial_direction": {
+                        "Direction": {
+                          "possible_directions": [
+                            "UpLeft",
+                            "Right",
+                            "DownLeft"
+                          ]
+                        }
+                      },
+                      "movement_handling": "Anywhere"
+                    }
+                  },
+                  "area": {
+                    "min": {
+                      "x": -200.0,
+                      "y": 28.0
+                    },
+                    "max": {
+                      "x": 1800.0,
+                      "y": 869.0
+                    }
+                  },
+                  "speed": {
+                    "Category": "Fast"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Area": {
+                  "min": {
+                    "x": -110.0,
+                    "y": 0.0
+                  },
+                  "max": {
+                    "x": -90.0,
+                    "y": 900.0
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": "Stop"
+            },
+            "Lose"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Area": {
+                  "min": {
+                    "x": 1690.0,
+                    "y": 0.0
+                  },
+                  "max": {
+                    "x": 1710.0,
+                    "y": 900.0
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": "Stop"
+            },
+            "Win"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "End"
+            }
+          ],
+          "actions": [
+            "Win"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Player"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "Roam": {
+                  "movement_type": {
+                    "Reflect": {
+                      "initial_direction": {
+                        "Direction": {
+                          "possible_directions": [
+                            "DownRight",
+                            "UpRight"
+                          ]
+                        }
+                      },
+                      "movement_handling": "Anywhere"
+                    }
+                  },
+                  "area": {
+                    "min": {
+                      "x": 185.0,
+                      "y": 12.0
+                    },
+                    "max": {
+                      "x": 1800.0,
+                      "y": 884.0
+                    }
+                  },
+                  "speed": {
+                    "Category": "Fast"
+                  }
+                }
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "beep"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Foe"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "Roam": {
+                  "movement_type": {
+                    "Reflect": {
+                      "initial_direction": {
+                        "Direction": {
+                          "possible_directions": [
+                            "DownLeft",
+                            "UpLeft"
+                          ]
+                        }
+                      },
+                      "movement_handling": "Anywhere"
+                    }
+                  },
+                  "area": {
+                    "min": {
+                      "x": -200.0,
+                      "y": 26.0
+                    },
+                    "max": {
+                      "x": 1413.0,
+                      "y": 885.0
+                    }
+                  },
+                  "speed": {
+                    "Category": "Fast"
+                  }
+                }
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "beep"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Foe",
+      "sprite": {
+        "Colour": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 1.0
+        }
+      },
+      "position": {
+        "x": 1424.0,
+        "y": 421.0
+      },
+      "size": {
+        "width": 50.0,
+        "height": 200.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "ClampPosition": {
+                    "area": {
+                      "min": {
+                        "x": 1425.0,
+                        "y": 65.0
+                      },
+                      "max": {
+                        "x": 1425.0,
+                        "y": 821.0
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Target": {
+                  "target": {
+                    "Object": {
+                      "name": "Ball"
+                    }
+                  },
+                  "target_type": "Follow",
+                  "offset": {
+                    "x": 0.0,
+                    "y": 0.0
+                  },
+                  "speed": {
+                    "Category": "Normal"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "background": [
+    {
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 1.0
+        }
+      },
+      "area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 1600.0,
+          "y": 900.0
+        }
+      }
+    }
+  ],
+  "asset_files": {
+    "images": {},
+    "audio": {
+      "beep": "beep.wav"
+    },
+    "fonts": {},
+    "music": {
+      "filename": "arcade-crop.ogg",
+      "looped": false
+    }
+  },
+  "length": 8.0,
+  "intro_text": "Rally!",
+  "attribution": "beep: https://freesound.org/people/Davidsraba/sounds/347167/\narcade: https://freesound.org/people/maxstcroix/sounds/343151/"
+}

@@ -1,0 +1,269 @@
+{
+  "format_version": "0.1",
+  "published": true,
+  "objects": [
+    {
+      "name": "parachute",
+      "sprite": {
+        "Image": {
+          "name": "parachute"
+        }
+      },
+      "position": {
+        "x": 550.0,
+        "y": 0.0
+      },
+      "size": {
+        "width": 245.0,
+        "height": 283.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 245.0,
+          "y": 155.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Area": {
+                    "min": {
+                      "x": 0.0,
+                      "y": -300.0
+                    },
+                    "max": {
+                      "x": 1600.0,
+                      "y": -299.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Random": {
+                  "start": 119,
+                  "end": 120
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Down"
+                      ]
+                    }
+                  },
+                  "speed": {
+                    "Category": "Normal"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "helicopter"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "no chute"
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Size": {
+                  "Value": {
+                    "width": 36.0,
+                    "height": 58.0
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Down"
+                      ]
+                    }
+                  },
+                  "speed": {
+                    "Category": "VeryFast"
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "parachute",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "PlaySound": {
+                "name": "pop"
+              }
+            },
+            "Win"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "helicopter",
+      "sprite": {
+        "Image": {
+          "name": "helicopter"
+        }
+      },
+      "position": {
+        "x": 550.0,
+        "y": 400.0
+      },
+      "size": {
+        "width": 310.0,
+        "height": 215.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 2,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Angle": "RotateToMouse"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "Target": {
+                  "target": "Mouse",
+                  "target_type": "Follow",
+                  "offset": {
+                    "x": 0.0,
+                    "y": 0.0
+                  },
+                  "speed": {
+                    "Category": "Normal"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "background": [
+    {
+      "sprite": {
+        "Image": {
+          "name": "sky"
+        }
+      },
+      "area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 1600.0,
+          "y": 900.0
+        }
+      }
+    }
+  ],
+  "asset_files": {
+    "images": {
+      "helicopter": "helicopter-crop.webp",
+      "no chute": "parachute-no-chute.webp",
+      "parachute": "parachute-crop.webp",
+      "sky": "sky.webp"
+    },
+    "audio": {
+      "pop": "pop.flac"
+    },
+    "fonts": {},
+    "music": {
+      "filename": "dreamy-crop.ogg",
+      "looped": false
+    }
+  },
+  "length": 5.0,
+  "intro_text": "Pop!",
+  "attribution": "parachute: http://www.picdrome.com/sports-and-recreation/sports-parachutist-skydiving.jpg.php\nsky: https://pixabay.com/photos/sky-clouds-outdoors-scenic-49520/\nhelicopter: http://www.picdrome.com/sports-and-recreation/military-helicopter-in-flight.jpg.php\n\noh no: https://freesound.org/people/ecfike/sounds/131407/\npop: https://freesound.org/people/unfa/sounds/245646/\nyippee: https://freesound.org/people/Topschool/sounds/443493/\n\n----\ndreamy:\nhttps://freesound.org/people/Timbre/sounds/462631/\n'dreamy loopable remix of mareproduction's Freesound #426354' by Timbre is licensed under CC BY-NC 3.0\nhttps://creativecommons.org/licenses/by-nc/3.0/legalcode\nI have trimmed the audio.\n----"
+}
