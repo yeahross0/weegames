@@ -586,6 +586,72 @@ fn run_main_loop<'a, 'b>(
                         }
                     });
 
+                imgui::Window::new(im_str!("Objects"))
+                    .size([500.0, 600.0], imgui::Condition::FirstUseEver)
+                    //.position([900.0, 200.0], imgui::Condition::FirstUseEver)
+                    .scroll_bar(true)
+                    .scrollable(true)
+                    .resizable(true)
+                    .build(&ui, || {
+                        imgui::ChildWindow::new(im_str!("Left"))
+                            .size([150.0, 0.0])
+                            .border(true)
+                            .horizontal_scrollbar(true)
+                            .build(&ui, || {
+                                for i in 0..game.objects.len() {
+                                    if imgui::Selectable::new(&im_str!("{}", game.objects[i].name))
+                                        .build(&ui)
+                                    {}
+                                }
+                            });
+
+                        ui.same_line(0.0);
+
+                        imgui::ChildWindow::new(im_str!("Right"))
+                            .size([0.0, 0.0])
+                            .scroll_bar(false)
+                            .build(&ui, || {
+                                fn tab_bar<F: FnOnce()>(label: &imgui::ImStr, f: F) {
+                                    unsafe {
+                                        if imgui::sys::igBeginTabBar(label.as_ptr(), 0) {
+                                            f();
+                                            imgui::sys::igEndTabItem();
+                                        }
+                                    }
+                                }
+
+                                fn tab_item<F: FnOnce()>(label: &imgui::ImStr, f: F) {
+                                    unsafe {
+                                        if imgui::sys::igBeginTabItem(
+                                            label.as_ptr(),
+                                            std::ptr::null_mut(),
+                                            0 as ::std::os::raw::c_int,
+                                        ) {
+                                            f();
+                                            imgui::sys::igEndTabItem()
+                                        }
+                                    }
+                                }
+                                let mut selected_index = None;
+                                if !game.objects.is_empty() {
+                                    selected_index = Some(0);
+                                }
+                                if let Some(index) = selected_index {
+                                    tab_bar(im_str!("Tab Bar"), || {
+                                        tab_item(im_str!("Properties"), || {
+                                            if ui.radio_button_bool(
+                                                im_str!("Mirror Horizontal"),
+                                                game.objects[index].flip.horizontal,
+                                            ) {
+                                                game.objects[index].flip.horizontal =
+                                                    !game.objects[index].flip.horizontal;
+                                            }
+                                        })
+                                    });
+                                }
+                            });
+                    });
+
                 let key_down = |event_pump: &EventPump, scancode: Scancode| {
                     event_pump.keyboard_state().is_scancode_pressed(scancode)
                 };
