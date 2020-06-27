@@ -614,7 +614,7 @@ fn run_main_loop<'a, 'b>(
                 }
 
                 unsafe {
-                    let window_size = renderer.window.size();
+                    /*let window_size = renderer.window.size();
                     let window_height = window_size.1 as i32;
                     game_size =
                         Size::new(window_size.0 as f32 * scale, window_size.1 as f32 * scale);
@@ -631,10 +631,44 @@ fn run_main_loop<'a, 'b>(
                     gl::Enable(gl::SCISSOR_TEST);
                     gl::Scissor(viewport.0, viewport.1, viewport.2, viewport.3);
                     sdlglue::clear_screen(Colour::white());
-                    gl::Disable(gl::SCISSOR_TEST);
+                    gl::Disable(gl::SCISSOR_TEST);*/
+                    sdlglue::clear_screen(Colour::dull_grey());
                 }
 
-                renderer.draw_background(&game.background, &images)?;
+                //renderer.draw_background(&game.background, &images)?;
+                {
+                    for part in game.background.iter() {
+                        match &part.sprite {
+                            Sprite::Image { name } => {
+                                let texture = images.get_image(name)?;
+
+                                let mut dest = part.area.to_rect();
+                                dest.x += game_position.x;
+                                dest.y += game_position.y;
+                                dest.x *= scale;
+                                dest.y *= scale;
+                                dest.w *= scale;
+                                dest.h *= scale;
+
+                                renderer.prepare(&texture).set_dest(dest).draw();
+                            }
+                            Sprite::Colour(colour) => {
+                                let mut dest = part.area.to_rect();
+                                dest.x += game_position.x;
+                                dest.y += game_position.y;
+                                dest.x *= scale;
+                                dest.y *= scale;
+                                dest.w *= scale;
+                                dest.h *= scale;
+
+                                let model =
+                                    Model::new(dest, None, 0.0, wee_common::Flip::default());
+
+                                renderer.fill_rectangle(model, *colour);
+                            }
+                        }
+                    }
+                }
 
                 {
                     let mut layers: Vec<u8> = game.objects.iter().map(|o| o.layer).collect();
@@ -647,12 +681,17 @@ fn run_main_loop<'a, 'b>(
                                 match &object.sprite {
                                     Sprite::Image { name: image_name } => {
                                         let texture = images.get_image(image_name)?;
-                                        let dest = Rect::new(
-                                            object.position.x,
-                                            object.position.y,
+                                        let mut dest = Rect::new(
+                                            object.position.x + game_position.x,
+                                            object.position.y + game_position.y,
                                             object.size.width,
                                             object.size.height,
                                         );
+
+                                        dest.x *= scale;
+                                        dest.y *= scale;
+                                        dest.w *= scale;
+                                        dest.h *= scale;
 
                                         renderer
                                             .prepare(&texture)
