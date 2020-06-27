@@ -5,6 +5,7 @@ extern crate imgui;
 
 use imgui_opengl_renderer::Renderer as ImguiRenderer;
 use imgui_sdl2::ImguiSdl2 as ImguiSdl;
+use nfd::Response;
 use rand::{seq::SliceRandom, thread_rng};
 use sdl2::{
     image::InitFlag,
@@ -24,12 +25,13 @@ use std::{
 };
 use walkdir::WalkDir;
 
-use sdlglue::Renderer;
+use sdlglue::{Model, Renderer};
 use wee::{
-    Completion, FontLoadInfo, GameData, GameSettings, IntroFont, IntroFontConfig, LoadedGame,
-    SerialiseObject, Switch, DEFAULT_GAME_SPEED,
+    AssetFiles, Assets, Completion, DrawIntroText, FontLoadInfo, GameData, GameSettings, ImageList,
+    Images, IntroFont, IntroFontConfig, IntroText, LoadImages, LoadedGame, RenderScene,
+    SerialiseObject, Sprite, Switch, DEFAULT_GAME_SPEED,
 };
-use wee_common::{Colour, WeeResult};
+use wee_common::{Colour, Rect, WeeResult};
 
 fn init_logger() {
     if let Err(error) = simple_logger::init() {
@@ -497,6 +499,9 @@ fn run_main_loop<'a, 'b>(
         GameMode::Edit => {
             let mut last_frame = Instant::now();
             let mut return_to_menu = false;
+            let mut game = GameData::default();
+            let mut images = Images::new();
+            let mut filename = None;
             'editor_running: loop {
                 if sdlglue::has_quit(event_pump) {
                     process::exit(0);
@@ -512,6 +517,40 @@ fn run_main_loop<'a, 'b>(
                 if let Some(bar) = menu_bar {
                     let menu = ui.begin_menu(im_str!("File"), true);
                     if let Some(menu) = menu {
+                        if imgui::MenuItem::new(im_str!("Open")).build(&ui) {
+                            let games_path =
+                                std::env::current_dir().unwrap().join(Path::new("games"));
+                            let response = nfd::open_file_dialog(None, games_path.to_str());
+                            if let Ok(response) = response {
+                                for _ in event_pump.poll_iter() {}
+                                match response {
+                                    Response::Okay(file_path) => {
+                                        log::info!("File path = {:?}", file_path);
+                                        let new_data = GameData::load(&file_path);
+                                        match new_data {
+                                            Ok(new_data) => {
+                                                game = new_data;
+                                                let base_path =
+                                                    Path::new(&file_path).parent().unwrap();
+                                                images = Images::load(
+                                                    &game.asset_files.images,
+                                                    &base_path,
+                                                )?;
+                                                filename = Some(file_path);
+                                            }
+                                            Err(error) => {
+                                                log::error!("Couldn't open file {}", file_path);
+                                                log::error!("{}", error);
+                                            }
+                                        }
+                                    }
+                                    _ => {}
+                                }
+                            } else {
+                                log::error!("Error opening file dialog");
+                                //ui.open_popup(im_str!("Error Opening File"));
+                            }
+                        }
                         if imgui::MenuItem::new(im_str!("Return to Menu")).build(ui) {
                             game_mode = GameMode::Menu;
                             return_to_menu = true;
@@ -521,8 +560,96 @@ fn run_main_loop<'a, 'b>(
                     bar.end(ui);
                 }
 
-                sdlglue::clear_screen(Colour::dull_grey());
-                imgui_frame.render(&renderer);
+                imgui::Window::new(im_str!("Main Window"))
+                    .size([500.0, 600.0], imgui::Condition::FirstUseEver)
+                    .scroll_bar(true)
+                    .scrollable(true)
+                    .resizable(true)
+                    .build(&ui, || {
+                        if ui.button(im_str!("Play"), [100.0, 50.0]) {
+                            LoadedGame::load_from_game_data(
+                                game.clone(),
+                                filename.as_ref().unwrap(),
+                                &intro_font,
+                            )
+                            .unwrap()
+                            .start(1.0, config.settings())
+                            .play(renderer, event_pump)
+                            .unwrap();
+                        }
+                    });
+
+                unsafe {
+                    gl::Viewport(
+                        event_pump.mouse_state().x(),
+                        400 - event_pump.mouse_state().y(),
+                        800,
+                        400,
+                    );
+
+                    sdlglue::clear_screen(Colour::dull_grey());
+
+                    gl::Enable(gl::SCISSOR_TEST);
+                    gl::Scissor(
+                        event_pump.mouse_state().x(),
+                        400 - event_pump.mouse_state().y(),
+                        800,
+                        400,
+                    );
+                    sdlglue::clear_screen(Colour::white());
+                    gl::Disable(gl::SCISSOR_TEST);
+                }
+
+                renderer.draw_background(&game.background, &images)?;
+
+                {
+                    let mut layers: Vec<u8> = game.objects.iter().map(|o| o.layer).collect();
+                    layers.sort();
+                    layers.dedup();
+                    layers.reverse();
+                    for layer in layers.into_iter() {
+                        for object in game.objects.iter() {
+                            if object.layer == layer {
+                                match &object.sprite {
+                                    Sprite::Image { name: image_name } => {
+                                        let texture = images.get_image(image_name)?;
+                                        let dest = Rect::new(
+                                            object.position.x,
+                                            object.position.y,
+                                            object.size.width,
+                                            object.size.height,
+                                        );
+
+                                        renderer
+                                            .prepare(&texture)
+                                            .set_dest(dest)
+                                            .set_angle(object.angle)
+                                            .set_origin(object.origin)
+                                            .flip(object.flip)
+                                            .draw();
+                                    }
+                                    Sprite::Colour(colour) => {
+                                        let model = Model::new(
+                                            Rect::new(
+                                                object.position.x,
+                                                object.position.y,
+                                                object.size.width,
+                                                object.size.height,
+                                            ),
+                                            object.origin,
+                                            object.angle,
+                                            object.flip,
+                                        );
+
+                                        renderer.fill_rectangle(model, *colour);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                imgui_frame.render(renderer);
                 renderer.present();
 
                 thread::sleep(Duration::from_millis(10));
