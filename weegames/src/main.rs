@@ -9,6 +9,7 @@ use nfd::Response;
 use rand::{seq::SliceRandom, thread_rng};
 use sdl2::{
     image::InitFlag,
+    keyboard::Scancode,
     messagebox::{self, MessageBoxFlag},
     video::{GLContext, Window as SdlWindow},
     EventPump, VideoSubsystem,
@@ -27,11 +28,11 @@ use walkdir::WalkDir;
 
 use sdlglue::{Model, Renderer};
 use wee::{
-    AssetFiles, Assets, Completion, DrawIntroText, FontLoadInfo, GameData, GameSettings, ImageList,
-    Images, IntroFont, IntroFontConfig, IntroText, LoadImages, LoadedGame, RenderScene,
-    SerialiseObject, Sprite, Switch, DEFAULT_GAME_SPEED,
+    AssetFiles, Assets, ButtonState, Completion, DrawIntroText, FontLoadInfo, GameData,
+    GameSettings, ImageList, Images, IntroFont, IntroFontConfig, IntroText, LoadImages, LoadedGame,
+    RenderScene, SerialiseObject, Sprite, Switch, DEFAULT_GAME_SPEED,
 };
-use wee_common::{Colour, Rect, WeeResult};
+use wee_common::{Colour, Rect, Size, Vec2, WeeResult};
 
 fn init_logger() {
     if let Err(error) = simple_logger::init() {
@@ -502,6 +503,11 @@ fn run_main_loop<'a, 'b>(
             let mut game = GameData::default();
             let mut images = Images::new();
             let mut filename = None;
+            let mut game_position = Vec2::zero();
+            let mut scale: f32 = 1.0;
+            let mut game_size = Size::new(800.0, 400.0);
+            let mut minus_button = ButtonState::Up;
+            let mut plus_button = ButtonState::Up;
             'editor_running: loop {
                 if sdlglue::has_quit(event_pump) {
                     process::exit(0);
@@ -567,6 +573,7 @@ fn run_main_loop<'a, 'b>(
                     .resizable(true)
                     .build(&ui, || {
                         if ui.button(im_str!("Play"), [100.0, 50.0]) {
+                            Renderer::set_viewport(&renderer.window);
                             LoadedGame::load_from_game_data(
                                 game.clone(),
                                 filename.as_ref().unwrap(),
@@ -579,23 +586,50 @@ fn run_main_loop<'a, 'b>(
                         }
                     });
 
+                let key_down = |event_pump: &EventPump, scancode: Scancode| {
+                    event_pump.keyboard_state().is_scancode_pressed(scancode)
+                };
+
+                minus_button.update(key_down(event_pump, Scancode::Minus));
+                plus_button.update(key_down(event_pump, Scancode::Equals));
+
+                if minus_button == ButtonState::Press {
+                    scale = (scale - 0.1).max(0.1);
+                }
+                if plus_button == ButtonState::Press {
+                    scale = (scale + 0.1).min(4.0);
+                }
+
+                if event_pump.keyboard_state().is_scancode_pressed(Scancode::W) {
+                    game_position.y += 2.0;
+                }
+                if event_pump.keyboard_state().is_scancode_pressed(Scancode::S) {
+                    game_position.y -= 2.0;
+                }
+                if event_pump.keyboard_state().is_scancode_pressed(Scancode::A) {
+                    game_position.x += 2.0;
+                }
+                if event_pump.keyboard_state().is_scancode_pressed(Scancode::D) {
+                    game_position.x -= 2.0;
+                }
+
                 unsafe {
-                    gl::Viewport(
-                        event_pump.mouse_state().x(),
-                        400 - event_pump.mouse_state().y(),
-                        800,
-                        400,
+                    let window_size = renderer.window.size();
+                    let window_height = window_size.1 as i32;
+                    game_size =
+                        Size::new(window_size.0 as f32 * scale, window_size.1 as f32 * scale);
+                    let viewport = (
+                        game_position.x as i32,
+                        window_height - game_position.y as i32 - game_size.height as i32,
+                        game_size.width as i32,
+                        game_size.height as i32,
                     );
+                    gl::Viewport(viewport.0, viewport.1, viewport.2, viewport.3);
 
                     sdlglue::clear_screen(Colour::dull_grey());
 
                     gl::Enable(gl::SCISSOR_TEST);
-                    gl::Scissor(
-                        event_pump.mouse_state().x(),
-                        400 - event_pump.mouse_state().y(),
-                        800,
-                        400,
-                    );
+                    gl::Scissor(viewport.0, viewport.1, viewport.2, viewport.3);
                     sdlglue::clear_screen(Colour::white());
                     gl::Disable(gl::SCISSOR_TEST);
                 }
