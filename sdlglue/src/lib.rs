@@ -380,7 +380,7 @@ impl Renderer {
         }
     }
 
-    fn set_viewport(window: &SdlWindow) {
+    pub fn set_viewport(window: &SdlWindow) {
         unsafe {
             let (w, h) = window.size();
             gl::Viewport(0, 0, w as i32, h as i32);
@@ -483,7 +483,11 @@ impl Renderer {
     }
 
     pub fn present(&self) {
-        Renderer::set_viewport(&self.window);
+        // TODO: Set viewport correctly in the right place
+        //unsafe {
+        //    gl::Viewport(100, 0, 800, 400);
+        //}
+        //Renderer::set_viewport(&self.window);
         self.window.gl_swap_window();
     }
 }

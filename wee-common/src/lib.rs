@@ -141,6 +141,19 @@ impl Rect {
         let top = self.y - self.h / 2.0;
         Vec2::new(left, top)
     }
+
+    pub fn scale(self, scale: f32) -> Rect {
+        Rect::new(
+            self.x * scale,
+            self.y * scale,
+            self.w * scale,
+            self.h * scale,
+        )
+    }
+
+    pub fn move_position(self, position: Vec2) -> Rect {
+        Rect::new(self.x + position.x, self.y + position.y, self.w, self.h)
+    }
 }
 
 #[derive(Copy, Clone, Debug, Serialize, Deserialize, PartialEq)]
@@ -154,6 +167,10 @@ pub struct Colour {
 impl Colour {
     pub fn rgb(r: f32, g: f32, b: f32) -> Colour {
         Colour { r, g, b, a: 1.0 }
+    }
+
+    pub fn rgba(r: f32, g: f32, b: f32, a: f32) -> Colour {
+        Colour { r, g, b, a }
     }
 
     pub fn white() -> Colour {

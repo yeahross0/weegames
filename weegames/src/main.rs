@@ -8,6 +8,7 @@ use imgui_sdl2::ImguiSdl2 as ImguiSdl;
 use nfd::Response;
 use rand::{seq::SliceRandom, thread_rng};
 use sdl2::{
+    event::Event,
     image::InitFlag,
     keyboard::Scancode,
     messagebox::{self, MessageBoxFlag},
@@ -32,7 +33,7 @@ use wee::{
     GameSettings, ImageList, Images, IntroFont, IntroFontConfig, IntroText, LoadImages, LoadedGame,
     RenderScene, SerialiseObject, Sprite, Switch, DEFAULT_GAME_SPEED,
 };
-use wee_common::{Colour, Rect, Size, Vec2, WeeResult};
+use wee_common::{Colour, Flip, Rect, Size, Vec2, WeeResult, PROJECTION_HEIGHT, PROJECTION_WIDTH};
 
 fn init_logger() {
     if let Err(error) = simple_logger::init() {
@@ -508,9 +509,16 @@ fn run_main_loop<'a, 'b>(
             let mut game_size = Size::new(800.0, 400.0);
             let mut minus_button = ButtonState::Up;
             let mut plus_button = ButtonState::Up;
+            let mut show_collision_areas = false;
             'editor_running: loop {
-                if sdlglue::has_quit(event_pump) {
-                    process::exit(0);
+                for event in event_pump.poll_iter() {
+                    imgui.sdl.handle_event(&mut imgui.context, &event);
+                    if imgui.sdl.ignore_event(&event) {
+                        continue;
+                    }
+                    if let Event::Quit { .. } = event {
+                        process::exit(0);
+                    }
                 }
                 sdlglue::set_fullscreen(renderer, event_pump)?;
 
@@ -561,6 +569,19 @@ fn run_main_loop<'a, 'b>(
                             game_mode = GameMode::Menu;
                             return_to_menu = true;
                         }
+                        menu.end(ui);
+                    }
+
+                    let menu = ui.begin_menu(im_str!("Debug"), true);
+                    if let Some(menu) = menu {
+                        let toggle = |label, opened: &mut bool| {
+                            let mut toggled = *opened;
+                            if imgui::MenuItem::new(label).build_with_ref(ui, &mut toggled) {
+                                *opened = !(*opened);
+                            }
+                        };
+
+                        toggle(im_str!("Show Collision Areas"), &mut show_collision_areas);
                         menu.end(ui);
                     }
                     bar.end(ui);
@@ -637,15 +658,36 @@ fn run_main_loop<'a, 'b>(
                                     selected_index = Some(0);
                                 }
                                 if let Some(index) = selected_index {
+                                    let object = game.objects.get_mut(index).unwrap();
                                     tab_bar(im_str!("Tab Bar"), || {
                                         tab_item(im_str!("Properties"), || {
+                                            ui.input_float(im_str!("Angle"), &mut object.angle)
+                                                .build();
+
                                             if ui.radio_button_bool(
-                                                im_str!("Mirror Horizontal"),
-                                                game.objects[index].flip.horizontal,
+                                                im_str!("Flip Horizontal"),
+                                                object.flip.horizontal,
                                             ) {
-                                                game.objects[index].flip.horizontal =
-                                                    !game.objects[index].flip.horizontal;
+                                                object.flip.horizontal = !object.flip.horizontal;
                                             }
+                                            ui.same_line(0.0);
+                                            if ui.radio_button_bool(
+                                                im_str!("Flip Vertical"),
+                                                object.flip.vertical,
+                                            ) {
+                                                object.flip.vertical = !object.flip.vertical;
+                                            }
+
+                                            let switch = object.switch == Switch::On;
+                                            if ui.radio_button_bool(im_str!("Switch"), switch) {
+                                                object.switch =
+                                                    if switch { Switch::Off } else { Switch::On };
+                                            }
+
+                                            let mut change_layer = object.layer as i32;
+                                            ui.input_int(im_str!("Layer"), &mut change_layer)
+                                                .build();
+                                            object.layer = change_layer.max(0).min(255) as u8;
                                         })
                                     });
                                 }
@@ -679,26 +721,17 @@ fn run_main_loop<'a, 'b>(
                     game_position.x -= 2.0;
                 }
 
-                unsafe {
-                    /*let window_size = renderer.window.size();
-                    let window_height = window_size.1 as i32;
-                    game_size =
-                        Size::new(window_size.0 as f32 * scale, window_size.1 as f32 * scale);
-                    let viewport = (
-                        game_position.x as i32,
-                        window_height - game_position.y as i32 - game_size.height as i32,
-                        game_size.width as i32,
-                        game_size.height as i32,
+                sdlglue::clear_screen(Colour::dull_grey());
+
+                {
+                    let dest = Rect::new(
+                        (PROJECTION_WIDTH / 2.0 + game_position.x) * scale,
+                        (PROJECTION_HEIGHT / 2.0 + game_position.y) * scale,
+                        PROJECTION_WIDTH * scale,
+                        PROJECTION_HEIGHT * scale,
                     );
-                    gl::Viewport(viewport.0, viewport.1, viewport.2, viewport.3);
-
-                    sdlglue::clear_screen(Colour::dull_grey());
-
-                    gl::Enable(gl::SCISSOR_TEST);
-                    gl::Scissor(viewport.0, viewport.1, viewport.2, viewport.3);
-                    sdlglue::clear_screen(Colour::white());
-                    gl::Disable(gl::SCISSOR_TEST);*/
-                    sdlglue::clear_screen(Colour::dull_grey());
+                    let model = Model::new(dest, None, 0.0, Flip::default());
+                    renderer.fill_rectangle(model, Colour::white());
                 }
 
                 //renderer.draw_background(&game.background, &images)?;
@@ -727,8 +760,7 @@ fn run_main_loop<'a, 'b>(
                                 dest.w *= scale;
                                 dest.h *= scale;
 
-                                let model =
-                                    Model::new(dest, None, 0.0, wee_common::Flip::default());
+                                let model = Model::new(dest, None, 0.0, Flip::default());
 
                                 renderer.fill_rectangle(model, *colour);
                             }
@@ -759,29 +791,73 @@ fn run_main_loop<'a, 'b>(
                                         dest.w *= scale;
                                         dest.h *= scale;
 
+                                        let origin = object.origin() * scale;
+
                                         renderer
                                             .prepare(&texture)
                                             .set_dest(dest)
                                             .set_angle(object.angle)
-                                            .set_origin(object.origin)
+                                            .set_origin(Some(origin))
                                             .flip(object.flip)
                                             .draw();
                                     }
                                     Sprite::Colour(colour) => {
+                                        let mut dest = Rect::new(
+                                            object.position.x + game_position.x,
+                                            object.position.y + game_position.y,
+                                            object.size.width,
+                                            object.size.height,
+                                        );
+
+                                        dest.x *= scale;
+                                        dest.y *= scale;
+                                        dest.w *= scale;
+                                        dest.h *= scale;
+
                                         let model = Model::new(
-                                            Rect::new(
-                                                object.position.x,
-                                                object.position.y,
-                                                object.size.width,
-                                                object.size.height,
-                                            ),
-                                            object.origin,
+                                            dest,
+                                            Some(object.origin() * scale),
                                             object.angle,
                                             object.flip,
                                         );
 
                                         renderer.fill_rectangle(model, *colour);
                                     }
+                                }
+
+                                if show_collision_areas {
+                                    // TODO: Tidy up
+                                    let game_object = object.clone().to_object();
+                                    let poly = game_object.poly();
+
+                                    for v in poly.verts.iter() {
+                                        let rect = Rect::new(v.x, v.y, 10.0, 10.0)
+                                            .move_position(game_position)
+                                            .scale(scale);
+                                        let model = Model::new(rect, None, 0.0, Flip::default());
+                                        renderer.fill_rectangle(
+                                            model,
+                                            Colour::rgba(0.0, 1.0, 0.0, 0.5),
+                                        );
+                                    }
+
+                                    let aabb = game_object.collision_aabb();
+                                    let mut origin = game_object.origin();
+                                    if let Some(area) = game_object.collision_area {
+                                        origin =
+                                            Vec2::new(origin.x - area.min.x, origin.y - area.min.y);
+                                    }
+                                    let rect =
+                                        aabb.to_rect().move_position(game_position).scale(scale);
+                                    let model = Model::new(
+                                        rect,
+                                        Some(origin * scale),
+                                        object.angle,
+                                        Flip::default(),
+                                    );
+                                    // TODO: model.move().scale()
+                                    renderer
+                                        .fill_rectangle(model, Colour::rgba(1.0, 0.0, 0.0, 0.5));
                                 }
                             }
                         }

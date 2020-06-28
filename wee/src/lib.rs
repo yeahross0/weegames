@@ -31,14 +31,14 @@ pub const DEFAULT_GAME_SPEED: f32 = 1.0;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SerialiseObject {
     pub name: String,
-    sprite: Sprite,
-    position: Vec2,
-    size: Size,
-    angle: f32,
-    origin: Option<Vec2>,
+    pub sprite: Sprite,
+    pub position: Vec2,
+    pub size: Size,
+    pub angle: f32,
+    pub origin: Option<Vec2>,
     collision_area: Option<AABB>,
-    flip: Flip,
-    layer: u8,
+    pub flip: Flip,
+    pub layer: u8,
     pub switch: Switch,
     instructions: Vec<Instruction>,
 }
@@ -61,6 +61,56 @@ impl SerialiseObject {
             }
         }
     }
+
+    pub fn to_object(self) -> Object {
+        let switch = match self.switch {
+            Switch::On => SwitchState::On,
+            Switch::Off => SwitchState::Off,
+        };
+
+        let object_name = self.name;
+
+        let mut object = Object {
+            sprite: self.sprite,
+            position: self.position,
+            size: self.size,
+            angle: self.angle,
+            origin: self.origin,
+            collision_area: self.collision_area,
+            flip: self.flip,
+            layer: self.layer,
+            switch,
+            instructions: self.instructions,
+            queued_motion: Vec::new(),
+            active_motion: ActiveMotion::Stop,
+            animation: AnimationStatus::None,
+            timer: None,
+        };
+        for instruction in object.instructions.iter_mut() {
+            for trigger in instruction.triggers.iter_mut() {
+                if let Trigger::Time(When::Random { start, end }) = trigger {
+                    *trigger = Trigger::Time(When::Exact {
+                        time: thread_rng().gen_range(*start, *end + 1),
+                    });
+                }
+            }
+        }
+
+        object
+    }
+
+    pub fn origin(&self) -> Vec2 {
+        self.origin
+            .unwrap_or_else(|| Vec2::new(self.half_width(), self.half_height()))
+    }
+
+    fn half_width(&self) -> f32 {
+        self.size.width / 2.0
+    }
+
+    fn half_height(&self) -> f32 {
+        self.size.height / 2.0
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -70,23 +120,49 @@ struct SerialiseMusic {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-struct AssetFiles {
-    images: HashMap<String, String>,
+pub struct AssetFiles {
+    pub images: HashMap<String, String>,
     audio: HashMap<String, String>,
     music: Option<SerialiseMusic>,
     fonts: HashMap<String, FontLoadInfo>,
 }
 
+impl Default for AssetFiles {
+    fn default() -> AssetFiles {
+        AssetFiles {
+            images: HashMap::new(),
+            audio: HashMap::new(),
+            music: None,
+            fonts: HashMap::new(),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GameData {
-    format_version: String,
+    pub format_version: String,
     pub published: bool,
-    objects: Vec<SerialiseObject>,
-    background: Vec<BackgroundPart>,
-    asset_files: AssetFiles,
-    length: f32,
-    intro_text: Option<String>,
-    attribution: String,
+    pub objects: Vec<SerialiseObject>,
+    pub background: Vec<BackgroundPart>,
+    pub asset_files: AssetFiles,
+    pub length: f32,
+    pub intro_text: Option<String>,
+    pub attribution: String,
+}
+
+impl Default for GameData {
+    fn default() -> GameData {
+        GameData {
+            format_version: "0.1".to_string(),
+            published: false,
+            objects: Vec::new(),
+            background: Vec::new(),
+            asset_files: AssetFiles::default(),
+            length: 4.0,
+            intro_text: None,
+            attribution: "".to_string(),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -111,11 +187,32 @@ enum MouseOver {
 }
 
 #[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq)]
-enum ButtonState {
+pub enum ButtonState {
     Up,
     Down,
     Press,
     Release,
+}
+
+impl ButtonState {
+    pub fn update(&mut self, pressed: bool) {
+        *self = match *self {
+            ButtonState::Up | ButtonState::Release => {
+                if pressed {
+                    ButtonState::Press
+                } else {
+                    ButtonState::Up
+                }
+            }
+            ButtonState::Down | ButtonState::Press => {
+                if pressed {
+                    ButtonState::Down
+                } else {
+                    ButtonState::Release
+                }
+            }
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -515,15 +612,15 @@ pub struct FontLoadInfo {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-enum Sprite {
+pub enum Sprite {
     Image { name: String },
     Colour(Colour),
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-struct BackgroundPart {
-    sprite: Sprite,
-    area: AABB,
+pub struct BackgroundPart {
+    pub sprite: Sprite,
+    pub area: AABB,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
@@ -587,8 +684,8 @@ pub struct Object {
     position: Vec2,
     size: Size,
     angle: f32,
-    origin: Option<Vec2>,
-    collision_area: Option<AABB>,
+    pub origin: Option<Vec2>,
+    pub collision_area: Option<AABB>,
     flip: Flip,
     layer: u8,
     instructions: Vec<Instruction>,
@@ -600,7 +697,7 @@ pub struct Object {
 }
 
 impl Object {
-    fn origin(&self) -> Vec2 {
+    pub fn origin(&self) -> Vec2 {
         self.origin
             .unwrap_or_else(|| Vec2::new(self.half_width(), self.half_height()))
     }
@@ -637,16 +734,23 @@ impl Object {
         )
     }
 
-    fn poly(&self) -> c2::Poly {
-        impl Object {
-            fn bottom_right(&self) -> Vec2 {
-                Vec2::new(
-                    self.position.x + self.half_width(),
-                    self.position.y + self.half_height(),
-                )
-            }
-        }
-        let collision_aabb = match &self.collision_area {
+    pub fn bottom(&self) -> f32 {
+        self.position.y + self.half_height()
+    }
+
+    pub fn right(&self) -> f32 {
+        self.position.x + self.half_width()
+    }
+
+    fn bottom_right(&self) -> Vec2 {
+        Vec2::new(
+            self.position.x + self.half_width(),
+            self.position.y + self.half_height(),
+        )
+    }
+
+    pub fn collision_aabb(&self) -> AABB {
+        match &self.collision_area {
             Some(mut area) => {
                 if self.flip.horizontal {
                     let difference_from_left = area.min.x;
@@ -666,7 +770,11 @@ impl Object {
                 min: self.top_left(),
                 max: self.bottom_right(),
             },
-        };
+        }
+    }
+
+    pub fn poly(&self) -> c2::Poly {
+        let collision_aabb = self.collision_aabb();
         let origin = self.origin_in_world();
         let aabb = collision_aabb.move_position(-origin);
         let c2v = |x, y| c2::Vec2::new(x, y);
@@ -776,7 +884,7 @@ impl Mouse {
             calc_mouse_position(mouse_state.y(), window_size.1, PROJECTION_HEIGHT),
         );
 
-        update_button(&mut self.state, mouse_state.left());
+        self.state.update(mouse_state.left());
     }
 }
 
@@ -789,7 +897,7 @@ pub struct IntroFontConfig {
 pub struct IntroFont<'a, 'b> {
     main: Font<'a, 'b>,
     outline: Option<Font<'a, 'b>>,
-    ttf_context: &'a TtfContext,
+    pub ttf_context: &'a TtfContext,
 }
 
 impl<'a, 'b> IntroFont<'a, 'b> {
@@ -834,46 +942,14 @@ impl ObjectList for Objects {
         let mut new_objects = Objects::new();
 
         for object in objects {
-            let switch = match object.switch {
-                Switch::On => SwitchState::On,
-                Switch::Off => SwitchState::Off,
-            };
-
-            let object_name = object.name;
-
-            let mut object = Object {
-                sprite: object.sprite,
-                position: object.position,
-                size: object.size,
-                angle: object.angle,
-                origin: object.origin,
-                collision_area: object.collision_area,
-                flip: object.flip,
-                layer: object.layer,
-                switch,
-                instructions: object.instructions,
-                queued_motion: Vec::new(),
-                active_motion: ActiveMotion::Stop,
-                animation: AnimationStatus::None,
-                timer: None,
-            };
-            for instruction in object.instructions.iter_mut() {
-                for trigger in instruction.triggers.iter_mut() {
-                    if let Trigger::Time(When::Random { start, end }) = trigger {
-                        *trigger = Trigger::Time(When::Exact {
-                            time: thread_rng().gen_range(*start, *end + 1),
-                        });
-                    }
-                }
-            }
-            new_objects.insert(object_name, object);
+            new_objects.insert(object.name.clone(), object.to_object());
         }
 
         new_objects
     }
 }
 
-trait ImageList {
+pub trait ImageList {
     fn get_image(&self, name: &str) -> WeeResult<&Texture>;
 }
 
@@ -885,7 +961,7 @@ impl ImageList for Images {
 }
 
 pub type Objects = IndexMap<String, Object>;
-type Images = HashMap<String, Texture>;
+pub type Images = HashMap<String, Texture>;
 type Sounds = HashMap<String, SfBox<SoundBuffer>>;
 type Fonts<'a, 'b> = HashMap<String, Font<'a, 'b>>;
 
@@ -894,7 +970,7 @@ struct Music {
     looped: bool,
 }
 
-trait LoadImages {
+pub trait LoadImages {
     fn load<P: AsRef<Path>>(
         image_filenames: &HashMap<String, String>,
         base_path: P,
@@ -973,15 +1049,26 @@ impl LoadMusic for Music {
     }
 }
 
-struct Assets<'a, 'b> {
+pub struct Assets<'a, 'b> {
     images: Images,
     sounds: Sounds,
     music: Option<Music>,
     fonts: Fonts<'a, 'b>,
 }
 
+impl<'a, 'b> Default for Assets<'a, 'b> {
+    fn default() -> Assets<'a, 'b> {
+        Assets {
+            images: HashMap::new(),
+            sounds: HashMap::new(),
+            music: None,
+            fonts: HashMap::new(),
+        }
+    }
+}
+
 impl<'a, 'b> Assets<'a, 'b> {
-    fn load<P: AsRef<Path>>(
+    pub fn load<P: AsRef<Path>>(
         asset_filenames: &AssetFiles,
         game_path: P,
         ttf_context: &'a TtfContext,
@@ -1055,9 +1142,9 @@ impl FrameInfo {
     }
 }
 
-type IntroText = [Option<Texture>; 2];
+pub type IntroText = [Option<Texture>; 2];
 
-trait DrawIntroText {
+pub trait DrawIntroText {
     fn new(intro_font: &IntroFont, text: &Option<String>) -> Self;
 }
 
@@ -1175,25 +1262,6 @@ impl<'a, 'b> LoadedGame<'a, 'b> {
     }
 }
 
-fn update_button(button: &mut ButtonState, pressed: bool) {
-    *button = match *button {
-        ButtonState::Up | ButtonState::Release => {
-            if pressed {
-                ButtonState::Press
-            } else {
-                ButtonState::Up
-            }
-        }
-        ButtonState::Down | ButtonState::Press => {
-            if pressed {
-                ButtonState::Down
-            } else {
-                ButtonState::Release
-            }
-        }
-    }
-}
-
 pub fn is_switched_on(objects: &Objects, name: &str) -> bool {
     if let Some(obj) = objects.get(name) {
         obj.switch == SwitchState::SwitchedOn
@@ -1267,7 +1335,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                     .is_scancode_pressed(Scancode::Escape)
             };
             for _ in 0..self.frames.to_run {
-                update_button(&mut escape, esc_down(event_pump));
+                escape.update(esc_down(event_pump));
                 if escape == ButtonState::Press {
                     if let Some(music) = &mut self.assets.music {
                         music.data.pause();
@@ -1283,7 +1351,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
 
                         game.update_and_render_frame(renderer, event_pump)?;
 
-                        update_button(&mut escape, esc_down(event_pump));
+                        escape.update(esc_down(event_pump));
                         if escape == ButtonState::Press || is_switched_on(&game.objects, "Continue")
                         {
                             if let Some(music) = &mut self.assets.music {
@@ -2264,7 +2332,7 @@ impl GameData {
     }
 }
 
-trait RenderScene {
+pub trait RenderScene {
     fn draw_background(&self, background: &[BackgroundPart], images: &Images) -> WeeResult<()>;
 
     fn draw_objects(
