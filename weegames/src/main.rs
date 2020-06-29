@@ -348,13 +348,49 @@ fn right_window(ui: &imgui::Ui, game: &mut GameData, images: &mut Images) {
                 let object = game.objects.get_mut(index).unwrap();
                 tab_bar(im_str!("Tab Bar"), || {
                     tab_item(im_str!("Properties"), || {
-                        let mut current_image = match &game_data.objects[name].image_name {
-                            Some(image_name) => assets
-                                .images
-                                .keys()
-                                .position(|k| k == image_name)
-                                .unwrap_or(0),
-                            None => 0,
+                        let mut sprite_type = if let Sprite::Image { .. } = &object.sprite {
+                            0
+                        } else {
+                            1
+                        };
+                        let sprite_typename = if sprite_type == 0 {
+                            "Image".to_string()
+                        } else {
+                            "Colour".to_string()
+                        };
+                        if imgui::Slider::new(
+                            im_str!("Sprite"),
+                            std::ops::RangeInclusive::new(0, 1),
+                        )
+                        .display_format(&imgui::ImString::from(sprite_typename))
+                        .build(&ui, &mut sprite_type)
+                        {
+                            object.sprite = if sprite_type == 0 {
+                                Sprite::Image {
+                                    name: images.keys().next().unwrap().clone(),
+                                }
+                            } else {
+                                Sprite::Colour(Colour::black())
+                            };
+                        }
+                        match &mut object.sprite {
+                            Sprite::Image { name: image_name } => {
+                                let mut current_image =
+                                    images.keys().position(|k| k == image_name).unwrap_or(0);
+                                // TODO: Add image picker
+                            }
+                            Sprite::Colour(colour) => {
+                                let mut colour_array = [colour.r, colour.g, colour.b, colour.a];
+                                imgui::ColorEdit::new(im_str!("Colour"), &mut colour_array)
+                                    .alpha(true)
+                                    .build(ui);
+                                *colour = Colour::rgba(
+                                    colour_array[0],
+                                    colour_array[1],
+                                    colour_array[2],
+                                    colour_array[3],
+                                );
+                            }
                         };
 
                         ui.input_float(im_str!("Starting X"), &mut object.position.x)
@@ -366,7 +402,12 @@ fn right_window(ui: &imgui::Ui, game: &mut GameData, images: &mut Images) {
                         ui.input_float(im_str!("Height"), &mut object.size.height)
                             .build();
 
-                        ui.input_float(im_str!("Angle"), &mut object.angle).build();
+                        let mut radians = object.angle.to_radians();
+                        imgui::AngleSlider::new(im_str!("Angle"))
+                            .min_degrees(-360.0)
+                            .max_degrees(360.0)
+                            .build(ui, &mut radians);
+                        object.angle = radians.to_degrees();
 
                         object.origin = match object.origin {
                             Some(mut origin) => {
