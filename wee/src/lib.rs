@@ -36,11 +36,11 @@ pub struct SerialiseObject {
     pub size: Size,
     pub angle: f32,
     pub origin: Option<Vec2>,
-    collision_area: Option<AABB>,
+    pub collision_area: Option<AABB>,
     pub flip: Flip,
     pub layer: u8,
     pub switch: Switch,
-    instructions: Vec<Instruction>,
+    pub instructions: Vec<Instruction>,
 }
 
 impl SerialiseObject {
@@ -67,8 +67,6 @@ impl SerialiseObject {
             Switch::On => SwitchState::On,
             Switch::Off => SwitchState::Off,
         };
-
-        let object_name = self.name;
 
         let mut object = Object {
             sprite: self.sprite,
@@ -166,7 +164,7 @@ impl Default for GameData {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-enum When {
+pub enum When {
     Start,
     End,
     Exact { time: u32 },
@@ -174,13 +172,13 @@ enum When {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-enum CollisionWith {
+pub enum CollisionWith {
     Object { name: String },
     Area(AABB),
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-enum MouseOver {
+pub enum MouseOver {
     Object { name: String },
     Area(AABB),
     Anywhere,
@@ -216,13 +214,13 @@ impl ButtonState {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-enum MouseInteraction {
+pub enum MouseInteraction {
     Button { state: ButtonState },
     Hover,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-enum Input {
+pub enum Input {
     Mouse {
         over: MouseOver,
         interaction: MouseInteraction,
@@ -230,7 +228,7 @@ enum Input {
 }
 
 #[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq)]
-enum WinStatus {
+pub enum WinStatus {
     Won,
     Lost,
     HasBeenWon,
@@ -248,7 +246,7 @@ pub enum SwitchState {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-enum PropertyCheck {
+pub enum PropertyCheck {
     Switch(SwitchState),
     Sprite(Sprite),
     FinishedAnimation,
@@ -256,7 +254,7 @@ enum PropertyCheck {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-enum Trigger {
+pub enum Trigger {
     Time(When),
     Collision(CollisionWith),
     Input(Input),
@@ -266,20 +264,20 @@ enum Trigger {
 }
 
 #[derive(Debug, Copy, Clone, Serialize, Deserialize)]
-enum Effect {
+pub enum Effect {
     Freeze,
     None,
 }
 
 #[derive(Debug, Copy, Clone, Serialize, Deserialize)]
-enum Angle {
+pub enum Angle {
     Current,
     Degrees(f32),
     Random { min: f32, max: f32 },
 }
 
 #[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
-enum CompassDirection {
+pub enum CompassDirection {
     Up,
     UpRight,
     Right,
@@ -359,7 +357,7 @@ fn vector_from_angle(angle: f32, speed: Speed) -> Vec2 {
     Vec2::new(speed * angle.cos(), speed * angle.sin())
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
-enum MovementDirection {
+pub enum MovementDirection {
     Angle(Angle),
     Direction {
         possible_directions: HashSet<CompassDirection>,
@@ -376,7 +374,7 @@ impl MovementDirection {
 }
 
 #[derive(Debug, Copy, Clone, Serialize, Deserialize)]
-enum Speed {
+pub enum Speed {
     Category(SpeedCategory),
     Value(f32),
 }
@@ -417,7 +415,7 @@ fn clamp_position(position: &mut Vec2, area: AABB) {
 }
 
 #[derive(Debug, Copy, Clone, Serialize, Deserialize)]
-enum SpeedCategory {
+pub enum SpeedCategory {
     VerySlow,
     Slow,
     Normal,
@@ -425,13 +423,13 @@ enum SpeedCategory {
     VeryFast,
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
-enum RelativeTo {
+pub enum RelativeTo {
     CurrentPosition,
     CurrentAngle,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-enum JumpLocation {
+pub enum JumpLocation {
     Point(Vec2),
     Area(AABB),
     Relative { to: RelativeTo, distance: Vec2 },
@@ -441,13 +439,13 @@ enum JumpLocation {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-enum BounceDirection {
+pub enum BounceDirection {
     Left,
     Right,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-enum MovementType {
+pub enum MovementType {
     Wiggle,
     Insect,
     Reflect {
@@ -460,25 +458,25 @@ enum MovementType {
 }
 
 #[derive(Debug, Copy, Clone, Serialize, Deserialize)]
-enum MovementHandling {
+pub enum MovementHandling {
     Anywhere,
     TryNotToOverlap,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
-enum Target {
+pub enum Target {
     Object { name: String },
     Mouse,
 }
 
 #[derive(Debug, Copy, Clone, Serialize, Deserialize)]
-enum TargetType {
+pub enum TargetType {
     Follow,
     StopWhenReached,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-enum Motion {
+pub enum Motion {
     GoStraight {
         direction: MovementDirection,
         speed: Speed,
@@ -506,13 +504,13 @@ enum Motion {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-enum AnimationType {
+pub enum AnimationType {
     Loop,
     PlayOnce,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-enum AngleSetter {
+pub enum AngleSetter {
     Value(f32),
     Increase(f32),
     Decrease(f32),
@@ -522,13 +520,13 @@ enum AngleSetter {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-enum SizeDifference {
+pub enum SizeDifference {
     Value(Size),
     Percent(Size),
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-enum SizeSetter {
+pub enum SizeSetter {
     Value(Size),
     Grow(SizeDifference),
     Shrink(SizeDifference),
@@ -542,20 +540,20 @@ pub enum Switch {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-enum FlipSetter {
+pub enum FlipSetter {
     Flip,
     SetFlip(bool),
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-enum LayerSetter {
+pub enum LayerSetter {
     Value(u8),
     Increase,
     Decrease,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-enum PropertySetter {
+pub enum PropertySetter {
     Sprite(Sprite),
     Angle(AngleSetter),
     Size(SizeSetter),
@@ -567,13 +565,13 @@ enum PropertySetter {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-enum TextResize {
+pub enum TextResize {
     MatchText,
     MatchObject,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-enum Action {
+pub enum Action {
     Win,
     Lose,
     Effect(Effect),
@@ -600,9 +598,9 @@ enum Action {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-struct Instruction {
-    triggers: Vec<Trigger>,
-    actions: Vec<Action>,
+pub struct Instruction {
+    pub triggers: Vec<Trigger>,
+    pub actions: Vec<Action>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

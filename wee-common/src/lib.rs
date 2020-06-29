@@ -98,6 +98,13 @@ pub struct AABB {
 }
 
 impl AABB {
+    pub fn new(min_x: f32, min_y: f32, max_x: f32, max_y: f32) -> AABB {
+        AABB {
+            min: Vec2::new(min_x, min_y),
+            max: Vec2::new(max_x, max_y),
+        }
+    }
+
     pub fn width(self) -> f32 {
         self.max.x - self.min.x
     }

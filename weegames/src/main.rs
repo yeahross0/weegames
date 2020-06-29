@@ -1,3 +1,5 @@
+// TODO: Fix issues with fullscreen
+
 #![windows_subsystem = "windows"]
 
 #[macro_use]
@@ -312,6 +314,142 @@ fn replace_text(object: &mut SerialiseObject, progress: &Progress) {
     object.replace_text(progress.score, progress.lives);
 }
 
+fn right_window(ui: &imgui::Ui, game: &mut GameData, images: &mut Images) {
+    imgui::ChildWindow::new(im_str!("Right"))
+        .size([0.0, 0.0])
+        .scroll_bar(false)
+        .build(ui, || {
+            fn tab_bar<F: FnOnce()>(label: &imgui::ImStr, f: F) {
+                unsafe {
+                    if imgui::sys::igBeginTabBar(label.as_ptr(), 0) {
+                        f();
+                        imgui::sys::igEndTabItem();
+                    }
+                }
+            }
+
+            fn tab_item<F: FnOnce()>(label: &imgui::ImStr, f: F) {
+                unsafe {
+                    if imgui::sys::igBeginTabItem(
+                        label.as_ptr(),
+                        std::ptr::null_mut(),
+                        0 as ::std::os::raw::c_int,
+                    ) {
+                        f();
+                        imgui::sys::igEndTabItem()
+                    }
+                }
+            }
+            let mut selected_index = None;
+            if !game.objects.is_empty() {
+                selected_index = Some(0);
+            }
+            if let Some(index) = selected_index {
+                let object = game.objects.get_mut(index).unwrap();
+                tab_bar(im_str!("Tab Bar"), || {
+                    tab_item(im_str!("Properties"), || {
+                        let mut current_image = match &game_data.objects[name].image_name {
+                            Some(image_name) => assets
+                                .images
+                                .keys()
+                                .position(|k| k == image_name)
+                                .unwrap_or(0),
+                            None => 0,
+                        };
+
+                        ui.input_float(im_str!("Starting X"), &mut object.position.x)
+                            .build();
+                        ui.input_float(im_str!("Starting Y"), &mut object.position.y)
+                            .build();
+                        ui.input_float(im_str!("Width"), &mut object.size.width)
+                            .build();
+                        ui.input_float(im_str!("Height"), &mut object.size.height)
+                            .build();
+
+                        ui.input_float(im_str!("Angle"), &mut object.angle).build();
+
+                        object.origin = match object.origin {
+                            Some(mut origin) => {
+                                ui.input_float(im_str!("Origin X"), &mut origin.x).build();
+                                ui.input_float(im_str!("Origin Y"), &mut origin.y).build();
+                                Some(origin)
+                            }
+                            None => {
+                                let mut origin = object.origin();
+                                let changed = ui
+                                    .input_float(im_str!("Origin X"), &mut origin.x)
+                                    .build()
+                                    || ui.input_float(im_str!("Origin Y"), &mut origin.y).build();
+                                if changed {
+                                    Some(origin)
+                                } else {
+                                    None
+                                }
+                            }
+                        };
+
+                        object.collision_area = match object.collision_area {
+                            Some(mut area) => {
+                                ui.input_float(im_str!("Collision Min X"), &mut area.min.x)
+                                    .build();
+                                ui.input_float(im_str!("Collision Min Y"), &mut area.min.y)
+                                    .build();
+                                ui.input_float(im_str!("Collision Max X"), &mut area.max.x)
+                                    .build();
+                                ui.input_float(im_str!("Collision Max Y"), &mut area.max.y)
+                                    .build();
+                                Some(area)
+                            }
+                            None => {
+                                let mut area = wee_common::AABB::new(
+                                    0.0,
+                                    0.0,
+                                    object.size.width as f32,
+                                    object.size.height as f32,
+                                );
+                                let changed = ui
+                                    .input_float(im_str!("Collision Min X"), &mut area.min.x)
+                                    .build()
+                                    || ui
+                                        .input_float(im_str!("Collision Min Y"), &mut area.min.y)
+                                        .build()
+                                    || ui
+                                        .input_float(im_str!("Collision Max X"), &mut area.max.x)
+                                        .build()
+                                    || ui
+                                        .input_float(im_str!("Collision Max Y"), &mut area.max.y)
+                                        .build();
+                                if changed {
+                                    Some(area)
+                                } else {
+                                    None
+                                }
+                            }
+                        };
+
+                        if ui.radio_button_bool(im_str!("Flip Horizontal"), object.flip.horizontal)
+                        {
+                            object.flip.horizontal = !object.flip.horizontal;
+                        }
+                        ui.same_line(0.0);
+                        if ui.radio_button_bool(im_str!("Flip Vertical"), object.flip.vertical) {
+                            object.flip.vertical = !object.flip.vertical;
+                        }
+
+                        let switch = object.switch == Switch::On;
+                        if ui.radio_button_bool(im_str!("Switch"), switch) {
+                            object.switch = if switch { Switch::Off } else { Switch::On };
+                        }
+
+                        let mut change_layer = object.layer as i32;
+                        ui.input_int(im_str!("Layer"), &mut change_layer).build();
+                        object.layer = change_layer.max(0).min(255) as u8;
+                    })
+                });
+            }
+        });
+}
+
 fn run_main_loop<'a, 'b>(
     mut game_mode: GameMode<'a, 'b>,
     renderer: &mut Renderer,
@@ -506,7 +644,6 @@ fn run_main_loop<'a, 'b>(
             let mut filename = None;
             let mut game_position = Vec2::zero();
             let mut scale: f32 = 1.0;
-            let mut game_size = Size::new(800.0, 400.0);
             let mut minus_button = ButtonState::Up;
             let mut plus_button = ButtonState::Up;
             let mut show_collision_areas = false;
@@ -594,7 +731,6 @@ fn run_main_loop<'a, 'b>(
                     .resizable(true)
                     .build(&ui, || {
                         if ui.button(im_str!("Play"), [100.0, 50.0]) {
-                            Renderer::set_viewport(&renderer.window);
                             LoadedGame::load_from_game_data(
                                 game.clone(),
                                 filename.as_ref().unwrap(),
@@ -628,70 +764,7 @@ fn run_main_loop<'a, 'b>(
 
                         ui.same_line(0.0);
 
-                        imgui::ChildWindow::new(im_str!("Right"))
-                            .size([0.0, 0.0])
-                            .scroll_bar(false)
-                            .build(&ui, || {
-                                fn tab_bar<F: FnOnce()>(label: &imgui::ImStr, f: F) {
-                                    unsafe {
-                                        if imgui::sys::igBeginTabBar(label.as_ptr(), 0) {
-                                            f();
-                                            imgui::sys::igEndTabItem();
-                                        }
-                                    }
-                                }
-
-                                fn tab_item<F: FnOnce()>(label: &imgui::ImStr, f: F) {
-                                    unsafe {
-                                        if imgui::sys::igBeginTabItem(
-                                            label.as_ptr(),
-                                            std::ptr::null_mut(),
-                                            0 as ::std::os::raw::c_int,
-                                        ) {
-                                            f();
-                                            imgui::sys::igEndTabItem()
-                                        }
-                                    }
-                                }
-                                let mut selected_index = None;
-                                if !game.objects.is_empty() {
-                                    selected_index = Some(0);
-                                }
-                                if let Some(index) = selected_index {
-                                    let object = game.objects.get_mut(index).unwrap();
-                                    tab_bar(im_str!("Tab Bar"), || {
-                                        tab_item(im_str!("Properties"), || {
-                                            ui.input_float(im_str!("Angle"), &mut object.angle)
-                                                .build();
-
-                                            if ui.radio_button_bool(
-                                                im_str!("Flip Horizontal"),
-                                                object.flip.horizontal,
-                                            ) {
-                                                object.flip.horizontal = !object.flip.horizontal;
-                                            }
-                                            ui.same_line(0.0);
-                                            if ui.radio_button_bool(
-                                                im_str!("Flip Vertical"),
-                                                object.flip.vertical,
-                                            ) {
-                                                object.flip.vertical = !object.flip.vertical;
-                                            }
-
-                                            let switch = object.switch == Switch::On;
-                                            if ui.radio_button_bool(im_str!("Switch"), switch) {
-                                                object.switch =
-                                                    if switch { Switch::Off } else { Switch::On };
-                                            }
-
-                                            let mut change_layer = object.layer as i32;
-                                            ui.input_int(im_str!("Layer"), &mut change_layer)
-                                                .build();
-                                            object.layer = change_layer.max(0).min(255) as u8;
-                                        })
-                                    });
-                                }
-                            });
+                        right_window(ui, &mut game, &mut images);
                     });
 
                 let key_down = |event_pump: &EventPump, scancode: Scancode| {
@@ -701,24 +774,26 @@ fn run_main_loop<'a, 'b>(
                 minus_button.update(key_down(event_pump, Scancode::Minus));
                 plus_button.update(key_down(event_pump, Scancode::Equals));
 
-                if minus_button == ButtonState::Press {
-                    scale = (scale - 0.1).max(0.1);
-                }
-                if plus_button == ButtonState::Press {
-                    scale = (scale + 0.1).min(4.0);
-                }
+                if !ui.io().want_capture_keyboard {
+                    if minus_button == ButtonState::Press {
+                        scale = (scale - 0.1).max(0.1);
+                    }
+                    if plus_button == ButtonState::Press {
+                        scale = (scale + 0.1).min(4.0);
+                    }
 
-                if event_pump.keyboard_state().is_scancode_pressed(Scancode::W) {
-                    game_position.y += 2.0;
-                }
-                if event_pump.keyboard_state().is_scancode_pressed(Scancode::S) {
-                    game_position.y -= 2.0;
-                }
-                if event_pump.keyboard_state().is_scancode_pressed(Scancode::A) {
-                    game_position.x += 2.0;
-                }
-                if event_pump.keyboard_state().is_scancode_pressed(Scancode::D) {
-                    game_position.x -= 2.0;
+                    if event_pump.keyboard_state().is_scancode_pressed(Scancode::W) {
+                        game_position.y += 2.0;
+                    }
+                    if event_pump.keyboard_state().is_scancode_pressed(Scancode::S) {
+                        game_position.y -= 2.0;
+                    }
+                    if event_pump.keyboard_state().is_scancode_pressed(Scancode::A) {
+                        game_position.x += 2.0;
+                    }
+                    if event_pump.keyboard_state().is_scancode_pressed(Scancode::D) {
+                        game_position.x -= 2.0;
+                    }
                 }
 
                 sdlglue::clear_screen(Colour::dull_grey());

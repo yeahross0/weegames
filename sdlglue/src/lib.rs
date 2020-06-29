@@ -387,6 +387,10 @@ impl Renderer {
         }
     }
 
+    pub fn update_viewport(&self) {
+        Self::set_viewport(&self.window);
+    }
+
     pub fn prepare<'a>(&'a self, texture: &'a Texture) -> TextureDrawer<'a> {
         TextureDrawer::new(self, texture)
     }
@@ -636,6 +640,7 @@ pub fn set_fullscreen(renderer: &mut Renderer, event_pump: &EventPump) -> WeeRes
     } else {
         renderer.full_screen_info.recent_change = false;
     }
+    renderer.update_viewport();
     Ok(())
 }
 
