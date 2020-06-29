@@ -5,6 +5,7 @@
 #[macro_use]
 extern crate imgui;
 
+use imgui::ImString;
 use imgui_opengl_renderer::Renderer as ImguiRenderer;
 use imgui_sdl2::ImguiSdl2 as ImguiSdl;
 use nfd::Response;
@@ -29,13 +30,15 @@ use std::{
 };
 use walkdir::WalkDir;
 
-use sdlglue::{Model, Renderer};
+use sdlglue::{Model, Renderer, Texture};
 use wee::{
     AssetFiles, Assets, ButtonState, Completion, DrawIntroText, FontLoadInfo, GameData,
     GameSettings, ImageList, Images, IntroFont, IntroFontConfig, IntroText, LoadImages, LoadedGame,
     RenderScene, SerialiseObject, Sprite, Switch, DEFAULT_GAME_SPEED,
 };
 use wee_common::{Colour, Flip, Rect, Size, Vec2, WeeResult, PROJECTION_HEIGHT, PROJECTION_WIDTH};
+
+const NORMAL_BUTTON: [f32; 2] = [100.0, 50.0];
 
 fn init_logger() {
     if let Err(error) = simple_logger::init() {
@@ -314,7 +317,12 @@ fn replace_text(object: &mut SerialiseObject, progress: &Progress) {
     object.replace_text(progress.score, progress.lives);
 }
 
-fn right_window(ui: &imgui::Ui, game: &mut GameData, images: &mut Images) {
+fn right_window(
+    ui: &imgui::Ui,
+    game: &mut GameData,
+    images: &mut Images,
+    filename: &Option<String>,
+) {
     imgui::ChildWindow::new(im_str!("Right"))
         .size([0.0, 0.0])
         .scroll_bar(false)
@@ -345,14 +353,14 @@ fn right_window(ui: &imgui::Ui, game: &mut GameData, images: &mut Images) {
                 selected_index = Some(0);
             }
             if let Some(index) = selected_index {
-                let object = game.objects.get_mut(index).unwrap();
                 tab_bar(im_str!("Tab Bar"), || {
                     tab_item(im_str!("Properties"), || {
-                        let mut sprite_type = if let Sprite::Image { .. } = &object.sprite {
-                            0
-                        } else {
-                            1
-                        };
+                        let mut sprite_type =
+                            if let Sprite::Image { .. } = &game.objects[index].sprite {
+                                0
+                            } else {
+                                1
+                            };
                         let sprite_typename = if sprite_type == 0 {
                             "Image".to_string()
                         } else {
@@ -362,10 +370,10 @@ fn right_window(ui: &imgui::Ui, game: &mut GameData, images: &mut Images) {
                             im_str!("Sprite"),
                             std::ops::RangeInclusive::new(0, 1),
                         )
-                        .display_format(&imgui::ImString::from(sprite_typename))
+                        .display_format(&ImString::from(sprite_typename))
                         .build(&ui, &mut sprite_type)
                         {
-                            object.sprite = if sprite_type == 0 {
+                            game.objects[index].sprite = if sprite_type == 0 {
                                 Sprite::Image {
                                     name: images.keys().next().unwrap().clone(),
                                 }
@@ -373,11 +381,180 @@ fn right_window(ui: &imgui::Ui, game: &mut GameData, images: &mut Images) {
                                 Sprite::Colour(Colour::black())
                             };
                         }
-                        match &mut object.sprite {
+
+                        fn load_textures(
+                            game_data: &mut GameData,
+                            images: &mut Images,
+                            image_filenames: Vec<(WeeResult<String>, String)>,
+                        ) -> Option<String> {
+                            let mut first_key = None;
+                            for (key, path) in &image_filenames {
+                                match key {
+                                    Ok(key) => {
+                                        let texture = Texture::from_file(path);
+                                        match texture {
+                                            Ok(texture) => {
+                                                images.insert(key.clone(), texture);
+                                                let filename = Path::new(path)
+                                                    .file_name()
+                                                    .unwrap()
+                                                    .to_str()
+                                                    .unwrap()
+                                                    .to_string();
+                                                game_data
+                                                    .asset_files
+                                                    .images
+                                                    .insert(key.clone(), filename);
+                                                first_key = Some(key.clone());
+                                            }
+                                            Err(error) => {
+                                                log::error!(
+                                                    "Could not add image with filename {}",
+                                                    path
+                                                );
+                                                log::error!("{}", error);
+                                            }
+                                        }
+                                    }
+                                    Err(error) => {
+                                        log::error!("Could not add image with filename {}", path);
+                                        log::error!("{}", error);
+                                    }
+                                }
+                            }
+                            first_key
+                        }
+
+                        fn get_main_filename_part(path: &Path) -> WeeResult<String> {
+                            let parent = path.parent().ok_or("Could not find filename parent")?;
+                            let name = path
+                                .strip_prefix(parent)?
+                                .file_stem()
+                                .ok_or("Could not get file stem")?
+                                .to_str()
+                                .ok_or("Could not convert main filename part to string")?
+                                .to_string();
+                            Ok(name)
+                        }
+                        fn choose_image_from_files<P: AsRef<Path>>(
+                            game: &mut GameData,
+                            images: &mut Images,
+                            images_path: P,
+                        ) -> Option<String> {
+                            let result =
+                                nfd::open_file_multiple_dialog(None, images_path.as_ref().to_str())
+                                    .unwrap();
+
+                            match result {
+                                Response::Okay(_) => {
+                                    unreachable!();
+                                }
+                                Response::OkayMultiple(files) => {
+                                    log::info!("Files {:?}", files);
+                                    let image_filenames: Vec<(WeeResult<String>, String)> = files
+                                        .into_iter()
+                                        .map(|file_path| {
+                                            let path = std::path::Path::new(&file_path);
+                                            let name = get_main_filename_part(&path);
+                                            let file_path = path
+                                                .strip_prefix(
+                                                    std::env::current_dir().unwrap().as_path(),
+                                                )
+                                                .unwrap()
+                                                .to_str()
+                                                .unwrap()
+                                                .to_string();
+                                            (name, file_path)
+                                        })
+                                        .collect();
+
+                                    load_textures(game, images, image_filenames)
+                                }
+                                _ => None,
+                            }
+                        }
+                        match &mut game.objects[index].sprite {
                             Sprite::Image { name: image_name } => {
                                 let mut current_image =
                                     images.keys().position(|k| k == image_name).unwrap_or(0);
-                                // TODO: Add image picker
+                                let path = match filename {
+                                    Some(filename) => {
+                                        Path::new(filename).parent().unwrap().join("images")
+                                    }
+                                    None => Path::new("games").to_owned(),
+                                };
+
+                                if images.is_empty() {
+                                    if ui.button(im_str!("Add a New Image"), NORMAL_BUTTON) {
+                                        let first_key = choose_image_from_files(game, images, path);
+                                        match first_key {
+                                            Some(key) => {
+                                                game.objects[index].sprite =
+                                                    Sprite::Image { name: key.clone() };
+                                                game.objects[index].size.width =
+                                                    images[&key].width as f32;
+                                                game.objects[index].size.height =
+                                                    images[&key].height as f32;
+                                            }
+                                            None => {
+                                                log::error!(
+                                                    "None of the new images loaded correctly"
+                                                );
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    let mut keys: Vec<ImString> =
+                                        images.keys().map(|k| ImString::from(k.clone())).collect();
+
+                                    keys.push(ImString::new("Add a New Image"));
+
+                                    let image_names: Vec<&ImString> = keys.iter().collect();
+
+                                    if imgui::ComboBox::new(im_str!("Images")).build_simple_string(
+                                        &ui,
+                                        &mut current_image,
+                                        &image_names,
+                                    ) {
+                                        let images_path = std::env::current_dir()
+                                            .unwrap()
+                                            .join(Path::new("games"));
+
+                                        if current_image == image_names.len() - 1 {
+                                            let first_key =
+                                                choose_image_from_files(game, images, path);
+                                            match first_key {
+                                                Some(key) => {
+                                                    game.objects[index].sprite =
+                                                        Sprite::Image { name: key.clone() };
+                                                    game.objects[index].size.width =
+                                                        images[&key].width as f32;
+                                                    game.objects[index].size.height =
+                                                        images[&key].height as f32;
+                                                }
+                                                None => {
+                                                    log::error!(
+                                                        "None of the new images loaded correctly"
+                                                    );
+                                                }
+                                            }
+                                        } else {
+                                            match images.keys().nth(current_image) {
+                                                Some(image) => {
+                                                    game.objects[index].sprite = Sprite::Image {
+                                                        name: image.clone(),
+                                                    };
+                                                }
+                                                None => {
+                                                    log::error!(
+                                                        "Could not set image to index {}",
+                                                        current_image
+                                                    );
+                                                }
+                                            }
+                                        }
+                                    }
+                                };
                             }
                             Sprite::Colour(colour) => {
                                 let mut colour_array = [colour.r, colour.g, colour.b, colour.a];
@@ -393,30 +570,30 @@ fn right_window(ui: &imgui::Ui, game: &mut GameData, images: &mut Images) {
                             }
                         };
 
-                        ui.input_float(im_str!("Starting X"), &mut object.position.x)
+                        ui.input_float(im_str!("Starting X"), &mut game.objects[index].position.x)
                             .build();
-                        ui.input_float(im_str!("Starting Y"), &mut object.position.y)
+                        ui.input_float(im_str!("Starting Y"), &mut game.objects[index].position.y)
                             .build();
-                        ui.input_float(im_str!("Width"), &mut object.size.width)
+                        ui.input_float(im_str!("Width"), &mut game.objects[index].size.width)
                             .build();
-                        ui.input_float(im_str!("Height"), &mut object.size.height)
+                        ui.input_float(im_str!("Height"), &mut game.objects[index].size.height)
                             .build();
 
-                        let mut radians = object.angle.to_radians();
+                        let mut radians = game.objects[index].angle.to_radians();
                         imgui::AngleSlider::new(im_str!("Angle"))
                             .min_degrees(-360.0)
                             .max_degrees(360.0)
                             .build(ui, &mut radians);
-                        object.angle = radians.to_degrees();
+                        game.objects[index].angle = radians.to_degrees();
 
-                        object.origin = match object.origin {
+                        game.objects[index].origin = match game.objects[index].origin {
                             Some(mut origin) => {
                                 ui.input_float(im_str!("Origin X"), &mut origin.x).build();
                                 ui.input_float(im_str!("Origin Y"), &mut origin.y).build();
                                 Some(origin)
                             }
                             None => {
-                                let mut origin = object.origin();
+                                let mut origin = game.objects[index].origin();
                                 let changed = ui
                                     .input_float(im_str!("Origin X"), &mut origin.x)
                                     .build()
@@ -429,7 +606,9 @@ fn right_window(ui: &imgui::Ui, game: &mut GameData, images: &mut Images) {
                             }
                         };
 
-                        object.collision_area = match object.collision_area {
+                        game.objects[index].collision_area = match game.objects[index]
+                            .collision_area
+                        {
                             Some(mut area) => {
                                 ui.input_float(im_str!("Collision Min X"), &mut area.min.x)
                                     .build();
@@ -445,8 +624,8 @@ fn right_window(ui: &imgui::Ui, game: &mut GameData, images: &mut Images) {
                                 let mut area = wee_common::AABB::new(
                                     0.0,
                                     0.0,
-                                    object.size.width as f32,
-                                    object.size.height as f32,
+                                    game.objects[index].size.width as f32,
+                                    game.objects[index].size.height as f32,
                                 );
                                 let changed = ui
                                     .input_float(im_str!("Collision Min X"), &mut area.min.x)
@@ -468,23 +647,30 @@ fn right_window(ui: &imgui::Ui, game: &mut GameData, images: &mut Images) {
                             }
                         };
 
-                        if ui.radio_button_bool(im_str!("Flip Horizontal"), object.flip.horizontal)
-                        {
-                            object.flip.horizontal = !object.flip.horizontal;
+                        if ui.radio_button_bool(
+                            im_str!("Flip Horizontal"),
+                            game.objects[index].flip.horizontal,
+                        ) {
+                            game.objects[index].flip.horizontal =
+                                !game.objects[index].flip.horizontal;
                         }
                         ui.same_line(0.0);
-                        if ui.radio_button_bool(im_str!("Flip Vertical"), object.flip.vertical) {
-                            object.flip.vertical = !object.flip.vertical;
+                        if ui.radio_button_bool(
+                            im_str!("Flip Vertical"),
+                            game.objects[index].flip.vertical,
+                        ) {
+                            game.objects[index].flip.vertical = !game.objects[index].flip.vertical;
                         }
 
-                        let switch = object.switch == Switch::On;
+                        let switch = game.objects[index].switch == Switch::On;
                         if ui.radio_button_bool(im_str!("Switch"), switch) {
-                            object.switch = if switch { Switch::Off } else { Switch::On };
+                            game.objects[index].switch =
+                                if switch { Switch::Off } else { Switch::On };
                         }
 
-                        let mut change_layer = object.layer as i32;
+                        let mut change_layer = game.objects[index].layer as i32;
                         ui.input_int(im_str!("Layer"), &mut change_layer).build();
-                        object.layer = change_layer.max(0).min(255) as u8;
+                        game.objects[index].layer = change_layer.max(0).min(255) as u8;
                     })
                 });
             }
@@ -771,7 +957,7 @@ fn run_main_loop<'a, 'b>(
                     .scrollable(true)
                     .resizable(true)
                     .build(&ui, || {
-                        if ui.button(im_str!("Play"), [100.0, 50.0]) {
+                        if ui.button(im_str!("Play"), NORMAL_BUTTON) {
                             LoadedGame::load_from_game_data(
                                 game.clone(),
                                 filename.as_ref().unwrap(),
@@ -805,7 +991,7 @@ fn run_main_loop<'a, 'b>(
 
                         ui.same_line(0.0);
 
-                        right_window(ui, &mut game, &mut images);
+                        right_window(ui, &mut game, &mut images, &filename);
                     });
 
                 let key_down = |event_pump: &EventPump, scancode: Scancode| {
