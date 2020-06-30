@@ -1,4 +1,5 @@
 // TODO: Show origin debug option
+// TODO: Enable selecting object again
 
 #![windows_subsystem = "windows"]
 
@@ -32,9 +33,11 @@ use walkdir::WalkDir;
 
 use sdlglue::{Model, Renderer, Texture};
 use wee::{
-    AssetFiles, Assets, ButtonState, Completion, DrawIntroText, FontLoadInfo, GameData,
-    GameSettings, ImageList, Images, IntroFont, IntroFontConfig, IntroText, LoadImages, LoadedGame,
-    RenderScene, SerialiseObject, Sprite, Switch, DEFAULT_GAME_SPEED,
+    Action, AnimationStatus, AssetFiles, Assets, ButtonState, CollisionWith, Completion,
+    DrawIntroText, FontLoadInfo, GameData, GameSettings, ImageList, Images, Input, IntroFont,
+    IntroFontConfig, IntroText, LoadImages, LoadedGame, MouseInteraction, MouseOver, PropertyCheck,
+    RenderScene, SerialiseObject, SerialiseObjectList, Sprite, Switch, Trigger, When, WinStatus,
+    DEFAULT_GAME_SPEED,
 };
 use wee_common::{Colour, Flip, Rect, Size, Vec2, WeeResult, PROJECTION_HEIGHT, PROJECTION_WIDTH};
 
@@ -317,11 +320,255 @@ fn replace_text(object: &mut SerialiseObject, progress: &Progress) {
     object.replace_text(progress.score, progress.lives);
 }
 
+trait ImguiDisplayTrigger {
+    fn display(&self, ui: &imgui::Ui, game: &GameData, images: &Images);
+}
+
+impl ImguiDisplayTrigger for Trigger {
+    fn display(&self, ui: &imgui::Ui, game: &GameData, images: &Images) {
+        let image_tooltip = |image_name: &str| {
+            if ui.is_item_hovered() {
+                ui.tooltip(|| {
+                    let texture_id = images[image_name].id;
+                    imgui::Image::new(imgui::TextureId::from(texture_id as usize), [200.0, 200.0])
+                        .build(ui);
+                });
+            }
+        };
+
+        let object_tooltip = |object_name: &str| {
+            if ui.is_item_hovered() {
+                ui.tooltip(|| match game.objects.get_obj(object_name) {
+                    Ok(object) => match &object.sprite {
+                        Sprite::Image { name: image_name } => {
+                            if let Some(texture) = &images.get(image_name) {
+                                let w = texture.width as f32;
+                                let h = texture.height as f32;
+                                let m = w.max(h);
+                                let w = w / m * 200.0;
+                                let h = h / m * 200.0;
+                                imgui::Image::new(
+                                    imgui::TextureId::from(texture.id as usize),
+                                    [w, h],
+                                )
+                                .build(ui);
+                            } else {
+                                ui.text_colored(
+                                    [1.0, 0.0, 0.0, 1.0],
+                                    format!("Warning: Image `{}` not found", image_name),
+                                );
+                            }
+                        }
+                        Sprite::Colour(colour) => {
+                            // TODO: Show colour
+                        }
+                    },
+                    Err(_) => {
+                        ui.text_colored(
+                            [1.0, 0.0, 0.0, 1.0],
+                            format!("Warning: Object `{}` not found", object_name),
+                        );
+                    }
+                });
+            }
+        };
+
+        let object_button_with_label = |label: &imgui::ImStr, object_name: &str| {
+            if game.objects.iter().any(|o| o.name == object_name) {
+                ui.text(label);
+            } else {
+                ui.text_colored([1.0, 0.0, 0.0, 1.0], label);
+            }
+            object_tooltip(object_name);
+        };
+
+        let object_button = |object_name: &str| {
+            object_button_with_label(&imgui::ImString::from(object_name.to_string()), object_name);
+        };
+
+        let image_button_with_label = |label: &imgui::ImStr, image_name: &str| {
+            ui.text(label);
+            image_tooltip(image_name);
+        };
+
+        let image_button = |image_name: &str| {
+            image_button_with_label(&imgui::ImString::from(image_name.to_string()), image_name);
+        };
+
+        let sprite_button = |sprite: &Sprite| {
+            match sprite {
+                Sprite::Image { name } => {
+                    image_button(name);
+                }
+                Sprite::Colour(colour) => {
+                    ui.text(&format!(
+                        "The colour {{ red: {}, green: {}, blue: {}, alpha: {} }}",
+                        colour.r, colour.g, colour.b, colour.a
+                    ));
+                }
+            };
+        };
+
+        let same_line = || ui.same_line_with_spacing(0.0, 3.0);
+
+        match self {
+            Trigger::Time(When::Start) => ui.text("When the game starts"),
+            Trigger::Time(When::End) => ui.text("When the game ends"),
+            Trigger::Time(When::Exact { time }) => {
+                ui.text(format!("When the time is {:.2} seconds", time))
+            }
+            Trigger::Time(When::Random { start, end }) => ui.text(format!(
+                "At a random time between {:.2} and {:.2} seconds",
+                start, end,
+            )),
+            Trigger::Collision(CollisionWith::Object { name }) => {
+                ui.text("While this object collides with");
+                same_line();
+                object_button(name);
+            }
+            Trigger::Collision(CollisionWith::Area(area)) => ui.text(format!(
+                "While this object is inside {}, {} and {}, {}",
+                area.min.x, area.min.y, area.max.x, area.max.y
+            )),
+            Trigger::WinStatus(status) => match status {
+                WinStatus::Won => ui.text("While you have won the game"),
+                WinStatus::Lost => ui.text("While you have lost the game"),
+                WinStatus::NotYetWon => ui.text("While you haven't won"),
+                WinStatus::NotYetLost => ui.text("While you haven't lost"),
+                WinStatus::HasBeenWon => ui.text("When you win the game"),
+                WinStatus::HasBeenLost => ui.text("When you lose the game"),
+            },
+            Trigger::Input(Input::Mouse { over, interaction }) => {
+                if let MouseOver::Anywhere = over {
+                    match interaction {
+                        MouseInteraction::Button { state } => match state {
+                            ButtonState::Press => ui.text("When the screen is clicked"),
+                            ButtonState::Down => {
+                                ui.text("While the mouse button is down");
+                            }
+                            ButtonState::Release => {
+                                ui.text("When the mouse button is released");
+                            }
+                            ButtonState::Up => {
+                                ui.text("While the mouse button isn't pressed");
+                            }
+                        },
+                        MouseInteraction::Hover => {
+                            ui.text("While the mouse hovers over the screen (always true)");
+                        }
+                    }
+                } else {
+                    let show_clicked_object = |clicked_object: &MouseOver| match clicked_object {
+                        MouseOver::Object { name } => {
+                            object_button(name);
+                        }
+                        MouseOver::Area(area) => {
+                            ui.text(format!(
+                                "the area between {}, {} and {}, {}",
+                                area.min.x, area.min.y, area.max.x, area.max.y
+                            ));
+                        }
+                        _ => {}
+                    };
+                    match interaction {
+                        MouseInteraction::Button { state } => match state {
+                            ButtonState::Press => {
+                                ui.text("When");
+                                same_line();
+                                show_clicked_object(over);
+                                same_line();
+                                ui.text("is clicked")
+                            }
+                            ButtonState::Down => {
+                                ui.text("While the mouse cursor is over");
+                                same_line();
+                                show_clicked_object(over);
+                                same_line();
+                                ui.text("and the mouse button is down");
+                            }
+                            ButtonState::Release => {
+                                ui.text("When the mouse cursor is over");
+                                same_line();
+                                show_clicked_object(over);
+                                same_line();
+                                ui.text("and the mouse button is released");
+                            }
+                            ButtonState::Up => {
+                                ui.text("While the mouse cursor is over");
+                                same_line();
+                                show_clicked_object(over);
+                                same_line();
+                                ui.text("and the mouse button is up");
+                            }
+                        },
+                        MouseInteraction::Hover => {
+                            ui.text("While the mouse is hovered over");
+                            same_line();
+                            show_clicked_object(over);
+                        }
+                    }
+                }
+            }
+            Trigger::CheckProperty { name, check } => match check {
+                PropertyCheck::Switch(switch) => match switch {
+                    wee::SwitchState::On => {
+                        ui.text("While");
+                        same_line();
+                        object_button_with_label(&im_str!("{}'s", name), name);
+                        same_line();
+                        ui.text("switch is on");
+                    }
+                    wee::SwitchState::Off => {
+                        ui.text("While");
+                        same_line();
+                        object_button_with_label(&im_str!("{}'s", name), name);
+                        same_line();
+                        ui.text("switch is off");
+                    }
+                    wee::SwitchState::SwitchedOn => {
+                        ui.text("When");
+                        same_line();
+                        object_button(name);
+                        same_line();
+                        ui.text("is switched on")
+                    }
+                    wee::SwitchState::SwitchedOff => {
+                        ui.text("When");
+                        same_line();
+                        object_button(name);
+                        same_line();
+                        ui.text("is switched off")
+                    }
+                },
+                PropertyCheck::Sprite(sprite) => {
+                    ui.text("While");
+                    same_line();
+                    object_button_with_label(&im_str!("{}'s", name), name);
+                    same_line();
+                    ui.text("image is");
+                    same_line();
+                    sprite_button(sprite);
+                }
+                PropertyCheck::FinishedAnimation => {
+                    ui.text("When");
+                    same_line();
+                    object_button_with_label(&im_str!("{}'s", name), name);
+                    same_line();
+                    ui.text("animation is finished");
+                }
+                PropertyCheck::Timer => ui.text("When this object's timer hits zero"),
+            },
+            Trigger::Random { chance } => ui.text(format!("With a {}% chance", chance * 100.0)),
+        };
+    }
+}
+
 fn right_window(
     ui: &imgui::Ui,
     game: &mut GameData,
     images: &mut Images,
     filename: &Option<String>,
+    instruction_index: &mut usize,
 ) {
     imgui::ChildWindow::new(im_str!("Right"))
         .size([0.0, 0.0])
@@ -357,10 +604,96 @@ fn right_window(
                     tab_item(im_str!("Properties"), || {
                         properties_window(ui, game, index, images, filename);
                     });
-                    tab_item(im_str!("Instructions"), || {});
+                    tab_item(im_str!("Instructions"), || {
+                        instruction_window(ui, game, index, images, filename, instruction_index);
+                    });
                 });
             }
         });
+}
+
+fn instruction_window(
+    ui: &imgui::Ui,
+    game: &mut GameData,
+    index: usize,
+    images: &mut Images,
+    filename: &Option<String>,
+    instruction_index: &mut usize,
+) {
+    imgui::ChildWindow::new(im_str!("Test"))
+        .size([0.0, -ui.frame_height_with_spacing()])
+        //.border(true)
+        //.horizontal_scrollbar(true)
+        .horizontal_scrollbar(true)
+        .build(&ui, || {
+            for (i, instruction) in game.objects[index].instructions.clone().iter().enumerate() {
+                ui.tree_node(&im_str!("Instruction {}", i))
+                    .flags(imgui::ImGuiTreeNodeFlags::SpanAvailWidth)
+                    .bullet(true)
+                    .leaf(true)
+                    .selected(*instruction_index == i)
+                    .build(|| {
+                        if ui.is_item_clicked(imgui::MouseButton::Left) {
+                            *instruction_index = i;
+                        }
+                        if instruction.triggers.is_empty() {
+                            ui.text("\tEvery frame")
+                        } else {
+                            for trigger in instruction.triggers.iter() {
+                                trigger.display(ui, game, images);
+                            }
+                        }
+
+                        ui.text("\t\tThen:");
+
+                        if instruction.actions.is_empty() {
+                            ui.text("\tDo nothing")
+                        } else {
+                            for action in instruction.actions.iter() {
+                                //action.display(ui, game, images, 0);
+                            }
+                        }
+                    });
+                ui.separator();
+            }
+        });
+    if ui.small_button(im_str!("Up")) && *instruction_index > 0 {
+        game.objects[index]
+            .instructions
+            .swap(*instruction_index, *instruction_index - 1);
+        *instruction_index -= 1;
+    }
+    ui.same_line(0.0);
+    if ui.small_button(im_str!("Down"))
+        && *instruction_index + 1 < game.objects[index].instructions.len()
+    {
+        game.objects[index]
+            .instructions
+            .swap(*instruction_index, *instruction_index + 1);
+        *instruction_index += 1;
+    }
+    ui.same_line(0.0);
+    if ui.small_button(im_str!("Add")) {
+        game.objects[index].instructions.push(wee::Instruction {
+            triggers: Vec::new(),
+            actions: Vec::new(),
+        });
+    }
+    ui.same_line(0.0);
+    if ui.small_button(im_str!("Edit")) {
+        /*self.mode = InstructionEditorMode::EditInstruction {
+            focus: InstructionFocus::Trigger,
+            selected_index: 0,
+            selected_sub_index: None,
+        };*/
+    }
+    ui.same_line(0.0);
+    if ui.small_button(im_str!("Delete")) && !game.objects[index].instructions.is_empty() {
+        game.objects[index].instructions.remove(*instruction_index);
+        if *instruction_index > 0 {
+            *instruction_index -= 1;
+        }
+    }
 }
 
 fn properties_window(
@@ -841,6 +1174,7 @@ fn run_main_loop<'a, 'b>(
             let mut minus_button = ButtonState::Up;
             let mut plus_button = ButtonState::Up;
             let mut show_collision_areas = false;
+            let mut instruction_index = 0;
             'editor_running: loop {
                 for event in event_pump.poll_iter() {
                     imgui.sdl.handle_event(&mut imgui.context, &event);
@@ -958,7 +1292,13 @@ fn run_main_loop<'a, 'b>(
 
                         ui.same_line(0.0);
 
-                        right_window(ui, &mut game, &mut images, &filename);
+                        right_window(
+                            ui,
+                            &mut game,
+                            &mut images,
+                            &filename,
+                            &mut instruction_index,
+                        );
                     });
 
                 let key_down = |event_pump: &EventPump, scancode: Scancode| {

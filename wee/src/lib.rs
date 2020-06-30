@@ -111,6 +111,20 @@ impl SerialiseObject {
     }
 }
 
+pub trait SerialiseObjectList {
+    fn get_obj(&self, name: &str) -> WeeResult<&SerialiseObject>;
+}
+
+impl SerialiseObjectList for Vec<SerialiseObject> {
+    fn get_obj(&self, name: &str) -> WeeResult<&SerialiseObject> {
+        let index = self.iter().position(|o| o.name == name);
+        match index {
+            Some(index) => Ok(self.get(index).unwrap()),
+            None => Err("Cannot find object".into()), // TODO: Better error message
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct SerialiseMusic {
     filename: String,
@@ -622,7 +636,7 @@ pub struct BackgroundPart {
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
-struct Animation {
+pub struct Animation {
     should_loop: bool,
     index: usize,
     sprites: Vec<Sprite>,
@@ -631,7 +645,7 @@ struct Animation {
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
-enum AnimationStatus {
+pub enum AnimationStatus {
     Animating(Animation),
     Finished,
     None,

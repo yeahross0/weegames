@@ -26,7 +26,7 @@ use shader::Shader;
 use wee_common::{Colour, Flip, Rect, Vec2, WeeResult, PROJECTION_HEIGHT, PROJECTION_WIDTH};
 #[derive(Debug)]
 pub struct Texture {
-    id: GLuint,
+    pub id: GLuint,
     pub width: GLuint,
     pub height: GLuint,
     pub internal_format: GLuint,
