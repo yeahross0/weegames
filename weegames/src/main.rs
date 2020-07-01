@@ -35,9 +35,9 @@ use sdlglue::{Model, Renderer, Texture};
 use wee::{
     Action, AnimationStatus, AssetFiles, Assets, ButtonState, CollisionWith, Completion,
     DrawIntroText, FontLoadInfo, GameData, GameSettings, ImageList, Images, Input, IntroFont,
-    IntroFontConfig, IntroText, LoadImages, LoadedGame, MouseInteraction, MouseOver, PropertyCheck,
-    RenderScene, SerialiseObject, SerialiseObjectList, Sprite, Switch, Trigger, When, WinStatus,
-    DEFAULT_GAME_SPEED,
+    IntroFontConfig, IntroText, LoadImages, LoadedGame, Motion, MouseInteraction, MouseOver,
+    PropertyCheck, RenderScene, SerialiseObject, SerialiseObjectList, Sprite, Switch, Trigger,
+    When, WinStatus, DEFAULT_GAME_SPEED,
 };
 use wee_common::{Colour, Flip, Rect, Size, Vec2, WeeResult, PROJECTION_HEIGHT, PROJECTION_WIDTH};
 
@@ -401,7 +401,7 @@ impl ImguiDisplayTrigger for Trigger {
                     image_button(name);
                 }
                 Sprite::Colour(colour) => {
-                    ui.text(&format!(
+                    ui.text(format!(
                         "The colour {{ red: {}, green: {}, blue: {}, alpha: {} }}",
                         colour.r, colour.g, colour.b, colour.a
                     ));
@@ -563,6 +563,484 @@ impl ImguiDisplayTrigger for Trigger {
     }
 }
 
+trait ImguiDisplayAction {
+    fn display(&self, ui: &imgui::Ui, game: &GameData, images: &Images, indent: usize);
+}
+
+impl ImguiDisplayAction for Action {
+    fn display(&self, ui: &imgui::Ui, game: &GameData, images: &Images, indent: usize) {
+        let image_tooltip = |image_name: &str| {
+            if ui.is_item_hovered() {
+                ui.tooltip(|| {
+                    let texture_id = images[image_name].id;
+                    imgui::Image::new(imgui::TextureId::from(texture_id as usize), [200.0, 200.0])
+                        .build(ui);
+                });
+            }
+        };
+
+        let object_tooltip = |object_name: &str| {
+            if ui.is_item_hovered() {
+                ui.tooltip(|| match game.objects.get_obj(object_name) {
+                    Ok(object) => match &object.sprite {
+                        Sprite::Image { name: image_name } => {
+                            if let Some(texture) = &images.get(image_name) {
+                                let w = texture.width as f32;
+                                let h = texture.height as f32;
+                                let m = w.max(h);
+                                let w = w / m * 200.0;
+                                let h = h / m * 200.0;
+                                imgui::Image::new(
+                                    imgui::TextureId::from(texture.id as usize),
+                                    [w, h],
+                                )
+                                .build(ui);
+                            } else {
+                                ui.text_colored(
+                                    [1.0, 0.0, 0.0, 1.0],
+                                    format!("Warning: Image `{}` not found", image_name),
+                                );
+                            }
+                        }
+                        Sprite::Colour(colour) => {
+                            // TODO: Show colour
+                        }
+                    },
+                    Err(_) => {
+                        ui.text_colored(
+                            [1.0, 0.0, 0.0, 1.0],
+                            format!("Warning: Object `{}` not found", object_name),
+                        );
+                    }
+                });
+            }
+        };
+
+        let object_button_with_label = |label: &imgui::ImStr, object_name: &str| {
+            if game.objects.iter().any(|o| o.name == object_name) {
+                ui.text(label);
+            } else {
+                ui.text_colored([1.0, 0.0, 0.0, 1.0], label);
+            }
+            object_tooltip(object_name);
+        };
+
+        let object_button = |object_name: &str| {
+            object_button_with_label(&imgui::ImString::from(object_name.to_string()), object_name);
+        };
+
+        let image_button_with_label = |label: &imgui::ImStr, image_name: &str| {
+            ui.text(label);
+            image_tooltip(image_name);
+        };
+
+        let image_button = |image_name: &str| {
+            image_button_with_label(&imgui::ImString::from(image_name.to_string()), image_name);
+        };
+
+        let sprite_button = |sprite: &Sprite| {
+            match sprite {
+                Sprite::Image { name } => {
+                    image_button(name);
+                }
+                Sprite::Colour(colour) => {
+                    ui.text(format!(
+                        "The colour {{ red: {}, green: {}, blue: {}, alpha: {} }}",
+                        colour.r, colour.g, colour.b, colour.a
+                    ));
+                }
+            };
+        };
+
+        let speed_to_string = |speed: &Speed| match speed {
+            Speed::Category(SpeedCategory::VerySlow) => "very slow".to_string(),
+            Speed::Category(SpeedCategory::Slow) => "slow".to_string(),
+            Speed::Category(SpeedCategory::Normal) => "normal".to_string(),
+            Speed::Category(SpeedCategory::Fast) => "fast".to_string(),
+            Speed::Category(SpeedCategory::VeryFast) => "very fast".to_string(),
+            Speed::Value(value) => format!("value: {}", value),
+        };
+
+        let same_line = || ui.same_line_with_spacing(0.0, 3.0);
+        let dir_to_str = |dir| match dir {
+            CompassDirection::Up => "up",
+            CompassDirection::UpRight => "up-right",
+            CompassDirection::Right => "right",
+            CompassDirection::DownRight => "down-right",
+            CompassDirection::Down => "down",
+            CompassDirection::DownLeft => "down-left",
+            CompassDirection::Left => "left",
+            CompassDirection::UpLeft => "up-left",
+        };
+
+        // TODO: Remove this
+        use wee::*;
+
+        ui.text("\t".repeat(indent));
+        ui.same_line_with_spacing(0.0, 0.0);
+
+        match self {
+            Action::Motion(motion) => motion.display(ui, game, images),
+            Action::Win => ui.text("Win the game"),
+            Action::Lose => ui.text("Lose the game"),
+            Action::Effect(effect) => match effect {
+                Effect::Freeze => ui.text("Freeze the screen"),
+                Effect::None => ui.text("Remove screen effects"),
+            },
+            Action::PlaySound { name } => ui.text(format!("Play the {} sound", name)),
+            Action::StopMusic => ui.text("Stop the music"),
+            Action::Animate {
+                animation_type,
+                sprites,
+                speed,
+            } => {
+                let speed = speed_to_string(speed);
+                if let AnimationType::Loop = animation_type {
+                    ui.text(format!("Loops an animation {}", speed));
+                } else {
+                    ui.text(format!("Plays an animation once {}", speed));
+                }
+            }
+            Action::DrawText {
+                text,
+                font,
+                colour,
+                resize,
+            } => {
+                let change_size = if let TextResize::MatchText = resize {
+                    " changing this object's size to match the text size"
+                } else {
+                    ""
+                };
+                let colour = format!(
+                    "red: {}, green: {}, blue: {}, alpha: {}",
+                    colour.r, colour.g, colour.b, colour.a
+                );
+                ui.text(format!(
+                    "Draws `{}` using the {} font with colour ({}) {}",
+                    text, font, colour, change_size
+                ));
+            }
+            Action::SetProperty(PropertySetter::Angle(angle_setter)) => {
+                match angle_setter {
+                    AngleSetter::Value(value) => {
+                        ui.text(format!("Set this object's angle to {}", value))
+                    }
+                    AngleSetter::Increase(value) => {
+                        ui.text(format!("Increase this object's angle by {}", value))
+                    }
+                    AngleSetter::Decrease(value) => {
+                        ui.text(format!("Decrease this object's angle by {}", value))
+                    }
+                    AngleSetter::Match { name } => {
+                        ui.text(format!("Have the same angle as {}", name))
+                    }
+                    AngleSetter::Clamp { min, max } => ui.text(format!(
+                        "Clamp this object's angle to between {} and {} degrees",
+                        min, max
+                    )),
+                    AngleSetter::RotateToMouse => ui.text("Rotate towards the mouse"),
+                };
+            }
+            Action::SetProperty(PropertySetter::Sprite(sprite)) => {
+                ui.text(format!("Set this object's sprite to {:?}", sprite))
+            }
+            Action::SetProperty(PropertySetter::Size(size_setter)) => {
+                match size_setter {
+                    SizeSetter::Value(size) => ui.text(format!(
+                        "Set this object's width to {} and its height to {}",
+                        size.width, size.height
+                    )),
+                    SizeSetter::Grow(SizeDifference::Value(size)) => ui.text(format!(
+                        "Grow this object's width by {}px and its height by {}px",
+                        size.width, size.height
+                    )),
+                    SizeSetter::Shrink(SizeDifference::Value(size)) => ui.text(format!(
+                        "Shrink this object's width by {}px and its height by {}px",
+                        size.width, size.height
+                    )),
+                    SizeSetter::Grow(SizeDifference::Percent(percent)) => ui.text(format!(
+                        "Grow this object's width by {}% and its height by {}%",
+                        percent.width * 100.0,
+                        percent.height * 100.0
+                    )),
+                    SizeSetter::Shrink(SizeDifference::Percent(percent)) => ui.text(format!(
+                        "Shrink this object's width by {}% and its height by {}%",
+                        percent.width * 100.0,
+                        percent.height * 100.0
+                    )),
+                    SizeSetter::Clamp { min, max } => ui.text(format!(
+                        "Clamp this object's size between {}x{} pixels and {}x{} pixels",
+                        min.width, min.height, max.width, max.height
+                    )),
+                };
+            }
+            Action::SetProperty(PropertySetter::Switch(switch)) => ui.text(format!(
+                "Set the switch {}",
+                if let Switch::On = switch { "on" } else { "off" }
+            )),
+            Action::SetProperty(PropertySetter::Timer { time }) => {
+                ui.text(format!("Set the timer to {:.2} seconds ", time))
+            }
+            Action::SetProperty(PropertySetter::FlipHorizontal(FlipSetter::Flip)) => {
+                ui.text("Flip this object horizontally")
+            }
+            Action::SetProperty(PropertySetter::FlipVertical(FlipSetter::Flip)) => {
+                ui.text("Flip this object vertically")
+            }
+            Action::SetProperty(PropertySetter::FlipHorizontal(FlipSetter::SetFlip(flipped))) => {
+                ui.text(format!("Set this object's horizontal flip to {}", flipped))
+            }
+            Action::SetProperty(PropertySetter::FlipVertical(FlipSetter::SetFlip(flipped))) => {
+                ui.text(format!("Set this object's vertical flip to {}", flipped))
+            }
+            Action::SetProperty(PropertySetter::Layer(layer_setter)) => {
+                match layer_setter {
+                    LayerSetter::Value(value) => {
+                        ui.text(format!("Set this object's layer to {}", value))
+                    }
+                    LayerSetter::Increase => ui.text("Increase this object's layer by 1"),
+                    LayerSetter::Decrease => ui.text("Decrease this object's layer by 1"),
+                };
+            }
+            Action::Random { random_actions } => {
+                ui.text("Chooses a random action");
+                for action in random_actions {
+                    action.display(ui, game, images, indent + 1);
+                }
+            }
+        };
+    }
+}
+
+trait ImguiDisplayMotion {
+    fn display(&self, ui: &imgui::Ui, game: &GameData, images: &Images);
+}
+
+impl ImguiDisplayMotion for Motion {
+    fn display(&self, ui: &imgui::Ui, game: &GameData, images: &Images) {
+        let speed_to_string = |speed: &Speed| match speed {
+            Speed::Category(SpeedCategory::VerySlow) => "very slow".to_string(),
+            Speed::Category(SpeedCategory::Slow) => "slow".to_string(),
+            Speed::Category(SpeedCategory::Normal) => "normal".to_string(),
+            Speed::Category(SpeedCategory::Fast) => "fast".to_string(),
+            Speed::Category(SpeedCategory::VeryFast) => "very fast".to_string(),
+            Speed::Value(value) => format!("value: {}", value),
+        };
+
+        let same_line = || ui.same_line_with_spacing(0.0, 3.0);
+        let dir_to_str = |dir| match dir {
+            CompassDirection::Up => "up",
+            CompassDirection::UpRight => "up-right",
+            CompassDirection::Right => "right",
+            CompassDirection::DownRight => "down-right",
+            CompassDirection::Down => "down",
+            CompassDirection::DownLeft => "down-left",
+            CompassDirection::Left => "left",
+            CompassDirection::UpLeft => "up-left",
+        };
+
+        let angle_to_string = |angle: Angle| match angle {
+            Angle::Current => "in the current angle".to_string(),
+            Angle::Degrees(angle) => format!("at a {} degree angle", angle),
+            Angle::Random { min, max } => format!("in a random angle between {} and {}", min, max),
+        };
+
+        // TODO: Remove this
+        use wee::*;
+
+        match self {
+            Motion::Stop => ui.text("Stop this object"),
+            Motion::GoStraight { direction, speed } => {
+                let speed = speed_to_string(speed);
+                match direction {
+                    MovementDirection::Direction {
+                        possible_directions: dirs,
+                    } => {
+                        if dirs.is_empty() {
+                            ui.text(format!("Go {} in a random direction", speed));
+                        } else if dirs.len() == 1 {
+                            ui.text(format!(
+                                "Go {} {}",
+                                dir_to_str(*dirs.iter().next().unwrap()),
+                                speed
+                            ));
+                        } else {
+                            let dirs: Vec<&str> = dirs.iter().map(|dir| dir_to_str(*dir)).collect();
+                            let dirs = dirs.join(", ");
+                            ui.text(format!("Go {} in a direction chosen from {}", speed, dirs));
+                        }
+                    }
+                    MovementDirection::Angle(angle) => match angle {
+                        Angle::Current => {
+                            ui.text(format!("Go {} in this object's current angle", speed))
+                        }
+
+                        Angle::Degrees(angle) => {
+                            ui.text(format!("Go {} at a {} angle", speed, angle))
+                        }
+                        Angle::Random { min, max } => ui.text(format!(
+                            "Go {} at a random angle between {} and {}",
+                            speed, min, max
+                        )),
+                    },
+                }
+            }
+            Motion::JumpTo(jump_location) => match jump_location {
+                JumpLocation::Point(point) => {
+                    ui.text(format!("Jump to {}, {}", point.x, point.y));
+                }
+                JumpLocation::Relative { to, distance } => match to {
+                    RelativeTo::CurrentPosition => {
+                        ui.text(format!(
+                            "Jump {}, {} relative to this object's position",
+                            distance.x, distance.y
+                        ));
+                    }
+                    RelativeTo::CurrentAngle => {
+                        ui.text(format!(
+                            "Jump {}, {} relative to this object's angle",
+                            distance.x, distance.y
+                        ));
+                    }
+                },
+                JumpLocation::Area(area) => {
+                    ui.text(format!(
+                        "Jump to a random location between {}, {} and {}, {}",
+                        area.min.x, area.min.y, area.max.x, area.max.y
+                    ));
+                }
+                JumpLocation::ClampPosition { area } => {
+                    ui.text(format!(
+                        "Clamp this object's position within {}, {} and {}, {}",
+                        area.min.x, area.min.y, area.max.x, area.max.y
+                    ));
+                }
+                JumpLocation::Object { name } => {
+                    ui.text(format!("Jump to {}'s position", name));
+                }
+                JumpLocation::Mouse => {
+                    ui.text("Jump to the mouse");
+                }
+            },
+            Motion::Roam {
+                movement_type,
+                area,
+                speed,
+            } => {
+                let speed = speed_to_string(speed);
+                match movement_type {
+                    MovementType::Wiggle => ui.text(format!(
+                        "Wiggle {} between {}, {} and {}, {}",
+                        speed, area.min.x, area.min.y, area.max.x, area.max.y,
+                    )),
+                    MovementType::Insect => ui.text(format!(
+                        "Move like an insect {} between {}, {} and {}, {}",
+                        speed, area.min.x, area.min.y, area.max.x, area.max.y,
+                    )),
+                    MovementType::Reflect {
+                        movement_handling, ..
+                    } => {
+                        let movement_handling = match movement_handling {
+                            MovementHandling::Anywhere => "",
+                            MovementHandling::TryNotToOverlap => {
+                                " trying not to overlap with over objects"
+                            }
+                        };
+                        ui.text(format!(
+                            "Reflect {} between {}, {} and {}, {}{}",
+                            speed,
+                            area.min.x,
+                            area.min.y,
+                            area.max.x,
+                            area.max.y,
+                            movement_handling,
+                        ));
+                    }
+                    MovementType::Bounce { .. } => ui.text(format!(
+                        "Move like an insect {} between {}, {} and {}, {}",
+                        speed, area.min.x, area.min.y, area.max.x, area.max.y,
+                    )),
+                };
+            }
+            Motion::Swap { name } => ui.text(format!("Swap position with {}", name)),
+            Motion::Target {
+                target,
+                target_type,
+                offset,
+                speed,
+            } => {
+                let name = match target {
+                    Target::Object { name } => name,
+                    Target::Mouse => "Mouse",
+                };
+                let offset = if *offset == Vec2::zero() {
+                    "".to_string()
+                } else {
+                    format!(" with an offset of {}, {}", offset.x, offset.y)
+                };
+                match target_type {
+                    TargetType::Follow => {
+                        ui.text(format!(
+                            "Follow {} {}{}",
+                            name,
+                            speed_to_string(speed),
+                            offset
+                        ));
+                    }
+                    TargetType::StopWhenReached => {
+                        ui.text(format!(
+                            "Target {} {}{}",
+                            name,
+                            speed_to_string(speed),
+                            offset
+                        ));
+                    }
+                }
+            }
+            Motion::Accelerate { direction, speed } => {
+                let speed = speed_to_string(speed);
+                match direction {
+                    MovementDirection::Direction {
+                        possible_directions: dirs,
+                    } => {
+                        if dirs.is_empty() {
+                            ui.text(format!("Accelerate {} in a random direction", speed));
+                        } else if dirs.len() == 1 {
+                            ui.text(format!(
+                                "Accelerate {} {}",
+                                dir_to_str(*dirs.iter().next().unwrap()),
+                                speed
+                            ));
+                        } else {
+                            let dirs: Vec<&str> = dirs.iter().map(|dir| dir_to_str(*dir)).collect();
+                            let dirs = dirs.join(", ");
+                            ui.text(format!(
+                                "Accelerate {} in a direction chosen from {}",
+                                speed, dirs
+                            ));
+                        }
+                    }
+                    MovementDirection::Angle(angle) => match angle {
+                        Angle::Current => ui.text(format!(
+                            "Accelerate {} in this object's current angle",
+                            speed
+                        )),
+
+                        Angle::Degrees(angle) => {
+                            ui.text(format!("Accelerate {} at a {} angle", speed, angle))
+                        }
+                        Angle::Random { min, max } => ui.text(format!(
+                            "Accelerate {} at a random angle between {} and {}",
+                            speed, min, max
+                        )),
+                    },
+                }
+            }
+        };
+    }
+}
+
 fn right_window(
     ui: &imgui::Ui,
     game: &mut GameData,
@@ -627,7 +1105,7 @@ fn instruction_window(
         .horizontal_scrollbar(true)
         .build(&ui, || {
             for (i, instruction) in game.objects[index].instructions.clone().iter().enumerate() {
-                ui.tree_node(&im_str!("Instruction {}", i))
+                ui.tree_node(&im_str!("Instruction {}", i + 1))
                     .flags(imgui::ImGuiTreeNodeFlags::SpanAvailWidth)
                     .bullet(true)
                     .leaf(true)
@@ -650,7 +1128,7 @@ fn instruction_window(
                             ui.text("\tDo nothing")
                         } else {
                             for action in instruction.actions.iter() {
-                                //action.display(ui, game, images, 0);
+                                action.display(ui, game, images, 0);
                             }
                         }
                     });

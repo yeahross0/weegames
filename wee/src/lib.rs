@@ -652,7 +652,7 @@ pub enum AnimationStatus {
 }
 
 #[derive(Clone, Debug)]
-enum ActiveMotion {
+pub enum ActiveMotion {
     GoStraight {
         velocity: Vec2,
     },
@@ -674,7 +674,7 @@ enum ActiveMotion {
     Stop,
 }
 #[derive(Clone, Debug)]
-enum ActiveRoam {
+pub enum ActiveRoam {
     Wiggle,
     Insect {
         velocity: Vec2,
