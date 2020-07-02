@@ -1,7 +1,7 @@
 // TODO: Show origin debug option
 // TODO: Enable selecting object again
 
-#![windows_subsystem = "windows"]
+//#![windows_subsystem = "windows"]
 
 #[macro_use]
 extern crate imgui;
@@ -1844,9 +1844,9 @@ fn run_main_loop<'a, 'b>(
                                         from: String,
                                         to: String,
                                     },
-                                    /*Delete {
-                                        name: String,
-                                    },*/
+                                    Delete {
+                                        index: usize,
+                                    },
                                     Move {
                                         direction: MoveDirection,
                                         index: usize,
@@ -1923,15 +1923,87 @@ fn run_main_loop<'a, 'b>(
                                                 };
                                             }
                                         }
-                                    }
-                                    if ui.is_item_clicked(imgui::MouseButton::Right) {
-                                        rename_object = Some(RenameObject {
-                                            index: i,
-                                            name: game.objects[i].name.clone(),
-                                            buffer: ImString::from(game.objects[i].name.clone()),
-                                        });
+                                        if ui.is_item_clicked(imgui::MouseButton::Right) {
+                                            ui.open_popup(im_str!("Edit Object"));
+                                            /*rename_object = Some(RenameObject {
+                                                index: i,
+                                                name: game.objects[i].name.clone(),
+                                                buffer: ImString::from(
+                                                    game.objects[i].name.clone(),
+                                                ),
+                                            });*/
+                                            selected_index = Some(i);
+                                        }
                                     }
                                 }
+
+                                ui.popup(im_str!("Edit Object"), || {
+                                    if ui.button(im_str!("Move up"), NORMAL_BUTTON) {
+                                        object_operation = ObjectOperation::Move {
+                                            direction: MoveDirection::Up,
+                                            index: selected_index.unwrap(),
+                                        };
+                                    }
+
+                                    if ui.button(im_str!("Move down"), NORMAL_BUTTON) {
+                                        object_operation = ObjectOperation::Move {
+                                            direction: MoveDirection::Down,
+                                            index: selected_index.unwrap(),
+                                        };
+                                    }
+
+                                    if ui.button(im_str!("Delete"), NORMAL_BUTTON) {
+                                        object_operation = ObjectOperation::Delete {
+                                            index: selected_index.unwrap(),
+                                        }
+                                    }
+
+                                    if ui.button(im_str!("Rename"), NORMAL_BUTTON) {
+                                        rename_object = Some(RenameObject {
+                                            index: selected_index.unwrap(),
+                                            name: game.objects[selected_index.unwrap()]
+                                                .name
+                                                .clone(),
+                                            buffer: ImString::from(
+                                                game.objects[selected_index.unwrap()].name.clone(),
+                                            ),
+                                        });
+                                        ui.close_current_popup();
+                                    }
+
+                                    /*if let Some(rename_details) = &mut rename_object {
+                                        if ui
+                                            .input_text(
+                                                im_str!("Rename Object"),
+                                                &mut rename_details.buffer,
+                                            )
+                                            .resize_buffer(true)
+                                            .enter_returns_true(true)
+                                            .build()
+                                        {
+                                            object_operation = ObjectOperation::Rename {
+                                                index: rename_details.index,
+                                                from: rename_details.name.clone(),
+                                                to: rename_details.buffer.to_string(),
+                                            };
+
+                                            // TODO: try selected_object instead
+                                            //rename_object = None;
+                                            rename_details.name = rename_details.buffer.to_string();
+                                        }
+                                    }
+                                    if ui.button(im_str!("Confirm"), NORMAL_BUTTON) {
+                                        if let Some(rename_details) = &mut rename_object {
+                                            object_operation = ObjectOperation::Rename {
+                                                index: rename_details.index,
+                                                from: rename_details.name.clone(),
+                                                to: rename_details.buffer.to_string(),
+                                            };
+                                            rename_details.name = rename_details.buffer.to_string();
+                                        }
+                                    }*/
+                                });
+
                                 if !ui.is_any_mouse_down() && ui.is_window_focused() {
                                     if let Some(index) = &mut selected_index {
                                         if up_pressed {
@@ -1972,14 +2044,26 @@ fn run_main_loop<'a, 'b>(
                                         MoveDirection::Up => {
                                             if index > 0 {
                                                 game.objects.swap(index - 1, index);
+                                                selected_index = Some(index - 1);
                                             }
                                         }
                                         MoveDirection::Down => {
                                             if index + 1 < game.objects.len() {
                                                 game.objects.swap(index, index + 1);
+                                                selected_index = Some(index + 1);
                                             }
                                         }
                                     },
+                                    ObjectOperation::Delete { index } => {
+                                        game.objects.remove(index);
+                                        if game.objects.is_empty() {
+                                            selected_index = None;
+                                        } else if index == 0 {
+                                            selected_index = Some(0);
+                                        } else {
+                                            selected_index = Some(index - 1);
+                                        }
+                                    }
                                     _ => {}
                                 }
                             });
