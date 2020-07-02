@@ -33,11 +33,11 @@ use walkdir::WalkDir;
 
 use sdlglue::{Model, Renderer, Texture};
 use wee::{
-    Action, AnimationStatus, AssetFiles, Assets, ButtonState, CollisionWith, Completion,
-    DrawIntroText, FontLoadInfo, GameData, GameSettings, ImageList, Images, Input, IntroFont,
-    IntroFontConfig, IntroText, LoadImages, LoadedGame, Motion, MouseInteraction, MouseOver,
-    PropertyCheck, RenderScene, SerialiseObject, SerialiseObjectList, Sprite, Switch, Trigger,
-    When, WinStatus, DEFAULT_GAME_SPEED,
+    Action, AngleSetter, AnimationStatus, AssetFiles, Assets, ButtonState, CollisionWith,
+    Completion, DrawIntroText, FontLoadInfo, GameData, GameSettings, ImageList, Images, Input,
+    IntroFont, IntroFontConfig, IntroText, JumpLocation, LoadImages, LoadedGame, Motion,
+    MouseInteraction, MouseOver, PropertyCheck, PropertySetter, RenderScene, SerialiseObject,
+    SerialiseObjectList, Sprite, Switch, Target, Trigger, When, WinStatus, DEFAULT_GAME_SPEED,
 };
 use wee_common::{Colour, Flip, Rect, Size, Vec2, WeeResult, PROJECTION_HEIGHT, PROJECTION_WIDTH};
 
@@ -1046,6 +1046,7 @@ fn right_window(
     game: &mut GameData,
     images: &mut Images,
     filename: &Option<String>,
+    selected_index: &Option<usize>,
     instruction_index: &mut usize,
 ) {
     imgui::ChildWindow::new(im_str!("Right"))
@@ -1073,17 +1074,13 @@ fn right_window(
                     }
                 }
             }
-            let mut selected_index = None;
-            if !game.objects.is_empty() {
-                selected_index = Some(0);
-            }
             if let Some(index) = selected_index {
                 tab_bar(im_str!("Tab Bar"), || {
                     tab_item(im_str!("Properties"), || {
-                        properties_window(ui, game, index, images, filename);
+                        properties_window(ui, game, *index, images, filename);
                     });
                     tab_item(im_str!("Instructions"), || {
-                        instruction_window(ui, game, index, images, filename, instruction_index);
+                        instruction_window(ui, game, *index, images, instruction_index);
                     });
                 });
             }
@@ -1095,7 +1092,6 @@ fn instruction_window(
     game: &mut GameData,
     index: usize,
     images: &mut Images,
-    filename: &Option<String>,
     instruction_index: &mut usize,
 ) {
     imgui::ChildWindow::new(im_str!("Test"))
@@ -1455,6 +1451,74 @@ fn properties_window(
     object.layer = change_layer.max(0).min(255) as u8;
 }
 
+fn rename_across_objects(objects: &mut Vec<SerialiseObject>, old_name: &str, new_name: &str) {
+    for obj in objects.iter_mut() {
+        rename_object(obj, old_name, new_name);
+    }
+}
+
+fn rename_object(object: &mut SerialiseObject, old_name: &str, new_name: &str) {
+    let rename = |other_name: &mut String| {
+        if *other_name == old_name {
+            *other_name = new_name.to_string();
+        }
+    };
+    for instruction in object.instructions.iter_mut() {
+        for trigger in instruction.triggers.iter_mut() {
+            match trigger {
+                Trigger::Collision(CollisionWith::Object { name }) => {
+                    rename(name);
+                }
+                Trigger::Input(Input::Mouse { over, .. }) => {
+                    if let MouseOver::Object { name } = over {
+                        rename(name);
+                    }
+                }
+                Trigger::CheckProperty { name, .. } => {
+                    rename(name);
+                }
+                _ => {}
+            }
+        }
+        rename_actions(&mut instruction.actions, &old_name, &new_name);
+    }
+}
+
+fn rename_actions(actions: &mut Vec<Action>, old_name: &str, new_name: &str) {
+    let rename = |other_name: &mut String| {
+        if *other_name == old_name {
+            *other_name = new_name.to_string();
+        }
+    };
+    for action in actions.iter_mut() {
+        match action {
+            Action::SetProperty(PropertySetter::Angle(angle_setter)) => {
+                if let AngleSetter::Match { name } = angle_setter {
+                    rename(name);
+                }
+            }
+            Action::Motion(motion) => match motion {
+                Motion::JumpTo(jump_location) => {
+                    if let JumpLocation::Object { name } = jump_location {
+                        rename(name)
+                    }
+                }
+                Motion::Swap { name } => rename(name),
+                Motion::Target { target, .. } => {
+                    if let Target::Object { name } = target {
+                        rename(name)
+                    }
+                }
+                _ => {}
+            },
+            Action::Random { random_actions } => {
+                rename_actions(random_actions, old_name, new_name);
+            }
+            _ => {}
+        }
+    }
+}
+
 fn run_main_loop<'a, 'b>(
     mut game_mode: GameMode<'a, 'b>,
     renderer: &mut Renderer,
@@ -1652,7 +1716,14 @@ fn run_main_loop<'a, 'b>(
             let mut minus_button = ButtonState::Up;
             let mut plus_button = ButtonState::Up;
             let mut show_collision_areas = false;
+            let mut selected_index = None;
             let mut instruction_index = 0;
+            struct RenameObject {
+                index: usize,
+                name: String,
+                buffer: ImString,
+            }
+            let mut rename_object: Option<RenameObject> = None;
             'editor_running: loop {
                 for event in event_pump.poll_iter() {
                     imgui.sdl.handle_event(&mut imgui.context, &event);
@@ -1761,10 +1832,155 @@ fn run_main_loop<'a, 'b>(
                             .border(true)
                             .horizontal_scrollbar(true)
                             .build(&ui, || {
+                                #[derive(Debug)]
+                                enum MoveDirection {
+                                    Up,
+                                    Down,
+                                }
+                                #[derive(Debug)]
+                                enum ObjectOperation {
+                                    Rename {
+                                        index: usize,
+                                        from: String,
+                                        to: String,
+                                    },
+                                    /*Delete {
+                                        name: String,
+                                    },*/
+                                    Move {
+                                        direction: MoveDirection,
+                                        index: usize,
+                                    },
+                                    None,
+                                }
+
+                                let up_arrow = ui.key_index(imgui::Key::UpArrow);
+                                let down_arrow = ui.key_index(imgui::Key::DownArrow);
+                                let up_pressed = ui.is_key_pressed(up_arrow);
+                                let down_pressed = ui.is_key_pressed(down_arrow);
+
+                                let mut object_operation: ObjectOperation = ObjectOperation::None;
+
+                                // TODO: Tidy up
+                                let is_being_renamed =
+                                    |rename_object: &Option<RenameObject>, index| {
+                                        if let Some(rename_details) = rename_object {
+                                            return rename_details.index == index;
+                                        }
+                                        return false;
+                                    };
+
                                 for i in 0..game.objects.len() {
-                                    if imgui::Selectable::new(&im_str!("{}", game.objects[i].name))
+                                    if is_being_renamed(&rename_object, i) {
+                                        if let Some(rename_details) = &mut rename_object {
+                                            if ui
+                                                .input_text(
+                                                    im_str!("##edit"),
+                                                    &mut rename_details.buffer,
+                                                )
+                                                .enter_returns_true(true)
+                                                .build()
+                                            {
+                                                object_operation = ObjectOperation::Rename {
+                                                    index: rename_details.index,
+                                                    from: rename_details.name.clone(),
+                                                    to: rename_details.buffer.to_string(),
+                                                };
+
+                                                // TODO: try selected_object instead
+                                                rename_object = None;
+                                            } else if ui.is_item_deactivated() {
+                                                // TODO: Not deactivating anymore
+                                                object_operation = ObjectOperation::Rename {
+                                                    index: rename_details.index,
+                                                    from: rename_details.name.clone(),
+                                                    to: rename_details.buffer.to_string(),
+                                                };
+
+                                                rename_object = None;
+                                            }
+                                        }
+                                    } else {
+                                        if imgui::Selectable::new(&im_str!(
+                                            "{}",
+                                            game.objects[i].name
+                                        ))
+                                        .selected(selected_index == Some(i))
                                         .build(&ui)
-                                    {}
+                                        {
+                                            selected_index = Some(i);
+                                        }
+                                        if ui.is_item_active() {
+                                            if up_pressed {
+                                                object_operation = ObjectOperation::Move {
+                                                    direction: MoveDirection::Up,
+                                                    index: i,
+                                                };
+                                            } else if down_pressed {
+                                                object_operation = ObjectOperation::Move {
+                                                    direction: MoveDirection::Down,
+                                                    index: i,
+                                                };
+                                            }
+                                        }
+                                    }
+                                    if ui.is_item_clicked(imgui::MouseButton::Right) {
+                                        rename_object = Some(RenameObject {
+                                            index: i,
+                                            name: game.objects[i].name.clone(),
+                                            buffer: ImString::from(game.objects[i].name.clone()),
+                                        });
+                                    }
+                                }
+                                if !ui.is_any_mouse_down() && ui.is_window_focused() {
+                                    if let Some(index) = &mut selected_index {
+                                        if up_pressed {
+                                            let previous_index =
+                                                if *index == 0 { 0 } else { *index - 1 };
+                                            game.objects.swap(*index, previous_index);
+                                            *index = previous_index;
+                                        } else if down_pressed {
+                                            let next_index =
+                                                (*index + 1).min(game.objects.len() - 1);
+                                            game.objects.swap(*index, next_index);
+                                            *index = next_index;
+                                        }
+                                    }
+                                }
+                                /*ui.popup(im_str!("Edit Object Name"), || {
+                                    ui.text("Edit name:");
+                                    let mut text = imgui::ImString::from("Test".to_string());
+                                    ui.input_text(im_str!("##edit"), &mut text).build();
+                                });*/
+
+                                match object_operation {
+                                    ObjectOperation::Rename { index, from, to } => {
+                                        let duplicate = game.objects.iter().any(|o| o.name == to);
+                                        if from == to {
+                                            ui.close_current_popup();
+                                        } else if duplicate {
+                                            // TODO: Add this popup
+                                            ui.open_popup(im_str!("Duplicate Name"));
+                                        } else {
+                                            // TODO: Remove unnecessary cloning
+                                            game.objects[index].name = to.clone();
+                                            rename_across_objects(&mut game.objects, &from, &to);
+                                            ui.close_current_popup();
+                                        }
+                                    }
+                                    ObjectOperation::Move { direction, index } => match direction {
+                                        MoveDirection::Up => {
+                                            if index > 0 {
+                                                game.objects.swap(index - 1, index);
+                                            }
+                                        }
+                                        MoveDirection::Down => {
+                                            if index + 1 < game.objects.len() {
+                                                game.objects.swap(index, index + 1);
+                                            }
+                                        }
+                                    },
+                                    _ => {}
                                 }
                             });
 
@@ -1775,6 +1991,7 @@ fn run_main_loop<'a, 'b>(
                             &mut game,
                             &mut images,
                             &filename,
+                            &selected_index,
                             &mut instruction_index,
                         );
                     });
