@@ -3,6 +3,109 @@
   "published": true,
   "objects": [
     {
+      "name": "Bird Body",
+      "sprite": {
+        "Image": {
+          "name": "bird-transparent-body"
+        }
+      },
+      "position": {
+        "x": 832.0,
+        "y": 618.0
+      },
+      "size": {
+        "width": 300.0,
+        "height": 300.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 2,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Transp",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "bird-transparent-stretched"
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Size": {
+                  "Value": {
+                    "width": 300.0,
+                    "height": 600.0
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 0.0,
+                      "y": -150.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Area": {
+                    "min": {
+                      "x": 66.0,
+                      "y": 572.0
+                    },
+                    "max": {
+                      "x": 1521.0,
+                      "y": 642.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "eerie-crop"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "Bird Head",
       "sprite": {
         "Image": {
@@ -123,11 +226,7 @@
         {
           "triggers": [
             {
-              "Time": {
-                "Exact": {
-                  "time": 1
-                }
-              }
+              "Time": "Start"
             }
           ],
           "actions": [
@@ -151,109 +250,6 @@
                     }
                   }
                 }
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "Bird Body",
-      "sprite": {
-        "Image": {
-          "name": "bird-transparent-body"
-        }
-      },
-      "position": {
-        "x": 832.0,
-        "y": 618.0
-      },
-      "size": {
-        "width": 300.0,
-        "height": 300.0
-      },
-      "angle": 0.0,
-      "origin": null,
-      "collision_area": null,
-      "flip": {
-        "horizontal": false,
-        "vertical": false
-      },
-      "layer": 2,
-      "switch": "Off",
-      "instructions": [
-        {
-          "triggers": [
-            {
-              "CheckProperty": {
-                "name": "Transp",
-                "check": {
-                  "Switch": "SwitchedOn"
-                }
-              }
-            }
-          ],
-          "actions": [
-            {
-              "SetProperty": {
-                "Sprite": {
-                  "Image": {
-                    "name": "bird-transparent-stretched"
-                  }
-                }
-              }
-            },
-            {
-              "SetProperty": {
-                "Size": {
-                  "Value": {
-                    "width": 300.0,
-                    "height": 600.0
-                  }
-                }
-              }
-            },
-            {
-              "Motion": {
-                "JumpTo": {
-                  "Relative": {
-                    "to": "CurrentPosition",
-                    "distance": {
-                      "x": 0.0,
-                      "y": -150.0
-                    }
-                  }
-                }
-              }
-            }
-          ]
-        },
-        {
-          "triggers": [
-            {
-              "Time": "Start"
-            }
-          ],
-          "actions": [
-            {
-              "Motion": {
-                "JumpTo": {
-                  "Area": {
-                    "min": {
-                      "x": 66.0,
-                      "y": 572.0
-                    },
-                    "max": {
-                      "x": 1521.0,
-                      "y": 642.0
-                    }
-                  }
-                }
-              }
-            },
-            {
-              "PlaySound": {
-                "name": "eerie-crop"
               }
             }
           ]

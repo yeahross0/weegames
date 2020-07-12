@@ -41,7 +41,8 @@ use wee::{
 };
 use wee_common::{Colour, Flip, Rect, Size, Vec2, WeeResult, PROJECTION_HEIGHT, PROJECTION_WIDTH};
 
-const NORMAL_BUTTON: [f32; 2] = [100.0, 50.0];
+const SMALL_BUTTON: [f32; 2] = [100.0, 50.0];
+const NORMAL_BUTTON: [f32; 2] = [200.0, 50.0];
 
 fn init_logger() {
     if let Err(error) = simple_logger::init() {
@@ -320,6 +321,7 @@ fn replace_text(object: &mut SerialiseObject, progress: &Progress) {
     object.replace_text(progress.score, progress.lives);
 }
 
+// TODO: to_string() and all that for Display is already implemented
 trait ImguiDisplayTrigger {
     fn display(&self, ui: &imgui::Ui, game: &GameData, images: &Images);
 }
@@ -658,7 +660,7 @@ impl ImguiDisplayAction for Action {
             Speed::Category(SpeedCategory::Normal) => "normal".to_string(),
             Speed::Category(SpeedCategory::Fast) => "fast".to_string(),
             Speed::Category(SpeedCategory::VeryFast) => "very fast".to_string(),
-            Speed::Value(value) => format!("value: {}", value),
+            Speed::Value(value) => format!("speed: {}", value),
         };
 
         let same_line = || ui.same_line_with_spacing(0.0, 3.0);
@@ -825,7 +827,7 @@ impl ImguiDisplayMotion for Motion {
             Speed::Category(SpeedCategory::Normal) => "normal".to_string(),
             Speed::Category(SpeedCategory::Fast) => "fast".to_string(),
             Speed::Category(SpeedCategory::VeryFast) => "very fast".to_string(),
-            Speed::Value(value) => format!("value: {}", value),
+            Speed::Value(value) => format!("speed: {}", value),
         };
 
         let same_line = || ui.same_line_with_spacing(0.0, 3.0);
@@ -1047,6 +1049,7 @@ fn right_window(
     images: &mut Images,
     filename: &Option<String>,
     selected_index: &Option<usize>,
+    instruction_mode: &mut InstructionMode,
     instruction_index: &mut usize,
 ) {
     imgui::ChildWindow::new(im_str!("Right"))
@@ -1080,11 +1083,23 @@ fn right_window(
                         properties_window(ui, game, *index, images, filename);
                     });
                     tab_item(im_str!("Instructions"), || {
-                        instruction_window(ui, game, *index, images, instruction_index);
+                        instruction_window(
+                            ui,
+                            game,
+                            *index,
+                            images,
+                            instruction_mode,
+                            instruction_index,
+                        );
                     });
                 });
             }
         });
+}
+
+enum InstructionMode {
+    View,
+    Edit,
 }
 
 fn instruction_window(
@@ -1092,80 +1107,116 @@ fn instruction_window(
     game: &mut GameData,
     index: usize,
     images: &mut Images,
+    instruction_mode: &mut InstructionMode,
     instruction_index: &mut usize,
 ) {
-    imgui::ChildWindow::new(im_str!("Test"))
-        .size([0.0, -ui.frame_height_with_spacing()])
-        //.border(true)
-        //.horizontal_scrollbar(true)
-        .horizontal_scrollbar(true)
-        .build(&ui, || {
-            for (i, instruction) in game.objects[index].instructions.clone().iter().enumerate() {
-                ui.tree_node(&im_str!("Instruction {}", i + 1))
-                    .flags(imgui::ImGuiTreeNodeFlags::SpanAvailWidth)
-                    .bullet(true)
-                    .leaf(true)
-                    .selected(*instruction_index == i)
-                    .build(|| {
-                        if ui.is_item_clicked(imgui::MouseButton::Left) {
-                            *instruction_index = i;
-                        }
-                        if instruction.triggers.is_empty() {
-                            ui.text("\tEvery frame")
-                        } else {
-                            for trigger in instruction.triggers.iter() {
-                                trigger.display(ui, game, images);
-                            }
-                        }
+    match instruction_mode {
+        InstructionMode::View => {
+            imgui::ChildWindow::new(im_str!("Test"))
+                .size([0.0, -ui.frame_height_with_spacing()])
+                //.border(true)
+                //.horizontal_scrollbar(true)
+                .horizontal_scrollbar(true)
+                .build(&ui, || {
+                    for (i, instruction) in
+                        game.objects[index].instructions.clone().iter().enumerate()
+                    {
+                        ui.tree_node(&im_str!("Instruction {}", i + 1))
+                            .flags(imgui::ImGuiTreeNodeFlags::SpanAvailWidth)
+                            .bullet(true)
+                            .leaf(true)
+                            .selected(*instruction_index == i)
+                            .build(|| {
+                                if ui.is_item_clicked(imgui::MouseButton::Left) {
+                                    *instruction_index = i;
+                                }
+                                if instruction.triggers.is_empty() {
+                                    ui.text("\tEvery frame")
+                                } else {
+                                    for trigger in instruction.triggers.iter() {
+                                        trigger.display(ui, game, images);
+                                    }
+                                }
 
-                        ui.text("\t\tThen:");
+                                ui.text("\t\tThen:");
 
-                        if instruction.actions.is_empty() {
-                            ui.text("\tDo nothing")
-                        } else {
-                            for action in instruction.actions.iter() {
-                                action.display(ui, game, images, 0);
-                            }
-                        }
-                    });
-                ui.separator();
+                                if instruction.actions.is_empty() {
+                                    ui.text("\tDo nothing")
+                                } else {
+                                    for action in instruction.actions.iter() {
+                                        action.display(ui, game, images, 0);
+                                    }
+                                }
+                            });
+                        ui.separator();
+                    }
+                });
+            if ui.small_button(im_str!("Up")) && *instruction_index > 0 {
+                game.objects[index]
+                    .instructions
+                    .swap(*instruction_index, *instruction_index - 1);
+                *instruction_index -= 1;
             }
-        });
-    if ui.small_button(im_str!("Up")) && *instruction_index > 0 {
-        game.objects[index]
-            .instructions
-            .swap(*instruction_index, *instruction_index - 1);
-        *instruction_index -= 1;
-    }
-    ui.same_line(0.0);
-    if ui.small_button(im_str!("Down"))
-        && *instruction_index + 1 < game.objects[index].instructions.len()
-    {
-        game.objects[index]
-            .instructions
-            .swap(*instruction_index, *instruction_index + 1);
-        *instruction_index += 1;
-    }
-    ui.same_line(0.0);
-    if ui.small_button(im_str!("Add")) {
-        game.objects[index].instructions.push(wee::Instruction {
-            triggers: Vec::new(),
-            actions: Vec::new(),
-        });
-    }
-    ui.same_line(0.0);
-    if ui.small_button(im_str!("Edit")) {
-        /*self.mode = InstructionEditorMode::EditInstruction {
-            focus: InstructionFocus::Trigger,
-            selected_index: 0,
-            selected_sub_index: None,
-        };*/
-    }
-    ui.same_line(0.0);
-    if ui.small_button(im_str!("Delete")) && !game.objects[index].instructions.is_empty() {
-        game.objects[index].instructions.remove(*instruction_index);
-        if *instruction_index > 0 {
-            *instruction_index -= 1;
+            ui.same_line(0.0);
+            if ui.small_button(im_str!("Down"))
+                && *instruction_index + 1 < game.objects[index].instructions.len()
+            {
+                game.objects[index]
+                    .instructions
+                    .swap(*instruction_index, *instruction_index + 1);
+                *instruction_index += 1;
+            }
+            ui.same_line(0.0);
+            if ui.small_button(im_str!("Add")) {
+                game.objects[index].instructions.push(wee::Instruction {
+                    triggers: Vec::new(),
+                    actions: Vec::new(),
+                });
+            }
+            ui.same_line(0.0);
+            if ui.small_button(im_str!("Edit")) {
+                *instruction_mode = InstructionMode::Edit;
+                /*self.mode = InstructionEditorMode::EditInstruction {
+                    focus: InstructionFocus::Trigger,
+                    selected_index: 0,
+                    selected_sub_index: None,
+                };*/
+            }
+            ui.same_line(0.0);
+            if ui.small_button(im_str!("Delete")) && !game.objects[index].instructions.is_empty() {
+                game.objects[index].instructions.remove(*instruction_index);
+                if *instruction_index > 0 {
+                    *instruction_index -= 1;
+                }
+            }
+        }
+        InstructionMode::Edit => {
+            ui.text("Triggers:");
+            let instruction = &mut game.objects[index].instructions[*instruction_index];
+            for (_, trigger) in instruction.triggers.iter().enumerate() {
+                if imgui::Selectable::new(&ImString::new(trigger.to_string())).build(&ui) {}
+            }
+            if ui.button(im_str!("Add Trigger"), SMALL_BUTTON) {}
+            ui.text("Actions:");
+            for (_, action) in instruction.actions.iter().enumerate() {
+                match action {
+                    Action::Random { random_actions } => {
+                        if imgui::Selectable::new(&ImString::new(action.to_string())).build(&ui) {}
+                        for (_, action) in random_actions.iter().enumerate() {
+                            if imgui::Selectable::new(&ImString::new(format!("\t{}", action)))
+                                .build(&ui)
+                            {}
+                        }
+                    }
+                    _ => {
+                        if imgui::Selectable::new(&ImString::new(action.to_string())).build(&ui) {}
+                    }
+                }
+            }
+            if ui.button(im_str!("Add Action"), SMALL_BUTTON) {}
+            if ui.small_button(im_str!("Back")) {
+                *instruction_mode = InstructionMode::View;
+            }
         }
     }
 }
@@ -1718,6 +1769,7 @@ fn run_main_loop<'a, 'b>(
             let mut show_collision_areas = false;
             let mut selected_index = None;
             let mut instruction_index = 0;
+            let mut instruction_mode = InstructionMode::View;
             struct RenameObject {
                 index: usize,
                 name: String,
@@ -2076,6 +2128,7 @@ fn run_main_loop<'a, 'b>(
                             &mut images,
                             &filename,
                             &selected_index,
+                            &mut instruction_mode,
                             &mut instruction_index,
                         );
                     });

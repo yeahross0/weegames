@@ -19,7 +19,7 @@ use sfml::{
 use std::{
     collections::{HashMap, HashSet},
     default::Default,
-    fs,
+    fmt, fs,
     path::Path,
     process, str, thread,
     time::{Duration, Instant},
@@ -277,6 +277,103 @@ pub enum Trigger {
     CheckProperty { name: String, check: PropertyCheck },
 }
 
+impl fmt::Display for Trigger {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Trigger::Time(When::Start) => write!(f, "When the game starts"),
+            Trigger::Time(When::End) => write!(f, "When the game ends"),
+            Trigger::Time(When::Exact { time }) => {
+                write!(f, "When the time is {:.2} seconds", (*time as f32) / 60.0)
+            }
+            Trigger::Time(When::Random { start, end }) => write!(
+                f,
+                "At a random time between {:.2} and {:.2} seconds",
+                start, end,
+            ),
+            Trigger::Collision(CollisionWith::Object { name }) => {
+                write!(f, "While this object collides with {}", name)
+            }
+            Trigger::Collision(CollisionWith::Area(area)) => write!(
+                f,
+                "While this object is inside {}, {} and {}, {}",
+                area.min.x, area.min.y, area.max.x, area.max.y
+            ),
+            Trigger::WinStatus(status) => match status {
+                WinStatus::Won => write!(f, "While you have won the game"),
+                WinStatus::Lost => write!(f, "While you have lost the game"),
+                WinStatus::NotYetWon => write!(f, "While you haven't won"),
+                WinStatus::NotYetLost => write!(f, "While you haven't lost"),
+                WinStatus::HasBeenWon => write!(f, "When you win the game"),
+                WinStatus::HasBeenLost => write!(f, "When you lose the game"),
+            },
+            Trigger::Input(Input::Mouse { over, interaction }) => {
+                if let MouseOver::Anywhere = over {
+                    match interaction {
+                        MouseInteraction::Button { state } => match state {
+                            ButtonState::Press => write!(f, "When the screen is clicked"),
+                            ButtonState::Down => write!(f, "While the mouse button is down"),
+                            ButtonState::Release => write!(f, "When the mouse button is released"),
+                            ButtonState::Up => write!(f, "While the mouse button isn't pressed"),
+                        },
+                        MouseInteraction::Hover => {
+                            write!(f, "While the mouse hovers over the screen (always true)")
+                        }
+                    }
+                } else {
+                    let clicked_object_string = |clicked_object: &MouseOver| match clicked_object {
+                        MouseOver::Object { name } => name.clone(),
+                        MouseOver::Area(area) => format!(
+                            "the area between {}, {} and {}, {}",
+                            area.min.x, area.min.y, area.max.x, area.max.y
+                        ),
+                        _ => unreachable!(),
+                    };
+                    let clicked_object = clicked_object_string(over);
+                    match interaction {
+                        MouseInteraction::Button { state } => match state {
+                            ButtonState::Press => write!(f, "When {} is clicked", clicked_object),
+                            ButtonState::Down => write!(
+                                f,
+                                "While the mouse cursor is over {} and the mouse button is down",
+                                clicked_object
+                            ),
+                            ButtonState::Release => write!(
+                                f,
+                                "When the mouse cursor is over {} and the mouse button is released",
+                                clicked_object
+                            ),
+                            ButtonState::Up => write!(
+                                f,
+                                "While the mouse cursor is over {} and the mouse button is up",
+                                clicked_object
+                            ),
+                        },
+                        MouseInteraction::Hover => {
+                            write!(f, "While the mouse is hovered over {}", clicked_object)
+                        }
+                    }
+                }
+            }
+            Trigger::CheckProperty { name, check } => match check {
+                PropertyCheck::Switch(switch) => match switch {
+                    SwitchState::On => write!(f, "While {}'s switch is on", name),
+                    SwitchState::Off => write!(f, "While {}'s switch is off", name),
+                    SwitchState::SwitchedOn => write!(f, "When {} is switched on", name),
+                    SwitchState::SwitchedOff => write!(f, "When {} is switched off", name),
+                },
+                PropertyCheck::Sprite(sprite) => {
+                    write!(f, "While {}'s image is {:?}", name, sprite)
+                }
+                PropertyCheck::FinishedAnimation => {
+                    write!(f, "When {}'s animation is finished", name)
+                }
+                PropertyCheck::Timer => write!(f, "When this object's timer hits zero"),
+            },
+            Trigger::Random { chance } => write!(f, "With a {}% chance", chance * 100.0),
+        }
+    }
+}
+
 #[derive(Debug, Copy, Clone, Serialize, Deserialize)]
 pub enum Effect {
     Freeze,
@@ -331,6 +428,21 @@ impl CompassDirection {
 
     fn to_vector(self, speed: Speed) -> Vec2 {
         vector_from_angle(self.angle(), speed)
+    }
+}
+
+impl fmt::Display for CompassDirection {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            CompassDirection::Up => write!(f, "up"),
+            CompassDirection::UpRight => write!(f, "up-right"),
+            CompassDirection::Right => write!(f, "right"),
+            CompassDirection::DownRight => write!(f, "down-right"),
+            CompassDirection::Down => write!(f, "down"),
+            CompassDirection::DownLeft => write!(f, "down-left"),
+            CompassDirection::Left => write!(f, "left"),
+            CompassDirection::UpLeft => write!(f, "up-left"),
+        }
     }
 }
 
@@ -413,6 +525,19 @@ impl Speed {
             Speed::Category(SpeedCategory::Fast) => 4,
             Speed::Category(SpeedCategory::VeryFast) => 2,
             Speed::Value(value) => value as u32,
+        }
+    }
+}
+
+impl fmt::Display for Speed {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Speed::Category(SpeedCategory::VerySlow) => write!(f, "very slow"),
+            Speed::Category(SpeedCategory::Slow) => write!(f, "slow"),
+            Speed::Category(SpeedCategory::Normal) => write!(f, "normal"),
+            Speed::Category(SpeedCategory::Fast) => write!(f, "fast"),
+            Speed::Category(SpeedCategory::VeryFast) => write!(f, "very fast"),
+            Speed::Value(value) => write!(f, "speed: {}", value),
         }
     }
 }
@@ -517,6 +642,154 @@ pub enum Motion {
     Stop,
 }
 
+impl fmt::Display for Motion {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Motion::Stop => write!(f, "Stop this object"),
+            Motion::GoStraight { direction, speed } => match direction {
+                MovementDirection::Direction {
+                    possible_directions: dirs,
+                } => {
+                    if dirs.is_empty() {
+                        write!(f, "Go {} in a random direction", speed)
+                    } else if dirs.len() == 1 {
+                        write!(f, "Go {} {}", dirs.iter().next().unwrap(), speed)
+                    } else {
+                        let dirs: Vec<String> = dirs.iter().map(|dir| dir.to_string()).collect();
+                        let dirs = dirs.join(", ");
+                        write!(f, "Go {} in a direction chosen from {}", speed, dirs)
+                    }
+                }
+                MovementDirection::Angle(angle) => match angle {
+                    Angle::Current => write!(f, "Go {} in this object's current angle", speed),
+
+                    Angle::Degrees(angle) => write!(f, "Go {} at a {} angle", speed, angle),
+                    Angle::Random { min, max } => write!(
+                        f,
+                        "Go {} at a random angle between {} and {}",
+                        speed, min, max
+                    ),
+                },
+            },
+            Motion::JumpTo(jump_location) => match jump_location {
+                JumpLocation::Point(point) => write!(f, "Jump to {}, {}", point.x, point.y),
+                JumpLocation::Relative { to, distance } => match to {
+                    RelativeTo::CurrentPosition => write!(
+                        f,
+                        "Jump {}, {} relative to this object's position",
+                        distance.x, distance.y
+                    ),
+                    RelativeTo::CurrentAngle => write!(
+                        f,
+                        "Jump {}, {} relative to this object's angle",
+                        distance.x, distance.y
+                    ),
+                },
+                JumpLocation::Area(area) => write!(
+                    f,
+                    "Jump to a random location between {}, {} and {}, {}",
+                    area.min.x, area.min.y, area.max.x, area.max.y
+                ),
+                JumpLocation::ClampPosition { area } => write!(
+                    f,
+                    "Clamp this object's position within {}, {} and {}, {}",
+                    area.min.x, area.min.y, area.max.x, area.max.y
+                ),
+                JumpLocation::Object { name } => write!(f, "Jump to {}'s position", name),
+                JumpLocation::Mouse => write!(f, "Jump to the mouse"),
+            },
+            Motion::Roam {
+                movement_type,
+                area,
+                speed,
+            } => match movement_type {
+                MovementType::Wiggle => write!(
+                    f,
+                    "Wiggle {} between {}, {} and {}, {}",
+                    speed, area.min.x, area.min.y, area.max.x, area.max.y,
+                ),
+                MovementType::Insect => write!(
+                    f,
+                    "Move like an insect {} between {}, {} and {}, {}",
+                    speed, area.min.x, area.min.y, area.max.x, area.max.y,
+                ),
+                MovementType::Reflect {
+                    movement_handling, ..
+                } => {
+                    let movement_handling = match movement_handling {
+                        MovementHandling::Anywhere => "",
+                        MovementHandling::TryNotToOverlap => {
+                            " trying not to overlap with over objects"
+                        }
+                    };
+                    write!(
+                        f,
+                        "Reflect {} between {}, {} and {}, {}{}",
+                        speed, area.min.x, area.min.y, area.max.x, area.max.y, movement_handling,
+                    )
+                }
+                MovementType::Bounce { .. } => write!(
+                    f,
+                    "Move like an insect {} between {}, {} and {}, {}",
+                    speed, area.min.x, area.min.y, area.max.x, area.max.y,
+                ),
+            },
+            Motion::Swap { name } => write!(f, "Swap position with {}", name),
+            Motion::Target {
+                target,
+                target_type,
+                offset,
+                speed,
+            } => {
+                let name = match target {
+                    Target::Object { name } => name,
+                    Target::Mouse => "Mouse",
+                };
+                let offset = if *offset == Vec2::zero() {
+                    "".to_string()
+                } else {
+                    format!(" with an offset of {}, {}", offset.x, offset.y)
+                };
+                match target_type {
+                    TargetType::Follow => write!(f, "Follow {} {}{}", name, speed, offset),
+                    TargetType::StopWhenReached => write!(f, "Target {} {}{}", name, speed, offset),
+                }
+            }
+            Motion::Accelerate { direction, speed } => match direction {
+                MovementDirection::Direction {
+                    possible_directions: dirs,
+                } => {
+                    if dirs.is_empty() {
+                        write!(f, "Accelerate {} in a random direction", speed)
+                    } else if dirs.len() == 1 {
+                        write!(f, "Accelerate {} {}", dirs.iter().next().unwrap(), speed)
+                    } else {
+                        let dirs: Vec<String> = dirs.iter().map(|dir| dir.to_string()).collect();
+                        let dirs = dirs.join(", ");
+                        write!(
+                            f,
+                            "Accelerate {} in a direction chosen from {}",
+                            speed, dirs
+                        )
+                    }
+                }
+                MovementDirection::Angle(angle) => match angle {
+                    Angle::Current => {
+                        write!(f, "Accelerate {} in this object's current angle", speed)
+                    }
+
+                    Angle::Degrees(angle) => write!(f, "Accelerate {} at a {} angle", speed, angle),
+                    Angle::Random { min, max } => write!(
+                        f,
+                        "Accelerate {} at a random angle between {} and {}",
+                        speed, min, max
+                    ),
+                },
+            },
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum AnimationType {
     Loop,
@@ -609,6 +882,133 @@ pub enum Action {
     Random {
         random_actions: Vec<Action>,
     },
+}
+
+impl fmt::Display for Action {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Action::Motion(motion) => write!(f, "{}", motion),
+            Action::Win => write!(f, "Win the game"),
+            Action::Lose => write!(f, "Lose the game"),
+            Action::Effect(effect) => match effect {
+                Effect::Freeze => write!(f, "Freeze the screen"),
+                Effect::None => write!(f, "Remove screen effects"),
+            },
+            Action::PlaySound { name } => write!(f, "Play the {} sound", name),
+            Action::StopMusic => write!(f, "Stop the music"),
+            Action::Animate {
+                animation_type,
+                speed,
+                ..
+            } => {
+                if let AnimationType::Loop = animation_type {
+                    write!(f, "Loops an animation {}", speed)
+                } else {
+                    write!(f, "Plays an animation once {}", speed)
+                }
+            }
+            Action::DrawText {
+                text,
+                font,
+                colour,
+                resize,
+            } => {
+                let change_size = if let TextResize::MatchText = resize {
+                    " changing this object's size to match the text size"
+                } else {
+                    ""
+                };
+                let colour = format!(
+                    "red: {}, green: {}, blue: {}, alpha: {}",
+                    colour.r, colour.g, colour.b, colour.a
+                );
+                write!(
+                    f,
+                    "Draws `{}` using the {} font with colour ({}) {}",
+                    text, font, colour, change_size
+                )
+            }
+            Action::SetProperty(PropertySetter::Angle(angle_setter)) => match angle_setter {
+                AngleSetter::Value(value) => write!(f, "Set this object's angle to {}", value),
+                AngleSetter::Increase(value) => {
+                    write!(f, "Increase this object's angle by {}", value)
+                }
+                AngleSetter::Decrease(value) => {
+                    write!(f, "Decrease this object's angle by {}", value)
+                }
+                AngleSetter::Match { name } => write!(f, "Have the same angle as {}", name),
+                AngleSetter::Clamp { min, max } => write!(
+                    f,
+                    "Clamp this object's angle to between {} and {} degrees",
+                    min, max
+                ),
+                AngleSetter::RotateToMouse => write!(f, "Rotate towards the mouse"),
+            },
+            Action::SetProperty(PropertySetter::Sprite(sprite)) => {
+                write!(f, "Set this object's sprite to {:?}", sprite)
+            }
+            Action::SetProperty(PropertySetter::Size(size_setter)) => match size_setter {
+                SizeSetter::Value(size) => write!(
+                    f,
+                    "Set this object's width to {} and its height to {}",
+                    size.width, size.height
+                ),
+                SizeSetter::Grow(SizeDifference::Value(size)) => write!(
+                    f,
+                    "Grow this object's width by {}px and its height by {}px",
+                    size.width, size.height
+                ),
+                SizeSetter::Shrink(SizeDifference::Value(size)) => write!(
+                    f,
+                    "Shrink this object's width by {}px and its height by {}px",
+                    size.width, size.height
+                ),
+                SizeSetter::Grow(SizeDifference::Percent(percent)) => write!(
+                    f,
+                    "Grow this object's width by {}% and its height by {}%",
+                    percent.width * 100.0,
+                    percent.height * 100.0
+                ),
+                SizeSetter::Shrink(SizeDifference::Percent(percent)) => write!(
+                    f,
+                    "Shrink this object's width by {}% and its height by {}%",
+                    percent.width * 100.0,
+                    percent.height * 100.0
+                ),
+                SizeSetter::Clamp { min, max } => write!(
+                    f,
+                    "Clamp this object's size between {}x{} pixels and {}x{} pixels",
+                    min.width, min.height, max.width, max.height
+                ),
+            },
+            Action::SetProperty(PropertySetter::Switch(switch)) => write!(
+                f,
+                "Set the switch {}",
+                if let Switch::On = switch { "on" } else { "off" }
+            ),
+            Action::SetProperty(PropertySetter::Timer { time }) => {
+                write!(f, "Set the timer to {:.2} seconds ", time)
+            }
+            Action::SetProperty(PropertySetter::FlipHorizontal(FlipSetter::Flip)) => {
+                write!(f, "Flip this object horizontally")
+            }
+            Action::SetProperty(PropertySetter::FlipVertical(FlipSetter::Flip)) => {
+                write!(f, "Flip this object vertically")
+            }
+            Action::SetProperty(PropertySetter::FlipHorizontal(FlipSetter::SetFlip(flipped))) => {
+                write!(f, "Set this object's horizontal flip to {}", flipped)
+            }
+            Action::SetProperty(PropertySetter::FlipVertical(FlipSetter::SetFlip(flipped))) => {
+                write!(f, "Set this object's vertical flip to {}", flipped)
+            }
+            Action::SetProperty(PropertySetter::Layer(layer_setter)) => match layer_setter {
+                LayerSetter::Value(value) => write!(f, "Set this object's layer to {}", value),
+                LayerSetter::Increase => write!(f, "Increase this object's layer by 1"),
+                LayerSetter::Decrease => write!(f, "Decrease this object's layer by 1"),
+            },
+            Action::Random { .. } => write!(f, "Chooses a random action"),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -41,7 +41,7 @@
           "triggers": [
             {
               "CheckProperty": {
-                "name": "forth",
+                "name": "fourth",
                 "check": {
                   "Switch": "SwitchedOn"
                 }
@@ -327,7 +327,7 @@
       ]
     },
     {
-      "name": "forth",
+      "name": "fourth",
       "sprite": {
         "Colour": {
           "r": 0.0,
@@ -406,7 +406,7 @@
             },
             {
               "CheckProperty": {
-                "name": "forth",
+                "name": "fourth",
                 "check": {
                   "Switch": "Off"
                 }
