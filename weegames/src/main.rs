@@ -1051,6 +1051,7 @@ fn right_window(
     selected_index: &Option<usize>,
     instruction_mode: &mut InstructionMode,
     instruction_index: &mut usize,
+    instruction_focus: &mut InstructionFocus,
 ) {
     imgui::ChildWindow::new(im_str!("Right"))
         .size([0.0, 0.0])
@@ -1090,6 +1091,7 @@ fn right_window(
                             images,
                             instruction_mode,
                             instruction_index,
+                            instruction_focus,
                         );
                     });
                 });
@@ -1100,6 +1102,20 @@ fn right_window(
 enum InstructionMode {
     View,
     Edit,
+    AddTrigger,
+    AddAction,
+}
+
+#[derive(Debug, PartialEq)]
+enum InstructionFocus {
+    Trigger {
+        index: usize,
+    },
+    Action {
+        index: usize,
+        sub_index: Option<usize>,
+    },
+    None,
 }
 
 fn instruction_window(
@@ -1109,6 +1125,7 @@ fn instruction_window(
     images: &mut Images,
     instruction_mode: &mut InstructionMode,
     instruction_index: &mut usize,
+    focus: &mut InstructionFocus,
 ) {
     match instruction_mode {
         InstructionMode::View => {
@@ -1193,31 +1210,63 @@ fn instruction_window(
         InstructionMode::Edit => {
             ui.text("Triggers:");
             let instruction = &mut game.objects[index].instructions[*instruction_index];
-            for (_, trigger) in instruction.triggers.iter().enumerate() {
-                if imgui::Selectable::new(&ImString::new(trigger.to_string())).build(&ui) {}
-            }
-            if ui.button(im_str!("Add Trigger"), SMALL_BUTTON) {}
-            ui.text("Actions:");
-            for (_, action) in instruction.actions.iter().enumerate() {
-                match action {
-                    Action::Random { random_actions } => {
-                        if imgui::Selectable::new(&ImString::new(action.to_string())).build(&ui) {}
-                        for (_, action) in random_actions.iter().enumerate() {
-                            if imgui::Selectable::new(&ImString::new(format!("\t{}", action)))
-                                .build(&ui)
-                            {}
-                        }
-                    }
-                    _ => {
-                        if imgui::Selectable::new(&ImString::new(action.to_string())).build(&ui) {}
-                    }
+            for (i, trigger) in instruction.triggers.iter().enumerate() {
+                let selected = InstructionFocus::Trigger { index: i } == *focus;
+                if imgui::Selectable::new(&ImString::new(trigger.to_string()))
+                    .selected(selected)
+                    .build(&ui)
+                {
+                    *focus = InstructionFocus::Trigger { index: i };
                 }
             }
-            if ui.button(im_str!("Add Action"), SMALL_BUTTON) {}
+            if ui.button(im_str!("Add Trigger"), SMALL_BUTTON) {
+                *instruction_mode = InstructionMode::AddTrigger;
+            }
+            ui.text("Actions:");
+            for (i, action) in instruction.actions.iter().enumerate() {
+                let selected = InstructionFocus::Action {
+                    index: i,
+                    sub_index: None,
+                } == *focus;
+                if imgui::Selectable::new(&ImString::new(action.to_string()))
+                    .selected(selected)
+                    .build(&ui)
+                {
+                    *focus = InstructionFocus::Action {
+                        index: i,
+                        sub_index: None,
+                    };
+                }
+                match action {
+                    Action::Random { random_actions } => {
+                        for (sub_index, action) in random_actions.iter().enumerate() {
+                            let selected = InstructionFocus::Action {
+                                index: i,
+                                sub_index: Some(sub_index),
+                            } == *focus;
+                            if imgui::Selectable::new(&ImString::new(format!("\t{}", action)))
+                                .selected(selected)
+                                .build(&ui)
+                            {
+                                *focus = InstructionFocus::Action {
+                                    index: i,
+                                    sub_index: Some(sub_index),
+                                };
+                            }
+                        }
+                    }
+                    _ => {}
+                }
+            }
+            if ui.button(im_str!("Add Action"), SMALL_BUTTON) {
+                *instruction_mode = InstructionMode::AddAction;
+            }
             if ui.small_button(im_str!("Back")) {
                 *instruction_mode = InstructionMode::View;
             }
         }
+        InstructionMode::AddAction => {}
+        InstructionMode::AddTrigger => {}
     }
 }
 
@@ -1770,6 +1819,7 @@ fn run_main_loop<'a, 'b>(
             let mut selected_index = None;
             let mut instruction_index = 0;
             let mut instruction_mode = InstructionMode::View;
+            let mut instruction_focus = InstructionFocus::None;
             struct RenameObject {
                 index: usize,
                 name: String,
@@ -2130,6 +2180,7 @@ fn run_main_loop<'a, 'b>(
                             &selected_index,
                             &mut instruction_mode,
                             &mut instruction_index,
+                            &mut instruction_focus,
                         );
                     });
 
