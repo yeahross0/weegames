@@ -12,4 +12,4 @@ playback_rate:
   - 2.0
   - 0.1
 volume: 20.0
-render_each_frame: true
+render_each_frame: false
