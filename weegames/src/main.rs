@@ -1,5 +1,6 @@
 // TODO: Show origin debug option
 // TODO: Enable selecting object again
+// TODO: Exit fullscreen when in editor
 
 //#![windows_subsystem = "windows"]
 
@@ -1108,13 +1109,8 @@ enum InstructionMode {
 
 #[derive(Debug, PartialEq)]
 enum InstructionFocus {
-    Trigger {
-        index: usize,
-    },
-    Action {
-        index: usize,
-        sub_index: Option<usize>,
-    },
+    Trigger { index: usize },
+    Action { index: usize },
     None,
 }
 
@@ -1224,34 +1220,22 @@ fn instruction_window(
             }
             ui.text("Actions:");
             for (i, action) in instruction.actions.iter().enumerate() {
-                let selected = InstructionFocus::Action {
-                    index: i,
-                    sub_index: None,
-                } == *focus;
+                let selected = InstructionFocus::Action { index: i } == *focus;
                 if imgui::Selectable::new(&ImString::new(action.to_string()))
                     .selected(selected)
                     .build(&ui)
                 {
-                    *focus = InstructionFocus::Action {
-                        index: i,
-                        sub_index: None,
-                    };
+                    *focus = InstructionFocus::Action { index: i };
                 }
                 match action {
                     Action::Random { random_actions } => {
-                        for (sub_index, action) in random_actions.iter().enumerate() {
-                            let selected = InstructionFocus::Action {
-                                index: i,
-                                sub_index: Some(sub_index),
-                            } == *focus;
+                        for action in random_actions.iter() {
+                            let selected = InstructionFocus::Action { index: i } == *focus;
                             if imgui::Selectable::new(&ImString::new(format!("\t{}", action)))
                                 .selected(selected)
                                 .build(&ui)
                             {
-                                *focus = InstructionFocus::Action {
-                                    index: i,
-                                    sub_index: Some(sub_index),
-                                };
+                                *focus = InstructionFocus::Action { index: i };
                             }
                         }
                     }
@@ -1263,6 +1247,86 @@ fn instruction_window(
             }
             if ui.small_button(im_str!("Back")) {
                 *instruction_mode = InstructionMode::View;
+            }
+            ui.same_line(0.0);
+            if ui.small_button(im_str!("Up")) {
+                match focus {
+                    InstructionFocus::Trigger {
+                        index: selected_index,
+                    } => {
+                        if *selected_index > 0 {
+                            instruction
+                                .triggers
+                                .swap(*selected_index, *selected_index - 1);
+                            *selected_index -= 1;
+                        }
+                    }
+                    InstructionFocus::Action {
+                        index: selected_index,
+                    } => {
+                        if *selected_index > 0 {
+                            instruction
+                                .actions
+                                .swap(*selected_index, *selected_index - 1);
+                            *selected_index -= 1;
+                        }
+                    }
+                    InstructionFocus::None => {}
+                }
+            }
+            ui.same_line(0.0);
+            if ui.small_button(im_str!("Down")) {
+                match focus {
+                    InstructionFocus::Trigger {
+                        index: selected_index,
+                    } => {
+                        if *selected_index + 1 < instruction.triggers.len() {
+                            instruction
+                                .triggers
+                                .swap(*selected_index, *selected_index + 1);
+                            *selected_index += 1;
+                        }
+                    }
+                    InstructionFocus::Action {
+                        index: selected_index,
+                    } => {
+                        if *selected_index + 1 < instruction.actions.len() {
+                            instruction
+                                .actions
+                                .swap(*selected_index, *selected_index + 1);
+                            *selected_index += 1;
+                        }
+                    }
+                    InstructionFocus::None => {}
+                }
+            }
+            ui.same_line(0.0);
+            if ui.small_button(im_str!("Edit")) {}
+            ui.same_line(0.0);
+            if ui.small_button(im_str!("Delete")) {
+                match focus {
+                    InstructionFocus::Trigger {
+                        index: selected_index,
+                    } => {
+                        if !instruction.triggers.is_empty() {
+                            instruction.triggers.remove(*selected_index);
+                            if *selected_index > 0 {
+                                *selected_index -= 1;
+                            }
+                        }
+                    }
+                    InstructionFocus::Action {
+                        index: selected_index,
+                    } => {
+                        if !instruction.actions.is_empty() {
+                            instruction.actions.remove(*selected_index);
+                            if *selected_index > 0 {
+                                *selected_index -= 1;
+                            }
+                        }
+                    }
+                    InstructionFocus::None => {}
+                }
             }
         }
         InstructionMode::AddAction => {}
