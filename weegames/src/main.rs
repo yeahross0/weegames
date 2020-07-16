@@ -38,9 +38,10 @@ use wee::{
     Completion, DrawIntroText, FontLoadInfo, GameData, GameSettings, ImageList, Images, Input,
     IntroFont, IntroFontConfig, IntroText, JumpLocation, LoadImages, LoadedGame, Motion,
     MouseInteraction, MouseOver, PropertyCheck, PropertySetter, RenderScene, SerialiseObject,
-    SerialiseObjectList, Sprite, Switch, Target, Trigger, When, WinStatus, DEFAULT_GAME_SPEED,
+    SerialiseObjectList, Sprite, Switch, SwitchState, Target, Trigger, When, WinStatus,
+    DEFAULT_GAME_SPEED,
 };
-use wee_common::{Colour, Flip, Rect, Size, Vec2, WeeResult, PROJECTION_HEIGHT, PROJECTION_WIDTH};
+use wee_common::{Colour, Flip, Rect, Vec2, WeeResult, AABB, PROJECTION_HEIGHT, PROJECTION_WIDTH};
 
 const SMALL_BUTTON: [f32; 2] = [100.0, 50.0];
 const NORMAL_BUTTON: [f32; 2] = [200.0, 50.0];
@@ -514,28 +515,28 @@ impl ImguiDisplayTrigger for Trigger {
             }
             Trigger::CheckProperty { name, check } => match check {
                 PropertyCheck::Switch(switch) => match switch {
-                    wee::SwitchState::On => {
+                    SwitchState::On => {
                         ui.text("While");
                         same_line();
                         object_button_with_label(&im_str!("{}'s", name), name);
                         same_line();
                         ui.text("switch is on");
                     }
-                    wee::SwitchState::Off => {
+                    SwitchState::Off => {
                         ui.text("While");
                         same_line();
                         object_button_with_label(&im_str!("{}'s", name), name);
                         same_line();
                         ui.text("switch is off");
                     }
-                    wee::SwitchState::SwitchedOn => {
+                    SwitchState::SwitchedOn => {
                         ui.text("When");
                         same_line();
                         object_button(name);
                         same_line();
                         ui.text("is switched on")
                     }
-                    wee::SwitchState::SwitchedOff => {
+                    SwitchState::SwitchedOff => {
                         ui.text("When");
                         same_line();
                         object_button(name);
@@ -1105,6 +1106,8 @@ enum InstructionMode {
     Edit,
     AddTrigger,
     AddAction,
+    EditTrigger,
+    EditAction,
 }
 
 #[derive(Debug, PartialEq)]
@@ -1301,7 +1304,17 @@ fn instruction_window(
                 }
             }
             ui.same_line(0.0);
-            if ui.small_button(im_str!("Edit")) {}
+            if ui.small_button(im_str!("Edit")) {
+                match focus {
+                    InstructionFocus::Trigger { .. } => {
+                        *instruction_mode = InstructionMode::EditTrigger;
+                    }
+                    InstructionFocus::Action { .. } => {
+                        *instruction_mode = InstructionMode::EditAction;
+                    }
+                    InstructionFocus::None => {}
+                }
+            }
             ui.same_line(0.0);
             if ui.small_button(im_str!("Delete")) {
                 match focus {
@@ -1329,8 +1342,122 @@ fn instruction_window(
                 }
             }
         }
-        InstructionMode::AddAction => {}
-        InstructionMode::AddTrigger => {}
+        InstructionMode::AddTrigger => {
+            let instruction = &mut game.objects[index].instructions[*instruction_index];
+            instruction.triggers.push(Trigger::Time(When::Start));
+            *focus = InstructionFocus::Trigger {
+                index: instruction.triggers.len() - 1,
+            };
+            *instruction_mode = InstructionMode::EditTrigger;
+        }
+        InstructionMode::AddAction => {
+            let instruction = &mut game.objects[index].instructions[*instruction_index];
+            instruction.actions.push(Action::Win);
+            *focus = InstructionFocus::Action {
+                index: instruction.actions.len() - 1,
+            };
+            *instruction_mode = InstructionMode::EditAction;
+        }
+        InstructionMode::EditTrigger => {
+            let trigger_index = match focus {
+                InstructionFocus::Trigger { index } => *index,
+                _ => unreachable!(),
+            };
+            let first_name = game.objects[0].name.clone();
+            let trigger =
+                &mut game.objects[index].instructions[*instruction_index].triggers[trigger_index];
+            let mut current_trigger_position = match trigger {
+                Trigger::Time(_) => 0,
+                Trigger::Collision(_) => 1,
+                Trigger::Input(_) => 2,
+                Trigger::WinStatus(_) => 3,
+                Trigger::Random { .. } => 4,
+                Trigger::CheckProperty {
+                    check: PropertyCheck::Switch(_),
+                    ..
+                } => 5,
+                Trigger::CheckProperty {
+                    check: PropertyCheck::Sprite(_),
+                    ..
+                } => 6,
+                Trigger::CheckProperty {
+                    check: PropertyCheck::FinishedAnimation,
+                    ..
+                } => 7,
+                Trigger::CheckProperty {
+                    check: PropertyCheck::Timer,
+                    ..
+                } => 8,
+            };
+            let trigger_names = [
+                im_str!("Time"),
+                im_str!("Collision"),
+                im_str!("Win Status"),
+                im_str!("Mouse"),
+                im_str!("Random Chance"),
+                im_str!("Check Switch"),
+                im_str!("Check Sprite"),
+                im_str!("Finished Animation"),
+                im_str!("Timer"),
+            ];
+            if imgui::ComboBox::new(im_str!("Trigger")).build_simple_string(
+                &ui,
+                &mut current_trigger_position,
+                &trigger_names,
+            ) {
+                *trigger = match current_trigger_position {
+                    0 => Trigger::Time(When::Start),
+                    1 => {
+                        Trigger::Collision(CollisionWith::Area(AABB::new(0.0, 0.0, 1600.0, 900.0)))
+                    }
+                    2 => Trigger::WinStatus(WinStatus::Won),
+                    3 => Trigger::Input(Input::Mouse {
+                        over: MouseOver::Anywhere,
+                        interaction: MouseInteraction::Hover,
+                    }),
+                    4 => Trigger::Random { chance: 0.5 },
+                    5 => Trigger::CheckProperty {
+                        name: first_name.clone(),
+                        check: PropertyCheck::Switch(SwitchState::On),
+                    },
+                    6 => Trigger::CheckProperty {
+                        name: first_name.clone(),
+                        check: PropertyCheck::Sprite(Sprite::Colour(Colour::black())),
+                    },
+                    7 => Trigger::CheckProperty {
+                        name: first_name.clone(),
+                        check: PropertyCheck::FinishedAnimation,
+                    },
+                    8 => Trigger::CheckProperty {
+                        name: first_name.clone(),
+                        check: PropertyCheck::Timer,
+                    },
+                    _ => unreachable!(),
+                }
+            }
+            match trigger {
+                Trigger::Time(_) => {}
+                Trigger::Random { chance } => {
+                    let mut chance_percent = *chance * 100.0;
+                    ui.drag_float(im_str!("Chance"), &mut chance_percent)
+                        .min(0.0)
+                        .max(100.0)
+                        .speed(1.0)
+                        .display_format(im_str!("%.01f%%"))
+                        .build();
+                    *chance = chance_percent / 100.0;
+                }
+                _ => {}
+            }
+            if ui.small_button(im_str!("Back")) {
+                *instruction_mode = InstructionMode::Edit;
+            }
+        }
+        InstructionMode::EditAction => {
+            if ui.small_button(im_str!("Back")) {
+                *instruction_mode = InstructionMode::Edit;
+            }
+        }
     }
 }
 
@@ -2480,8 +2607,8 @@ fn main() -> WeeResult<()> {
         sdl2::image::init(InitFlag::PNG | InitFlag::JPG | InitFlag::WEBP).show_error()?;
 
     let window = {
-        const INITIAL_WINDOW_WIDTH: u32 = 1200;
-        const INITIAL_WINDOW_HEIGHT: u32 = 675;
+        const INITIAL_WINDOW_WIDTH: u32 = 1600; //1200;
+        const INITIAL_WINDOW_HEIGHT: u32 = 900; //675;
 
         video_subsystem
             .window("Wee", INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT)
