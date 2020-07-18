@@ -1091,6 +1091,7 @@ fn right_window(
                             game,
                             *index,
                             images,
+                            filename,
                             instruction_mode,
                             instruction_index,
                             instruction_focus,
@@ -1122,6 +1123,7 @@ fn instruction_window(
     game: &mut GameData,
     index: usize,
     images: &mut Images,
+    filename: &Option<String>,
     instruction_mode: &mut InstructionMode,
     instruction_index: &mut usize,
     focus: &mut InstructionFocus,
@@ -1633,6 +1635,33 @@ fn instruction_window(
                         };
                     }
                 }
+                Trigger::WinStatus(status) => {
+                    let win_states = [
+                        im_str!("Won"),
+                        im_str!("Lost"),
+                        im_str!("Has Been Won"),
+                        im_str!("Has Been Lost"),
+                        im_str!("Not Yet Won"),
+                        im_str!("Not Yet Lost"),
+                    ];
+                    let mut current_status = *status as usize;
+
+                    if imgui::ComboBox::new(im_str!("Win State")).build_simple_string(
+                        &ui,
+                        &mut current_status,
+                        &win_states,
+                    ) {
+                        *status = match current_status {
+                            0 => WinStatus::Won,
+                            1 => WinStatus::Lost,
+                            2 => WinStatus::HasBeenWon,
+                            3 => WinStatus::HasBeenLost,
+                            4 => WinStatus::NotYetWon,
+                            5 => WinStatus::NotYetLost,
+                            _ => WinStatus::Won,
+                        };
+                    }
+                }
                 Trigger::Random { chance } => {
                     let mut chance_percent = *chance * 100.0;
                     ui.drag_float(im_str!("Chance"), &mut chance_percent)
@@ -1642,6 +1671,172 @@ fn instruction_window(
                         .display_format(im_str!("%.01f%%"))
                         .build();
                     *chance = chance_percent / 100.0;
+                }
+                Trigger::CheckProperty { name, check } => {
+                    let mut current_object = object_names
+                        .iter()
+                        .position(|obj_name| obj_name == name)
+                        .unwrap();
+                    let keys: Vec<ImString> = object_names
+                        .iter()
+                        .map(|name| ImString::from(name.clone()))
+                        .collect();
+                    let combo_keys: Vec<_> = keys.iter().collect();
+                    if imgui::ComboBox::new(im_str!("Object")).build_simple_string(
+                        &ui,
+                        &mut current_object,
+                        &combo_keys,
+                    ) {
+                        *name = object_names[current_object].clone();
+                    }
+                    match check {
+                        PropertyCheck::Switch(switch_state) => {
+                            let switch_states = [
+                                im_str!("On"),
+                                im_str!("Off"),
+                                im_str!("Switched On"),
+                                im_str!("Switched Off"),
+                            ];
+
+                            let mut current_switch_state = *switch_state as usize;
+
+                            if imgui::ComboBox::new(im_str!("Switch State")).build_simple_string(
+                                &ui,
+                                &mut current_switch_state,
+                                &switch_states,
+                            ) {
+                                *switch_state = match current_switch_state {
+                                    0 => SwitchState::On,
+                                    1 => SwitchState::Off,
+                                    2 => SwitchState::SwitchedOn,
+                                    3 => SwitchState::SwitchedOff,
+                                    _ => SwitchState::On,
+                                };
+                            }
+                        }
+                        PropertyCheck::Sprite(sprite) => {
+                            let mut sprite_type = if let Sprite::Image { .. } = sprite {
+                                0
+                            } else {
+                                1
+                            };
+                            let sprite_typename = if sprite_type == 0 {
+                                "Image".to_string()
+                            } else {
+                                "Colour".to_string()
+                            };
+                            if imgui::Slider::new(
+                                im_str!("Sprite"),
+                                std::ops::RangeInclusive::new(0, 1),
+                            )
+                            .display_format(&ImString::from(sprite_typename))
+                            .build(&ui, &mut sprite_type)
+                            {
+                                *sprite = if sprite_type == 0 {
+                                    Sprite::Image {
+                                        name: images.keys().next().unwrap().clone(),
+                                    }
+                                } else {
+                                    Sprite::Colour(Colour::black())
+                                };
+                            }
+
+                            match sprite {
+                                Sprite::Image { name: image_name } => {
+                                    // TODO: Tidy up
+                                    let mut current_image =
+                                        images.keys().position(|k| k == image_name).unwrap_or(0);
+                                    let path = match filename {
+                                        Some(filename) => {
+                                            Path::new(filename).parent().unwrap().join("images")
+                                        }
+                                        None => Path::new("games").to_owned(),
+                                    };
+
+                                    if images.is_empty() {
+                                        if ui.button(im_str!("Add a New Image"), NORMAL_BUTTON) {
+                                            let first_key = choose_image_from_files(
+                                                &mut game.asset_files,
+                                                images,
+                                                path,
+                                            );
+                                            match first_key {
+                                                Some(key) => {
+                                                    *sprite = Sprite::Image { name: key.clone() };
+                                                }
+                                                None => {
+                                                    log::error!(
+                                                        "None of the new images loaded correctly"
+                                                    );
+                                                }
+                                            }
+                                        }
+                                    } else {
+                                        let mut keys: Vec<ImString> = images
+                                            .keys()
+                                            .map(|k| ImString::from(k.clone()))
+                                            .collect();
+
+                                        keys.push(ImString::new("Add a New Image"));
+
+                                        let image_names: Vec<&ImString> = keys.iter().collect();
+
+                                        if imgui::ComboBox::new(im_str!("Image"))
+                                            .build_simple_string(
+                                                &ui,
+                                                &mut current_image,
+                                                &image_names,
+                                            )
+                                        {
+                                            if current_image == image_names.len() - 1 {
+                                                let first_key = choose_image_from_files(
+                                                    &mut game.asset_files,
+                                                    images,
+                                                    path,
+                                                );
+                                                match first_key {
+                                                    Some(key) => {
+                                                        *sprite =
+                                                            Sprite::Image { name: key.clone() };
+                                                    }
+                                                    None => {
+                                                        log::error!("None of the new images loaded correctly");
+                                                    }
+                                                }
+                                            } else {
+                                                match images.keys().nth(current_image) {
+                                                    Some(image) => {
+                                                        *sprite = Sprite::Image {
+                                                            name: image.clone(),
+                                                        };
+                                                    }
+                                                    None => {
+                                                        log::error!(
+                                                            "Could not set image to index {}",
+                                                            current_image
+                                                        );
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    };
+                                }
+                                Sprite::Colour(colour) => {
+                                    let mut colour_array = [colour.r, colour.g, colour.b, colour.a];
+                                    imgui::ColorEdit::new(im_str!("Colour"), &mut colour_array)
+                                        .alpha(true)
+                                        .build(ui);
+                                    *colour = Colour::rgba(
+                                        colour_array[0],
+                                        colour_array[1],
+                                        colour_array[2],
+                                        colour_array[3],
+                                    );
+                                }
+                            };
+                        }
+                        _ => {}
+                    }
                 }
                 _ => {}
             }
@@ -1654,6 +1849,88 @@ fn instruction_window(
                 *instruction_mode = InstructionMode::Edit;
             }
         }
+    }
+}
+
+fn load_textures(
+    asset_files: &mut AssetFiles,
+    images: &mut Images,
+    image_filenames: Vec<(WeeResult<String>, String)>,
+) -> Option<String> {
+    let mut first_key = None;
+    for (key, path) in &image_filenames {
+        match key {
+            Ok(key) => {
+                let texture = Texture::from_file(path);
+                match texture {
+                    Ok(texture) => {
+                        images.insert(key.clone(), texture);
+                        let filename = Path::new(path)
+                            .file_name()
+                            .unwrap()
+                            .to_str()
+                            .unwrap()
+                            .to_string();
+                        asset_files.images.insert(key.clone(), filename);
+                        first_key = Some(key.clone());
+                    }
+                    Err(error) => {
+                        log::error!("Could not add image with filename {}", path);
+                        log::error!("{}", error);
+                    }
+                }
+            }
+            Err(error) => {
+                log::error!("Could not add image with filename {}", path);
+                log::error!("{}", error);
+            }
+        }
+    }
+    first_key
+}
+
+fn get_main_filename_part(path: &Path) -> WeeResult<String> {
+    let parent = path.parent().ok_or("Could not find filename parent")?;
+    let name = path
+        .strip_prefix(parent)?
+        .file_stem()
+        .ok_or("Could not get file stem")?
+        .to_str()
+        .ok_or("Could not convert main filename part to string")?
+        .to_string();
+    Ok(name)
+}
+fn choose_image_from_files<P: AsRef<Path>>(
+    asset_files: &mut AssetFiles,
+    images: &mut Images,
+    images_path: P,
+) -> Option<String> {
+    let result = nfd::open_file_multiple_dialog(None, images_path.as_ref().to_str()).unwrap();
+
+    match result {
+        Response::Okay(_) => {
+            unreachable!();
+        }
+        Response::OkayMultiple(files) => {
+            log::info!("Files {:?}", files);
+            let image_filenames: Vec<(WeeResult<String>, String)> = files
+                .into_iter()
+                .map(|file_path| {
+                    let path = std::path::Path::new(&file_path);
+                    let name = get_main_filename_part(&path);
+                    let file_path = path
+                        .strip_prefix(std::env::current_dir().unwrap().as_path())
+                        .unwrap()
+                        .to_str()
+                        .unwrap()
+                        .to_string();
+                    (name, file_path)
+                })
+                .collect();
+
+            load_textures(asset_files, images, image_filenames)
+        }
+        _ => None,
     }
 }
 
@@ -1688,87 +1965,6 @@ fn properties_window(
         };
     }
 
-    fn load_textures(
-        asset_files: &mut AssetFiles,
-        images: &mut Images,
-        image_filenames: Vec<(WeeResult<String>, String)>,
-    ) -> Option<String> {
-        let mut first_key = None;
-        for (key, path) in &image_filenames {
-            match key {
-                Ok(key) => {
-                    let texture = Texture::from_file(path);
-                    match texture {
-                        Ok(texture) => {
-                            images.insert(key.clone(), texture);
-                            let filename = Path::new(path)
-                                .file_name()
-                                .unwrap()
-                                .to_str()
-                                .unwrap()
-                                .to_string();
-                            asset_files.images.insert(key.clone(), filename);
-                            first_key = Some(key.clone());
-                        }
-                        Err(error) => {
-                            log::error!("Could not add image with filename {}", path);
-                            log::error!("{}", error);
-                        }
-                    }
-                }
-                Err(error) => {
-                    log::error!("Could not add image with filename {}", path);
-                    log::error!("{}", error);
-                }
-            }
-        }
-        first_key
-    }
-
-    fn get_main_filename_part(path: &Path) -> WeeResult<String> {
-        let parent = path.parent().ok_or("Could not find filename parent")?;
-        let name = path
-            .strip_prefix(parent)?
-            .file_stem()
-            .ok_or("Could not get file stem")?
-            .to_str()
-            .ok_or("Could not convert main filename part to string")?
-            .to_string();
-        Ok(name)
-    }
-    fn choose_image_from_files<P: AsRef<Path>>(
-        asset_files: &mut AssetFiles,
-        images: &mut Images,
-        images_path: P,
-    ) -> Option<String> {
-        let result = nfd::open_file_multiple_dialog(None, images_path.as_ref().to_str()).unwrap();
-
-        match result {
-            Response::Okay(_) => {
-                unreachable!();
-            }
-            Response::OkayMultiple(files) => {
-                log::info!("Files {:?}", files);
-                let image_filenames: Vec<(WeeResult<String>, String)> = files
-                    .into_iter()
-                    .map(|file_path| {
-                        let path = std::path::Path::new(&file_path);
-                        let name = get_main_filename_part(&path);
-                        let file_path = path
-                            .strip_prefix(std::env::current_dir().unwrap().as_path())
-                            .unwrap()
-                            .to_str()
-                            .unwrap()
-                            .to_string();
-                        (name, file_path)
-                    })
-                    .collect();
-
-                load_textures(asset_files, images, image_filenames)
-            }
-            _ => None,
-        }
-    }
     match &mut object.sprite {
         Sprite::Image { name: image_name } => {
             // TODO: Tidy up
@@ -2610,7 +2806,7 @@ fn run_main_loop<'a, 'b>(
                         PROJECTION_HEIGHT * scale,
                     );
                     let model = Model::new(dest, None, 0.0, Flip::default());
-                    renderer.fill_rectangle(model, Colour::white());
+                    renderer.fill_rectangle(model, Colour::light_grey());
                 }
 
                 //renderer.draw_background(&game.background, &images)?;

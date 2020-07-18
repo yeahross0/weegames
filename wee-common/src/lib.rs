@@ -188,6 +188,10 @@ impl Colour {
         Colour::rgb(0.2, 0.2, 0.2)
     }
 
+    pub fn light_grey() -> Colour {
+        Colour::rgb(0.8, 0.8, 0.8)
+    }
+
     pub fn black() -> Colour {
         Colour::rgb(0.0, 0.0, 0.0)
     }
