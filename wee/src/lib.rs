@@ -199,11 +199,12 @@ pub enum MouseOver {
 }
 
 #[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq)]
+#[repr(usize)]
 pub enum ButtonState {
-    Up,
-    Down,
-    Press,
-    Release,
+    Up = 0,
+    Down = 1,
+    Press = 2,
+    Release = 3,
 }
 
 impl ButtonState {

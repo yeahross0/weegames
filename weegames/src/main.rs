@@ -1359,6 +1359,7 @@ fn instruction_window(
             *instruction_mode = InstructionMode::EditAction;
         }
         InstructionMode::EditTrigger => {
+            let object_names: Vec<String> = game.objects.iter().map(|o| o.name.clone()).collect();
             let trigger_index = match focus {
                 InstructionFocus::Trigger { index } => *index,
                 _ => unreachable!(),
@@ -1392,8 +1393,8 @@ fn instruction_window(
             let trigger_names = [
                 im_str!("Time"),
                 im_str!("Collision"),
-                im_str!("Win Status"),
                 im_str!("Mouse"),
+                im_str!("Win Status"),
                 im_str!("Random Chance"),
                 im_str!("Check Switch"),
                 im_str!("Check Sprite"),
@@ -1410,11 +1411,11 @@ fn instruction_window(
                     1 => {
                         Trigger::Collision(CollisionWith::Area(AABB::new(0.0, 0.0, 1600.0, 900.0)))
                     }
-                    2 => Trigger::WinStatus(WinStatus::Won),
-                    3 => Trigger::Input(Input::Mouse {
+                    2 => Trigger::Input(Input::Mouse {
                         over: MouseOver::Anywhere,
                         interaction: MouseInteraction::Hover,
                     }),
+                    3 => Trigger::WinStatus(WinStatus::Won),
                     4 => Trigger::Random { chance: 0.5 },
                     5 => Trigger::CheckProperty {
                         name: first_name.clone(),
@@ -1436,7 +1437,202 @@ fn instruction_window(
                 }
             }
             match trigger {
-                Trigger::Time(_) => {}
+                Trigger::Time(when) => {
+                    let mut current_when_position = match when {
+                        When::Start => 0,
+                        When::End => 1,
+                        When::Exact { .. } => 2,
+                        When::Random { .. } => 3,
+                    };
+                    let when_names = [
+                        im_str!("Start"),
+                        im_str!("End"),
+                        im_str!("Exact Time"),
+                        im_str!("Random Time"),
+                    ];
+                    if imgui::ComboBox::new(im_str!("When")).build_simple_string(
+                        &ui,
+                        &mut current_when_position,
+                        &when_names,
+                    ) {
+                        *when = match current_when_position {
+                            0 => When::Start,
+                            1 => When::End,
+                            2 => When::Exact { time: 0 },
+                            3 => When::Random { start: 0, end: 60 },
+                            _ => unreachable!(),
+                        };
+                    }
+
+                    match when {
+                        When::Exact { time } => {
+                            let mut changed_time = *time as i32;
+                            ui.input_int(im_str!("Time"), &mut changed_time).build();
+                            *time = changed_time as u32;
+                        }
+                        When::Random { start, end } => {
+                            let mut frames = [*start as i32, *end as i32];
+                            ui.drag_int2(im_str!("Time"), &mut frames)
+                                .min(0)
+                                .max((game.length * 60.0) as i32)
+                                .build();
+                            *start = frames[0] as u32;
+                            *end = frames[1] as u32;
+                        }
+                        _ => {}
+                    }
+                }
+                Trigger::Collision(with) => {
+                    let mut collision_type = if let CollisionWith::Object { .. } = with {
+                        0
+                    } else {
+                        1
+                    };
+                    let collision_typename = if collision_type == 0 {
+                        "Object".to_string()
+                    } else {
+                        "Area".to_string()
+                    };
+                    if imgui::Slider::new(
+                        im_str!("Collision With"),
+                        std::ops::RangeInclusive::new(0, 1),
+                    )
+                    .display_format(&ImString::from(collision_typename))
+                    .build(&ui, &mut collision_type)
+                    {
+                        *with = if collision_type == 0 {
+                            CollisionWith::Object {
+                                name: first_name.clone(),
+                            }
+                        } else {
+                            CollisionWith::Area(AABB::new(0.0, 0.0, 1600.0, 900.0))
+                        };
+                    }
+
+                    match with {
+                        CollisionWith::Object { name } => {
+                            let mut current_object = object_names
+                                .iter()
+                                .position(|obj_name| obj_name == name)
+                                .unwrap();
+                            let keys: Vec<ImString> = object_names
+                                .iter()
+                                .map(|name| ImString::from(name.clone()))
+                                .collect();
+                            let combo_keys: Vec<_> = keys.iter().collect();
+                            if imgui::ComboBox::new(im_str!("Object")).build_simple_string(
+                                &ui,
+                                &mut current_object,
+                                &combo_keys,
+                            ) {
+                                *name = object_names[current_object].clone();
+                            }
+                        }
+                        CollisionWith::Area(area) => {
+                            ui.input_float(im_str!("Collision Min X"), &mut area.min.x)
+                                .build();
+                            ui.input_float(im_str!("Collision Min Y"), &mut area.min.y)
+                                .build();
+                            ui.input_float(im_str!("Collision Max X"), &mut area.max.x)
+                                .build();
+                            ui.input_float(im_str!("Collision Max Y"), &mut area.max.y)
+                                .build();
+                        }
+                    }
+                }
+                Trigger::Input(Input::Mouse { over, interaction }) => {
+                    let mut input_type = match over {
+                        MouseOver::Object { .. } => 0,
+                        MouseOver::Area(_) => 1,
+                        MouseOver::Anywhere => 2,
+                    };
+                    let input_typename = if input_type == 0 {
+                        "Object".to_string()
+                    } else {
+                        "Area".to_string()
+                    };
+                    if imgui::Slider::new(
+                        im_str!("Mouse Over"),
+                        std::ops::RangeInclusive::new(0, 1),
+                    )
+                    .display_format(&ImString::from(input_typename))
+                    .build(&ui, &mut input_type)
+                    {
+                        *over = if input_type == 0 {
+                            MouseOver::Object {
+                                name: first_name.clone(),
+                            }
+                        } else if input_type == 1 {
+                            MouseOver::Area(AABB::new(0.0, 0.0, 1600.0, 900.0))
+                        } else {
+                            MouseOver::Anywhere
+                        };
+                    }
+                    match over {
+                        MouseOver::Object { name } => {
+                            let mut current_object = object_names
+                                .iter()
+                                .position(|obj_name| obj_name == name)
+                                .unwrap();
+                            let keys: Vec<ImString> = object_names
+                                .iter()
+                                .map(|name| ImString::from(name.clone()))
+                                .collect();
+                            let combo_keys: Vec<_> = keys.iter().collect();
+                            if imgui::ComboBox::new(im_str!("Object")).build_simple_string(
+                                &ui,
+                                &mut current_object,
+                                &combo_keys,
+                            ) {
+                                *name = object_names[current_object].clone();
+                            }
+                        }
+                        MouseOver::Area(area) => {
+                            ui.input_float(im_str!("Area Min X"), &mut area.min.x)
+                                .build();
+                            ui.input_float(im_str!("Area Min Y"), &mut area.min.y)
+                                .build();
+                            ui.input_float(im_str!("Area Max X"), &mut area.max.x)
+                                .build();
+                            ui.input_float(im_str!("Area Max Y"), &mut area.max.y)
+                                .build();
+                        }
+                        _ => {}
+                    }
+                    let button_states = [
+                        im_str!("Button Up"),
+                        im_str!("Button Down"),
+                        im_str!("Button Press"),
+                        im_str!("Button Release"),
+                        im_str!("Hover"),
+                    ];
+                    let mut current_button_state = match interaction {
+                        MouseInteraction::Button { state } => *state as usize,
+                        MouseInteraction::Hover => 4,
+                    };
+                    if imgui::ComboBox::new(im_str!("Button State")).build_simple_string(
+                        &ui,
+                        &mut current_button_state,
+                        &button_states,
+                    ) {
+                        *interaction = match current_button_state {
+                            0 => MouseInteraction::Button {
+                                state: ButtonState::Up,
+                            },
+                            1 => MouseInteraction::Button {
+                                state: ButtonState::Down,
+                            },
+                            2 => MouseInteraction::Button {
+                                state: ButtonState::Press,
+                            },
+                            3 => MouseInteraction::Button {
+                                state: ButtonState::Release,
+                            },
+                            4 => MouseInteraction::Hover,
+                            _ => unreachable!(),
+                        };
+                    }
+                }
                 Trigger::Random { chance } => {
                     let mut chance_percent = *chance * 100.0;
                     ui.drag_float(im_str!("Chance"), &mut chance_percent)
