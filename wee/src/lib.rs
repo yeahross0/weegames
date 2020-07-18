@@ -375,7 +375,7 @@ impl fmt::Display for Trigger {
     }
 }
 
-#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq)]
 pub enum Effect {
     Freeze,
     None,

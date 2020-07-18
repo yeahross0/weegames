@@ -34,12 +34,12 @@ use walkdir::WalkDir;
 
 use sdlglue::{Model, Renderer, Texture};
 use wee::{
-    Action, AngleSetter, AnimationStatus, AssetFiles, Assets, ButtonState, CollisionWith,
-    Completion, DrawIntroText, FontLoadInfo, GameData, GameSettings, ImageList, Images, Input,
-    IntroFont, IntroFontConfig, IntroText, JumpLocation, LoadImages, LoadedGame, Motion,
-    MouseInteraction, MouseOver, PropertyCheck, PropertySetter, RenderScene, SerialiseObject,
-    SerialiseObjectList, Sprite, Switch, SwitchState, Target, Trigger, When, WinStatus,
-    DEFAULT_GAME_SPEED,
+    Action, AngleSetter, AnimationStatus, AnimationType, AssetFiles, Assets, ButtonState,
+    CollisionWith, Completion, DrawIntroText, Effect, FontLoadInfo, GameData, GameSettings,
+    ImageList, Images, Input, IntroFont, IntroFontConfig, IntroText, JumpLocation, LoadImages,
+    LoadedGame, Motion, MouseInteraction, MouseOver, PropertyCheck, PropertySetter, RenderScene,
+    SerialiseObject, SerialiseObjectList, Speed, SpeedCategory, Sprite, Switch, SwitchState,
+    Target, TextResize, Trigger, When, WinStatus, DEFAULT_GAME_SPEED,
 };
 use wee_common::{Colour, Flip, Rect, Vec2, WeeResult, AABB, PROJECTION_HEIGHT, PROJECTION_WIDTH};
 
@@ -1366,7 +1366,6 @@ fn instruction_window(
                 InstructionFocus::Trigger { index } => *index,
                 _ => unreachable!(),
             };
-            let first_name = game.objects[0].name.clone();
             let trigger =
                 &mut game.objects[index].instructions[*instruction_index].triggers[trigger_index];
             let mut current_trigger_position = match trigger {
@@ -1420,19 +1419,19 @@ fn instruction_window(
                     3 => Trigger::WinStatus(WinStatus::Won),
                     4 => Trigger::Random { chance: 0.5 },
                     5 => Trigger::CheckProperty {
-                        name: first_name.clone(),
+                        name: object_names[0].clone(),
                         check: PropertyCheck::Switch(SwitchState::On),
                     },
                     6 => Trigger::CheckProperty {
-                        name: first_name.clone(),
+                        name: object_names[0].clone(),
                         check: PropertyCheck::Sprite(Sprite::Colour(Colour::black())),
                     },
                     7 => Trigger::CheckProperty {
-                        name: first_name.clone(),
+                        name: object_names[0].clone(),
                         check: PropertyCheck::FinishedAnimation,
                     },
                     8 => Trigger::CheckProperty {
-                        name: first_name.clone(),
+                        name: object_names[0].clone(),
                         check: PropertyCheck::Timer,
                     },
                     _ => unreachable!(),
@@ -1504,7 +1503,7 @@ fn instruction_window(
                     {
                         *with = if collision_type == 0 {
                             CollisionWith::Object {
-                                name: first_name.clone(),
+                                name: object_names[0].clone(),
                             }
                         } else {
                             CollisionWith::Area(AABB::new(0.0, 0.0, 1600.0, 900.0))
@@ -1562,7 +1561,7 @@ fn instruction_window(
                     {
                         *over = if input_type == 0 {
                             MouseOver::Object {
-                                name: first_name.clone(),
+                                name: object_names[0].clone(),
                             }
                         } else if input_type == 1 {
                             MouseOver::Area(AABB::new(0.0, 0.0, 1600.0, 900.0))
@@ -1838,13 +1837,98 @@ fn instruction_window(
                         _ => {}
                     }
                 }
-                _ => {}
             }
             if ui.small_button(im_str!("Back")) {
                 *instruction_mode = InstructionMode::Edit;
             }
         }
         InstructionMode::EditAction => {
+            let object_names: Vec<String> = game.objects.iter().map(|o| o.name.clone()).collect();
+            let action_index = match focus {
+                InstructionFocus::Action { index } => *index,
+                _ => unreachable!(),
+            };
+            let action =
+                &mut game.objects[index].instructions[*instruction_index].actions[action_index];
+            let mut current_action_position = match action {
+                Action::Win => 0,
+                Action::Lose => 1,
+                Action::Effect(_) => 2,
+                Action::Motion(_) => 3,
+                Action::PlaySound { .. } => 4,
+                Action::StopMusic => 5,
+                Action::SetProperty(_) => 6,
+                Action::Animate { .. } => 7,
+                Action::DrawText { .. } => 8,
+                Action::Random { .. } => 9,
+            };
+            let action_names = [
+                im_str!("Win"),
+                im_str!("Lose"),
+                im_str!("Effect"),
+                im_str!("Motion"),
+                im_str!("Play Sound"),
+                im_str!("Stop Music"),
+                im_str!("Set Property"),
+                im_str!("Animate"),
+                im_str!("Draw Text"),
+                im_str!("Random Action"),
+            ];
+            if imgui::ComboBox::new(im_str!("Action")).build_simple_string(
+                &ui,
+                &mut current_action_position,
+                &action_names,
+            ) {
+                *action = match current_action_position {
+                    0 => Action::Win,
+                    1 => Action::Lose,
+                    2 => Action::Effect(Effect::None),
+                    3 => Action::Motion(Motion::Stop),
+                    4 => Action::PlaySound {
+                        name: "".to_string(),
+                    }, // TODO: assets.sounds.first
+                    5 => Action::StopMusic,
+                    6 => Action::SetProperty(PropertySetter::Angle(AngleSetter::Value(0.0))),
+                    7 => Action::Animate {
+                        animation_type: AnimationType::Loop,
+                        sprites: Vec::new(),
+                        speed: Speed::Category(SpeedCategory::Normal),
+                    },
+                    8 => Action::DrawText {
+                        text: "".to_string(),
+                        font: "".to_string(), // TODO: assets.fonts.first
+                        colour: Colour::black(),
+                        resize: TextResize::MatchObject,
+                    },
+                    9 => Action::Random {
+                        random_actions: Vec::new(),
+                    },
+                    _ => unreachable!(),
+                }
+            }
+
+            match action {
+                Action::Effect(effect) => {
+                    let mut effect_type = if *effect == Effect::Freeze { 0 } else { 1 };
+                    let effect_typename = if effect_type == 0 {
+                        "Freeze".to_string()
+                    } else {
+                        "None".to_string()
+                    };
+                    if imgui::Slider::new(im_str!("Effect"), std::ops::RangeInclusive::new(0, 1))
+                        .display_format(&ImString::from(effect_typename))
+                        .build(&ui, &mut effect_type)
+                    {
+                        *effect = if effect_type == 0 {
+                            Effect::Freeze
+                        } else {
+                            Effect::None
+                        };
+                    }
+                }
+                _ => {}
+            }
+
             if ui.small_button(im_str!("Back")) {
                 *instruction_mode = InstructionMode::Edit;
             }
