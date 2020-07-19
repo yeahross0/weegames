@@ -22,6 +22,7 @@ use sdl2::{
 };
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use std::{
+    collections::HashSet,
     error::Error,
     fs,
     path::Path,
@@ -34,12 +35,14 @@ use walkdir::WalkDir;
 
 use sdlglue::{Model, Renderer, Texture};
 use wee::{
-    Action, AngleSetter, AnimationStatus, AnimationType, AssetFiles, Assets, ButtonState,
-    CollisionWith, Completion, DrawIntroText, Effect, FontLoadInfo, GameData, GameSettings,
-    ImageList, Images, Input, IntroFont, IntroFontConfig, IntroText, JumpLocation, LoadImages,
-    LoadedGame, Motion, MouseInteraction, MouseOver, PropertyCheck, PropertySetter, RenderScene,
-    SerialiseObject, SerialiseObjectList, Speed, SpeedCategory, Sprite, Switch, SwitchState,
-    Target, TextResize, Trigger, When, WinStatus, DEFAULT_GAME_SPEED,
+    Action, Angle, AngleSetter, AnimationStatus, AnimationType, AssetFiles, Assets,
+    BounceDirection, ButtonState, CollisionWith, CompassDirection, Completion, DrawIntroText,
+    Effect, FontLoadInfo, GameData, GameSettings, ImageList, Images, Input, IntroFont,
+    IntroFontConfig, IntroText, JumpLocation, LoadImages, LoadedGame, Motion, MouseInteraction,
+    MouseOver, MovementDirection, MovementHandling, MovementType, PropertyCheck, PropertySetter,
+    RelativeTo, RenderScene, SerialiseObject, SerialiseObjectList, Speed, SpeedCategory, Sprite,
+    Switch, SwitchState, Target, TargetType, TextResize, Trigger, When, WinStatus,
+    DEFAULT_GAME_SPEED,
 };
 use wee_common::{Colour, Flip, Rect, Vec2, WeeResult, AABB, PROJECTION_HEIGHT, PROJECTION_WIDTH};
 
@@ -1909,21 +1912,562 @@ fn instruction_window(
 
             match action {
                 Action::Effect(effect) => {
-                    let mut effect_type = if *effect == Effect::Freeze { 0 } else { 1 };
+                    let mut effect_type = if *effect == Effect::None { 0 } else { 1 };
                     let effect_typename = if effect_type == 0 {
-                        "Freeze".to_string()
-                    } else {
                         "None".to_string()
+                    } else {
+                        "Freeze".to_string()
                     };
                     if imgui::Slider::new(im_str!("Effect"), std::ops::RangeInclusive::new(0, 1))
                         .display_format(&ImString::from(effect_typename))
                         .build(&ui, &mut effect_type)
                     {
                         *effect = if effect_type == 0 {
-                            Effect::Freeze
-                        } else {
                             Effect::None
+                        } else {
+                            Effect::Freeze
                         };
+                    }
+                }
+                Action::Motion(motion) => {
+                    let mut current_motion_position = match motion {
+                        Motion::Stop => 0,
+                        Motion::GoStraight { .. } => 1,
+                        Motion::JumpTo(_) => 2,
+                        Motion::Roam { .. } => 3,
+                        Motion::Swap { .. } => 4,
+                        Motion::Target { .. } => 5,
+                        Motion::Accelerate { .. } => 6,
+                    };
+                    let motion_names = [
+                        im_str!("Stop"),
+                        im_str!("Go Straight"),
+                        im_str!("Jump To"),
+                        im_str!("Roam"),
+                        im_str!("Swap"),
+                        im_str!("Target"),
+                        im_str!("Accelerate"),
+                    ];
+                    if imgui::ComboBox::new(im_str!("Motion")).build_simple_string(
+                        &ui,
+                        &mut current_motion_position,
+                        &motion_names,
+                    ) {
+                        *motion = match current_motion_position {
+                            0 => Motion::Stop,
+                            1 => Motion::GoStraight {
+                                direction: MovementDirection::Angle(Angle::Current),
+                                speed: Speed::Category(SpeedCategory::Normal),
+                            },
+                            2 => Motion::JumpTo(JumpLocation::Mouse),
+                            3 => Motion::Roam {
+                                movement_type: MovementType::Wiggle,
+                                area: AABB::new(0.0, 0.0, 0.0, 0.0),
+                                speed: Speed::Category(SpeedCategory::Normal),
+                            },
+                            4 => Motion::Swap {
+                                name: object_names[0].clone(),
+                            },
+                            5 => Motion::Target {
+                                target: Target::Mouse,
+                                target_type: TargetType::StopWhenReached,
+                                offset: Vec2::zero(),
+                                speed: Speed::Category(SpeedCategory::Normal),
+                            },
+                            6 => Motion::Accelerate {
+                                direction: MovementDirection::Angle(Angle::Current),
+                                speed: Speed::Category(SpeedCategory::Normal),
+                            },
+                            _ => unreachable!(),
+                        };
+                    }
+
+                    match motion {
+                        Motion::GoStraight { direction, speed }
+                        | Motion::Accelerate { direction, speed } => {
+                            let direction_types = [
+                                im_str!("Current Angle"),
+                                im_str!("Chosen Angle"),
+                                im_str!("Random Angle"),
+                                im_str!("Direction"),
+                            ];
+                            let mut current_direction_position = match direction {
+                                MovementDirection::Angle(Angle::Current) => 0,
+                                MovementDirection::Angle(Angle::Degrees(_)) => 1,
+                                MovementDirection::Angle(Angle::Random { .. }) => 2,
+                                MovementDirection::Direction { .. } => 3,
+                            };
+                            if imgui::ComboBox::new(im_str!("Movement Direction"))
+                                .build_simple_string(
+                                    &ui,
+                                    &mut current_direction_position,
+                                    &direction_types,
+                                )
+                            {
+                                *direction = match current_direction_position {
+                                    0 => MovementDirection::Angle(Angle::Current),
+                                    1 => MovementDirection::Angle(Angle::Degrees(0.0)),
+                                    2 => MovementDirection::Angle(Angle::Random {
+                                        min: 0.0,
+                                        max: 360.0,
+                                    }),
+                                    3 => MovementDirection::Direction {
+                                        possible_directions: HashSet::new(),
+                                    },
+                                    _ => unreachable!(),
+                                };
+                            }
+                            match direction {
+                                MovementDirection::Angle(Angle::Degrees(angle)) => {
+                                    ui.input_float(im_str!("Angle"), angle).build();
+                                }
+                                MovementDirection::Angle(Angle::Random { min, max }) => {
+                                    ui.input_float(im_str!("Min Angle"), min).build();
+                                    ui.input_float(im_str!("Max Angle"), max).build();
+                                }
+                                MovementDirection::Direction {
+                                    possible_directions,
+                                } => {
+                                    fn direction_checkbox(
+                                        ui: &imgui::Ui,
+                                        possible_directions: &mut HashSet<CompassDirection>,
+                                        label: &imgui::ImStr,
+                                        direction: CompassDirection,
+                                    ) {
+                                        let mut checked = possible_directions.contains(&direction);
+                                        if imgui::Ui::checkbox(&ui, label, &mut checked) {
+                                            if checked {
+                                                possible_directions.insert(direction);
+                                            } else {
+                                                possible_directions.remove(&direction);
+                                            }
+                                        }
+                                    }
+                                    ui.text("Random directions:");
+                                    direction_checkbox(
+                                        &ui,
+                                        possible_directions,
+                                        im_str!("Up"),
+                                        CompassDirection::Up,
+                                    );
+                                    direction_checkbox(
+                                        &ui,
+                                        possible_directions,
+                                        im_str!("Up Right"),
+                                        CompassDirection::UpRight,
+                                    );
+                                    direction_checkbox(
+                                        &ui,
+                                        possible_directions,
+                                        im_str!("Right"),
+                                        CompassDirection::Right,
+                                    );
+                                    direction_checkbox(
+                                        &ui,
+                                        possible_directions,
+                                        im_str!("Down Right"),
+                                        CompassDirection::DownRight,
+                                    );
+                                    direction_checkbox(
+                                        &ui,
+                                        possible_directions,
+                                        im_str!("Down"),
+                                        CompassDirection::Down,
+                                    );
+                                    direction_checkbox(
+                                        &ui,
+                                        possible_directions,
+                                        im_str!("Down Left"),
+                                        CompassDirection::DownLeft,
+                                    );
+                                    direction_checkbox(
+                                        &ui,
+                                        possible_directions,
+                                        im_str!("Left"),
+                                        CompassDirection::Left,
+                                    );
+                                    direction_checkbox(
+                                        &ui,
+                                        possible_directions,
+                                        im_str!("Up Left"),
+                                        CompassDirection::UpLeft,
+                                    );
+                                }
+                                _ => {}
+                            }
+                            let speeds = [
+                                im_str!("Very Slow"),
+                                im_str!("Slow"),
+                                im_str!("Normal"),
+                                im_str!("Fast"),
+                                im_str!("Very Fast"),
+                                im_str!("Value"),
+                            ];
+                            let mut current_speed = match speed {
+                                Speed::Category(SpeedCategory::VerySlow) => 0,
+                                Speed::Category(SpeedCategory::Slow) => 1,
+                                Speed::Category(SpeedCategory::Normal) => 2,
+                                Speed::Category(SpeedCategory::Fast) => 3,
+                                Speed::Category(SpeedCategory::VeryFast) => 4,
+                                Speed::Value(_) => 5,
+                            };
+
+                            if imgui::ComboBox::new(im_str!("Speed")).build_simple_string(
+                                &ui,
+                                &mut current_speed,
+                                &speeds,
+                            ) {
+                                *speed = match current_speed {
+                                    0 => Speed::Category(SpeedCategory::VerySlow),
+                                    1 => Speed::Category(SpeedCategory::Slow),
+                                    2 => Speed::Category(SpeedCategory::Normal),
+                                    3 => Speed::Category(SpeedCategory::Fast),
+                                    4 => Speed::Category(SpeedCategory::VeryFast),
+                                    5 => Speed::Value(0.0),
+                                    _ => unreachable!(),
+                                };
+                            }
+                            match speed {
+                                Speed::Value(value) => {
+                                    ui.input_float(im_str!("Speed"), value).build();
+                                }
+                                _ => {}
+                            }
+                        }
+                        Motion::JumpTo(jump_location) => {
+                            let jump_types = [
+                                im_str!("Point"),
+                                im_str!("Area"),
+                                im_str!("Mouse"),
+                                im_str!("Object"),
+                                im_str!("Relative"),
+                                im_str!("Clamp Position"),
+                            ];
+                            let mut current_jump_position = match jump_location {
+                                JumpLocation::Point(_) => 0,
+                                JumpLocation::Area(_) => 1,
+                                JumpLocation::Mouse => 2,
+                                JumpLocation::Object { .. } => 3,
+                                JumpLocation::Relative { .. } => 4,
+                                JumpLocation::ClampPosition { .. } => 5,
+                            };
+                            if imgui::ComboBox::new(im_str!("Jump To")).build_simple_string(
+                                &ui,
+                                &mut current_jump_position,
+                                &jump_types,
+                            ) {
+                                *jump_location = match current_jump_position {
+                                    0 => JumpLocation::Point(Vec2::zero()),
+                                    1 => JumpLocation::Area(AABB::new(0.0, 0.0, 1600.0, 900.0)),
+                                    2 => JumpLocation::Mouse,
+                                    3 => JumpLocation::Object {
+                                        name: object_names[0].clone(),
+                                    },
+                                    4 => JumpLocation::Relative {
+                                        to: RelativeTo::CurrentAngle,
+                                        distance: Vec2::zero(),
+                                    },
+                                    5 => JumpLocation::ClampPosition {
+                                        area: AABB::new(0.0, 0.0, 1600.0, 900.0),
+                                    },
+                                    _ => unreachable!(),
+                                };
+                            }
+
+                            match jump_location {
+                                JumpLocation::Area(area) => {
+                                    ui.input_float(im_str!("Area Min X"), &mut area.min.x)
+                                        .build();
+                                    ui.input_float(im_str!("Area Min Y"), &mut area.min.y)
+                                        .build();
+                                    ui.input_float(im_str!("Area Max X"), &mut area.max.x)
+                                        .build();
+                                    ui.input_float(im_str!("Area Max Y"), &mut area.max.y)
+                                        .build();
+                                }
+                                JumpLocation::Object { name } => {
+                                    let mut current_object = object_names
+                                        .iter()
+                                        .position(|obj_name| obj_name == name)
+                                        .unwrap();
+                                    let keys: Vec<ImString> = object_names
+                                        .iter()
+                                        .map(|name| ImString::from(name.clone()))
+                                        .collect();
+                                    let combo_keys: Vec<_> = keys.iter().collect();
+                                    if imgui::ComboBox::new(im_str!("Object")).build_simple_string(
+                                        &ui,
+                                        &mut current_object,
+                                        &combo_keys,
+                                    ) {
+                                        *name = object_names[current_object].clone();
+                                    }
+                                }
+                                JumpLocation::Point(point) => {
+                                    ui.input_float(im_str!("X"), &mut point.x).build();
+                                    ui.input_float(im_str!("Y"), &mut point.y).build();
+                                }
+                                JumpLocation::Relative { to, distance } => {
+                                    if ui.radio_button_bool(
+                                        im_str!("Relative To Current Angle"),
+                                        *to == RelativeTo::CurrentAngle,
+                                    ) {
+                                        *to = RelativeTo::CurrentAngle;
+                                    }
+                                    if ui.radio_button_bool(
+                                        im_str!("Relative To Current Position"),
+                                        *to == RelativeTo::CurrentPosition,
+                                    ) {
+                                        *to = RelativeTo::CurrentPosition;
+                                    }
+                                    ui.input_float(im_str!("Distance X"), &mut distance.x)
+                                        .build();
+                                    ui.input_float(im_str!("Distance Y"), &mut distance.y)
+                                        .build();
+                                }
+                                JumpLocation::ClampPosition { area } => {
+                                    ui.input_float(im_str!("Area Min X"), &mut area.min.x)
+                                        .build();
+                                    ui.input_float(im_str!("Area Min Y"), &mut area.min.y)
+                                        .build();
+                                    ui.input_float(im_str!("Area Max X"), &mut area.max.x)
+                                        .build();
+                                    ui.input_float(im_str!("Area Max Y"), &mut area.max.y)
+                                        .build();
+                                }
+                                _ => {}
+                            }
+                        }
+                        Motion::Roam {
+                            movement_type,
+                            area,
+                            speed,
+                        } => {
+                            let movement_types = [
+                                im_str!("Wiggle"),
+                                im_str!("Insect"),
+                                im_str!("Reflect"),
+                                im_str!("Bounce"),
+                            ];
+                            let mut current_movement_position = match movement_type {
+                                MovementType::Wiggle => 0,
+                                MovementType::Insect => 1,
+                                MovementType::Reflect { .. } => 2,
+                                MovementType::Bounce { .. } => 3,
+                            };
+
+                            if imgui::ComboBox::new(im_str!("Movement Type")).build_simple_string(
+                                &ui,
+                                &mut current_movement_position,
+                                &movement_types,
+                            ) {
+                                *movement_type = match current_movement_position {
+                                    0 => MovementType::Wiggle,
+                                    1 => MovementType::Insect,
+                                    2 => MovementType::Reflect {
+                                        initial_direction: MovementDirection::Angle(Angle::Current),
+                                        movement_handling: MovementHandling::Anywhere,
+                                    },
+                                    3 => MovementType::Bounce {
+                                        initial_direction: None,
+                                    },
+                                    _ => unreachable!(),
+                                };
+                            }
+
+                            match movement_type {
+                                MovementType::Reflect {
+                                    initial_direction,
+                                    movement_handling,
+                                } => {
+                                    let movement_handling_types =
+                                        [im_str!("Anywhere"), im_str!("Try Not To Overlap")];
+
+                                    let mut current_movement = *movement_handling as usize;
+
+                                    if imgui::ComboBox::new(im_str!("Movement Handling"))
+                                        .build_simple_string(
+                                            &ui,
+                                            &mut current_movement,
+                                            &movement_handling_types,
+                                        )
+                                    {
+                                        *movement_handling = match current_movement {
+                                            0 => MovementHandling::Anywhere,
+                                            1 => MovementHandling::TryNotToOverlap,
+                                            _ => MovementHandling::Anywhere,
+                                        };
+                                    }
+
+                                    match initial_direction {
+                                        MovementDirection::Angle(Angle::Degrees(angle)) => {
+                                            ui.input_float(im_str!("Angle"), angle).build();
+                                        }
+                                        MovementDirection::Angle(Angle::Random { min, max }) => {
+                                            ui.input_float(im_str!("Min Angle"), min).build();
+                                            ui.input_float(im_str!("Max Angle"), max).build();
+                                        }
+                                        MovementDirection::Direction {
+                                            possible_directions,
+                                        } => {
+                                            fn direction_checkbox(
+                                                ui: &imgui::Ui,
+                                                possible_directions: &mut HashSet<CompassDirection>,
+                                                label: &imgui::ImStr,
+                                                direction: CompassDirection,
+                                            ) {
+                                                let mut checked =
+                                                    possible_directions.contains(&direction);
+                                                if imgui::Ui::checkbox(&ui, label, &mut checked) {
+                                                    if checked {
+                                                        possible_directions.insert(direction);
+                                                    } else {
+                                                        possible_directions.remove(&direction);
+                                                    }
+                                                }
+                                            }
+                                            ui.text("Random directions:");
+                                            direction_checkbox(
+                                                &ui,
+                                                possible_directions,
+                                                im_str!("Up"),
+                                                CompassDirection::Up,
+                                            );
+                                            direction_checkbox(
+                                                &ui,
+                                                possible_directions,
+                                                im_str!("Up Right"),
+                                                CompassDirection::UpRight,
+                                            );
+                                            direction_checkbox(
+                                                &ui,
+                                                possible_directions,
+                                                im_str!("Right"),
+                                                CompassDirection::Right,
+                                            );
+                                            direction_checkbox(
+                                                &ui,
+                                                possible_directions,
+                                                im_str!("Down Right"),
+                                                CompassDirection::DownRight,
+                                            );
+                                            direction_checkbox(
+                                                &ui,
+                                                possible_directions,
+                                                im_str!("Down"),
+                                                CompassDirection::Down,
+                                            );
+                                            direction_checkbox(
+                                                &ui,
+                                                possible_directions,
+                                                im_str!("Down Left"),
+                                                CompassDirection::DownLeft,
+                                            );
+                                            direction_checkbox(
+                                                &ui,
+                                                possible_directions,
+                                                im_str!("Left"),
+                                                CompassDirection::Left,
+                                            );
+                                            direction_checkbox(
+                                                &ui,
+                                                possible_directions,
+                                                im_str!("Up Left"),
+                                                CompassDirection::UpLeft,
+                                            );
+                                        }
+                                        _ => {}
+                                    }
+                                }
+                                MovementType::Bounce { initial_direction } => {
+                                    if ui.radio_button_bool(
+                                        im_str!("Initial Direction Left"),
+                                        *initial_direction == Some(BounceDirection::Left),
+                                    ) {
+                                        *initial_direction = Some(BounceDirection::Left);
+                                    }
+                                    if ui.radio_button_bool(
+                                        im_str!("Initial Direction Right"),
+                                        *initial_direction == Some(BounceDirection::Right),
+                                    ) {
+                                        *initial_direction = Some(BounceDirection::Right);
+                                    }
+                                    if ui.radio_button_bool(
+                                        im_str!("No Initial Direction"),
+                                        *initial_direction == None,
+                                    ) {
+                                        *initial_direction = None;
+                                    }
+                                }
+                                _ => {}
+                            }
+                            ui.input_float(im_str!("Area Min X"), &mut area.min.x)
+                                .build();
+                            ui.input_float(im_str!("Area Min Y"), &mut area.min.y)
+                                .build();
+                            ui.input_float(im_str!("Area Max X"), &mut area.max.x)
+                                .build();
+                            ui.input_float(im_str!("Area Max Y"), &mut area.max.y)
+                                .build();
+
+                            let speeds = [
+                                im_str!("Very Slow"),
+                                im_str!("Slow"),
+                                im_str!("Normal"),
+                                im_str!("Fast"),
+                                im_str!("Very Fast"),
+                                im_str!("Value"),
+                            ];
+                            let mut current_speed = match speed {
+                                Speed::Category(SpeedCategory::VerySlow) => 0,
+                                Speed::Category(SpeedCategory::Slow) => 1,
+                                Speed::Category(SpeedCategory::Normal) => 2,
+                                Speed::Category(SpeedCategory::Fast) => 3,
+                                Speed::Category(SpeedCategory::VeryFast) => 4,
+                                Speed::Value(_) => 5,
+                            };
+
+                            if imgui::ComboBox::new(im_str!("Speed")).build_simple_string(
+                                &ui,
+                                &mut current_speed,
+                                &speeds,
+                            ) {
+                                *speed = match current_speed {
+                                    0 => Speed::Category(SpeedCategory::VerySlow),
+                                    1 => Speed::Category(SpeedCategory::Slow),
+                                    2 => Speed::Category(SpeedCategory::Normal),
+                                    3 => Speed::Category(SpeedCategory::Fast),
+                                    4 => Speed::Category(SpeedCategory::VeryFast),
+                                    5 => Speed::Value(0.0),
+                                    _ => unreachable!(),
+                                };
+                            }
+                            match speed {
+                                Speed::Value(value) => {
+                                    ui.input_float(im_str!("Speed"), value).build();
+                                }
+                                _ => {}
+                            }
+                        }
+                        Motion::Swap { name } => {
+                            let mut current_object = object_names
+                                .iter()
+                                .position(|obj_name| obj_name == name)
+                                .unwrap();
+                            let keys: Vec<ImString> = object_names
+                                .iter()
+                                .map(|name| ImString::from(name.clone()))
+                                .collect();
+                            let combo_keys: Vec<_> = keys.iter().collect();
+                            if imgui::ComboBox::new(im_str!("Object")).build_simple_string(
+                                &ui,
+                                &mut current_object,
+                                &combo_keys,
+                            ) {
+                                *name = object_names[current_object].clone();
+                            }
+                        }
+                        _ => {}
                     }
                 }
                 _ => {}

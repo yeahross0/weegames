@@ -562,7 +562,7 @@ pub enum SpeedCategory {
     Fast,
     VeryFast,
 }
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum RelativeTo {
     CurrentPosition,
     CurrentAngle,
@@ -578,7 +578,7 @@ pub enum JumpLocation {
     ClampPosition { area: AABB },
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum BounceDirection {
     Left,
     Right,
