@@ -20,6 +20,7 @@ use std::{
     collections::{HashMap, HashSet},
     default::Default,
     fmt, fs,
+    ops::Not,
     path::Path,
     process, str, thread,
     time::{Duration, Instant},
@@ -603,13 +604,13 @@ pub enum MovementHandling {
     TryNotToOverlap,
 }
 
-#[derive(Clone, Serialize, Deserialize, Debug)]
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
 pub enum Target {
     Object { name: String },
     Mouse,
 }
 
-#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq)]
 pub enum TargetType {
     Follow,
     StopWhenReached,
@@ -791,10 +792,21 @@ impl fmt::Display for Motion {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq)]
 pub enum AnimationType {
     Loop,
     PlayOnce,
+}
+
+impl Not for AnimationType {
+    type Output = AnimationType;
+
+    fn not(self) -> Self::Output {
+        match self {
+            AnimationType::Loop => AnimationType::PlayOnce,
+            AnimationType::PlayOnce => AnimationType::Loop,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -821,10 +833,21 @@ pub enum SizeSetter {
     Clamp { min: Size, max: Size },
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq)]
 pub enum Switch {
     On,
     Off,
+}
+
+impl Not for Switch {
+    type Output = Switch;
+
+    fn not(self) -> Self::Output {
+        match self {
+            Switch::On => Switch::Off,
+            Switch::Off => Switch::On,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -852,10 +875,21 @@ pub enum PropertySetter {
     Layer(LayerSetter),
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq)]
 pub enum TextResize {
     MatchText,
     MatchObject,
+}
+
+impl Not for TextResize {
+    type Output = TextResize;
+
+    fn not(self) -> Self::Output {
+        match self {
+            TextResize::MatchText => TextResize::MatchObject,
+            TextResize::MatchObject => TextResize::MatchText,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

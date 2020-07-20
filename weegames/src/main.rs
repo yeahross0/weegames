@@ -1,13 +1,14 @@
 // TODO: Show origin debug option
 // TODO: Enable selecting object again
 // TODO: Exit fullscreen when in editor
+// TODO: Fix crashes when switching between objects
 
 //#![windows_subsystem = "windows"]
 
 #[macro_use]
 extern crate imgui;
 
-use imgui::ImString;
+use imgui::{ImStr, ImString};
 use imgui_opengl_renderer::Renderer as ImguiRenderer;
 use imgui_sdl2::ImguiSdl2 as ImguiSdl;
 use nfd::Response;
@@ -34,7 +35,7 @@ use std::{
 use walkdir::WalkDir;
 
 use sdlglue::{Model, Renderer, Texture};
-use wee::{
+/*use wee::{
     Action, Angle, AngleSetter, AnimationStatus, AnimationType, AssetFiles, Assets,
     BounceDirection, ButtonState, CollisionWith, CompassDirection, Completion, DrawIntroText,
     Effect, FontLoadInfo, GameData, GameSettings, ImageList, Images, Input, IntroFont,
@@ -43,8 +44,11 @@ use wee::{
     RelativeTo, RenderScene, SerialiseObject, SerialiseObjectList, Speed, SpeedCategory, Sprite,
     Switch, SwitchState, Target, TargetType, TextResize, Trigger, When, WinStatus,
     DEFAULT_GAME_SPEED,
+};*/
+use wee::*;
+use wee_common::{
+    Colour, Flip, Rect, Size, Vec2, WeeResult, AABB, PROJECTION_HEIGHT, PROJECTION_WIDTH,
 };
-use wee_common::{Colour, Flip, Rect, Vec2, WeeResult, AABB, PROJECTION_HEIGHT, PROJECTION_WIDTH};
 
 const SMALL_BUTTON: [f32; 2] = [100.0, 50.0];
 const NORMAL_BUTTON: [f32; 2] = [200.0, 50.0];
@@ -380,7 +384,7 @@ impl ImguiDisplayTrigger for Trigger {
             }
         };
 
-        let object_button_with_label = |label: &imgui::ImStr, object_name: &str| {
+        let object_button_with_label = |label: &ImStr, object_name: &str| {
             if game.objects.iter().any(|o| o.name == object_name) {
                 ui.text(label);
             } else {
@@ -390,16 +394,16 @@ impl ImguiDisplayTrigger for Trigger {
         };
 
         let object_button = |object_name: &str| {
-            object_button_with_label(&imgui::ImString::from(object_name.to_string()), object_name);
+            object_button_with_label(&ImString::from(object_name.to_string()), object_name);
         };
 
-        let image_button_with_label = |label: &imgui::ImStr, image_name: &str| {
+        let image_button_with_label = |label: &ImStr, image_name: &str| {
             ui.text(label);
             image_tooltip(image_name);
         };
 
         let image_button = |image_name: &str| {
-            image_button_with_label(&imgui::ImString::from(image_name.to_string()), image_name);
+            image_button_with_label(&ImString::from(image_name.to_string()), image_name);
         };
 
         let sprite_button = |sprite: &Sprite| {
@@ -419,51 +423,14 @@ impl ImguiDisplayTrigger for Trigger {
         let same_line = || ui.same_line_with_spacing(0.0, 3.0);
 
         match self {
-            Trigger::Time(When::Start) => ui.text("When the game starts"),
-            Trigger::Time(When::End) => ui.text("When the game ends"),
-            Trigger::Time(When::Exact { time }) => {
-                ui.text(format!("When the time is {:.2} seconds", time))
-            }
-            Trigger::Time(When::Random { start, end }) => ui.text(format!(
-                "At a random time between {:.2} and {:.2} seconds",
-                start, end,
-            )),
             Trigger::Collision(CollisionWith::Object { name }) => {
                 ui.text("While this object collides with");
                 same_line();
                 object_button(name);
             }
-            Trigger::Collision(CollisionWith::Area(area)) => ui.text(format!(
-                "While this object is inside {}, {} and {}, {}",
-                area.min.x, area.min.y, area.max.x, area.max.y
-            )),
-            Trigger::WinStatus(status) => match status {
-                WinStatus::Won => ui.text("While you have won the game"),
-                WinStatus::Lost => ui.text("While you have lost the game"),
-                WinStatus::NotYetWon => ui.text("While you haven't won"),
-                WinStatus::NotYetLost => ui.text("While you haven't lost"),
-                WinStatus::HasBeenWon => ui.text("When you win the game"),
-                WinStatus::HasBeenLost => ui.text("When you lose the game"),
-            },
             Trigger::Input(Input::Mouse { over, interaction }) => {
                 if let MouseOver::Anywhere = over {
-                    match interaction {
-                        MouseInteraction::Button { state } => match state {
-                            ButtonState::Press => ui.text("When the screen is clicked"),
-                            ButtonState::Down => {
-                                ui.text("While the mouse button is down");
-                            }
-                            ButtonState::Release => {
-                                ui.text("When the mouse button is released");
-                            }
-                            ButtonState::Up => {
-                                ui.text("While the mouse button isn't pressed");
-                            }
-                        },
-                        MouseInteraction::Hover => {
-                            ui.text("While the mouse hovers over the screen (always true)");
-                        }
-                    }
+                    ui.text(self.to_string());
                 } else {
                     let show_clicked_object = |clicked_object: &MouseOver| match clicked_object {
                         MouseOver::Object { name } => {
@@ -563,9 +530,9 @@ impl ImguiDisplayTrigger for Trigger {
                     same_line();
                     ui.text("animation is finished");
                 }
-                PropertyCheck::Timer => ui.text("When this object's timer hits zero"),
+                _ => ui.text(self.to_string()),
             },
-            Trigger::Random { chance } => ui.text(format!("With a {}% chance", chance * 100.0)),
+            _ => ui.text(self.to_string()),
         };
     }
 }
@@ -576,474 +543,17 @@ trait ImguiDisplayAction {
 
 impl ImguiDisplayAction for Action {
     fn display(&self, ui: &imgui::Ui, game: &GameData, images: &Images, indent: usize) {
-        let image_tooltip = |image_name: &str| {
-            if ui.is_item_hovered() {
-                ui.tooltip(|| {
-                    let texture_id = images[image_name].id;
-                    imgui::Image::new(imgui::TextureId::from(texture_id as usize), [200.0, 200.0])
-                        .build(ui);
-                });
-            }
-        };
-
-        let object_tooltip = |object_name: &str| {
-            if ui.is_item_hovered() {
-                ui.tooltip(|| match game.objects.get_obj(object_name) {
-                    Ok(object) => match &object.sprite {
-                        Sprite::Image { name: image_name } => {
-                            if let Some(texture) = &images.get(image_name) {
-                                let w = texture.width as f32;
-                                let h = texture.height as f32;
-                                let m = w.max(h);
-                                let w = w / m * 200.0;
-                                let h = h / m * 200.0;
-                                imgui::Image::new(
-                                    imgui::TextureId::from(texture.id as usize),
-                                    [w, h],
-                                )
-                                .build(ui);
-                            } else {
-                                ui.text_colored(
-                                    [1.0, 0.0, 0.0, 1.0],
-                                    format!("Warning: Image `{}` not found", image_name),
-                                );
-                            }
-                        }
-                        Sprite::Colour(colour) => {
-                            // TODO: Show colour
-                        }
-                    },
-                    Err(_) => {
-                        ui.text_colored(
-                            [1.0, 0.0, 0.0, 1.0],
-                            format!("Warning: Object `{}` not found", object_name),
-                        );
-                    }
-                });
-            }
-        };
-
-        let object_button_with_label = |label: &imgui::ImStr, object_name: &str| {
-            if game.objects.iter().any(|o| o.name == object_name) {
-                ui.text(label);
-            } else {
-                ui.text_colored([1.0, 0.0, 0.0, 1.0], label);
-            }
-            object_tooltip(object_name);
-        };
-
-        let object_button = |object_name: &str| {
-            object_button_with_label(&imgui::ImString::from(object_name.to_string()), object_name);
-        };
-
-        let image_button_with_label = |label: &imgui::ImStr, image_name: &str| {
-            ui.text(label);
-            image_tooltip(image_name);
-        };
-
-        let image_button = |image_name: &str| {
-            image_button_with_label(&imgui::ImString::from(image_name.to_string()), image_name);
-        };
-
-        let sprite_button = |sprite: &Sprite| {
-            match sprite {
-                Sprite::Image { name } => {
-                    image_button(name);
-                }
-                Sprite::Colour(colour) => {
-                    ui.text(format!(
-                        "The colour {{ red: {}, green: {}, blue: {}, alpha: {} }}",
-                        colour.r, colour.g, colour.b, colour.a
-                    ));
-                }
-            };
-        };
-
-        let speed_to_string = |speed: &Speed| match speed {
-            Speed::Category(SpeedCategory::VerySlow) => "very slow".to_string(),
-            Speed::Category(SpeedCategory::Slow) => "slow".to_string(),
-            Speed::Category(SpeedCategory::Normal) => "normal".to_string(),
-            Speed::Category(SpeedCategory::Fast) => "fast".to_string(),
-            Speed::Category(SpeedCategory::VeryFast) => "very fast".to_string(),
-            Speed::Value(value) => format!("speed: {}", value),
-        };
-
-        let same_line = || ui.same_line_with_spacing(0.0, 3.0);
-        let dir_to_str = |dir| match dir {
-            CompassDirection::Up => "up",
-            CompassDirection::UpRight => "up-right",
-            CompassDirection::Right => "right",
-            CompassDirection::DownRight => "down-right",
-            CompassDirection::Down => "down",
-            CompassDirection::DownLeft => "down-left",
-            CompassDirection::Left => "left",
-            CompassDirection::UpLeft => "up-left",
-        };
-
-        // TODO: Remove this
-        use wee::*;
-
         ui.text("\t".repeat(indent));
         ui.same_line_with_spacing(0.0, 0.0);
 
         match self {
-            Action::Motion(motion) => motion.display(ui, game, images),
-            Action::Win => ui.text("Win the game"),
-            Action::Lose => ui.text("Lose the game"),
-            Action::Effect(effect) => match effect {
-                Effect::Freeze => ui.text("Freeze the screen"),
-                Effect::None => ui.text("Remove screen effects"),
-            },
-            Action::PlaySound { name } => ui.text(format!("Play the {} sound", name)),
-            Action::StopMusic => ui.text("Stop the music"),
-            Action::Animate {
-                animation_type,
-                sprites,
-                speed,
-            } => {
-                let speed = speed_to_string(speed);
-                if let AnimationType::Loop = animation_type {
-                    ui.text(format!("Loops an animation {}", speed));
-                } else {
-                    ui.text(format!("Plays an animation once {}", speed));
-                }
-            }
-            Action::DrawText {
-                text,
-                font,
-                colour,
-                resize,
-            } => {
-                let change_size = if let TextResize::MatchText = resize {
-                    " changing this object's size to match the text size"
-                } else {
-                    ""
-                };
-                let colour = format!(
-                    "red: {}, green: {}, blue: {}, alpha: {}",
-                    colour.r, colour.g, colour.b, colour.a
-                );
-                ui.text(format!(
-                    "Draws `{}` using the {} font with colour ({}) {}",
-                    text, font, colour, change_size
-                ));
-            }
-            Action::SetProperty(PropertySetter::Angle(angle_setter)) => {
-                match angle_setter {
-                    AngleSetter::Value(value) => {
-                        ui.text(format!("Set this object's angle to {}", value))
-                    }
-                    AngleSetter::Increase(value) => {
-                        ui.text(format!("Increase this object's angle by {}", value))
-                    }
-                    AngleSetter::Decrease(value) => {
-                        ui.text(format!("Decrease this object's angle by {}", value))
-                    }
-                    AngleSetter::Match { name } => {
-                        ui.text(format!("Have the same angle as {}", name))
-                    }
-                    AngleSetter::Clamp { min, max } => ui.text(format!(
-                        "Clamp this object's angle to between {} and {} degrees",
-                        min, max
-                    )),
-                    AngleSetter::RotateToMouse => ui.text("Rotate towards the mouse"),
-                };
-            }
-            Action::SetProperty(PropertySetter::Sprite(sprite)) => {
-                ui.text(format!("Set this object's sprite to {:?}", sprite))
-            }
-            Action::SetProperty(PropertySetter::Size(size_setter)) => {
-                match size_setter {
-                    SizeSetter::Value(size) => ui.text(format!(
-                        "Set this object's width to {} and its height to {}",
-                        size.width, size.height
-                    )),
-                    SizeSetter::Grow(SizeDifference::Value(size)) => ui.text(format!(
-                        "Grow this object's width by {}px and its height by {}px",
-                        size.width, size.height
-                    )),
-                    SizeSetter::Shrink(SizeDifference::Value(size)) => ui.text(format!(
-                        "Shrink this object's width by {}px and its height by {}px",
-                        size.width, size.height
-                    )),
-                    SizeSetter::Grow(SizeDifference::Percent(percent)) => ui.text(format!(
-                        "Grow this object's width by {}% and its height by {}%",
-                        percent.width * 100.0,
-                        percent.height * 100.0
-                    )),
-                    SizeSetter::Shrink(SizeDifference::Percent(percent)) => ui.text(format!(
-                        "Shrink this object's width by {}% and its height by {}%",
-                        percent.width * 100.0,
-                        percent.height * 100.0
-                    )),
-                    SizeSetter::Clamp { min, max } => ui.text(format!(
-                        "Clamp this object's size between {}x{} pixels and {}x{} pixels",
-                        min.width, min.height, max.width, max.height
-                    )),
-                };
-            }
-            Action::SetProperty(PropertySetter::Switch(switch)) => ui.text(format!(
-                "Set the switch {}",
-                if let Switch::On = switch { "on" } else { "off" }
-            )),
-            Action::SetProperty(PropertySetter::Timer { time }) => {
-                ui.text(format!("Set the timer to {:.2} seconds ", time))
-            }
-            Action::SetProperty(PropertySetter::FlipHorizontal(FlipSetter::Flip)) => {
-                ui.text("Flip this object horizontally")
-            }
-            Action::SetProperty(PropertySetter::FlipVertical(FlipSetter::Flip)) => {
-                ui.text("Flip this object vertically")
-            }
-            Action::SetProperty(PropertySetter::FlipHorizontal(FlipSetter::SetFlip(flipped))) => {
-                ui.text(format!("Set this object's horizontal flip to {}", flipped))
-            }
-            Action::SetProperty(PropertySetter::FlipVertical(FlipSetter::SetFlip(flipped))) => {
-                ui.text(format!("Set this object's vertical flip to {}", flipped))
-            }
-            Action::SetProperty(PropertySetter::Layer(layer_setter)) => {
-                match layer_setter {
-                    LayerSetter::Value(value) => {
-                        ui.text(format!("Set this object's layer to {}", value))
-                    }
-                    LayerSetter::Increase => ui.text("Increase this object's layer by 1"),
-                    LayerSetter::Decrease => ui.text("Decrease this object's layer by 1"),
-                };
-            }
             Action::Random { random_actions } => {
                 ui.text("Chooses a random action");
                 for action in random_actions {
                     action.display(ui, game, images, indent + 1);
                 }
             }
-        };
-    }
-}
-
-trait ImguiDisplayMotion {
-    fn display(&self, ui: &imgui::Ui, game: &GameData, images: &Images);
-}
-
-impl ImguiDisplayMotion for Motion {
-    fn display(&self, ui: &imgui::Ui, game: &GameData, images: &Images) {
-        let speed_to_string = |speed: &Speed| match speed {
-            Speed::Category(SpeedCategory::VerySlow) => "very slow".to_string(),
-            Speed::Category(SpeedCategory::Slow) => "slow".to_string(),
-            Speed::Category(SpeedCategory::Normal) => "normal".to_string(),
-            Speed::Category(SpeedCategory::Fast) => "fast".to_string(),
-            Speed::Category(SpeedCategory::VeryFast) => "very fast".to_string(),
-            Speed::Value(value) => format!("speed: {}", value),
-        };
-
-        let same_line = || ui.same_line_with_spacing(0.0, 3.0);
-        let dir_to_str = |dir| match dir {
-            CompassDirection::Up => "up",
-            CompassDirection::UpRight => "up-right",
-            CompassDirection::Right => "right",
-            CompassDirection::DownRight => "down-right",
-            CompassDirection::Down => "down",
-            CompassDirection::DownLeft => "down-left",
-            CompassDirection::Left => "left",
-            CompassDirection::UpLeft => "up-left",
-        };
-
-        let angle_to_string = |angle: Angle| match angle {
-            Angle::Current => "in the current angle".to_string(),
-            Angle::Degrees(angle) => format!("at a {} degree angle", angle),
-            Angle::Random { min, max } => format!("in a random angle between {} and {}", min, max),
-        };
-
-        // TODO: Remove this
-        use wee::*;
-
-        match self {
-            Motion::Stop => ui.text("Stop this object"),
-            Motion::GoStraight { direction, speed } => {
-                let speed = speed_to_string(speed);
-                match direction {
-                    MovementDirection::Direction {
-                        possible_directions: dirs,
-                    } => {
-                        if dirs.is_empty() {
-                            ui.text(format!("Go {} in a random direction", speed));
-                        } else if dirs.len() == 1 {
-                            ui.text(format!(
-                                "Go {} {}",
-                                dir_to_str(*dirs.iter().next().unwrap()),
-                                speed
-                            ));
-                        } else {
-                            let dirs: Vec<&str> = dirs.iter().map(|dir| dir_to_str(*dir)).collect();
-                            let dirs = dirs.join(", ");
-                            ui.text(format!("Go {} in a direction chosen from {}", speed, dirs));
-                        }
-                    }
-                    MovementDirection::Angle(angle) => match angle {
-                        Angle::Current => {
-                            ui.text(format!("Go {} in this object's current angle", speed))
-                        }
-
-                        Angle::Degrees(angle) => {
-                            ui.text(format!("Go {} at a {} angle", speed, angle))
-                        }
-                        Angle::Random { min, max } => ui.text(format!(
-                            "Go {} at a random angle between {} and {}",
-                            speed, min, max
-                        )),
-                    },
-                }
-            }
-            Motion::JumpTo(jump_location) => match jump_location {
-                JumpLocation::Point(point) => {
-                    ui.text(format!("Jump to {}, {}", point.x, point.y));
-                }
-                JumpLocation::Relative { to, distance } => match to {
-                    RelativeTo::CurrentPosition => {
-                        ui.text(format!(
-                            "Jump {}, {} relative to this object's position",
-                            distance.x, distance.y
-                        ));
-                    }
-                    RelativeTo::CurrentAngle => {
-                        ui.text(format!(
-                            "Jump {}, {} relative to this object's angle",
-                            distance.x, distance.y
-                        ));
-                    }
-                },
-                JumpLocation::Area(area) => {
-                    ui.text(format!(
-                        "Jump to a random location between {}, {} and {}, {}",
-                        area.min.x, area.min.y, area.max.x, area.max.y
-                    ));
-                }
-                JumpLocation::ClampPosition { area } => {
-                    ui.text(format!(
-                        "Clamp this object's position within {}, {} and {}, {}",
-                        area.min.x, area.min.y, area.max.x, area.max.y
-                    ));
-                }
-                JumpLocation::Object { name } => {
-                    ui.text(format!("Jump to {}'s position", name));
-                }
-                JumpLocation::Mouse => {
-                    ui.text("Jump to the mouse");
-                }
-            },
-            Motion::Roam {
-                movement_type,
-                area,
-                speed,
-            } => {
-                let speed = speed_to_string(speed);
-                match movement_type {
-                    MovementType::Wiggle => ui.text(format!(
-                        "Wiggle {} between {}, {} and {}, {}",
-                        speed, area.min.x, area.min.y, area.max.x, area.max.y,
-                    )),
-                    MovementType::Insect => ui.text(format!(
-                        "Move like an insect {} between {}, {} and {}, {}",
-                        speed, area.min.x, area.min.y, area.max.x, area.max.y,
-                    )),
-                    MovementType::Reflect {
-                        movement_handling, ..
-                    } => {
-                        let movement_handling = match movement_handling {
-                            MovementHandling::Anywhere => "",
-                            MovementHandling::TryNotToOverlap => {
-                                " trying not to overlap with over objects"
-                            }
-                        };
-                        ui.text(format!(
-                            "Reflect {} between {}, {} and {}, {}{}",
-                            speed,
-                            area.min.x,
-                            area.min.y,
-                            area.max.x,
-                            area.max.y,
-                            movement_handling,
-                        ));
-                    }
-                    MovementType::Bounce { .. } => ui.text(format!(
-                        "Move like an insect {} between {}, {} and {}, {}",
-                        speed, area.min.x, area.min.y, area.max.x, area.max.y,
-                    )),
-                };
-            }
-            Motion::Swap { name } => ui.text(format!("Swap position with {}", name)),
-            Motion::Target {
-                target,
-                target_type,
-                offset,
-                speed,
-            } => {
-                let name = match target {
-                    Target::Object { name } => name,
-                    Target::Mouse => "Mouse",
-                };
-                let offset = if *offset == Vec2::zero() {
-                    "".to_string()
-                } else {
-                    format!(" with an offset of {}, {}", offset.x, offset.y)
-                };
-                match target_type {
-                    TargetType::Follow => {
-                        ui.text(format!(
-                            "Follow {} {}{}",
-                            name,
-                            speed_to_string(speed),
-                            offset
-                        ));
-                    }
-                    TargetType::StopWhenReached => {
-                        ui.text(format!(
-                            "Target {} {}{}",
-                            name,
-                            speed_to_string(speed),
-                            offset
-                        ));
-                    }
-                }
-            }
-            Motion::Accelerate { direction, speed } => {
-                let speed = speed_to_string(speed);
-                match direction {
-                    MovementDirection::Direction {
-                        possible_directions: dirs,
-                    } => {
-                        if dirs.is_empty() {
-                            ui.text(format!("Accelerate {} in a random direction", speed));
-                        } else if dirs.len() == 1 {
-                            ui.text(format!(
-                                "Accelerate {} {}",
-                                dir_to_str(*dirs.iter().next().unwrap()),
-                                speed
-                            ));
-                        } else {
-                            let dirs: Vec<&str> = dirs.iter().map(|dir| dir_to_str(*dir)).collect();
-                            let dirs = dirs.join(", ");
-                            ui.text(format!(
-                                "Accelerate {} in a direction chosen from {}",
-                                speed, dirs
-                            ));
-                        }
-                    }
-                    MovementDirection::Angle(angle) => match angle {
-                        Angle::Current => ui.text(format!(
-                            "Accelerate {} in this object's current angle",
-                            speed
-                        )),
-
-                        Angle::Degrees(angle) => {
-                            ui.text(format!("Accelerate {} at a {} angle", speed, angle))
-                        }
-                        Angle::Random { min, max } => ui.text(format!(
-                            "Accelerate {} at a random angle between {} and {}",
-                            speed, min, max
-                        )),
-                    },
-                }
-            }
+            _ => ui.text(self.to_string()),
         };
     }
 }
@@ -1062,7 +572,7 @@ fn right_window(
         .size([0.0, 0.0])
         .scroll_bar(false)
         .build(ui, || {
-            fn tab_bar<F: FnOnce()>(label: &imgui::ImStr, f: F) {
+            fn tab_bar<F: FnOnce()>(label: &ImStr, f: F) {
                 unsafe {
                     if imgui::sys::igBeginTabBar(label.as_ptr(), 0) {
                         f();
@@ -1071,7 +581,7 @@ fn right_window(
                 }
             }
 
-            fn tab_item<F: FnOnce()>(label: &imgui::ImStr, f: F) {
+            fn tab_item<F: FnOnce()>(label: &ImStr, f: F) {
                 unsafe {
                     if imgui::sys::igBeginTabItem(
                         label.as_ptr(),
@@ -2031,7 +1541,7 @@ fn instruction_window(
                                     fn direction_checkbox(
                                         ui: &imgui::Ui,
                                         possible_directions: &mut HashSet<CompassDirection>,
-                                        label: &imgui::ImStr,
+                                        label: &ImStr,
                                         direction: CompassDirection,
                                     ) {
                                         let mut checked = possible_directions.contains(&direction);
@@ -2313,7 +1823,7 @@ fn instruction_window(
                                             fn direction_checkbox(
                                                 ui: &imgui::Ui,
                                                 possible_directions: &mut HashSet<CompassDirection>,
-                                                label: &imgui::ImStr,
+                                                label: &ImStr,
                                                 direction: CompassDirection,
                                             ) {
                                                 let mut checked =
@@ -2467,7 +1977,462 @@ fn instruction_window(
                                 *name = object_names[current_object].clone();
                             }
                         }
+                        Motion::Target {
+                            target,
+                            target_type,
+                            offset,
+                            speed,
+                        } => {
+                            if ui.radio_button_bool(
+                                im_str!("Target Object"),
+                                *target != Target::Mouse,
+                            ) {
+                                *target = Target::Object {
+                                    name: object_names[0].clone(),
+                                };
+                            }
+                            if ui.radio_button_bool(
+                                im_str!("Target Mouse"),
+                                *target == Target::Mouse,
+                            ) {
+                                *target = Target::Mouse;
+                            }
+                            if let Target::Object { name } = target {
+                                let mut current_object = object_names
+                                    .iter()
+                                    .position(|obj_name| obj_name == name)
+                                    .unwrap();
+                                let keys: Vec<ImString> = object_names
+                                    .iter()
+                                    .map(|name| ImString::from(name.clone()))
+                                    .collect();
+                                let combo_keys: Vec<_> = keys.iter().collect();
+                                if imgui::ComboBox::new(im_str!("Object")).build_simple_string(
+                                    &ui,
+                                    &mut current_object,
+                                    &combo_keys,
+                                ) {
+                                    *name = object_names[current_object].clone();
+                                }
+                            }
+                            if ui.radio_button_bool(
+                                im_str!("Follow Object"),
+                                *target_type == TargetType::Follow,
+                            ) {
+                                *target_type = TargetType::Follow;
+                            }
+                            if ui.radio_button_bool(
+                                im_str!("Stop When Reached"),
+                                *target_type == TargetType::StopWhenReached,
+                            ) {
+                                *target_type = TargetType::StopWhenReached;
+                            }
+
+                            ui.input_float(im_str!("Offset X"), &mut offset.x).build();
+                            ui.input_float(im_str!("Offset Y"), &mut offset.y).build();
+
+                            let speeds = [
+                                im_str!("Very Slow"),
+                                im_str!("Slow"),
+                                im_str!("Normal"),
+                                im_str!("Fast"),
+                                im_str!("Very Fast"),
+                                im_str!("Value"),
+                            ];
+                            let mut current_speed = match speed {
+                                Speed::Category(SpeedCategory::VerySlow) => 0,
+                                Speed::Category(SpeedCategory::Slow) => 1,
+                                Speed::Category(SpeedCategory::Normal) => 2,
+                                Speed::Category(SpeedCategory::Fast) => 3,
+                                Speed::Category(SpeedCategory::VeryFast) => 4,
+                                Speed::Value(_) => 5,
+                            };
+
+                            if imgui::ComboBox::new(im_str!("Speed")).build_simple_string(
+                                &ui,
+                                &mut current_speed,
+                                &speeds,
+                            ) {
+                                *speed = match current_speed {
+                                    0 => Speed::Category(SpeedCategory::VerySlow),
+                                    1 => Speed::Category(SpeedCategory::Slow),
+                                    2 => Speed::Category(SpeedCategory::Normal),
+                                    3 => Speed::Category(SpeedCategory::Fast),
+                                    4 => Speed::Category(SpeedCategory::VeryFast),
+                                    5 => Speed::Value(0.0),
+                                    _ => unreachable!(),
+                                };
+                            }
+                            match speed {
+                                Speed::Value(value) => {
+                                    ui.input_float(im_str!("Speed"), value).build();
+                                }
+                                _ => {}
+                            }
+                        }
                         _ => {}
+                    }
+                }
+                Action::PlaySound { name } => {
+                    // TODO: Pass in assets
+                }
+                Action::SetProperty(setter) => {
+                    let property_types = [
+                        im_str!("Sprite"),
+                        im_str!("Angle"),
+                        im_str!("Size"),
+                        im_str!("Switch"),
+                        im_str!("Timer"),
+                        im_str!("Flip Horizontal"),
+                        im_str!("Flip Vertical"),
+                        im_str!("Layer"),
+                    ];
+                    let mut current_property_position = match setter {
+                        PropertySetter::Sprite(_) => 0,
+                        PropertySetter::Angle(_) => 1,
+                        PropertySetter::Size(_) => 2,
+                        PropertySetter::Switch(_) => 3,
+                        PropertySetter::Timer { .. } => 4,
+                        PropertySetter::FlipHorizontal(_) => 5,
+                        PropertySetter::FlipVertical(_) => 6,
+                        PropertySetter::Layer(_) => 7,
+                    };
+                    if imgui::ComboBox::new(im_str!("Property Type")).build_simple_string(
+                        &ui,
+                        &mut current_property_position,
+                        &property_types,
+                    ) {
+                        *setter = match current_property_position {
+                            0 => PropertySetter::Sprite(Sprite::Colour(Colour::black())),
+                            1 => PropertySetter::Angle(AngleSetter::Value(0.0)),
+                            2 => PropertySetter::Size(SizeSetter::Value(Size::new(1.0, 1.0))),
+                            3 => PropertySetter::Switch(Switch::On),
+                            4 => PropertySetter::Timer { time: 60 },
+                            5 => PropertySetter::FlipHorizontal(FlipSetter::Flip),
+                            6 => PropertySetter::FlipVertical(FlipSetter::Flip),
+                            7 => PropertySetter::Layer(LayerSetter::Value(0)),
+                            _ => unreachable!(),
+                        };
+                    }
+                    match setter {
+                        PropertySetter::Sprite(sprite) => {
+                            let mut sprite_type = if let Sprite::Image { .. } = sprite {
+                                0
+                            } else {
+                                1
+                            };
+                            let sprite_typename = if sprite_type == 0 {
+                                "Image".to_string()
+                            } else {
+                                "Colour".to_string()
+                            };
+                            if imgui::Slider::new(
+                                im_str!("Sprite"),
+                                std::ops::RangeInclusive::new(0, 1),
+                            )
+                            .display_format(&ImString::from(sprite_typename))
+                            .build(&ui, &mut sprite_type)
+                            {
+                                *sprite = if sprite_type == 0 {
+                                    Sprite::Image {
+                                        name: images.keys().next().unwrap().clone(),
+                                    }
+                                } else {
+                                    Sprite::Colour(Colour::black())
+                                };
+                            }
+
+                            match sprite {
+                                Sprite::Image { name: image_name } => {
+                                    // TODO: Tidy up
+                                    let mut current_image =
+                                        images.keys().position(|k| k == image_name).unwrap_or(0);
+                                    let path = match filename {
+                                        Some(filename) => {
+                                            Path::new(filename).parent().unwrap().join("images")
+                                        }
+                                        None => Path::new("games").to_owned(),
+                                    };
+
+                                    if images.is_empty() {
+                                        if ui.button(im_str!("Add a New Image"), NORMAL_BUTTON) {
+                                            let first_key = choose_image_from_files(
+                                                &mut game.asset_files,
+                                                images,
+                                                path,
+                                            );
+                                            match first_key {
+                                                Some(key) => {
+                                                    *sprite = Sprite::Image { name: key.clone() };
+                                                }
+                                                None => {
+                                                    log::error!(
+                                                        "None of the new images loaded correctly"
+                                                    );
+                                                }
+                                            }
+                                        }
+                                    } else {
+                                        let mut keys: Vec<ImString> = images
+                                            .keys()
+                                            .map(|k| ImString::from(k.clone()))
+                                            .collect();
+
+                                        keys.push(ImString::new("Add a New Image"));
+
+                                        let image_names: Vec<&ImString> = keys.iter().collect();
+
+                                        if imgui::ComboBox::new(im_str!("Image"))
+                                            .build_simple_string(
+                                                &ui,
+                                                &mut current_image,
+                                                &image_names,
+                                            )
+                                        {
+                                            if current_image == image_names.len() - 1 {
+                                                let first_key = choose_image_from_files(
+                                                    &mut game.asset_files,
+                                                    images,
+                                                    path,
+                                                );
+                                                match first_key {
+                                                    Some(key) => {
+                                                        *sprite =
+                                                            Sprite::Image { name: key.clone() };
+                                                    }
+                                                    None => {
+                                                        log::error!("None of the new images loaded correctly");
+                                                    }
+                                                }
+                                            } else {
+                                                match images.keys().nth(current_image) {
+                                                    Some(image) => {
+                                                        *sprite = Sprite::Image {
+                                                            name: image.clone(),
+                                                        };
+                                                    }
+                                                    None => {
+                                                        log::error!(
+                                                            "Could not set image to index {}",
+                                                            current_image
+                                                        );
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    };
+                                }
+                                Sprite::Colour(colour) => {
+                                    let mut colour_array = [colour.r, colour.g, colour.b, colour.a];
+                                    imgui::ColorEdit::new(im_str!("Colour"), &mut colour_array)
+                                        .alpha(true)
+                                        .build(ui);
+                                    *colour = Colour::rgba(
+                                        colour_array[0],
+                                        colour_array[1],
+                                        colour_array[2],
+                                        colour_array[3],
+                                    );
+                                }
+                            };
+                        }
+                        PropertySetter::Angle(angle_setter) => {
+                            let angle_types = [
+                                im_str!("Value"),
+                                im_str!("Increase"),
+                                im_str!("Decrease"),
+                                im_str!("Match"),
+                                im_str!("Clamp"),
+                                im_str!("Rotate To Mouse"),
+                            ];
+                            let mut current_angle_position = match angle_setter {
+                                AngleSetter::Value(_) => 0,
+                                AngleSetter::Increase(_) => 1,
+                                AngleSetter::Decrease(_) => 2,
+                                AngleSetter::Match { .. } => 3,
+                                AngleSetter::Clamp { .. } => 4,
+                                AngleSetter::RotateToMouse => 5,
+                            };
+                            if imgui::ComboBox::new(im_str!("Angle Setter")).build_simple_string(
+                                &ui,
+                                &mut current_angle_position,
+                                &angle_types,
+                            ) {
+                                *angle_setter = match current_angle_position {
+                                    0 => AngleSetter::Value(0.0),
+                                    1 => AngleSetter::Increase(0.0),
+                                    2 => AngleSetter::Decrease(0.0),
+                                    3 => AngleSetter::Match {
+                                        name: object_names[0].clone(),
+                                    },
+                                    4 => AngleSetter::Clamp {
+                                        min: 0.0,
+                                        max: 360.0,
+                                    },
+                                    5 => AngleSetter::RotateToMouse,
+                                    _ => unreachable!(),
+                                };
+                            }
+
+                            match angle_setter {
+                                AngleSetter::Value(value) => {
+                                    ui.input_float(im_str!("Angle"), value).build();
+                                }
+                                AngleSetter::Increase(value) => {
+                                    ui.input_float(im_str!("Angle"), value).build();
+                                }
+                                AngleSetter::Decrease(value) => {
+                                    ui.input_float(im_str!("Angle"), value).build();
+                                }
+                                AngleSetter::Match { name } => {
+                                    let mut current_object = object_names
+                                        .iter()
+                                        .position(|obj_name| obj_name == name)
+                                        .unwrap();
+                                    let keys: Vec<ImString> = object_names
+                                        .iter()
+                                        .map(|name| ImString::from(name.clone()))
+                                        .collect();
+                                    let combo_keys: Vec<_> = keys.iter().collect();
+                                    if imgui::ComboBox::new(im_str!("Object")).build_simple_string(
+                                        &ui,
+                                        &mut current_object,
+                                        &combo_keys,
+                                    ) {
+                                        *name = object_names[current_object].clone();
+                                    }
+                                }
+                                AngleSetter::Clamp { min, max } => {
+                                    ui.input_float(im_str!("Min Angle"), min).build();
+                                    ui.input_float(im_str!("Max Angle"), max).build();
+                                }
+                                _ => {}
+                            }
+                        }
+                        PropertySetter::Size(size_setter) => {
+                            size_setter.combo(ui);
+                            match size_setter {
+                                SizeSetter::Value(size) => {
+                                    ui.input_float(im_str!("Width"), &mut size.width).build();
+                                    ui.input_float(im_str!("Height"), &mut size.height).build();
+                                }
+                                SizeSetter::Grow(size_difference)
+                                | SizeSetter::Shrink(size_difference) => {
+                                    size_difference.radio(ui);
+
+                                    match size_difference {
+                                        SizeDifference::Value(size)
+                                        | SizeDifference::Percent(size) => {
+                                            ui.input_float(im_str!("Width"), &mut size.width)
+                                                .build();
+                                            ui.input_float(im_str!("Height"), &mut size.height)
+                                                .build();
+                                        }
+                                    }
+                                }
+                                SizeSetter::Clamp { min, max } => {
+                                    ui.input_float(im_str!("Min Width"), &mut min.width).build();
+                                    ui.input_float(im_str!("Min Height"), &mut min.height)
+                                        .build();
+                                    ui.input_float(im_str!("Max Width"), &mut max.width).build();
+                                    ui.input_float(im_str!("Max Height"), &mut max.height)
+                                        .build();
+                                }
+                            }
+                        }
+                        PropertySetter::Switch(switch) => {
+                            if ui.radio_button_bool(im_str!("Switch"), *switch == Switch::On) {
+                                *switch = !*switch;
+                            }
+                        }
+                        PropertySetter::Timer { time } => {
+                            let mut t = *time as i32;
+                            ui.input_int(im_str!("Time"), &mut t).build();
+                            *time = t as u32;
+                        }
+                        PropertySetter::FlipHorizontal(flip_setter)
+                        | PropertySetter::FlipVertical(flip_setter) => {
+                            flip_setter.radio(ui);
+
+                            if let FlipSetter::SetFlip(flip) = flip_setter {
+                                if ui.radio_button_bool(im_str!("Switch"), *flip) {
+                                    *flip = !*flip;
+                                }
+                            }
+                        }
+                        PropertySetter::Layer(layer_setter) => {
+                            layer_setter.radio(ui);
+
+                            if let LayerSetter::Value(value) = layer_setter {
+                                let mut v = *value as i32;
+                                ui.input_int(im_str!("Time"), &mut v).build();
+                                *value = v as u8;
+                            }
+                        }
+                    }
+                }
+                Action::Animate {
+                    animation_type,
+                    sprites,
+                    speed,
+                } => {
+                    if ui.radio_button_bool(
+                        im_str!("Loop Animation"),
+                        *animation_type == AnimationType::Loop,
+                    ) {
+                        *animation_type = !*animation_type;
+                    }
+
+                    // TODO: Add ability to add sprites here
+
+                    speed.combo(ui);
+                    if let Speed::Value(value) = speed {
+                        ui.input_float(im_str!("Speed"), value).build();
+                    }
+                }
+                Action::DrawText {
+                    text,
+                    font,
+                    colour,
+                    resize,
+                } => {
+                    let mut change_text = ImString::from(text.to_owned());
+                    ui.input_text(im_str!("Text"), &mut change_text)
+                        .resize_buffer(true)
+                        .build();
+                    *text = change_text.to_str().to_owned();
+
+                    // TODO: Set font
+
+                    let mut col = [colour.r, colour.g, colour.b, colour.a];
+
+                    if imgui::ColorEdit::new(im_str!("Colour"), &mut col).build(&ui) {
+                        *colour = Colour {
+                            r: col[0],
+                            g: col[1],
+                            b: col[2],
+                            a: col[3],
+                        };
+                    }
+
+                    if ui.radio_button_bool(
+                        im_str!("Adjust Object Size to Match Text"),
+                        *resize == TextResize::MatchText,
+                    ) {
+                        *resize = !*resize;
+                    }
+                }
+                Action::Random { random_actions } => {
+                    // TODO: Finish this
+                    ui.text("Actions:");
+                    fn list_actions(ui: &imgui::Ui, actions: &[Action]) {
+                        for action in actions.iter() {
+                            ui.text(action.to_string());
+                        }
+                    }
+                    list_actions(&ui, &random_actions);
+                    if ui.button(im_str!("Add Action"), SMALL_BUTTON) {
+                        random_actions.push(Action::Win);
                     }
                 }
                 _ => {}
@@ -2477,6 +2442,183 @@ fn instruction_window(
                 *instruction_mode = InstructionMode::Edit;
             }
         }
+    }
+}
+
+trait EnumSetters: Sized {
+    fn to_value(&self) -> usize;
+
+    fn from_value(value: usize) -> Self;
+
+    fn component<F: Fn(&mut Self, &ImStr, &[&ImStr])>(&mut self, f: F);
+
+    fn combo(&mut self, ui: &imgui::Ui) {
+        self.component(|s, label, types| {
+            let mut position = s.to_value();
+            if imgui::ComboBox::new(label).build_simple_string(&ui, &mut position, types) {
+                *s = Self::from_value(position);
+            }
+        })
+    }
+
+    fn radio(&mut self, ui: &imgui::Ui) {
+        self.component(|s, _, types| {
+            for (i, t) in types.iter().enumerate() {
+                if ui.radio_button_bool(t, s.to_value() == i) {
+                    *s = Self::from_value(i);
+                }
+            }
+        })
+    }
+
+    fn radio_bool(&mut self, label: &ImStr, ui: &imgui::Ui) {
+        if ui.radio_button_bool(im_str!("Loop Animation"), self.to_value() == 0) {
+            *self = Self::from_value(!self.to_value());
+        }
+    }
+}
+
+impl EnumSetters for SizeSetter {
+    fn to_value(&self) -> usize {
+        match self {
+            SizeSetter::Value(_) => 0,
+            SizeSetter::Grow(_) => 1,
+            SizeSetter::Shrink(_) => 2,
+            SizeSetter::Clamp { .. } => 3,
+        }
+    }
+
+    fn from_value(value: usize) -> Self {
+        match value {
+            0 => SizeSetter::Value(Size::new(1.0, 1.0)),
+            1 => SizeSetter::Grow(SizeDifference::Value(Size::new(100.0, 100.0))),
+            2 => SizeSetter::Shrink(SizeDifference::Value(Size::new(100.0, 100.0))),
+            3 => SizeSetter::Clamp {
+                min: Size::new(0.0, 0.0),
+                max: Size::new(100.0, 100.0),
+            },
+            _ => unreachable!(),
+        }
+    }
+
+    fn component<F: Fn(&mut Self, &ImStr, &[&ImStr])>(&mut self, f: F) {
+        let setter_types = [
+            im_str!("Value"),
+            im_str!("Grow"),
+            im_str!("Shrink"),
+            im_str!("Clamp"),
+        ];
+
+        f(self, im_str!("Size Setter"), &setter_types);
+    }
+}
+
+impl EnumSetters for SizeDifference {
+    fn to_value(&self) -> usize {
+        match self {
+            SizeDifference::Value(_) => 0,
+            SizeDifference::Percent(_) => 1,
+        }
+    }
+
+    fn from_value(value: usize) -> Self {
+        match value {
+            0 => SizeDifference::Value(Size::new(0.0, 0.0)),
+            1 => SizeDifference::Percent(Size::new(0.0, 0.0)),
+            _ => unreachable!(),
+        }
+    }
+
+    fn component<F: Fn(&mut Self, &ImStr, &[&ImStr])>(&mut self, f: F) {
+        let setter_types = [im_str!("Value"), im_str!("Percent")];
+
+        f(self, im_str!("Size Difference"), &setter_types);
+    }
+}
+
+impl EnumSetters for FlipSetter {
+    fn to_value(&self) -> usize {
+        match self {
+            FlipSetter::Flip => 0,
+            FlipSetter::SetFlip(_) => 1,
+        }
+    }
+
+    fn from_value(value: usize) -> Self {
+        match value {
+            0 => FlipSetter::Flip,
+            1 => FlipSetter::SetFlip(true),
+            _ => unreachable!(),
+        }
+    }
+
+    fn component<F: Fn(&mut Self, &ImStr, &[&ImStr])>(&mut self, f: F) {
+        let setter_types = [im_str!("Flip"), im_str!("Set Flip")];
+
+        f(self, im_str!("Flip Setter"), &setter_types);
+    }
+}
+
+impl EnumSetters for LayerSetter {
+    fn to_value(&self) -> usize {
+        match self {
+            Self::Value(_) => 0,
+            Self::Increase => 1,
+            Self::Decrease => 2,
+        }
+    }
+
+    fn from_value(value: usize) -> Self {
+        match value {
+            0 => Self::Value(0),
+            1 => Self::Increase,
+            2 => Self::Decrease,
+            _ => unreachable!(),
+        }
+    }
+
+    fn component<F: Fn(&mut Self, &ImStr, &[&ImStr])>(&mut self, f: F) {
+        let setter_types = [im_str!("Value"), im_str!("Increase"), im_str!("Decrease")];
+
+        f(self, im_str!("Layer Setter"), &setter_types);
+    }
+}
+
+impl EnumSetters for Speed {
+    fn to_value(&self) -> usize {
+        match self {
+            Speed::Category(SpeedCategory::VerySlow) => 0,
+            Speed::Category(SpeedCategory::Slow) => 1,
+            Speed::Category(SpeedCategory::Normal) => 2,
+            Speed::Category(SpeedCategory::Fast) => 3,
+            Speed::Category(SpeedCategory::VeryFast) => 4,
+            Speed::Value(_) => 5,
+        }
+    }
+
+    fn from_value(value: usize) -> Self {
+        match value {
+            0 => Speed::Category(SpeedCategory::VerySlow),
+            1 => Speed::Category(SpeedCategory::Slow),
+            2 => Speed::Category(SpeedCategory::Normal),
+            3 => Speed::Category(SpeedCategory::Fast),
+            4 => Speed::Category(SpeedCategory::VeryFast),
+            5 => Speed::Value(0.0),
+            _ => unreachable!(),
+        }
+    }
+
+    fn component<F: Fn(&mut Self, &ImStr, &[&ImStr])>(&mut self, f: F) {
+        let types = [
+            im_str!("Very Slow"),
+            im_str!("Slow"),
+            im_str!("Normal"),
+            im_str!("Fast"),
+            im_str!("Very Fast"),
+            im_str!("Value"),
+        ];
+
+        f(self, im_str!("Animation Type"), &types);
     }
 }
 
@@ -3334,7 +3476,7 @@ fn run_main_loop<'a, 'b>(
                                 }
                                 /*ui.popup(im_str!("Edit Object Name"), || {
                                     ui.text("Edit name:");
-                                    let mut text = imgui::ImString::from("Test".to_string());
+                                    let mut text = ImString::from("Test".to_string());
                                     ui.input_text(im_str!("##edit"), &mut text).build();
                                 });*/
 
