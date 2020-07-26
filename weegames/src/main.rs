@@ -1227,125 +1227,181 @@ fn instruction_window(
                             }
                         }
                         PropertyCheck::Sprite(sprite) => {
-                            let mut sprite_type = if let Sprite::Image { .. } = sprite {
-                                0
-                            } else {
-                                1
-                            };
-                            let sprite_typename = if sprite_type == 0 {
-                                "Image".to_string()
-                            } else {
-                                "Colour".to_string()
-                            };
-                            if imgui::Slider::new(
-                                im_str!("Sprite"),
-                                std::ops::RangeInclusive::new(0, 1),
-                            )
-                            .display_format(&ImString::from(sprite_typename))
-                            .build(&ui, &mut sprite_type)
-                            {
-                                *sprite = if sprite_type == 0 {
-                                    Sprite::Image {
-                                        name: images.keys().next().unwrap().clone(),
-                                    }
-                                } else {
-                                    Sprite::Colour(Colour::black())
-                                };
+                            trait SelectSpriteType {
+                                fn select_type(&mut self, ui: &imgui::Ui, images: &Images);
                             }
 
-                            match sprite {
-                                Sprite::Image { name: image_name } => {
-                                    // TODO: Tidy up
-                                    let mut current_image =
-                                        images.keys().position(|k| k == image_name).unwrap_or(0);
-                                    let path = match filename {
-                                        Some(filename) => {
-                                            Path::new(filename).parent().unwrap().join("images")
-                                        }
-                                        None => Path::new("games").to_owned(),
+                            impl SelectSpriteType for Sprite {
+                                fn select_type(&mut self, ui: &imgui::Ui, images: &Images) {
+                                    let mut sprite_type = if let Sprite::Image { .. } = self {
+                                        0
+                                    } else {
+                                        1
                                     };
+                                    let sprite_typename = if sprite_type == 0 {
+                                        "Image".to_string()
+                                    } else {
+                                        "Colour".to_string()
+                                    };
+                                    if imgui::Slider::new(
+                                        im_str!("Sprite"),
+                                        std::ops::RangeInclusive::new(0, 1),
+                                    )
+                                    .display_format(&ImString::from(sprite_typename))
+                                    .build(&ui, &mut sprite_type)
+                                    {
+                                        *self = if sprite_type == 0 {
+                                            Sprite::Image {
+                                                name: images.keys().next().unwrap().clone(),
+                                            }
+                                        } else {
+                                            Sprite::Colour(Colour::black())
+                                        };
+                                    }
+                                }
+                            }
+                            sprite.select_type(ui, images);
 
-                                    if images.is_empty() {
-                                        if ui.button(im_str!("Add a New Image"), NORMAL_BUTTON) {
-                                            let first_key = choose_image_from_files(
-                                                &mut game.asset_files,
-                                                images,
-                                                path,
-                                            );
-                                            match first_key {
-                                                Some(key) => {
-                                                    *sprite = Sprite::Image { name: key.clone() };
-                                                }
-                                                None => {
-                                                    log::error!(
-                                                        "None of the new images loaded correctly"
+                            trait ChooseNewImage {
+                                fn choose_new_image<P: AsRef<Path>>(
+                                    &mut self,
+                                    asset_files: &mut AssetFiles,
+                                    images: &mut Images,
+                                    path: P,
+                                );
+                            }
+
+                            impl ChooseNewImage for Sprite {
+                                fn choose_new_image<P: AsRef<Path>>(
+                                    &mut self,
+                                    asset_files: &mut AssetFiles,
+                                    images: &mut Images,
+                                    path: P,
+                                ) {
+                                    let first_key =
+                                        choose_image_from_files(asset_files, images, path);
+                                    match first_key {
+                                        Some(key) => {
+                                            *self = Sprite::Image { name: key.clone() };
+                                        }
+                                        None => {
+                                            log::error!("None of the new images loaded correctly");
+                                        }
+                                    }
+                                }
+                            }
+
+                            sprite.choose(ui, &mut game.asset_files, images, filename);
+
+                            trait ChooseSprite {
+                                fn choose(
+                                    &mut self,
+                                    ui: &imgui::Ui,
+                                    asset_files: &mut AssetFiles,
+                                    images: &mut Images,
+                                    filename: &Option<String>,
+                                );
+                            }
+
+                            impl ChooseSprite for Sprite {
+                                fn choose(
+                                    &mut self,
+                                    ui: &imgui::Ui,
+                                    asset_files: &mut AssetFiles,
+                                    images: &mut Images,
+                                    filename: &Option<String>,
+                                ) {
+                                    match self {
+                                        Sprite::Image { name: image_name } => {
+                                            // TODO: Tidy up
+                                            let path = match filename {
+                                                Some(filename) => Path::new(filename)
+                                                    .parent()
+                                                    .unwrap()
+                                                    .join("images"),
+                                                None => Path::new("games").to_owned(),
+                                            };
+
+                                            if images.is_empty() {
+                                                if ui.button(
+                                                    im_str!("Add a New Image"),
+                                                    NORMAL_BUTTON,
+                                                ) {
+                                                    self.choose_new_image(
+                                                        asset_files,
+                                                        images,
+                                                        path,
                                                     );
                                                 }
-                                            }
-                                        }
-                                    } else {
-                                        let mut keys: Vec<ImString> = images
-                                            .keys()
-                                            .map(|k| ImString::from(k.clone()))
-                                            .collect();
-
-                                        keys.push(ImString::new("Add a New Image"));
-
-                                        let image_names: Vec<&ImString> = keys.iter().collect();
-
-                                        if imgui::ComboBox::new(im_str!("Image"))
-                                            .build_simple_string(
-                                                &ui,
-                                                &mut current_image,
-                                                &image_names,
-                                            )
-                                        {
-                                            if current_image == image_names.len() - 1 {
-                                                let first_key = choose_image_from_files(
-                                                    &mut game.asset_files,
-                                                    images,
-                                                    path,
-                                                );
-                                                match first_key {
-                                                    Some(key) => {
-                                                        *sprite =
-                                                            Sprite::Image { name: key.clone() };
-                                                    }
-                                                    None => {
-                                                        log::error!("None of the new images loaded correctly");
-                                                    }
-                                                }
                                             } else {
-                                                match images.keys().nth(current_image) {
-                                                    Some(image) => {
-                                                        *sprite = Sprite::Image {
-                                                            name: image.clone(),
-                                                        };
-                                                    }
-                                                    None => {
-                                                        log::error!(
+                                                let mut current_image = images
+                                                    .keys()
+                                                    .position(|k| k == image_name)
+                                                    .unwrap_or(0);
+                                                let keys = {
+                                                    let mut keys: Vec<ImString> = images
+                                                        .keys()
+                                                        .map(|k| ImString::from(k.clone()))
+                                                        .collect();
+
+                                                    keys.push(ImString::new("Add a New Image"));
+
+                                                    keys
+                                                };
+
+                                                let image_names: Vec<&ImString> =
+                                                    keys.iter().collect();
+
+                                                if imgui::ComboBox::new(im_str!("Image"))
+                                                    .build_simple_string(
+                                                        &ui,
+                                                        &mut current_image,
+                                                        &image_names,
+                                                    )
+                                                {
+                                                    if current_image == image_names.len() - 1 {
+                                                        self.choose_new_image(
+                                                            asset_files,
+                                                            images,
+                                                            path,
+                                                        );
+                                                    } else {
+                                                        match images.keys().nth(current_image) {
+                                                            Some(image) => {
+                                                                *self = Sprite::Image {
+                                                                    name: image.clone(),
+                                                                };
+                                                            }
+                                                            None => {
+                                                                log::error!(
                                                             "Could not set image to index {}",
                                                             current_image
                                                         );
+                                                            }
+                                                        }
                                                     }
                                                 }
-                                            }
+                                            };
+                                        }
+                                        Sprite::Colour(colour) => {
+                                            let mut colour_array =
+                                                [colour.r, colour.g, colour.b, colour.a];
+                                            imgui::ColorEdit::new(
+                                                im_str!("Colour"),
+                                                &mut colour_array,
+                                            )
+                                            .alpha(true)
+                                            .build(ui);
+                                            *colour = Colour::rgba(
+                                                colour_array[0],
+                                                colour_array[1],
+                                                colour_array[2],
+                                                colour_array[3],
+                                            );
                                         }
                                     };
                                 }
-                                Sprite::Colour(colour) => {
-                                    let mut colour_array = [colour.r, colour.g, colour.b, colour.a];
-                                    imgui::ColorEdit::new(im_str!("Colour"), &mut colour_array)
-                                        .alpha(true)
-                                        .build(ui);
-                                    *colour = Colour::rgba(
-                                        colour_array[0],
-                                        colour_array[1],
-                                        colour_array[2],
-                                        colour_array[3],
-                                    );
-                                }
-                            };
+                            }
                         }
                         _ => {}
                     }
@@ -3255,9 +3311,10 @@ fn run_main_loop<'a, 'b>(
                     }
                     bar.end(ui);
                 }
+                let window_size = [500.0, 600.0];
 
                 imgui::Window::new(im_str!("Main Window"))
-                    .size([500.0, 600.0], imgui::Condition::FirstUseEver)
+                    .size(window_size, imgui::Condition::FirstUseEver)
                     .scroll_bar(true)
                     .scrollable(true)
                     .resizable(true)
@@ -3276,7 +3333,7 @@ fn run_main_loop<'a, 'b>(
                     });
 
                 imgui::Window::new(im_str!("Objects"))
-                    .size([500.0, 600.0], imgui::Condition::FirstUseEver)
+                    .size(window_size, imgui::Condition::FirstUseEver)
                     //.position([900.0, 200.0], imgui::Condition::FirstUseEver)
                     .scroll_bar(true)
                     .scrollable(true)
@@ -3535,6 +3592,104 @@ fn run_main_loop<'a, 'b>(
                             &mut instruction_index,
                             &mut instruction_focus,
                         );
+                    });
+
+                // TODO: Fix up
+                imgui::Window::new(im_str!("Background"))
+                    .size(window_size, imgui::Condition::FirstUseEver)
+                    //.opened(&mut opened)
+                    .build(&ui, || {
+                        for i in 0..game.background.len() {
+                            let stack = ui.push_id(i as i32);
+                            ui.text(im_str!("Layer {}", i));
+                            if i != 0 {
+                                ui.same_line(0.0);
+                                if ui.small_button(im_str!("Move Up")) {
+                                    game.background.swap(i, i - 1);
+                                }
+                            }
+                            if i != game.background.len() - 1 {
+                                ui.same_line(0.0);
+                                if ui.small_button(im_str!("Move Down")) {
+                                    game.background.swap(i, i + 1);
+                                }
+                            }
+                            if ui.small_button(im_str!("Delete")) {
+                                ui.same_line(0.0);
+                                game.background.remove(i);
+                                stack.pop(&ui);
+                                break;
+                            } else {
+                                /*let mut choose_background_image = images
+                                    .keys()
+                                    .position(|k| *k == game.background[i].name)
+                                    .unwrap_or(0);
+                                if let Some(image_name) = build_image_name_changer_returns(
+                                    &ui,
+                                    game,
+                                    images,
+                                    &mut choose_background_image,
+                                    &None,
+                                ) {
+                                    game.background[i].name = image_name.clone();
+                                }*/
+
+                                ui.input_float(
+                                    im_str!("Min X"),
+                                    &mut game.background[i].area.min.x,
+                                )
+                                .build();
+                                ui.input_float(
+                                    im_str!("Min Y"),
+                                    &mut game.background[i].area.min.y,
+                                )
+                                .build();
+                                ui.input_float(
+                                    im_str!("Max X"),
+                                    &mut game.background[i].area.max.x,
+                                )
+                                .build();
+                                ui.input_float(
+                                    im_str!("Max Y"),
+                                    &mut game.background[i].area.max.y,
+                                )
+                                .build();
+                            }
+
+                            stack.pop(&ui);
+                        }
+                        if ui.button(im_str!("New Background"), NORMAL_BUTTON) {
+                            if images.is_empty() {
+                                ui.open_popup(im_str!("Add an image"));
+                            } else {
+                                /*let name = images.keys().next().unwrap().clone();
+                                let (w, h) =
+                                    (images[&name].width as f32, images[&name].height as f32);
+                                game.background.push(Background {
+                                    name,
+                                    rect: Rect::new(800.0, 450.0, w, h),
+                                });*/
+                            }
+                        };
+                        ui.popup_modal(im_str!("Add an image")).build(|| {
+                            if images.is_empty() {
+                                // TODO: Replace this with button instead of combo
+                                // Or maybe you don't need a button at all just go straight to it
+                                /*let mut tmp = 0;
+                                build_image_name_changer_returns(
+                                    &ui, game, images, &mut tmp, &None,
+                                );*/
+                            } else {
+                                /*game.background.push(BackgroundPart {
+                                    name: images.keys().next().unwrap().clone(),
+                                    rect: Rect::new(800.0, 450.0, 1600.0, 900.0),
+                                });*/
+                                ui.close_current_popup();
+                            }
+                            if ui.button(im_str!("Cancel"), NORMAL_BUTTON) {
+                                ui.close_current_popup();
+                            }
+                        });
                     });
 
                 let key_down = |event_pump: &EventPump, scancode: Scancode| {
