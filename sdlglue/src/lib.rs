@@ -363,7 +363,7 @@ impl Renderer {
         }
         let quad_vao = init();
 
-        Renderer::set_viewport(&window);
+        Renderer::set_viewport_from_window_size(window.size());
 
         let full_screen_info = FullScreenInfo {
             recent_change: false,
@@ -380,15 +380,18 @@ impl Renderer {
         }
     }
 
-    pub fn set_viewport(window: &SdlWindow) {
+    pub fn set_viewport(width: i32, height: i32) {
         unsafe {
-            let (w, h) = window.size();
-            gl::Viewport(0, 0, w as i32, h as i32);
+            gl::Viewport(0, 0, width, height as i32);
         }
     }
 
+    pub fn set_viewport_from_window_size(size: (u32, u32)) {
+        Self::set_viewport(size.0 as i32, size.1 as i32);
+    }
+
     pub fn update_viewport(&self) {
-        Self::set_viewport(&self.window);
+        Self::set_viewport_from_window_size(self.window.size());
     }
 
     pub fn prepare<'a>(&'a self, texture: &'a Texture) -> TextureDrawer<'a> {

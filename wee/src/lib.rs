@@ -114,6 +114,8 @@ impl SerialiseObject {
 
 pub trait SerialiseObjectList {
     fn get_obj(&self, name: &str) -> WeeResult<&SerialiseObject>;
+
+    fn sprites(&self) -> HashMap<&str, &Sprite>;
 }
 
 impl SerialiseObjectList for Vec<SerialiseObject> {
@@ -123,6 +125,14 @@ impl SerialiseObjectList for Vec<SerialiseObject> {
             Some(index) => Ok(self.get(index).unwrap()),
             None => Err("Cannot find object".into()), // TODO: Better error message
         }
+    }
+
+    fn sprites(&self) -> HashMap<&str, &Sprite> {
+        let mut sprites = HashMap::new();
+        for obj in self {
+            sprites.insert(&*obj.name, &obj.sprite);
+        }
+        sprites
     }
 }
 
@@ -503,29 +513,33 @@ impl MovementDirection {
 
 #[derive(Debug, Copy, Clone, Serialize, Deserialize)]
 pub enum Speed {
-    Category(SpeedCategory),
+    VerySlow,
+    Slow,
+    Normal,
+    Fast,
+    VeryFast,
     Value(f32),
 }
 
 impl Speed {
     fn as_value(self) -> f32 {
         match self {
-            Speed::Category(SpeedCategory::VerySlow) => 4.0,
-            Speed::Category(SpeedCategory::Slow) => 8.0,
-            Speed::Category(SpeedCategory::Normal) => 12.0,
-            Speed::Category(SpeedCategory::Fast) => 16.0,
-            Speed::Category(SpeedCategory::VeryFast) => 20.0,
+            Speed::VerySlow => 4.0,
+            Speed::Slow => 8.0,
+            Speed::Normal => 12.0,
+            Speed::Fast => 16.0,
+            Speed::VeryFast => 20.0,
             Speed::Value(value) => value,
         }
     }
 
     fn to_animation_time(self) -> u32 {
         match self {
-            Speed::Category(SpeedCategory::VerySlow) => 32,
-            Speed::Category(SpeedCategory::Slow) => 16,
-            Speed::Category(SpeedCategory::Normal) => 18,
-            Speed::Category(SpeedCategory::Fast) => 4,
-            Speed::Category(SpeedCategory::VeryFast) => 2,
+            Speed::VerySlow => 32,
+            Speed::Slow => 16,
+            Speed::Normal => 18,
+            Speed::Fast => 4,
+            Speed::VeryFast => 2,
             Speed::Value(value) => value as u32,
         }
     }
@@ -534,11 +548,11 @@ impl Speed {
 impl fmt::Display for Speed {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Speed::Category(SpeedCategory::VerySlow) => write!(f, "very slow"),
-            Speed::Category(SpeedCategory::Slow) => write!(f, "slow"),
-            Speed::Category(SpeedCategory::Normal) => write!(f, "normal"),
-            Speed::Category(SpeedCategory::Fast) => write!(f, "fast"),
-            Speed::Category(SpeedCategory::VeryFast) => write!(f, "very fast"),
+            Speed::VerySlow => write!(f, "very slow"),
+            Speed::Slow => write!(f, "slow"),
+            Speed::Normal => write!(f, "normal"),
+            Speed::Fast => write!(f, "fast"),
+            Speed::VeryFast => write!(f, "very fast"),
             Speed::Value(value) => write!(f, "speed: {}", value),
         }
     }
@@ -555,14 +569,6 @@ fn clamp_position(position: &mut Vec2, area: AABB) {
     position.y = position.y.min(area.max.y).max(area.min.y);
 }
 
-#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
-pub enum SpeedCategory {
-    VerySlow,
-    Slow,
-    Normal,
-    Fast,
-    VeryFast,
-}
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum RelativeTo {
     CurrentPosition,
