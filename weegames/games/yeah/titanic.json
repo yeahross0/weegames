@@ -120,9 +120,7 @@
                     "x": 0.0,
                     "y": 160.0
                   },
-                  "speed": {
-                    "Category": "Slow"
-                  }
+                  "speed": "Slow"
                 }
               }
             }
@@ -158,9 +156,7 @@
                       ]
                     }
                   },
-                  "speed": {
-                    "Category": "Slow"
-                  }
+                  "speed": "Slow"
                 }
               }
             },
@@ -312,9 +308,7 @@
                     "x": 0.0,
                     "y": 160.0
                   },
-                  "speed": {
-                    "Category": "Slow"
-                  }
+                  "speed": "Slow"
                 }
               }
             }
@@ -350,9 +344,7 @@
                       ]
                     }
                   },
-                  "speed": {
-                    "Category": "Slow"
-                  }
+                  "speed": "Slow"
                 }
               }
             },
@@ -504,9 +496,7 @@
                     "x": 0.0,
                     "y": 160.0
                   },
-                  "speed": {
-                    "Category": "Slow"
-                  }
+                  "speed": "Slow"
                 }
               }
             }
@@ -542,9 +532,7 @@
                       ]
                     }
                   },
-                  "speed": {
-                    "Category": "Slow"
-                  }
+                  "speed": "Slow"
                 }
               }
             },

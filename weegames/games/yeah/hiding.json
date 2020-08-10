@@ -148,9 +148,7 @@
                       ]
                     }
                   },
-                  "speed": {
-                    "Category": "VerySlow"
-                  }
+                  "speed": "VerySlow"
                 }
               }
             },

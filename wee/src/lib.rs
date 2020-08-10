@@ -44,6 +44,24 @@ pub struct SerialiseObject {
     pub instructions: Vec<Instruction>,
 }
 
+impl Default for SerialiseObject {
+    fn default() -> SerialiseObject {
+        SerialiseObject {
+            name: "test".to_string(),
+            sprite: Sprite::Colour(Colour::white()),
+            position: Vec2::zero(),
+            size: Size::new(100.0, 100.0),
+            angle: 0.0,
+            origin: None,
+            collision_area: None,
+            flip: Flip::default(),
+            layer: 0,
+            switch: Switch::Off,
+            instructions: Vec::new(),
+        }
+    }
+}
+
 impl SerialiseObject {
     pub fn replace_text(&mut self, score: i32, lives: i32) {
         for instruction in self.instructions.iter_mut() {

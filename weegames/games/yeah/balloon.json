@@ -57,9 +57,7 @@
                       "y": 650.0
                     }
                   },
-                  "speed": {
-                    "Category": "Normal"
-                  }
+                  "speed": "Normal"
                 }
               }
             }
@@ -283,9 +281,7 @@
                       ]
                     }
                   },
-                  "speed": {
-                    "Category": "Normal"
-                  }
+                  "speed": "Normal"
                 }
               }
             }
@@ -328,9 +324,7 @@
                       ]
                     }
                   },
-                  "speed": {
-                    "Category": "Normal"
-                  }
+                  "speed": "Normal"
                 }
               }
             },
@@ -412,9 +406,7 @@
                       ]
                     }
                   },
-                  "speed": {
-                    "Category": "Normal"
-                  }
+                  "speed": "Normal"
                 }
               }
             }
@@ -457,9 +449,7 @@
                       ]
                     }
                   },
-                  "speed": {
-                    "Category": "Normal"
-                  }
+                  "speed": "Normal"
                 }
               }
             },

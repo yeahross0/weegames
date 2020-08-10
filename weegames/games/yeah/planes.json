@@ -42,9 +42,7 @@
                       "Degrees": 60.0
                     }
                   },
-                  "speed": {
-                    "Category": "VerySlow"
-                  }
+                  "speed": "VerySlow"
                 }
               }
             }
@@ -212,9 +210,7 @@
                       "Degrees": 60.0
                     }
                   },
-                  "speed": {
-                    "Category": "VerySlow"
-                  }
+                  "speed": "VerySlow"
                 }
               }
             }
@@ -276,9 +272,7 @@
                       "Degrees": 60.0
                     }
                   },
-                  "speed": {
-                    "Category": "VerySlow"
-                  }
+                  "speed": "VerySlow"
                 }
               }
             }
@@ -340,9 +334,7 @@
                       "Degrees": 60.0
                     }
                   },
-                  "speed": {
-                    "Category": "VerySlow"
-                  }
+                  "speed": "VerySlow"
                 }
               }
             }
@@ -404,9 +396,7 @@
                       "Degrees": 60.0
                     }
                   },
-                  "speed": {
-                    "Category": "VerySlow"
-                  }
+                  "speed": "VerySlow"
                 }
               }
             }
@@ -468,9 +458,7 @@
                       "Degrees": 60.0
                     }
                   },
-                  "speed": {
-                    "Category": "VerySlow"
-                  }
+                  "speed": "VerySlow"
                 }
               }
             }

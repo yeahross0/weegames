@@ -122,9 +122,7 @@
                       "y": 762.0
                     }
                   },
-                  "speed": {
-                    "Category": "Normal"
-                  }
+                  "speed": "Normal"
                 }
               }
             }
@@ -256,9 +254,7 @@
                   "direction": {
                     "Angle": "Current"
                   },
-                  "speed": {
-                    "Category": "VeryFast"
-                  }
+                  "speed": "VeryFast"
                 }
               }
             },

@@ -82,9 +82,7 @@
                       "y": 10.0
                     }
                   },
-                  "speed": {
-                    "Category": "Fast"
-                  }
+                  "speed": "Fast"
                 }
               }
             }
@@ -109,9 +107,7 @@
                       "Degrees": 235.0
                     }
                   },
-                  "speed": {
-                    "Category": "Fast"
-                  }
+                  "speed": "Fast"
                 }
               }
             },
@@ -137,9 +133,7 @@
                       "Degrees": 125.0
                     }
                   },
-                  "speed": {
-                    "Category": "Fast"
-                  }
+                  "speed": "Fast"
                 }
               }
             },
@@ -172,9 +166,7 @@
                       ]
                     }
                   },
-                  "speed": {
-                    "Category": "Fast"
-                  }
+                  "speed": "Fast"
                 }
               }
             }

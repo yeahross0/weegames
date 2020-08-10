@@ -250,9 +250,7 @@
                       "y": 881.0
                     }
                   },
-                  "speed": {
-                    "Category": "Normal"
-                  }
+                  "speed": "Normal"
                 }
               }
             }

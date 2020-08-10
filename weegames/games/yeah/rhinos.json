@@ -133,9 +133,7 @@
                       "y": 900.0
                     }
                   },
-                  "speed": {
-                    "Category": "VerySlow"
-                  }
+                  "speed": "VerySlow"
                 }
               }
             }
@@ -170,9 +168,7 @@
                       "y": 900.0
                     }
                   },
-                  "speed": {
-                    "Category": "VerySlow"
-                  }
+                  "speed": "VerySlow"
                 }
               }
             },
@@ -347,9 +343,7 @@
                       "y": 900.0
                     }
                   },
-                  "speed": {
-                    "Category": "VerySlow"
-                  }
+                  "speed": "VerySlow"
                 }
               }
             }
@@ -384,9 +378,7 @@
                       "y": 900.0
                     }
                   },
-                  "speed": {
-                    "Category": "VerySlow"
-                  }
+                  "speed": "VerySlow"
                 }
               }
             },

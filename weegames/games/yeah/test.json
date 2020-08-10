@@ -43,8 +43,8 @@
                   "direction": {
                     "Direction": {
                       "possible_directions": [
-                        "Right",
-                        "Left"
+                        "Left",
+                        "Right"
                       ]
                     }
                   },
@@ -498,21 +498,21 @@
   ],
   "asset_files": {
     "images": {
-      "venice": "venice.jpg",
-      "man": "baby-blue-man.webp",
+      "baby": "baby-blue-baby.webp",
       "trifle": "trifle-crop.webp",
-      "baby": "baby-blue-baby.webp"
+      "venice": "venice.jpg",
+      "man": "baby-blue-man.webp"
     },
     "audio": {
-      "oh no": "oh-no-2.ogg",
       "yay": "yippee-yay.ogg",
+      "oh no": "oh-no-2.ogg",
       "wippee": "yippee-wippee.ogg"
     },
-    "fonts": {},
     "music": {
       "filename": "peaceful-crop.ogg",
       "looped": false
-    }
+    },
+    "fonts": {}
   },
   "length": 8.0,
   "intro_text": "Keepie Uppie",

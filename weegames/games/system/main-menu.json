@@ -48,9 +48,7 @@
                       "y": 564.0
                     }
                   },
-                  "speed": {
-                    "Category": "Slow"
-                  }
+                  "speed": "Slow"
                 }
               }
             }
@@ -274,9 +272,7 @@
                       "y": 520.0
                     }
                   },
-                  "speed": {
-                    "Category": "Slow"
-                  }
+                  "speed": "Slow"
                 }
               }
             }

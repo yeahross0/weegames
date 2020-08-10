@@ -261,9 +261,7 @@
                       "y": 900.0
                     }
                   },
-                  "speed": {
-                    "Category": "Slow"
-                  }
+                  "speed": "Slow"
                 }
               }
             }

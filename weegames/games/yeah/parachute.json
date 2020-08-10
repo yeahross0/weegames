@@ -83,9 +83,7 @@
                       ]
                     }
                   },
-                  "speed": {
-                    "Category": "Normal"
-                  }
+                  "speed": "Normal"
                 }
               }
             }
@@ -131,9 +129,7 @@
                       ]
                     }
                   },
-                  "speed": {
-                    "Category": "VeryFast"
-                  }
+                  "speed": "VeryFast"
                 }
               }
             },
@@ -217,9 +213,7 @@
                     "x": 0.0,
                     "y": 0.0
                   },
-                  "speed": {
-                    "Category": "Normal"
-                  }
+                  "speed": "Normal"
                 }
               }
             }

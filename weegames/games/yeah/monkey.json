@@ -137,9 +137,7 @@
                       ]
                     }
                   },
-                  "speed": {
-                    "Category": "Slow"
-                  }
+                  "speed": "Slow"
                 }
               }
             }
@@ -218,9 +216,7 @@
                       ]
                     }
                   },
-                  "speed": {
-                    "Category": "Slow"
-                  }
+                  "speed": "Slow"
                 }
               }
             }
@@ -439,9 +435,7 @@
                       ]
                     }
                   },
-                  "speed": {
-                    "Category": "Slow"
-                  }
+                  "speed": "Slow"
                 }
               }
             }
@@ -520,9 +514,7 @@
                       ]
                     }
                   },
-                  "speed": {
-                    "Category": "Slow"
-                  }
+                  "speed": "Slow"
                 }
               }
             }

@@ -66,9 +66,7 @@
                       "Degrees": 246.0
                     }
                   },
-                  "speed": {
-                    "Category": "Slow"
-                  }
+                  "speed": "Slow"
                 }
               }
             }
@@ -93,9 +91,7 @@
                       "Degrees": 346.0
                     }
                   },
-                  "speed": {
-                    "Category": "Normal"
-                  }
+                  "speed": "Normal"
                 }
               }
             },

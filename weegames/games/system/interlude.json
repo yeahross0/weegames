@@ -140,9 +140,7 @@
                       "y": 780.0
                     }
                   },
-                  "speed": {
-                    "Category": "VerySlow"
-                  }
+                  "speed": "VerySlow"
                 }
               }
             }
@@ -196,9 +194,7 @@
                       "y": 205.0
                     }
                   },
-                  "speed": {
-                    "Category": "VerySlow"
-                  }
+                  "speed": "VerySlow"
                 }
               }
             }
@@ -281,9 +277,7 @@
                       "y": 433.0
                     }
                   },
-                  "speed": {
-                    "Category": "VerySlow"
-                  }
+                  "speed": "VerySlow"
                 }
               }
             }
@@ -366,9 +360,7 @@
                       "y": 651.0
                     }
                   },
-                  "speed": {
-                    "Category": "VerySlow"
-                  }
+                  "speed": "VerySlow"
                 }
               }
             }
@@ -451,9 +443,7 @@
                       "y": 875.0
                     }
                   },
-                  "speed": {
-                    "Category": "VerySlow"
-                  }
+                  "speed": "VerySlow"
                 }
               }
             }

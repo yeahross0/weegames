@@ -46,9 +46,7 @@ use sdlglue::{Model, Renderer};
 };*/
 use editor::*;
 use wee::*;
-use wee_common::{
-    Colour, Flip, Rect, Vec2, WeeResult, PROJECTION_HEIGHT, PROJECTION_WIDTH,
-};
+use wee_common::{Colour, Flip, Rect, Vec2, WeeResult, PROJECTION_HEIGHT, PROJECTION_WIDTH};
 
 fn init_logger() {
     if let Err(error) = simple_logger::init() {
@@ -570,6 +568,7 @@ fn run_main_loop<'a, 'b>(
                                                 game = new_data;
                                                 let base_path =
                                                     Path::new(&file_path).parent().unwrap();
+                                                // TODO: Check if this handles errors correctly
                                                 images = Images::load(
                                                     &game.asset_files.images,
                                                     &base_path,
@@ -587,6 +586,33 @@ fn run_main_loop<'a, 'b>(
                             } else {
                                 log::error!("Error opening file dialog");
                                 //ui.open_popup(im_str!("Error Opening File"));
+                            }
+                        }
+                        if imgui::MenuItem::new(im_str!("Save As")).build(&ui) {
+                            let games_path =
+                                std::env::current_dir().unwrap().join(Path::new("games"));
+                            let response = nfd::open_save_dialog(None, games_path.to_str());
+                            match response {
+                                Ok(response) => {
+                                    if let Response::Okay(file_path) = response {
+                                        log::info!("File path = {:?}", file_path);
+                                        // let final_path = base_file_path.canonfile_path
+                                        let s = serde_json::to_string_pretty(&game);
+                                        match s {
+                                            Ok(s) => {
+                                                std::fs::write(&file_path, s)
+                                                    .unwrap_or_else(|e| log::error!("{}", e));
+                                                filename = Some(file_path);
+                                            }
+                                            Err(error) => {
+                                                log::error!("{}", error);
+                                            }
+                                        }
+                                    }
+                                }
+                                Err(error) => {
+                                    log::error!("{}", error);
+                                }
                             }
                         }
                         if imgui::MenuItem::new(im_str!("Return to Menu")).build(ui) {
@@ -650,6 +676,7 @@ fn run_main_loop<'a, 'b>(
                                 }
                                 #[derive(Debug)]
                                 enum ObjectOperation {
+                                    Add,
                                     Rename {
                                         index: usize,
                                         from: String,
@@ -748,6 +775,10 @@ fn run_main_loop<'a, 'b>(
                                     }
                                 }
 
+                                if ui.small_button(im_str!("New Object")) {
+                                    object_operation = ObjectOperation::Add;
+                                }
+
                                 ui.popup(im_str!("Edit Object"), || {
                                     if ui.button(im_str!("Move up"), NORMAL_BUTTON) {
                                         object_operation = ObjectOperation::Move {
@@ -837,6 +868,9 @@ fn run_main_loop<'a, 'b>(
                                 });*/
 
                                 match object_operation {
+                                    ObjectOperation::Add => {
+                                        game.objects.push(SerialiseObject::default());
+                                    }
                                     ObjectOperation::Rename { index, from, to } => {
                                         let duplicate = game.objects.iter().any(|o| o.name == to);
                                         if from == to {

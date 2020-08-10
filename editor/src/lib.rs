@@ -1670,35 +1670,37 @@ impl Choose for Speed {
 
 impl Choose for HashSet<CompassDirection> {
     fn choose(&mut self, ui: &imgui::Ui) {
-        fn direction_checkbox(
-            ui: &imgui::Ui,
-            possible_directions: &mut HashSet<CompassDirection>,
-            label: &ImStr,
-            direction: CompassDirection,
-        ) {
-            let mut checked = possible_directions.contains(&direction);
-            if imgui::Ui::checkbox(&ui, label, &mut checked) {
-                if checked {
-                    possible_directions.insert(direction);
+        ui.text("Random directions:");
+        let mut selectable = |direction| {
+            let contains_direction = self.contains(&direction);
+            if imgui::Selectable::new(&im_str!("{}", direction))
+                .selected(contains_direction)
+                .size([100.0, 100.0])
+                .build(ui)
+            {
+                if contains_direction {
+                    self.remove(&direction);
                 } else {
-                    possible_directions.remove(&direction);
+                    self.insert(direction);
                 }
             }
-        }
-        ui.text("Random directions:");
-        direction_checkbox(&ui, self, im_str!("Up"), CompassDirection::Up);
-        direction_checkbox(&ui, self, im_str!("Up Right"), CompassDirection::UpRight);
-        direction_checkbox(&ui, self, im_str!("Right"), CompassDirection::Right);
-        direction_checkbox(
-            &ui,
-            self,
-            im_str!("Down Right"),
-            CompassDirection::DownRight,
-        );
-        direction_checkbox(&ui, self, im_str!("Down"), CompassDirection::Down);
-        direction_checkbox(&ui, self, im_str!("Down Left"), CompassDirection::DownLeft);
-        direction_checkbox(&ui, self, im_str!("Left"), CompassDirection::Left);
-        direction_checkbox(&ui, self, im_str!("Up Left"), CompassDirection::UpLeft);
+        };
+
+        selectable(CompassDirection::UpLeft);
+        ui.same_line(0.0);
+        selectable(CompassDirection::Up);
+        ui.same_line(0.0);
+        selectable(CompassDirection::UpRight);
+
+        selectable(CompassDirection::Left);
+        ui.same_line(216.0);
+        selectable(CompassDirection::Right);
+
+        selectable(CompassDirection::DownLeft);
+        ui.same_line(0.0);
+        selectable(CompassDirection::Down);
+        ui.same_line(0.0);
+        selectable(CompassDirection::DownRight);
     }
 }
 

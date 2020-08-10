@@ -64,9 +64,7 @@
                       "y": 900.0
                     }
                   },
-                  "speed": {
-                    "Category": "Fast"
-                  }
+                  "speed": "Fast"
                 }
               }
             }
@@ -199,9 +197,7 @@
                       "y": 900.0
                     }
                   },
-                  "speed": {
-                    "Category": "Fast"
-                  }
+                  "speed": "Fast"
                 }
               }
             }
@@ -334,9 +330,7 @@
                       "y": 900.0
                     }
                   },
-                  "speed": {
-                    "Category": "Fast"
-                  }
+                  "speed": "Fast"
                 }
               }
             }

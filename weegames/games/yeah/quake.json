@@ -92,9 +92,7 @@
                       "y": 747.0
                     }
                   },
-                  "speed": {
-                    "Category": "Normal"
-                  }
+                  "speed": "Normal"
                 }
               }
             }

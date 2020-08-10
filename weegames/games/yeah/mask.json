@@ -77,9 +77,7 @@
                     }
                   }
                 ],
-                "speed": {
-                  "Category": "VerySlow"
-                }
+                "speed": "VerySlow"
               }
             },
             {
@@ -218,9 +216,7 @@
                     "x": -100.0,
                     "y": -180.0
                   },
-                  "speed": {
-                    "Category": "VerySlow"
-                  }
+                  "speed": "VerySlow"
                 }
               }
             }
@@ -266,9 +262,7 @@
                       "y": 882.0
                     }
                   },
-                  "speed": {
-                    "Category": "Normal"
-                  }
+                  "speed": "Normal"
                 }
               }
             }
@@ -299,9 +293,7 @@
                     "x": -100.0,
                     "y": -180.0
                   },
-                  "speed": {
-                    "Category": "VerySlow"
-                  }
+                  "speed": "VerySlow"
                 }
               }
             }
@@ -329,9 +321,7 @@
                       ]
                     }
                   },
-                  "speed": {
-                    "Category": "Normal"
-                  }
+                  "speed": "Normal"
                 }
               }
             }
