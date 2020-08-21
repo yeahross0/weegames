@@ -163,9 +163,9 @@ struct SerialiseMusic {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AssetFiles {
     pub images: HashMap<String, String>,
-    audio: HashMap<String, String>,
+    pub audio: HashMap<String, String>,
     music: Option<SerialiseMusic>,
-    fonts: HashMap<String, FontLoadInfo>,
+    pub fonts: HashMap<String, FontLoadInfo>,
 }
 
 impl Default for AssetFiles {
@@ -1433,10 +1433,10 @@ impl ImageList for Images {
 
 pub type Objects = IndexMap<String, Object>;
 pub type Images = HashMap<String, Texture>;
-type Sounds = HashMap<String, SfBox<SoundBuffer>>;
-type Fonts<'a, 'b> = HashMap<String, Font<'a, 'b>>;
+pub type Sounds = HashMap<String, SfBox<SoundBuffer>>;
+pub type Fonts<'a, 'b> = HashMap<String, Font<'a, 'b>>;
 
-struct Music {
+pub struct Music {
     data: SfmlMusic,
     looped: bool,
 }
@@ -1521,10 +1521,10 @@ impl LoadMusic for Music {
 }
 
 pub struct Assets<'a, 'b> {
-    images: Images,
-    sounds: Sounds,
+    pub images: Images,
+    pub sounds: Sounds,
     music: Option<Music>,
-    fonts: Fonts<'a, 'b>,
+    pub fonts: Fonts<'a, 'b>,
 }
 
 impl<'a, 'b> Default for Assets<'a, 'b> {

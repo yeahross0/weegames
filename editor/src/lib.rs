@@ -6,9 +6,11 @@ use imgui_opengl_renderer::Renderer as ImguiRenderer;
 use imgui_sdl2::ImguiSdl2 as ImguiSdl;
 use nfd::Response;
 use sdl2::{
-    event::Event, keyboard::Scancode, video::Window as SdlWindow, EventPump, VideoSubsystem,
+    event::Event, keyboard::Scancode, ttf::Sdl2TtfContext as TtfContext,
+    video::Window as SdlWindow, EventPump, VideoSubsystem,
 };
 use sdlglue::{Model, Renderer, Texture};
+use sfml::audio::SoundBuffer;
 use std::{
     collections::{HashMap, HashSet},
     path::Path,
@@ -39,7 +41,7 @@ pub fn run_editor(
     let mut last_frame = Instant::now();
     let mut editor_status = EditorStatus::None;
     let mut game = GameData::default();
-    let mut images = Images::new();
+    let mut assets = Assets::default();
     let mut filename = None;
     let mut game_position = Vec2::zero();
     let mut scale: f32 = 1.0;
@@ -50,6 +52,10 @@ pub fn run_editor(
     let mut instruction_index = 0;
     let mut instruction_mode = InstructionMode::View;
     let mut instruction_focus = InstructionFocus::None;
+    let mut animation_editor = AnimationEditor {
+        new_sprite: Sprite::Colour(Colour::black()),
+        index: 0,
+    };
     struct RenameObject {
         index: usize,
         name: String,
@@ -90,10 +96,18 @@ pub fn run_editor(
                                 match new_data {
                                     Ok(new_data) => {
                                         game = new_data;
-                                        let base_path = Path::new(&file_path).parent().unwrap();
-                                        // TODO: Check if this handles errors correctly
-                                        images =
-                                            Images::load(&game.asset_files.images, &base_path)?;
+
+                                        assets = match Assets::load(
+                                            &game.asset_files,
+                                            &file_path,
+                                            intro_font.ttf_context,
+                                        ) {
+                                            Ok(assets) => assets,
+                                            Err(error) => {
+                                                menu.end(ui);
+                                                return Err(error);
+                                            }
+                                        };
                                         filename = Some(file_path);
                                     }
                                     Err(error) => {
@@ -434,8 +448,10 @@ pub fn run_editor(
                         &object_names,
                         &sprites,
                         &mut game.asset_files,
+                        &mut assets,
+                        intro_font.ttf_context,
                         game.length,
-                        &mut images,
+                        &mut animation_editor,
                         &filename,
                         &mut instruction_mode,
                         &mut instruction_index,
@@ -498,7 +514,7 @@ pub fn run_editor(
                     stack.pop(&ui);
                 }
                 if ui.button(im_str!("New Background"), NORMAL_BUTTON) {
-                    if images.is_empty() {
+                    if assets.images.is_empty() {
                         ui.open_popup(im_str!("Add an image"));
                     } else {
                         /*let name = images.keys().next().unwrap().clone();
@@ -511,7 +527,7 @@ pub fn run_editor(
                     }
                 };
                 ui.popup_modal(im_str!("Add an image")).build(|| {
-                    if images.is_empty() {
+                    if assets.images.is_empty() {
                         // TODO: Replace this with button instead of combo
                         // Or maybe you don't need a button at all just go straight to it
                         /*let mut tmp = 0;
@@ -529,6 +545,53 @@ pub fn run_editor(
                         ui.close_current_popup();
                     }
                 });
+            });
+
+        imgui::Window::new(im_str!("Fonts"))
+            .size(window_size, imgui::Condition::FirstUseEver)
+            .menu_bar(true)
+            .resizable(true)
+            .build(ui, || {
+                let menu_bar = ui.begin_menu_bar();
+
+                if let Some(bar) = menu_bar {
+                    let menu = ui.begin_menu(im_str!("File"), true);
+                    if let Some(menu) = menu {
+                        if imgui::MenuItem::new(im_str!("Add Fonts")).build(&ui) {
+                            let path = match &filename {
+                                Some(filename) => {
+                                    Path::new(filename).parent().unwrap().join("fonts")
+                                }
+                                None => Path::new("games").to_owned(),
+                            };
+                            choose_font_from_files(
+                                &mut game.asset_files.fonts,
+                                &mut assets.fonts,
+                                path,
+                                intro_font.ttf_context,
+                            );
+                        }
+                        menu.end(&ui);
+                    }
+
+                    bar.end(&ui);
+                }
+
+                for (name, font) in game.asset_files.fonts.iter_mut() {
+                    ui.text(name);
+                    let base_path = match &filename {
+                        Some(filename) => Path::new(filename).parent().unwrap().join("fonts"),
+                        None => Path::new("games").to_owned(),
+                    };
+                    let path = base_path.join(&font.filename);
+                    // TODO: Min Max this
+                    if ui.input_float(im_str!("Size"), &mut font.size).build() {
+                        *assets.fonts.get_mut(name).unwrap() = intro_font
+                            .ttf_context
+                            .load_font(&path, font.size as u16)
+                            .unwrap();
+                    }
+                }
             });
 
         let key_down = |event_pump: &EventPump, scancode: Scancode| {
@@ -578,7 +641,7 @@ pub fn run_editor(
             for part in game.background.iter() {
                 match &part.sprite {
                     Sprite::Image { name } => {
-                        let texture = images.get_image(name)?;
+                        let texture = assets.images.get_image(name)?;
 
                         let mut dest = part.area.to_rect();
                         dest.x += game_position.x;
@@ -617,7 +680,7 @@ pub fn run_editor(
                     if object.layer == layer {
                         match &object.sprite {
                             Sprite::Image { name: image_name } => {
-                                let texture = images.get_image(image_name)?;
+                                let texture = assets.images.get_image(image_name)?;
                                 let mut dest = Rect::new(
                                     object.position.x + game_position.x,
                                     object.position.y + game_position.y,
@@ -831,7 +894,12 @@ impl ImguiDisplayTrigger for Trigger {
                             }
                         }
                         Sprite::Colour(colour) => {
-                            // TODO: Show colour
+                            imgui::ColorButton::new(
+                                im_str!("##Colour"),
+                                [colour.r, colour.g, colour.b, colour.a],
+                            )
+                            .size([80.0, 80.0])
+                            .build(&ui);
                         }
                     },
                     None => {
@@ -876,6 +944,16 @@ impl ImguiDisplayTrigger for Trigger {
                         "The colour {{ red: {}, green: {}, blue: {}, alpha: {} }}",
                         colour.r, colour.g, colour.b, colour.a
                     ));
+                    if ui.is_item_hovered() {
+                        ui.tooltip(|| {
+                            imgui::ColorButton::new(
+                                im_str!("##Colour"),
+                                [colour.r, colour.g, colour.b, colour.a],
+                            )
+                            .size([80.0, 80.0])
+                            .build(&ui);
+                        })
+                    };
                 }
             };
         };
@@ -1018,14 +1096,16 @@ impl ImguiDisplayAction for Action {
     }
 }
 
-pub fn right_window(
+fn right_window<'a, 'b>(
     ui: &imgui::Ui,
     object: &mut SerialiseObject,
     object_names: &Vec<&str>,
     sprites: &HashMap<&str, &Sprite>,
     asset_files: &mut AssetFiles,
+    assets: &mut Assets<'a, 'b>,
+    ttf_context: &'a TtfContext,
     game_length: f32,
-    images: &mut Images,
+    animation_editor: &mut AnimationEditor,
     filename: &Option<String>,
     instruction_mode: &mut InstructionMode,
     instruction_index: &mut usize,
@@ -1033,7 +1113,7 @@ pub fn right_window(
 ) {
     imgui::ChildWindow::new(im_str!("Right"))
         .size([0.0, 0.0])
-        .scroll_bar(false)
+        .scroll_bar(true)
         .build(ui, || {
             fn tab_bar<F: FnOnce()>(label: &ImStr, f: F) {
                 unsafe {
@@ -1058,7 +1138,7 @@ pub fn right_window(
             }
             tab_bar(im_str!("Tab Bar"), || {
                 tab_item(im_str!("Properties"), || {
-                    properties_window(ui, object, asset_files, images, filename);
+                    properties_window(ui, object, asset_files, &mut assets.images, filename);
                 });
                 tab_item(im_str!("Instructions"), || {
                     object.instructions.choose(
@@ -1066,8 +1146,10 @@ pub fn right_window(
                         object_names,
                         sprites,
                         asset_files,
+                        assets,
+                        ttf_context,
                         game_length,
-                        images,
+                        animation_editor,
                         filename,
                         instruction_mode,
                         instruction_index,
@@ -1618,6 +1700,273 @@ impl ChooseNewImage for Sprite {
     }
 }
 
+trait ChooseFont {
+    fn choose_font<'a, 'b>(
+        &mut self,
+        ui: &imgui::Ui,
+        font_files: &mut HashMap<String, FontLoadInfo>,
+        fonts: &mut Fonts<'a, 'b>,
+        ttf_context: &'a TtfContext,
+        filename: &Option<String>,
+    );
+}
+
+impl ChooseFont for String {
+    fn choose_font<'a, 'b>(
+        &mut self,
+        ui: &imgui::Ui,
+        font_files: &mut HashMap<String, FontLoadInfo>,
+        fonts: &mut Fonts<'a, 'b>,
+        ttf_context: &'a TtfContext,
+        filename: &Option<String>,
+    ) {
+        let path = match filename {
+            Some(filename) => Path::new(filename).parent().unwrap().join("fonts"),
+            None => Path::new("games").to_owned(),
+        };
+
+        if fonts.is_empty() {
+            if ui.button(im_str!("Add a New Font"), NORMAL_BUTTON) {
+                let first_key = choose_font_from_files(font_files, fonts, path, ttf_context);
+                match first_key {
+                    Some(key) => {
+                        *self = key.clone();
+                    }
+                    None => {
+                        // TODO: What if user clicks cancel
+                        log::error!("None of the new fonts loaded correctly");
+                    }
+                }
+            }
+        } else {
+            let mut current_font = fonts.keys().position(|k| k == self).unwrap_or(0);
+            let keys = {
+                let mut keys: Vec<ImString> =
+                    fonts.keys().map(|k| ImString::from(k.clone())).collect();
+
+                keys.push(ImString::new("Add a New Font"));
+
+                keys
+            };
+
+            let font_names: Vec<&ImString> = keys.iter().collect();
+
+            if imgui::ComboBox::new(im_str!("Fonts")).build_simple_string(
+                &ui,
+                &mut current_font,
+                &font_names,
+            ) {
+                if current_font == font_names.len() - 1 {
+                    let first_key = choose_font_from_files(font_files, fonts, path, ttf_context);
+                    match first_key {
+                        Some(key) => {
+                            *self = key.clone();
+                        }
+                        None => {
+                            log::error!("None of the new fonts loaded correctly");
+                        }
+                    }
+                } else {
+                    match fonts.keys().nth(current_font) {
+                        Some(font) => *self = font.clone(),
+                        None => {
+                            log::error!("Could not set font to index {}", current_font);
+                        }
+                    }
+                }
+            }
+        };
+    }
+}
+
+trait ChooseSound {
+    fn choose_sound(
+        &mut self,
+        ui: &imgui::Ui,
+        audio_filenames: &mut HashMap<String, String>,
+        sounds: &mut Sounds,
+        filename: &Option<String>,
+    );
+}
+
+impl ChooseSound for String {
+    fn choose_sound(
+        &mut self,
+        ui: &imgui::Ui,
+        audio_filenames: &mut HashMap<String, String>,
+        sounds: &mut Sounds,
+        filename: &Option<String>,
+    ) {
+        let path = match filename {
+            Some(filename) => Path::new(filename).parent().unwrap().join("audio"),
+            None => Path::new("games").to_owned(),
+        };
+
+        if sounds.is_empty() {
+            if ui.button(im_str!("Add a New Sound"), NORMAL_BUTTON) {
+                let first_key = choose_sound_from_files(audio_filenames, sounds, path);
+                match first_key {
+                    Some(key) => {
+                        *self = key.clone();
+                    }
+                    None => {
+                        log::error!("None of the new sounds loaded correctly");
+                    }
+                }
+            }
+        } else {
+            let mut current_sound = sounds.keys().position(|k| k == self).unwrap_or(0);
+            let keys = {
+                let mut keys: Vec<ImString> =
+                    sounds.keys().map(|k| ImString::from(k.clone())).collect();
+
+                keys.push(ImString::new("Add a New Sound"));
+
+                keys
+            };
+
+            let font_names: Vec<&ImString> = keys.iter().collect();
+
+            if imgui::ComboBox::new(im_str!("Sound")).build_simple_string(
+                &ui,
+                &mut current_sound,
+                &font_names,
+            ) {
+                if current_sound == font_names.len() - 1 {
+                    let first_key = choose_sound_from_files(audio_filenames, sounds, path);
+                    match first_key {
+                        Some(key) => {
+                            *self = key.clone();
+                        }
+                        None => {
+                            log::error!("None of the new sounds loaded correctly");
+                        }
+                    }
+                } else {
+                    match sounds.keys().nth(current_sound) {
+                        Some(sound) => *self = sound.clone(),
+                        None => {
+                            log::error!("Could not set sound to index {}", current_sound);
+                        }
+                    }
+                }
+            }
+        };
+    }
+}
+
+struct AnimationEditor {
+    new_sprite: Sprite,
+    index: usize,
+}
+
+trait ChooseAnimation {
+    fn choose(
+        &mut self,
+        ui: &imgui::Ui,
+        editor: &mut AnimationEditor,
+        asset_files: &mut AssetFiles,
+        images: &mut Images,
+        filename: &Option<String>,
+    );
+}
+
+impl ChooseAnimation for Vec<Sprite> {
+    fn choose(
+        &mut self,
+        ui: &imgui::Ui,
+        editor: &mut AnimationEditor,
+        asset_files: &mut AssetFiles,
+        images: &mut Images,
+        filename: &Option<String>,
+    ) {
+        for (index, sprite) in self.iter().enumerate() {
+            match sprite {
+                Sprite::Image { name } => {
+                    let image_id = images[name].id;
+                    if imgui::ImageButton::new(
+                        imgui::TextureId::from(image_id as usize),
+                        [100.0, 100.0],
+                    )
+                    //.tint_col([0.9, 0.0, 0.0, 1.0])
+                    //.background_col([1.0, 0.0, 0.0, 0.5])
+                    .build(ui)
+                    {
+                        ui.open_popup(im_str!("Edit Animation"));
+                        editor.index = index;
+                    }
+                }
+                Sprite::Colour(colour) => {
+                    if imgui::ColorButton::new(
+                        im_str!("##Colour"),
+                        [colour.r, colour.g, colour.b, colour.a],
+                    )
+                    .size([108.0, 108.0])
+                    .build(&ui)
+                    {
+                        ui.open_popup(im_str!("Edit Animation"));
+                        editor.index = index;
+                    }
+                }
+            }
+        }
+
+        enum AnimationTask {
+            MoveBefore,
+            MoveAfter,
+            Delete,
+            None,
+        };
+        let mut task = AnimationTask::None;
+        ui.popup(im_str!("Edit Animation"), || {
+            if imgui::Selectable::new(im_str!("Move Before")).build(ui) {
+                task = AnimationTask::MoveBefore;
+            }
+            if imgui::Selectable::new(im_str!("Move After")).build(ui) {
+                task = AnimationTask::MoveAfter;
+            }
+            if imgui::Selectable::new(im_str!("Delete")).build(ui) {
+                task = AnimationTask::Delete;
+            }
+        });
+
+        match task {
+            AnimationTask::MoveBefore => {
+                if editor.index > 0 {
+                    let tmp = self[editor.index].clone();
+                    self[editor.index] = self[editor.index - 1].clone();
+                    self[editor.index - 1] = tmp;
+                }
+            }
+            AnimationTask::MoveAfter => {
+                if editor.index < self.len() - 1 {
+                    let tmp = self[editor.index].clone();
+                    self[editor.index] = self[editor.index + 1].clone();
+                    self[editor.index + 1] = tmp;
+                }
+            }
+            AnimationTask::Delete => {
+                log::info!("{}", editor.index);
+                self.remove(editor.index);
+            }
+            AnimationTask::None => {}
+        }
+
+        if ui.button(im_str!("Add Sprite"), NORMAL_BUTTON) {
+            ui.open_popup(im_str!("Add Animation Sprite"));
+            editor.new_sprite = Sprite::Colour(Colour::black());
+        }
+        ui.popup(im_str!("Add Animation Sprite"), || {
+            editor.new_sprite.choose(ui, asset_files, images, filename);
+
+            if ui.button(im_str!("OK"), NORMAL_BUTTON) {
+                self.push(editor.new_sprite.clone());
+                ui.close_current_popup();
+            }
+        });
+    }
+}
+
 trait ChooseSprite {
     fn choose(
         &mut self,
@@ -1853,24 +2202,28 @@ impl ChooseTrigger for Trigger {
 }
 
 trait ChooseAction {
-    fn choose(
+    fn choose<'a, 'b>(
         &mut self,
         ui: &imgui::Ui,
         object_names: &Vec<&str>,
         asset_files: &mut AssetFiles,
-        images: &mut Images,
+        assets: &mut Assets<'a, 'b>,
+        ttf_context: &'a TtfContext,
+        animation_editor: &mut AnimationEditor,
         filename: &Option<String>,
         instruction_mode: &mut InstructionMode,
     );
 }
 
 impl ChooseAction for Action {
-    fn choose(
+    fn choose<'a, 'b>(
         &mut self,
         ui: &imgui::Ui,
         object_names: &Vec<&str>,
         asset_files: &mut AssetFiles,
-        images: &mut Images,
+        assets: &mut Assets<'a, 'b>,
+        ttf_context: &'a TtfContext,
+        animation_editor: &mut AnimationEditor,
         filename: &Option<String>,
         instruction_mode: &mut InstructionMode,
     ) {
@@ -1939,10 +2292,10 @@ impl ChooseAction for Action {
                 motion.choose(ui, object_names);
             }
             Action::PlaySound { name } => {
-                // TODO: Pass in assets
+                name.choose_sound(ui, &mut asset_files.audio, &mut assets.sounds, filename);
             }
             Action::SetProperty(setter) => {
-                setter.choose(ui, object_names, images, asset_files, filename);
+                setter.choose(ui, object_names, &mut assets.images, asset_files, filename);
             }
             Action::Animate {
                 animation_type,
@@ -1950,9 +2303,13 @@ impl ChooseAction for Action {
                 speed,
             } => {
                 animation_type.choose(ui);
-
-                // TODO: Add ability to add sprites here
-
+                sprites.choose(
+                    ui,
+                    animation_editor,
+                    asset_files,
+                    &mut assets.images,
+                    filename,
+                );
                 speed.choose(ui);
             }
             Action::DrawText {
@@ -1962,7 +2319,13 @@ impl ChooseAction for Action {
                 resize,
             } => {
                 text.choose(ui);
-                // TODO: Set font
+                font.choose_font(
+                    ui,
+                    &mut asset_files.fonts,
+                    &mut assets.fonts,
+                    ttf_context,
+                    filename,
+                );
                 colour.choose(ui);
                 resize.choose(ui);
             }
@@ -2431,6 +2794,14 @@ impl ChooseAngle for f32 {
             .max_degrees(360.0)
             .build(ui, &mut radians);
         *self = radians.to_degrees();
+
+        if ui.is_item_hovered() && ui.is_mouse_released(imgui::MouseButton::Right) {
+            ui.open_popup(im_str!("Set specific angle"));
+        }
+
+        ui.popup(im_str!("Set specific angle"), || {
+            ui.input_float(im_str!("Angle"), self).build();
+        });
     }
 }
 
@@ -2795,14 +3166,16 @@ impl Choose for TargetType {
 }
 
 trait ChooseInstructions {
-    fn choose(
+    fn choose<'a, 'b>(
         &mut self,
         ui: &imgui::Ui,
         object_names: &Vec<&str>,
         sprites: &HashMap<&str, &Sprite>,
         asset_files: &mut AssetFiles,
+        assets: &mut Assets<'a, 'b>,
+        ttf_context: &'a TtfContext,
         game_length: f32,
-        images: &mut Images,
+        animation_editor: &mut AnimationEditor,
         filename: &Option<String>,
         instruction_mode: &mut InstructionMode,
         instruction_index: &mut usize,
@@ -2811,14 +3184,16 @@ trait ChooseInstructions {
 }
 
 impl ChooseInstructions for Vec<Instruction> {
-    fn choose(
+    fn choose<'a, 'b>(
         &mut self,
         ui: &imgui::Ui,
         object_names: &Vec<&str>,
         sprites: &HashMap<&str, &Sprite>,
         asset_files: &mut AssetFiles,
+        assets: &mut Assets<'a, 'b>,
+        ttf_context: &'a TtfContext,
         game_length: f32,
-        images: &mut Images,
+        animation_editor: &mut AnimationEditor,
         filename: &Option<String>,
         instruction_mode: &mut InstructionMode,
         selected_index: &mut usize,
@@ -2846,7 +3221,7 @@ impl ChooseInstructions for Vec<Instruction> {
                                         ui.text("\tEvery frame")
                                     } else {
                                         for trigger in instruction.triggers.iter() {
-                                            trigger.display(ui, sprites, images);
+                                            trigger.display(ui, sprites, &assets.images);
                                         }
                                     }
 
@@ -2921,7 +3296,7 @@ impl ChooseInstructions for Vec<Instruction> {
                     object_names,
                     game_length,
                     asset_files,
-                    images,
+                    &mut assets.images,
                     filename,
                     instruction_mode,
                 );
@@ -2936,7 +3311,9 @@ impl ChooseInstructions for Vec<Instruction> {
                     ui,
                     object_names,
                     asset_files,
-                    images,
+                    assets,
+                    ttf_context,
+                    animation_editor,
                     filename,
                     instruction_mode,
                 );
@@ -3159,6 +3536,84 @@ fn load_textures(
     first_key
 }
 
+fn load_sounds(
+    audio_files: &mut HashMap<String, String>,
+    sounds: &mut Sounds,
+    sound_filenames: Vec<(WeeResult<String>, String)>,
+) -> Option<String> {
+    let mut first_key = None;
+    for (key, path) in &sound_filenames {
+        match key {
+            Ok(key) => {
+                let sound = SoundBuffer::from_file(path);
+                match sound {
+                    Some(sound) => {
+                        sounds.insert(key.clone(), sound);
+                        let filename = Path::new(path)
+                            .file_name()
+                            .unwrap()
+                            .to_str()
+                            .unwrap()
+                            .to_string();
+                        audio_files.insert(key.clone(), filename);
+                        first_key = Some(key.clone());
+                    }
+                    None => {
+                        log::error!("Could not add sound with filename {}", path);
+                    }
+                }
+            }
+            Err(error) => {
+                log::error!("Could not add sound with filename {}", path);
+                log::error!("{}", error);
+            }
+        }
+    }
+    first_key
+}
+
+fn load_fonts<'a, 'b>(
+    font_files: &mut HashMap<String, FontLoadInfo>,
+    fonts: &mut Fonts<'a, 'b>,
+    font_filenames: Vec<(WeeResult<String>, String)>,
+    ttf_context: &'a TtfContext,
+) -> Option<String> {
+    let mut first_key = None;
+    for (key, path) in &font_filenames {
+        match key {
+            Ok(key) => {
+                let font = ttf_context.load_font(&path, 128);
+                match font {
+                    Ok(font) => {
+                        fonts.insert(key.clone(), font);
+                        let filename = Path::new(&path)
+                            .file_name()
+                            .unwrap()
+                            .to_str()
+                            .unwrap()
+                            .to_string();
+                        let load_info = FontLoadInfo {
+                            filename,
+                            size: 128.0,
+                        };
+                        font_files.insert(key.clone(), load_info);
+                        first_key = Some(key.clone());
+                    }
+                    Err(error) => {
+                        log::error!("Could not add font with filename {}", path);
+                        log::error!("{}", error);
+                    }
+                }
+            }
+            Err(error) => {
+                log::error!("Could not add font with filename {}", path);
+                log::error!("{}", error);
+            }
+        }
+    }
+    first_key
+}
+
 fn get_main_filename_part(path: &Path) -> WeeResult<String> {
     let parent = path.parent().ok_or("Could not find filename parent")?;
     let name = path
@@ -3204,6 +3659,75 @@ fn choose_image_from_files<P: AsRef<Path>>(
     }
 }
 
+fn choose_sound_from_files<P: AsRef<Path>>(
+    audio_files: &mut HashMap<String, String>,
+    sounds: &mut Sounds,
+    sounds_path: P,
+) -> Option<String> {
+    let result = nfd::open_file_multiple_dialog(None, sounds_path.as_ref().to_str()).unwrap();
+
+    match result {
+        Response::Okay(_) => {
+            unreachable!();
+        }
+        Response::OkayMultiple(files) => {
+            log::info!("Files {:?}", files);
+            let sound_filenames: Vec<(WeeResult<String>, String)> = files
+                .into_iter()
+                .map(|file_path| {
+                    let path = std::path::Path::new(&file_path);
+                    let name = get_main_filename_part(&path);
+                    let file_path = path
+                        .strip_prefix(std::env::current_dir().unwrap().as_path())
+                        .unwrap()
+                        .to_str()
+                        .unwrap()
+                        .to_string();
+                    (name, file_path)
+                })
+                .collect();
+
+            load_sounds(audio_files, sounds, sound_filenames)
+        }
+        _ => None,
+    }
+}
+
+fn choose_font_from_files<'a, 'b, P: AsRef<Path>>(
+    font_files: &mut HashMap<String, FontLoadInfo>,
+    fonts: &mut Fonts<'a, 'b>,
+    fonts_path: P,
+    ttf_context: &'a TtfContext,
+) -> Option<String> {
+    let result = nfd::open_file_multiple_dialog(None, fonts_path.as_ref().to_str()).unwrap();
+
+    match result {
+        Response::Okay(_) => {
+            unreachable!();
+        }
+        Response::OkayMultiple(files) => {
+            log::info!("Files {:?}", files);
+            let font_filenames: Vec<(WeeResult<String>, String)> = files
+                .into_iter()
+                .map(|file_path| {
+                    let path = std::path::Path::new(&file_path);
+                    let name = get_main_filename_part(&path);
+                    let file_path = path
+                        .strip_prefix(std::env::current_dir().unwrap().as_path())
+                        .unwrap()
+                        .to_str()
+                        .unwrap()
+                        .to_string();
+                    (name, file_path)
+                })
+                .collect();
+
+            load_fonts(font_files, fonts, font_filenames, ttf_context)
+        }
+        _ => None,
+    }
+}
+
 fn properties_window(
     ui: &imgui::Ui,
     object: &mut SerialiseObject,
@@ -3211,27 +3735,30 @@ fn properties_window(
     images: &mut Images,
     filename: &Option<String>,
 ) {
-    let mut sprite_type = if let Sprite::Image { .. } = &object.sprite {
-        0
+    let is_sprite = if let Sprite::Image { .. } = &object.sprite {
+        true
     } else {
-        1
+        false
     };
-    let sprite_typename = if sprite_type == 0 {
-        "Image".to_string()
-    } else {
-        "Colour".to_string()
-    };
-    if imgui::Slider::new(im_str!("Sprite"), std::ops::RangeInclusive::new(0, 1))
-        .display_format(&ImString::from(sprite_typename))
-        .build(&ui, &mut sprite_type)
-    {
-        object.sprite = if sprite_type == 0 {
-            Sprite::Image {
-                name: images.keys().next().unwrap().clone(),
+    //if ui.list_box(im_str!("Sprite"), &mut sprite_type, ["Image", "Colour"], 2);
+    if ui.radio_button_bool(im_str!("Sprite"), is_sprite) {
+        match images.keys().next() {
+            Some(name) => object.sprite = Sprite::Image { name: name.clone() },
+            None => {
+                let path = match filename {
+                    Some(filename) => Path::new(filename).parent().unwrap().join("images"),
+                    None => Path::new("games").to_owned(),
+                };
+                let image = choose_image_from_files(asset_files, images, path);
+                if let Some(image) = image {
+                    object.sprite = Sprite::Image { name: image };
+                }
             }
-        } else {
-            Sprite::Colour(Colour::black())
-        };
+        }
+    }
+    ui.same_line(0.0);
+    if ui.radio_button_bool(im_str!("Colour"), !is_sprite) {
+        object.sprite = Sprite::Colour(Colour::black());
     }
 
     match &mut object.sprite {
