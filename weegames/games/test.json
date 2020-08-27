@@ -1,0 +1,382 @@
+{
+  "format_version": "0.1",
+  "published": false,
+  "objects": [
+    {
+      "name": "Player",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.4627451,
+          "b": 0.80784315,
+          "a": 1.0
+        }
+      },
+      "position": {
+        "x": 200.0,
+        "y": 200.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Release"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Player",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Down"
+                      ]
+                    }
+                  },
+                  "speed": "Slow"
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Accelerate": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Down"
+                      ]
+                    }
+                  },
+                  "speed": "Normal"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Platform"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": "Stop"
+            },
+            {
+              "Motion": {
+                "Target": {
+                  "target": {
+                    "Object": {
+                      "name": "Platform"
+                    }
+                  },
+                  "target_type": "Follow",
+                  "offset": {
+                    "x": 0.0,
+                    "y": -100.0
+                  },
+                  "speed": "Normal"
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Release"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Player",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Up"
+                      ]
+                    }
+                  },
+                  "speed": "Slow"
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Accelerate": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Up"
+                      ]
+                    }
+                  },
+                  "speed": "Normal"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Spikes"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose",
+            {
+              "Effect": "Freeze"
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "End"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Win",
+            {
+              "Motion": "Stop"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Start",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.42352942,
+          "b": 0.0,
+          "a": 1.0
+        }
+      },
+      "position": {
+        "x": 300.0,
+        "y": 100.0
+      },
+      "size": {
+        "width": 500.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "Spikes",
+      "sprite": {
+        "Colour": {
+          "r": 0.65882355,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 1.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 100.0
+      },
+      "size": {
+        "width": 500.0,
+        "height": 200.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "End",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.42352942,
+          "b": 0.0,
+          "a": 1.0
+        }
+      },
+      "position": {
+        "x": 1200.0,
+        "y": 100.0
+      },
+      "size": {
+        "width": 300.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "Platform",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.42352942,
+          "b": 0.0,
+          "a": 1.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 600.0
+      },
+      "size": {
+        "width": 200.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "Roam": {
+                  "movement_type": {
+                    "Reflect": {
+                      "initial_direction": {
+                        "Direction": {
+                          "possible_directions": [
+                            "Left",
+                            "Right"
+                          ]
+                        }
+                      },
+                      "movement_handling": "Anywhere"
+                    }
+                  },
+                  "area": {
+                    "min": {
+                      "x": 0.0,
+                      "y": 0.0
+                    },
+                    "max": {
+                      "x": 1600.0,
+                      "y": 900.0
+                    }
+                  },
+                  "speed": "Normal"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "background": [],
+  "asset_files": {
+    "images": {},
+    "audio": {},
+    "music": null,
+    "fonts": {}
+  },
+  "length": 8.0,
+  "intro_text": null,
+  "attribution": ""
+}

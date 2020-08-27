@@ -43,8 +43,8 @@ pub fn run_editor(
     let mut game = GameData::default();
     let mut assets = Assets::default();
     let mut filename = None;
-    let mut game_position = Vec2::zero();
-    let mut scale: f32 = 1.0;
+    let mut game_position = Vec2::new(172.0, 106.0);
+    let mut scale: f32 = 0.8;
     let mut minus_button = ButtonState::Up;
     let mut plus_button = ButtonState::Up;
     let mut show_collision_areas = false;
@@ -62,6 +62,15 @@ pub fn run_editor(
         buffer: ImString,
     }
     let mut rename_object: Option<RenameObject> = None;
+    let mut new_object = SerialiseObject::default();
+    let mut new_name_buffer = ImString::from("".to_string());
+
+    let mut fonts_window_opened = false;
+    let mut background_window_opened = false;
+    let mut objects_window_opened = true;
+    let mut main_window_opened = true;
+    let mut demo_window_opened = false;
+
     'editor_running: loop {
         for event in event_pump.poll_iter() {
             imgui.sdl.handle_event(&mut imgui.context, &event);
@@ -72,18 +81,25 @@ pub fn run_editor(
                 process::exit(0);
             }
         }
-        sdlglue::set_fullscreen(renderer, event_pump)?;
+        //sdlglue::set_fullscreen(renderer, event_pump)?;
 
         let imgui_frame =
             imgui.prepare_frame(&renderer.window, &event_pump.mouse_state(), &mut last_frame);
         let ui = &imgui_frame.ui;
 
-        ui.show_demo_window(&mut true);
+        if demo_window_opened {
+            ui.show_demo_window(&mut demo_window_opened);
+        }
 
         let menu_bar = ui.begin_main_menu_bar();
         if let Some(bar) = menu_bar {
             let menu = ui.begin_menu(im_str!("File"), true);
             if let Some(menu) = menu {
+                if imgui::MenuItem::new(im_str!("New")).build(&ui) {
+                    game = GameData::default();
+                    assets = Assets::default();
+                    filename = None;
+                }
                 if imgui::MenuItem::new(im_str!("Open")).build(&ui) {
                     let games_path = std::env::current_dir().unwrap().join(Path::new("games"));
                     let response = nfd::open_file_dialog(None, games_path.to_str());
@@ -123,6 +139,27 @@ pub fn run_editor(
                         //ui.open_popup(im_str!("Error Opening File"));
                     }
                 }
+                if imgui::MenuItem::new(im_str!("Save")).build(&ui) {
+                    match &filename {
+                        Some(filename) => {
+                            let s = serde_json::to_string_pretty(&game);
+                            match s {
+                                Ok(s) => {
+                                    std::fs::write(&filename, s)
+                                        .unwrap_or_else(|e| log::error!("{}", e));
+                                    println!("SAVED! {}", filename);
+                                }
+                                Err(error) => {
+                                    log::error!("{}", error);
+                                }
+                            }
+                        }
+                        None => {
+                            // TODO:
+                            println!("TODO!");
+                        }
+                    }
+                }
                 if imgui::MenuItem::new(im_str!("Save As")).build(&ui) {
                     let games_path = std::env::current_dir().unwrap().join(Path::new("games"));
                     let response = nfd::open_save_dialog(None, games_path.to_str());
@@ -155,6 +192,25 @@ pub fn run_editor(
                 menu.end(ui);
             }
 
+            let toggle = |label, opened: &mut bool| {
+                let mut toggled = *opened;
+                if imgui::MenuItem::new(label).build_with_ref(ui, &mut toggled) {
+                    *opened = !(*opened);
+                }
+            };
+
+            let menu = ui.begin_menu(im_str!("View"), true);
+            if let Some(menu) = menu {
+                toggle(im_str!("Main Window"), &mut main_window_opened);
+                toggle(im_str!("Objects"), &mut objects_window_opened);
+                //toggle(im_str!("Sound FX"), &mut windows.sound_fx.opened);
+                //toggle(im_str!("Music"), &mut windows.music.opened);
+                toggle(im_str!("Background"), &mut background_window_opened);
+                toggle(im_str!("Fonts"), &mut fonts_window_opened);
+                toggle(im_str!("Demo Window"), &mut demo_window_opened);
+                menu.end(ui);
+            }
+
             let menu = ui.begin_menu(im_str!("Debug"), true);
             if let Some(menu) = menu {
                 let toggle = |label, opened: &mut bool| {
@@ -171,80 +227,195 @@ pub fn run_editor(
         }
         let window_size = [500.0, 600.0];
 
-        imgui::Window::new(im_str!("Main Window"))
-            .size(window_size, imgui::Condition::FirstUseEver)
-            .scroll_bar(true)
-            .scrollable(true)
-            .resizable(true)
-            .build(&ui, || {
-                if ui.button(im_str!("Play"), NORMAL_BUTTON) {
-                    LoadedGame::load_from_game_data(
-                        game.clone(),
-                        filename.as_ref().unwrap(),
-                        &intro_font,
+        let mut play_game = false;
+        if main_window_opened {
+            imgui::Window::new(im_str!("Main Window"))
+                .size(window_size, imgui::Condition::FirstUseEver)
+                .scroll_bar(true)
+                .scrollable(true)
+                .resizable(true)
+                .opened(&mut main_window_opened)
+                .build(&ui, || {
+                    if ui.button(im_str!("Play"), NORMAL_BUTTON) {
+                        play_game = true;
+                    }
+                    imgui::Slider::new(
+                        im_str!("Game Length"),
+                        std::ops::RangeInclusive::new(2.0, 8.0),
                     )
-                    .unwrap()
-                    .start(1.0, settings)
-                    .play(renderer, event_pump)
-                    .unwrap();
-                }
-            });
+                    .display_format(im_str!("%.1f"))
+                    .build(&ui, &mut game.length);
+                });
+        }
 
-        imgui::Window::new(im_str!("Objects"))
-            .size(window_size, imgui::Condition::FirstUseEver)
-            //.position([900.0, 200.0], imgui::Condition::FirstUseEver)
-            .scroll_bar(true)
-            .scrollable(true)
-            .resizable(true)
-            .build(&ui, || {
-                imgui::ChildWindow::new(im_str!("Left"))
-                    .size([150.0, 0.0])
-                    .border(true)
-                    .horizontal_scrollbar(true)
-                    .build(&ui, || {
-                        #[derive(Debug)]
-                        enum MoveDirection {
-                            Up,
-                            Down,
-                        }
-                        #[derive(Debug)]
-                        enum ObjectOperation {
-                            Add,
-                            Rename {
-                                index: usize,
-                                from: String,
-                                to: String,
-                            },
-                            Delete {
-                                index: usize,
-                            },
-                            Move {
-                                direction: MoveDirection,
-                                index: usize,
-                            },
-                            None,
-                        }
+        if play_game {
+            let completed_game = LoadedGame::with_assets(game.clone(), assets, &intro_font)?
+                .start(1.0, settings)
+                .play(renderer, event_pump)?;
+            assets = completed_game.assets;
+        }
 
-                        let up_arrow = ui.key_index(imgui::Key::UpArrow);
-                        let down_arrow = ui.key_index(imgui::Key::DownArrow);
-                        let up_pressed = ui.is_key_pressed(up_arrow);
-                        let down_pressed = ui.is_key_pressed(down_arrow);
-
-                        let mut object_operation: ObjectOperation = ObjectOperation::None;
-
-                        // TODO: Tidy up
-                        let is_being_renamed = |rename_object: &Option<RenameObject>, index| {
-                            if let Some(rename_details) = rename_object {
-                                return rename_details.index == index;
+        if objects_window_opened {
+            imgui::Window::new(im_str!("Objects"))
+                .size(window_size, imgui::Condition::FirstUseEver)
+                .position([600.0, 60.0], imgui::Condition::FirstUseEver)
+                .scroll_bar(true)
+                .scrollable(true)
+                .resizable(true)
+                .opened(&mut objects_window_opened)
+                .build(&ui, || {
+                    imgui::ChildWindow::new(im_str!("Left"))
+                        .size([150.0, 0.0])
+                        .border(true)
+                        .horizontal_scrollbar(true)
+                        .build(&ui, || {
+                            #[derive(Debug)]
+                            enum MoveDirection {
+                                Up,
+                                Down,
                             }
-                            return false;
-                        };
+                            #[derive(Debug)]
+                            enum ObjectOperation {
+                                Add,
+                                Rename {
+                                    index: usize,
+                                    from: String,
+                                    to: String,
+                                },
+                                Delete {
+                                    index: usize,
+                                },
+                                Move {
+                                    direction: MoveDirection,
+                                    index: usize,
+                                },
+                                None,
+                            }
 
-                        for i in 0..game.objects.len() {
-                            if is_being_renamed(&rename_object, i) {
-                                if let Some(rename_details) = &mut rename_object {
+                            let up_arrow = ui.key_index(imgui::Key::UpArrow);
+                            let down_arrow = ui.key_index(imgui::Key::DownArrow);
+                            let up_pressed = ui.is_key_pressed(up_arrow);
+                            let down_pressed = ui.is_key_pressed(down_arrow);
+
+                            let mut object_operation: ObjectOperation = ObjectOperation::None;
+
+                            // TODO: Tidy up
+                            let is_being_renamed = |rename_object: &Option<RenameObject>, index| {
+                                if let Some(rename_details) = rename_object {
+                                    return rename_details.index == index;
+                                }
+                                return false;
+                            };
+
+                            for i in 0..game.objects.len() {
+                                if is_being_renamed(&rename_object, i) {
+                                    if let Some(rename_details) = &mut rename_object {
+                                        if ui
+                                            .input_text(
+                                                im_str!("##edit"),
+                                                &mut rename_details.buffer,
+                                            )
+                                            .resize_buffer(true)
+                                            .enter_returns_true(true)
+                                            .build()
+                                        {
+                                            object_operation = ObjectOperation::Rename {
+                                                index: rename_details.index,
+                                                from: rename_details.name.clone(),
+                                                to: rename_details.buffer.to_string(),
+                                            };
+
+                                            // TODO: try selected_object instead
+                                            rename_object = None;
+                                        } else if ui.is_item_deactivated() {
+                                            // TODO: Not deactivating anymore
+                                            object_operation = ObjectOperation::Rename {
+                                                index: rename_details.index,
+                                                from: rename_details.name.clone(),
+                                                to: rename_details.buffer.to_string(),
+                                            };
+
+                                            rename_object = None;
+                                        }
+                                    }
+                                } else {
+                                    if imgui::Selectable::new(&im_str!("{}", game.objects[i].name))
+                                        .selected(selected_index == Some(i))
+                                        .build(&ui)
+                                    {
+                                        selected_index = Some(i);
+                                        instruction_mode = InstructionMode::View;
+                                    }
+                                    if ui.is_item_active() {
+                                        if up_pressed {
+                                            object_operation = ObjectOperation::Move {
+                                                direction: MoveDirection::Up,
+                                                index: i,
+                                            };
+                                        } else if down_pressed {
+                                            object_operation = ObjectOperation::Move {
+                                                direction: MoveDirection::Down,
+                                                index: i,
+                                            };
+                                        }
+                                    }
+                                    if ui.is_item_clicked(imgui::MouseButton::Right) {
+                                        ui.open_popup(im_str!("Edit Object"));
+                                        /*rename_object = Some(RenameObject {
+                                            index: i,
+                                            name: game.objects[i].name.clone(),
+                                            buffer: ImString::from(
+                                                game.objects[i].name.clone(),
+                                            ),
+                                        });*/
+                                        selected_index = Some(i);
+                                    }
+                                }
+                            }
+
+                            if ui.small_button(im_str!("New Object")) {
+                                object_operation = ObjectOperation::Add;
+                            }
+
+                            ui.popup(im_str!("Edit Object"), || {
+                                if ui.button(im_str!("Move up"), NORMAL_BUTTON) {
+                                    object_operation = ObjectOperation::Move {
+                                        direction: MoveDirection::Up,
+                                        index: selected_index.unwrap(),
+                                    };
+                                }
+
+                                if ui.button(im_str!("Move down"), NORMAL_BUTTON) {
+                                    object_operation = ObjectOperation::Move {
+                                        direction: MoveDirection::Down,
+                                        index: selected_index.unwrap(),
+                                    };
+                                }
+
+                                if ui.button(im_str!("Delete"), NORMAL_BUTTON) {
+                                    object_operation = ObjectOperation::Delete {
+                                        index: selected_index.unwrap(),
+                                    }
+                                }
+
+                                if ui.button(im_str!("Rename"), NORMAL_BUTTON) {
+                                    rename_object = Some(RenameObject {
+                                        index: selected_index.unwrap(),
+                                        name: game.objects[selected_index.unwrap()].name.clone(),
+                                        buffer: ImString::from(
+                                            game.objects[selected_index.unwrap()].name.clone(),
+                                        ),
+                                    });
+                                    ui.close_current_popup();
+                                }
+
+                                /*if let Some(rename_details) = &mut rename_object {
                                     if ui
-                                        .input_text(im_str!("##edit"), &mut rename_details.buffer)
+                                        .input_text(
+                                            im_str!("Rename Object"),
+                                            &mut rename_details.buffer,
+                                        )
+                                        .resize_buffer(true)
                                         .enter_returns_true(true)
                                         .build()
                                     {
@@ -255,344 +426,305 @@ pub fn run_editor(
                                         };
 
                                         // TODO: try selected_object instead
-                                        rename_object = None;
-                                    } else if ui.is_item_deactivated() {
-                                        // TODO: Not deactivating anymore
+                                        //rename_object = None;
+                                        rename_details.name = rename_details.buffer.to_string();
+                                    }
+                                }
+                                if ui.button(im_str!("Confirm"), NORMAL_BUTTON) {
+                                    if let Some(rename_details) = &mut rename_object {
                                         object_operation = ObjectOperation::Rename {
                                             index: rename_details.index,
                                             from: rename_details.name.clone(),
                                             to: rename_details.buffer.to_string(),
                                         };
-
-                                        rename_object = None;
+                                        rename_details.name = rename_details.buffer.to_string();
                                     }
-                                }
-                            } else {
-                                if imgui::Selectable::new(&im_str!("{}", game.objects[i].name))
-                                    .selected(selected_index == Some(i))
-                                    .build(&ui)
-                                {
-                                    selected_index = Some(i);
-                                }
-                                if ui.is_item_active() {
+                                }*/
+                            });
+
+                            if !ui.is_any_mouse_down() && ui.is_window_focused() {
+                                if let Some(index) = &mut selected_index {
                                     if up_pressed {
-                                        object_operation = ObjectOperation::Move {
-                                            direction: MoveDirection::Up,
-                                            index: i,
-                                        };
+                                        let previous_index =
+                                            if *index == 0 { 0 } else { *index - 1 };
+                                        game.objects.swap(*index, previous_index);
+                                        *index = previous_index;
                                     } else if down_pressed {
-                                        object_operation = ObjectOperation::Move {
-                                            direction: MoveDirection::Down,
-                                            index: i,
-                                        };
+                                        let next_index = (*index + 1).min(game.objects.len() - 1);
+                                        game.objects.swap(*index, next_index);
+                                        *index = next_index;
                                     }
                                 }
-                                if ui.is_item_clicked(imgui::MouseButton::Right) {
-                                    ui.open_popup(im_str!("Edit Object"));
+                            }
+                            /*ui.popup(im_str!("Edit Object Name"), || {
+                                ui.text("Edit name:");
+                                let mut text = ImString::from("Test".to_string());
+                                ui.input_text(im_str!("##edit"), &mut text).build();
+                            });*/
+
+                            match object_operation {
+                                ObjectOperation::Add => {
+                                    new_object = SerialiseObject::default();
+                                    new_name_buffer = ImString::from("".to_string());
+                                    ui.open_popup(im_str!("Create Object"));
+                                    //game.objects.push(SerialiseObject::default());
                                     /*rename_object = Some(RenameObject {
-                                        index: i,
-                                        name: game.objects[i].name.clone(),
-                                        buffer: ImString::from(
-                                            game.objects[i].name.clone(),
-                                        ),
+                                        index: game.objects.len() - 1,
+                                        name: "".to_string(),
+                                        buffer: ImString::from("".to_string()),
                                     });*/
-                                    selected_index = Some(i);
                                 }
-                            }
-                        }
-
-                        if ui.small_button(im_str!("New Object")) {
-                            object_operation = ObjectOperation::Add;
-                        }
-
-                        ui.popup(im_str!("Edit Object"), || {
-                            if ui.button(im_str!("Move up"), NORMAL_BUTTON) {
-                                object_operation = ObjectOperation::Move {
-                                    direction: MoveDirection::Up,
-                                    index: selected_index.unwrap(),
-                                };
-                            }
-
-                            if ui.button(im_str!("Move down"), NORMAL_BUTTON) {
-                                object_operation = ObjectOperation::Move {
-                                    direction: MoveDirection::Down,
-                                    index: selected_index.unwrap(),
-                                };
-                            }
-
-                            if ui.button(im_str!("Delete"), NORMAL_BUTTON) {
-                                object_operation = ObjectOperation::Delete {
-                                    index: selected_index.unwrap(),
+                                ObjectOperation::Rename { index, from, to } => {
+                                    let duplicate = game.objects.iter().any(|o| o.name == to);
+                                    if from == to {
+                                        ui.close_current_popup();
+                                    } else if duplicate {
+                                        // TODO: Add this popup
+                                        ui.open_popup(im_str!("Duplicate Name"));
+                                    } else {
+                                        // TODO: Remove unnecessary cloning
+                                        game.objects[index].name = to.clone();
+                                        rename_across_objects(&mut game.objects, &from, &to);
+                                        ui.close_current_popup();
+                                    }
                                 }
-                            }
-
-                            if ui.button(im_str!("Rename"), NORMAL_BUTTON) {
-                                rename_object = Some(RenameObject {
-                                    index: selected_index.unwrap(),
-                                    name: game.objects[selected_index.unwrap()].name.clone(),
-                                    buffer: ImString::from(
-                                        game.objects[selected_index.unwrap()].name.clone(),
-                                    ),
-                                });
-                                ui.close_current_popup();
-                            }
-
-                            /*if let Some(rename_details) = &mut rename_object {
-                                if ui
-                                    .input_text(
-                                        im_str!("Rename Object"),
-                                        &mut rename_details.buffer,
-                                    )
-                                    .resize_buffer(true)
-                                    .enter_returns_true(true)
-                                    .build()
-                                {
-                                    object_operation = ObjectOperation::Rename {
-                                        index: rename_details.index,
-                                        from: rename_details.name.clone(),
-                                        to: rename_details.buffer.to_string(),
-                                    };
-
-                                    // TODO: try selected_object instead
-                                    //rename_object = None;
-                                    rename_details.name = rename_details.buffer.to_string();
-                                }
-                            }
-                            if ui.button(im_str!("Confirm"), NORMAL_BUTTON) {
-                                if let Some(rename_details) = &mut rename_object {
-                                    object_operation = ObjectOperation::Rename {
-                                        index: rename_details.index,
-                                        from: rename_details.name.clone(),
-                                        to: rename_details.buffer.to_string(),
-                                    };
-                                    rename_details.name = rename_details.buffer.to_string();
-                                }
-                            }*/
-                        });
-
-                        if !ui.is_any_mouse_down() && ui.is_window_focused() {
-                            if let Some(index) = &mut selected_index {
-                                if up_pressed {
-                                    let previous_index = if *index == 0 { 0 } else { *index - 1 };
-                                    game.objects.swap(*index, previous_index);
-                                    *index = previous_index;
-                                } else if down_pressed {
-                                    let next_index = (*index + 1).min(game.objects.len() - 1);
-                                    game.objects.swap(*index, next_index);
-                                    *index = next_index;
-                                }
-                            }
-                        }
-                        /*ui.popup(im_str!("Edit Object Name"), || {
-                            ui.text("Edit name:");
-                            let mut text = ImString::from("Test".to_string());
-                            ui.input_text(im_str!("##edit"), &mut text).build();
-                        });*/
-
-                        match object_operation {
-                            ObjectOperation::Add => {
-                                game.objects.push(SerialiseObject::default());
-                            }
-                            ObjectOperation::Rename { index, from, to } => {
-                                let duplicate = game.objects.iter().any(|o| o.name == to);
-                                if from == to {
-                                    ui.close_current_popup();
-                                } else if duplicate {
-                                    // TODO: Add this popup
-                                    ui.open_popup(im_str!("Duplicate Name"));
-                                } else {
-                                    // TODO: Remove unnecessary cloning
-                                    game.objects[index].name = to.clone();
-                                    rename_across_objects(&mut game.objects, &from, &to);
-                                    ui.close_current_popup();
-                                }
-                            }
-                            ObjectOperation::Move { direction, index } => match direction {
-                                MoveDirection::Up => {
-                                    if index > 0 {
-                                        game.objects.swap(index - 1, index);
+                                ObjectOperation::Move { direction, index } => match direction {
+                                    MoveDirection::Up => {
+                                        if index > 0 {
+                                            game.objects.swap(index - 1, index);
+                                            selected_index = Some(index - 1);
+                                        }
+                                    }
+                                    MoveDirection::Down => {
+                                        if index + 1 < game.objects.len() {
+                                            game.objects.swap(index, index + 1);
+                                            selected_index = Some(index + 1);
+                                        }
+                                    }
+                                },
+                                ObjectOperation::Delete { index } => {
+                                    game.objects.remove(index);
+                                    if game.objects.is_empty() {
+                                        selected_index = None;
+                                    } else if index == 0 {
+                                        selected_index = Some(0);
+                                    } else {
                                         selected_index = Some(index - 1);
                                     }
                                 }
-                                MoveDirection::Down => {
-                                    if index + 1 < game.objects.len() {
-                                        game.objects.swap(index, index + 1);
-                                        selected_index = Some(index + 1);
-                                    }
-                                }
-                            },
-                            ObjectOperation::Delete { index } => {
-                                game.objects.remove(index);
-                                if game.objects.is_empty() {
-                                    selected_index = None;
-                                } else if index == 0 {
-                                    selected_index = Some(0);
-                                } else {
-                                    selected_index = Some(index - 1);
-                                }
+                                _ => {}
                             }
-                            _ => {}
-                        }
-                    });
 
-                ui.same_line(0.0);
+                            ui.popup_modal(im_str!("Create Object")).build(|| {
+                                let entered = ui
+                                    .input_text(im_str!("Name"), &mut new_name_buffer)
+                                    .resize_buffer(true)
+                                    .enter_returns_true(true)
+                                    .build();
 
-                if let Some(index) = selected_index {
-                    let mut object = game.objects[index].clone();
-                    let object_names: Vec<&str> =
-                        game.objects.iter().map(|o| o.name.as_ref()).collect();
-                    let sprites = game.objects.sprites();
-                    right_window(
-                        ui,
-                        &mut object,
-                        &object_names,
-                        &sprites,
-                        &mut game.asset_files,
-                        &mut assets,
-                        intro_font.ttf_context,
-                        game.length,
-                        &mut animation_editor,
-                        &filename,
-                        &mut instruction_mode,
-                        &mut instruction_index,
-                        &mut instruction_focus,
-                    );
-                    game.objects[index] = object;
-                }
-            });
+                                choose_sprite(
+                                    &mut new_object.sprite,
+                                    &ui,
+                                    &mut game.asset_files,
+                                    &mut assets.images,
+                                    &filename,
+                                );
+                                if let Sprite::Image { name } = &new_object.sprite {
+                                    new_object.size.width = assets.images[name].width as f32;
+                                    new_object.size.height = assets.images[name].height as f32;
+                                }
 
-        // TODO: Fix up
-        imgui::Window::new(im_str!("Background"))
-            .size(window_size, imgui::Condition::FirstUseEver)
-            //.opened(&mut opened)
-            .build(&ui, || {
-                for i in 0..game.background.len() {
-                    let stack = ui.push_id(i as i32);
-                    ui.text(im_str!("Layer {}", i));
-                    if i != 0 {
-                        ui.same_line(0.0);
-                        if ui.small_button(im_str!("Move Up")) {
-                            game.background.swap(i, i - 1);
-                        }
-                    }
-                    if i != game.background.len() - 1 {
-                        ui.same_line(0.0);
-                        if ui.small_button(im_str!("Move Down")) {
-                            game.background.swap(i, i + 1);
-                        }
-                    }
-                    if ui.small_button(im_str!("Delete")) {
-                        ui.same_line(0.0);
-                        game.background.remove(i);
-                        stack.pop(&ui);
-                        break;
-                    } else {
-                        /*let mut choose_background_image = images
-                            .keys()
-                            .position(|k| *k == game.background[i].name)
-                            .unwrap_or(0);
-                        if let Some(image_name) = build_image_name_changer_returns(
-                            &ui,
-                            game,
-                            images,
-                            &mut choose_background_image,
-                            &None,
-                        ) {
-                            game.background[i].name = image_name.clone();
-                        }*/
+                                if entered || ui.button(im_str!("OK"), NORMAL_BUTTON) {
+                                    let duplicate =
+                                        game.objects.iter().any(|o| o.name == new_object.name);
+                                    if duplicate {
+                                        ui.open_popup(im_str!("Duplicate Name"));
+                                    } else {
+                                        ui.close_current_popup();
+                                    }
+                                    new_object.name = new_name_buffer.to_str().to_string();
+                                    game.objects.push(new_object.clone());
+                                    selected_index = Some(game.objects.len() - 1);
+                                    ui.close_current_popup();
+                                }
+                                ui.same_line(0.0);
+                                if ui.button(im_str!("Cancel"), NORMAL_BUTTON) {
+                                    ui.close_current_popup();
+                                }
+                            });
 
-                        ui.input_float(im_str!("Min X"), &mut game.background[i].area.min.x)
-                            .build();
-                        ui.input_float(im_str!("Min Y"), &mut game.background[i].area.min.y)
-                            .build();
-                        ui.input_float(im_str!("Max X"), &mut game.background[i].area.max.x)
-                            .build();
-                        ui.input_float(im_str!("Max Y"), &mut game.background[i].area.max.y)
-                            .build();
-                    }
+                            ui.popup_modal(im_str!("Duplicate Name")).build(|| {
+                                ui.text(im_str!("An object with this name already exists"));
+                                if ui.button(im_str!("OK"), NORMAL_BUTTON) {
+                                    ui.close_current_popup();
+                                }
+                            });
+                        });
 
-                    stack.pop(&ui);
-                }
-                if ui.button(im_str!("New Background"), NORMAL_BUTTON) {
-                    if assets.images.is_empty() {
-                        ui.open_popup(im_str!("Add an image"));
-                    } else {
-                        /*let name = images.keys().next().unwrap().clone();
-                        let (w, h) =
-                            (images[&name].width as f32, images[&name].height as f32);
-                        game.background.push(Background {
-                            name,
-                            rect: Rect::new(800.0, 450.0, w, h),
-                        });*/
-                    }
-                };
-                ui.popup_modal(im_str!("Add an image")).build(|| {
-                    if assets.images.is_empty() {
-                        // TODO: Replace this with button instead of combo
-                        // Or maybe you don't need a button at all just go straight to it
-                        /*let mut tmp = 0;
-                        build_image_name_changer_returns(
-                            &ui, game, images, &mut tmp, &None,
-                        );*/
-                    } else {
-                        /*game.background.push(BackgroundPart {
-                            name: images.keys().next().unwrap().clone(),
-                            rect: Rect::new(800.0, 450.0, 1600.0, 900.0),
-                        });*/
-                        ui.close_current_popup();
-                    }
-                    if ui.button(im_str!("Cancel"), NORMAL_BUTTON) {
-                        ui.close_current_popup();
+                    ui.same_line(0.0);
+
+                    if let Some(index) = selected_index {
+                        let mut object = game.objects[index].clone();
+                        let object_names: Vec<&str> =
+                            game.objects.iter().map(|o| o.name.as_ref()).collect();
+                        let sprites = game.objects.sprites();
+                        right_window(
+                            ui,
+                            &mut object,
+                            &object_names,
+                            &sprites,
+                            &mut game.asset_files,
+                            &mut assets,
+                            intro_font.ttf_context,
+                            game.length,
+                            &mut animation_editor,
+                            &filename,
+                            &mut instruction_mode,
+                            &mut instruction_index,
+                            &mut instruction_focus,
+                        );
+                        game.objects[index] = object;
                     }
                 });
-            });
+        }
 
-        imgui::Window::new(im_str!("Fonts"))
-            .size(window_size, imgui::Condition::FirstUseEver)
-            .menu_bar(true)
-            .resizable(true)
-            .build(ui, || {
-                let menu_bar = ui.begin_menu_bar();
-
-                if let Some(bar) = menu_bar {
-                    let menu = ui.begin_menu(im_str!("File"), true);
-                    if let Some(menu) = menu {
-                        if imgui::MenuItem::new(im_str!("Add Fonts")).build(&ui) {
-                            let path = match &filename {
-                                Some(filename) => {
-                                    Path::new(filename).parent().unwrap().join("fonts")
-                                }
-                                None => Path::new("games").to_owned(),
-                            };
-                            choose_font_from_files(
-                                &mut game.asset_files.fonts,
-                                &mut assets.fonts,
-                                path,
-                                intro_font.ttf_context,
-                            );
+        if background_window_opened {
+            // TODO: Fix up
+            imgui::Window::new(im_str!("Background"))
+                .size(window_size, imgui::Condition::FirstUseEver)
+                .opened(&mut background_window_opened)
+                .build(&ui, || {
+                    for i in 0..game.background.len() {
+                        let stack = ui.push_id(i as i32);
+                        ui.text(im_str!("Layer {}", i));
+                        if i != 0 {
+                            ui.same_line(0.0);
+                            if ui.small_button(im_str!("Move Up")) {
+                                game.background.swap(i, i - 1);
+                            }
                         }
-                        menu.end(&ui);
+                        if i != game.background.len() - 1 {
+                            ui.same_line(0.0);
+                            if ui.small_button(im_str!("Move Down")) {
+                                game.background.swap(i, i + 1);
+                            }
+                        }
+                        if ui.small_button(im_str!("Delete")) {
+                            ui.same_line(0.0);
+                            game.background.remove(i);
+                            stack.pop(&ui);
+                            break;
+                        } else {
+                            /*let mut choose_background_image = images
+                                .keys()
+                                .position(|k| *k == game.background[i].name)
+                                .unwrap_or(0);
+                            if let Some(image_name) = build_image_name_changer_returns(
+                                &ui,
+                                game,
+                                images,
+                                &mut choose_background_image,
+                                &None,
+                            ) {
+                                game.background[i].name = image_name.clone();
+                            }*/
+
+                            ui.input_float(im_str!("Min X"), &mut game.background[i].area.min.x)
+                                .build();
+                            ui.input_float(im_str!("Min Y"), &mut game.background[i].area.min.y)
+                                .build();
+                            ui.input_float(im_str!("Max X"), &mut game.background[i].area.max.x)
+                                .build();
+                            ui.input_float(im_str!("Max Y"), &mut game.background[i].area.max.y)
+                                .build();
+                        }
+
+                        stack.pop(&ui);
                     }
-
-                    bar.end(&ui);
-                }
-
-                for (name, font) in game.asset_files.fonts.iter_mut() {
-                    ui.text(name);
-                    let base_path = match &filename {
-                        Some(filename) => Path::new(filename).parent().unwrap().join("fonts"),
-                        None => Path::new("games").to_owned(),
+                    if ui.button(im_str!("New Background"), NORMAL_BUTTON) {
+                        if assets.images.is_empty() {
+                            ui.open_popup(im_str!("Add an image"));
+                        } else {
+                            /*let name = images.keys().next().unwrap().clone();
+                            let (w, h) =
+                                (images[&name].width as f32, images[&name].height as f32);
+                            game.background.push(Background {
+                                name,
+                                rect: Rect::new(800.0, 450.0, w, h),
+                            });*/
+                        }
                     };
-                    let path = base_path.join(&font.filename);
-                    // TODO: Min Max this
-                    if ui.input_float(im_str!("Size"), &mut font.size).build() {
-                        *assets.fonts.get_mut(name).unwrap() = intro_font
-                            .ttf_context
-                            .load_font(&path, font.size as u16)
-                            .unwrap();
+                    ui.popup_modal(im_str!("Add an image")).build(|| {
+                        if assets.images.is_empty() {
+                            // TODO: Replace this with button instead of combo
+                            // Or maybe you don't need a button at all just go straight to it
+                            /*let mut tmp = 0;
+                            build_image_name_changer_returns(
+                                &ui, game, images, &mut tmp, &None,
+                            );*/
+                        } else {
+                            /*game.background.push(BackgroundPart {
+                                name: images.keys().next().unwrap().clone(),
+                                rect: Rect::new(800.0, 450.0, 1600.0, 900.0),
+                            });*/
+                            ui.close_current_popup();
+                        }
+                        if ui.button(im_str!("Cancel"), NORMAL_BUTTON) {
+                            ui.close_current_popup();
+                        }
+                    });
+                });
+        }
+
+        if fonts_window_opened {
+            imgui::Window::new(im_str!("Fonts"))
+                .size(window_size, imgui::Condition::FirstUseEver)
+                .menu_bar(true)
+                .resizable(true)
+                .opened(&mut fonts_window_opened)
+                .build(ui, || {
+                    let menu_bar = ui.begin_menu_bar();
+
+                    if let Some(bar) = menu_bar {
+                        let menu = ui.begin_menu(im_str!("File"), true);
+                        if let Some(menu) = menu {
+                            if imgui::MenuItem::new(im_str!("Add Fonts")).build(&ui) {
+                                let path = match &filename {
+                                    Some(filename) => {
+                                        Path::new(filename).parent().unwrap().join("fonts")
+                                    }
+                                    None => Path::new("games").to_owned(),
+                                };
+                                choose_font_from_files(
+                                    &mut game.asset_files.fonts,
+                                    &mut assets.fonts,
+                                    path,
+                                    intro_font.ttf_context,
+                                );
+                            }
+                            menu.end(&ui);
+                        }
+
+                        bar.end(&ui);
                     }
-                }
-            });
+
+                    for (name, font) in game.asset_files.fonts.iter_mut() {
+                        ui.text(name);
+                        let base_path = match &filename {
+                            Some(filename) => Path::new(filename).parent().unwrap().join("fonts"),
+                            None => Path::new("games").to_owned(),
+                        };
+                        let path = base_path.join(&font.filename);
+                        // TODO: Min Max this
+                        if ui.input_float(im_str!("Size"), &mut font.size).build() {
+                            *assets.fonts.get_mut(name).unwrap() = intro_font
+                                .ttf_context
+                                .load_font(&path, font.size as u16)
+                                .unwrap();
+                        }
+                    }
+                });
+        }
 
         let key_down = |event_pump: &EventPump, scancode: Scancode| {
             event_pump.keyboard_state().is_scancode_pressed(scancode)
@@ -1435,10 +1567,12 @@ fn choose_mouse_over(over: &mut MouseOver, ui: &imgui::Ui, object_names: &Vec<&s
     };
     let input_typename = if input_type == 0 {
         "Object".to_string()
-    } else {
+    } else if input_type == 1 {
         "Area".to_string()
+    } else {
+        "Anywhere".to_string()
     };
-    if imgui::Slider::new(im_str!("Mouse Over"), std::ops::RangeInclusive::new(0, 1))
+    if imgui::Slider::new(im_str!("Mouse Over"), std::ops::RangeInclusive::new(0, 2))
         .display_format(&ImString::from(input_typename))
         .build(&ui, &mut input_type)
     {
@@ -1610,36 +1744,39 @@ impl Choose for SwitchState {
     }
 }
 
-trait SelectSpriteType {
-    fn select_type(&mut self, ui: &imgui::Ui, images: &Images);
-}
-
-impl SelectSpriteType for Sprite {
-    fn select_type(&mut self, ui: &imgui::Ui, images: &Images) {
-        let mut sprite_type = if let Sprite::Image { .. } = self {
-            0
-        } else {
-            1
-        };
-        let sprite_typename = if sprite_type == 0 {
-            "Image".to_string()
-        } else {
-            "Colour".to_string()
-        };
-        if imgui::Slider::new(im_str!("Sprite"), std::ops::RangeInclusive::new(0, 1))
-            .display_format(&ImString::from(sprite_typename))
-            .build(&ui, &mut sprite_type)
-        {
-            *self = if sprite_type == 0 {
-                Sprite::Image {
-                    name: images.keys().next().unwrap().clone(),
+fn select_sprite_type(
+    sprite: &mut Sprite,
+    ui: &imgui::Ui,
+    asset_files: &mut AssetFiles,
+    images: &mut Images,
+    filename: &Option<String>,
+) {
+    let is_sprite = if let Sprite::Image { .. } = &sprite {
+        true
+    } else {
+        false
+    };
+    if ui.radio_button_bool(im_str!("Sprite"), is_sprite) {
+        match images.keys().next() {
+            Some(name) => *sprite = Sprite::Image { name: name.clone() },
+            None => {
+                let path = match filename {
+                    Some(filename) => Path::new(filename).parent().unwrap().join("images"),
+                    None => Path::new("games").to_owned(),
+                };
+                let image = choose_image_from_files(asset_files, images, path);
+                if let Some(image) = image {
+                    *sprite = Sprite::Image { name: image };
                 }
-            } else {
-                Sprite::Colour(Colour::black())
-            };
+            }
         }
     }
+    ui.same_line(0.0);
+    if ui.radio_button_bool(im_str!("Colour"), !is_sprite) {
+        *sprite = Sprite::Colour(Colour::black());
+    }
 }
+
 fn choose_new_image<P: AsRef<Path>>(
     image: &mut Sprite,
     asset_files: &mut AssetFiles,
@@ -1892,7 +2029,7 @@ fn choose_sprite(
     images: &mut Images,
     filename: &Option<String>,
 ) {
-    sprite.select_type(ui, images);
+    select_sprite_type(sprite, ui, asset_files, images, filename);
 
     match sprite {
         Sprite::Image { name: image_name } => {
@@ -2853,7 +2990,9 @@ impl Choose for MovementType {
                     };
                 }
 
-                match initial_direction {
+                initial_direction.choose(ui);
+
+                /*match initial_direction {
                     MovementDirection::Angle(Angle::Degrees(angle)) => {
                         ui.input_float(im_str!("Angle"), angle).build();
                     }
@@ -2930,7 +3069,7 @@ impl Choose for MovementType {
                         );
                     }
                     _ => {}
-                }
+                }*/
             }
             MovementType::Bounce { initial_direction } => {
                 if ui.radio_button_bool(
@@ -3313,7 +3452,7 @@ impl EnumSetters for Speed {
             im_str!("Value"),
         ];
 
-        f(self, im_str!("Animation Type"), &types);
+        f(self, im_str!("Speed Type"), &types);
     }
 }
 
@@ -3553,31 +3692,7 @@ fn properties_window(
     images: &mut Images,
     filename: &Option<String>,
 ) {
-    let is_sprite = if let Sprite::Image { .. } = &object.sprite {
-        true
-    } else {
-        false
-    };
-    //if ui.list_box(im_str!("Sprite"), &mut sprite_type, ["Image", "Colour"], 2);
-    if ui.radio_button_bool(im_str!("Sprite"), is_sprite) {
-        match images.keys().next() {
-            Some(name) => object.sprite = Sprite::Image { name: name.clone() },
-            None => {
-                let path = match filename {
-                    Some(filename) => Path::new(filename).parent().unwrap().join("images"),
-                    None => Path::new("games").to_owned(),
-                };
-                let image = choose_image_from_files(asset_files, images, path);
-                if let Some(image) = image {
-                    object.sprite = Sprite::Image { name: image };
-                }
-            }
-        }
-    }
-    ui.same_line(0.0);
-    if ui.radio_button_bool(im_str!("Colour"), !is_sprite) {
-        object.sprite = Sprite::Colour(Colour::black());
-    }
+    select_sprite_type(&mut object.sprite, ui, asset_files, images, filename);
 
     match &mut object.sprite {
         Sprite::Image { name: image_name } => {

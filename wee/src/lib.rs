@@ -47,9 +47,9 @@ pub struct SerialiseObject {
 impl Default for SerialiseObject {
     fn default() -> SerialiseObject {
         SerialiseObject {
-            name: "test".to_string(),
-            sprite: Sprite::Colour(Colour::white()),
-            position: Vec2::zero(),
+            name: "".to_string(),
+            sprite: Sprite::Colour(Colour::black()),
+            position: Vec2::new(800.0, 450.0),
             size: Size::new(100.0, 100.0),
             angle: 0.0,
             origin: None,
@@ -1695,6 +1695,27 @@ impl<'a, 'b> LoadedGame<'a, 'b> {
         })
     }
 
+    pub fn with_assets(
+        game_data: GameData,
+        assets: Assets<'a, 'b>,
+        intro_font: &'a IntroFont<'a, 'b>,
+    ) -> WeeResult<LoadedGame<'a, 'b>> {
+        let objects = game_data.objects.clone();
+
+        let intro_text = IntroText::new(intro_font, &game_data.intro_text);
+
+        let background = game_data.background;
+
+        Ok(LoadedGame {
+            objects,
+            background,
+            assets,
+            intro_text,
+            intro_font,
+            total_frames: (game_data.length * FPS) as u32,
+        })
+    }
+
     pub fn start<'c>(self, playback_rate: f32, settings: GameSettings) -> Game<'a, 'b, 'c> {
         let status = GameStatus {
             current: WinStatus::NotYetWon,
@@ -1739,6 +1760,12 @@ pub fn is_switched_on(objects: &Objects, name: &str) -> bool {
     } else {
         false
     }
+}
+
+pub struct CompletedGame<'a, 'b> {
+    pub completion: Completion,
+    pub assets: Assets<'a, 'b>,
+    pub has_been_won: bool,
 }
 
 pub enum Completion {
@@ -1788,10 +1815,10 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
     }
 
     pub fn play(
-        &mut self,
+        mut self,
         renderer: &mut Renderer,
         event_pump: &mut EventPump,
-    ) -> WeeResult<Completion> {
+    ) -> WeeResult<CompletedGame<'a, 'b>> {
         let mut escape = ButtonState::Up;
         'game_running: loop {
             if self.is_finished() {
@@ -1834,7 +1861,11 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                             break 'pause_running;
                         }
                         if is_switched_on(&game.objects, "Quit") {
-                            return Ok(Completion::Quit);
+                            return Ok(CompletedGame {
+                                completion: Completion::Quit,
+                                assets: game.assets,
+                                has_been_won: self.has_been_won(),
+                            });
                         }
                     }
                 }
@@ -1856,7 +1887,13 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
             music.data.stop();
         }
 
-        Ok(Completion::Finished)
+        let has_been_won = self.has_been_won();
+
+        Ok(CompletedGame {
+            completion: Completion::Finished,
+            assets: self.assets,
+            has_been_won,
+        })
     }
 
     fn sleep(&self) {
@@ -1996,6 +2033,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                 let is_over = match over {
                     MouseOver::Object { name: other_name } => {
                         let other_obj = self.objects.get_obj(other_name)?;
+                        // TODO: Use 1x1 AABB instead?
                         other_obj
                             .poly()
                             .gjk(&c2::Circle::new(c2v(self.mouse.position), 1.0))
@@ -2469,7 +2507,8 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                     speed: *speed,
                 },
                 Motion::Accelerate { direction, speed } => {
-                    let acceleration = direction.to_vector(&self.objects[name], *speed);
+                    let speed = Speed::Value(speed.as_value() / 40.0);
+                    let acceleration = direction.to_vector(&self.objects[name], speed);
                     let velocity = match &self.objects[name].active_motion {
                         ActiveMotion::Accelerate { velocity, .. } => *velocity,
                         ActiveMotion::GoStraight { velocity } => *velocity,

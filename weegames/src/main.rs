@@ -1,7 +1,6 @@
 // TODO: Show origin debug option
-// TODO: Enable selecting object again
 // TODO: Exit fullscreen when in editor
-// TODO: Fix crashes when switching between objects
+// TODO: Aspect ratio of edited game changes when window size changed
 
 //#![windows_subsystem = "windows"]
 
@@ -271,9 +270,10 @@ fn run_main_loop<'a, 'b>(
             });
             match handle.join().unwrap() {
                 Ok(()) => {
-                    let completion = LoadedGame::load("games/system/prelude.json", &intro_font)?
-                        .start(DEFAULT_GAME_SPEED, config.settings())
-                        .play(renderer, event_pump)?;
+                    let completed_game =
+                        LoadedGame::load("games/system/prelude.json", &intro_font)?
+                            .start(DEFAULT_GAME_SPEED, config.settings())
+                            .play(renderer, event_pump)?;
 
                     match rx.recv() {
                         Ok((list, game_data, filename)) => {
@@ -286,7 +286,7 @@ fn run_main_loop<'a, 'b>(
 
                             log::info!("{:?}", games_list);
 
-                            game_mode = if let Completion::Finished = completion {
+                            game_mode = if let Completion::Finished = completed_game.completion {
                                 GameMode::Play {
                                     game,
                                     games_list,
@@ -342,7 +342,7 @@ fn run_main_loop<'a, 'b>(
                 object.replace_text(progress.score, progress.lives);
             }
 
-            let completion = loaded_game
+            let completed_game = loaded_game
                 .start(progress.playback_rate, config.settings())
                 .play(renderer, event_pump)?;
 
@@ -351,7 +351,7 @@ fn run_main_loop<'a, 'b>(
             let game = LoadedGame::load_from_game_data(game_data, &filename, &intro_font)?;
 
             log::info!("Playing game: {}", filename);
-            game_mode = if let Completion::Finished = completion {
+            game_mode = if let Completion::Finished = completed_game.completion {
                 GameMode::Play {
                     game,
                     games_list,
@@ -377,14 +377,14 @@ fn run_main_loop<'a, 'b>(
             games_list,
             mut progress,
         } => {
-            let mut game = loaded_game.start(progress.playback_rate, config.settings());
-
-            let result = game.play(renderer, event_pump);
+            let result = loaded_game
+                .start(progress.playback_rate, config.settings())
+                .play(renderer, event_pump);
 
             match result {
-                Ok(completion) => {
-                    game_mode = if let Completion::Finished = completion {
-                        let has_won = game.has_been_won();
+                Ok(completed_game) => {
+                    game_mode = if let Completion::Finished = completed_game.completion {
+                        let has_won = completed_game.has_been_won;
 
                         progress.update(
                             has_won,
