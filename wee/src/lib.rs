@@ -3,7 +3,7 @@ use wee_common::{
     Colour, Flip, Rect, Size, Vec2, Warn, WeeResult, AABB, PROJECTION_HEIGHT, PROJECTION_WIDTH,
 };
 
-use cute_c2::{self as c2, prelude::*};
+use c2::prelude::*;
 use indexmap::IndexMap;
 use rand::{seq::SliceRandom, thread_rng, Rng};
 use sdl2::{
@@ -681,9 +681,10 @@ impl Object {
         let c = angle.cos();
         let s = angle.sin();
         for point in points.iter_mut() {
-            *point = c2::Vec2::new(point.x * c - point.y * s, point.x * s + point.y * c);
-            point.x += origin.x;
-            point.y += origin.y;
+            *point = c2v(
+                point.x() * c - point.y() * s + origin.x,
+                point.x() * s + point.y() * c + origin.y,
+            );
         }
         c2::Poly::from_slice(&points)
     }
@@ -1462,7 +1463,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                             .gjk(&c2::Circle::new(c2v(self.mouse.position), 1.0))
                             .use_radius(false)
                             .run()
-                            .distance
+                            .distance()
                             == 0.0
                     }
                     MouseOver::Area(area) => is_mouse_in_area(self.mouse, *area),
@@ -2003,8 +2004,8 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                                 for other_name in objects.keys() {
                                     if other_name != name {
                                         let manifold = poly.manifold(&objects[other_name].poly());
-                                        if manifold.count > 0 {
-                                            let depth = manifold.depths[0];
+                                        if manifold.count() > 0 {
+                                            let depth = manifold.depths()[0];
                                             if depth > longest_depth || closest_manifold.is_none() {
                                                 closest_manifold = Some(manifold);
                                                 position = objects[other_name].position;
@@ -2023,8 +2024,8 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                             let move_away = |manifold: Option<c2::Manifold>| {
                                 if let Some(manifold) = manifold {
                                     let normal = manifold.normal();
-                                    let depth = manifold.depths[0];
-                                    Vec2::new(normal.x * depth, normal.y * depth)
+                                    let depth = manifold.depths()[0];
+                                    Vec2::new(normal.x() * depth, normal.y() * depth)
                                 } else {
                                     Vec2::zero()
                                 }
@@ -2034,8 +2035,8 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                             let closest_manifold = {
                                 let moved_poly = {
                                     let transformation = c2::Transformation::new(
-                                        c2::Vec2::new(velocity.x, velocity.y),
-                                        0.0,
+                                        [velocity.x, velocity.y],
+                                        c2::Rotation::zero(),
                                     );
                                     (self.objects[name].poly(), transformation)
                                 };
@@ -2056,9 +2057,9 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                             self.objects[name].position -= move_away(closest_manifold);
                             if let Some(manifold) = closest_manifold {
                                 let normal = manifold.normal();
-                                let len = (normal.x.powf(2.0) + normal.y.powf(2.0)).sqrt();
+                                let len = (normal.x().powf(2.0) + normal.y().powf(2.0)).sqrt();
                                 if len != 0.0 {
-                                    let normal = Vec2::new(normal.x / len, normal.y / len);
+                                    let normal = Vec2::new(normal.x() / len, normal.y() / len);
                                     velocity = velocity - 2.0 * (velocity * normal) * normal;
                                 }
                             }
