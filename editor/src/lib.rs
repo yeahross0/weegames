@@ -1,3 +1,5 @@
+// TODO: Get the viewports right for full screen editor
+
 #[macro_use]
 extern crate imgui;
 
@@ -49,13 +51,14 @@ pub fn run_editor(
     let mut plus_button = ButtonState::Up;
     let mut show_collision_areas = false;
     let mut selected_index = None;
-    let mut instruction_index = 0;
+    let mut instruction_index = None;
     let mut instruction_mode = InstructionMode::View;
     let mut instruction_focus = InstructionFocus::None;
     let mut animation_editor = AnimationEditor {
         new_sprite: Sprite::Colour(Colour::black()),
         index: 0,
     };
+    let mut new_background = Sprite::Colour(Colour::black());
     struct RenameObject {
         index: usize,
         name: String,
@@ -99,6 +102,9 @@ pub fn run_editor(
                     game = GameData::default();
                     assets = Assets::default();
                     filename = None;
+                    selected_index = None;
+                    instruction_mode = InstructionMode::View;
+                    instruction_index = None;
                 }
                 if imgui::MenuItem::new(im_str!("Open")).build(&ui) {
                     let games_path = std::env::current_dir().unwrap().join(Path::new("games"));
@@ -155,8 +161,32 @@ pub fn run_editor(
                             }
                         }
                         None => {
-                            // TODO:
-                            println!("TODO!");
+                            // TODO: Duplicate code
+                            let games_path =
+                                std::env::current_dir().unwrap().join(Path::new("games"));
+                            let response = nfd::open_save_dialog(None, games_path.to_str());
+                            match response {
+                                Ok(response) => {
+                                    if let Response::Okay(file_path) = response {
+                                        log::info!("File path = {:?}", file_path);
+                                        // let final_path = base_file_path.canonfile_path
+                                        let s = serde_json::to_string_pretty(&game);
+                                        match s {
+                                            Ok(s) => {
+                                                std::fs::write(&file_path, s)
+                                                    .unwrap_or_else(|e| log::error!("{}", e));
+                                                filename = Some(file_path);
+                                            }
+                                            Err(error) => {
+                                                log::error!("{}", error);
+                                            }
+                                        }
+                                    }
+                                }
+                                Err(error) => {
+                                    log::error!("{}", error);
+                                }
+                            }
                         }
                     }
                 }
@@ -345,6 +375,7 @@ pub fn run_editor(
                                     {
                                         selected_index = Some(i);
                                         instruction_mode = InstructionMode::View;
+                                        instruction_index = None;
                                     }
                                     if ui.is_item_active() {
                                         if up_pressed {
@@ -615,19 +646,13 @@ pub fn run_editor(
                             stack.pop(&ui);
                             break;
                         } else {
-                            /*let mut choose_background_image = images
-                                .keys()
-                                .position(|k| *k == game.background[i].name)
-                                .unwrap_or(0);
-                            if let Some(image_name) = build_image_name_changer_returns(
-                                &ui,
-                                game,
-                                images,
-                                &mut choose_background_image,
-                                &None,
-                            ) {
-                                game.background[i].name = image_name.clone();
-                            }*/
+                            choose_sprite(
+                                &mut game.background[i].sprite,
+                                ui,
+                                &mut game.asset_files,
+                                &mut assets.images,
+                                &filename,
+                            );
 
                             ui.input_float(im_str!("Min X"), &mut game.background[i].area.min.x)
                                 .build();
@@ -642,33 +667,25 @@ pub fn run_editor(
                         stack.pop(&ui);
                     }
                     if ui.button(im_str!("New Background"), NORMAL_BUTTON) {
-                        if assets.images.is_empty() {
-                            ui.open_popup(im_str!("Add an image"));
-                        } else {
-                            /*let name = images.keys().next().unwrap().clone();
-                            let (w, h) =
-                                (images[&name].width as f32, images[&name].height as f32);
-                            game.background.push(Background {
-                                name,
-                                rect: Rect::new(800.0, 450.0, w, h),
-                            });*/
-                        }
+                        new_background = Sprite::Colour(Colour::black());
+                        ui.open_popup(im_str!("Add a Background"));
                     };
-                    ui.popup_modal(im_str!("Add an image")).build(|| {
-                        if assets.images.is_empty() {
-                            // TODO: Replace this with button instead of combo
-                            // Or maybe you don't need a button at all just go straight to it
-                            /*let mut tmp = 0;
-                            build_image_name_changer_returns(
-                                &ui, game, images, &mut tmp, &None,
-                            );*/
-                        } else {
-                            /*game.background.push(BackgroundPart {
-                                name: images.keys().next().unwrap().clone(),
-                                rect: Rect::new(800.0, 450.0, 1600.0, 900.0),
-                            });*/
+                    ui.popup_modal(im_str!("Add a Background")).build(|| {
+                        choose_sprite(
+                            &mut new_background,
+                            ui,
+                            &mut game.asset_files,
+                            &mut assets.images,
+                            &filename,
+                        );
+                        if ui.button(im_str!("Ok"), NORMAL_BUTTON) {
+                            game.background.push(BackgroundPart {
+                                sprite: new_background.clone(),
+                                area: AABB::new(0.0, 0.0, 1600.0, 900.0),
+                            });
                             ui.close_current_popup();
                         }
+                        ui.same_line(0.0);
                         if ui.button(im_str!("Cancel"), NORMAL_BUTTON) {
                             ui.close_current_popup();
                         }
@@ -864,8 +881,9 @@ pub fn run_editor(
                             let game_object = object.clone().to_object();
                             let poly = game_object.poly();
 
-                            for v in poly.verts.iter() {
-                                let rect = Rect::new(v.x, v.y, 10.0, 10.0)
+                            for i in 0..poly.count() {
+                                let v = poly.get_vert(i);
+                                let rect = Rect::new(v.x(), v.y(), 10.0, 10.0)
                                     .move_position(game_position)
                                     .scale(scale);
                                 let model = Model::new(rect, None, 0.0, Flip::default());
@@ -1240,7 +1258,7 @@ fn right_window<'a, 'b>(
     animation_editor: &mut AnimationEditor,
     filename: &Option<String>,
     instruction_mode: &mut InstructionMode,
-    instruction_index: &mut usize,
+    instruction_index: &mut Option<usize>,
     instruction_focus: &mut InstructionFocus,
 ) {
     imgui::ChildWindow::new(im_str!("Right"))
@@ -2171,7 +2189,7 @@ fn choose_trigger(
             3 => Trigger::WinStatus(WinStatus::Won),
             4 => Trigger::Random { chance: 0.5 },
             5 => Trigger::CheckProperty {
-                name: first_name(),
+                name: first_name(), // TODO: Use current object's name here
                 check: PropertyCheck::Switch(SwitchState::On),
             },
             6 => Trigger::CheckProperty {
@@ -2301,7 +2319,7 @@ fn choose_action<'a, 'b>(
             );
         }
         Action::SetProperty(setter) => {
-            choose(
+            choose_property_setter(
                 setter,
                 ui,
                 object_names,
@@ -2409,7 +2427,7 @@ impl Choose for AnimationType {
     }
 }
 
-fn choose(
+fn choose_property_setter(
     property: &mut PropertySetter,
     ui: &imgui::Ui,
     object_names: &Vec<&str>,
@@ -2991,85 +3009,6 @@ impl Choose for MovementType {
                 }
 
                 initial_direction.choose(ui);
-
-                /*match initial_direction {
-                    MovementDirection::Angle(Angle::Degrees(angle)) => {
-                        ui.input_float(im_str!("Angle"), angle).build();
-                    }
-                    MovementDirection::Angle(Angle::Random { min, max }) => {
-                        ui.input_float(im_str!("Min Angle"), min).build();
-                        ui.input_float(im_str!("Max Angle"), max).build();
-                    }
-                    MovementDirection::Direction {
-                        possible_directions,
-                    } => {
-                        fn direction_checkbox(
-                            ui: &imgui::Ui,
-                            possible_directions: &mut HashSet<CompassDirection>,
-                            label: &ImStr,
-                            direction: CompassDirection,
-                        ) {
-                            let mut checked = possible_directions.contains(&direction);
-                            if imgui::Ui::checkbox(&ui, label, &mut checked) {
-                                if checked {
-                                    possible_directions.insert(direction);
-                                } else {
-                                    possible_directions.remove(&direction);
-                                }
-                            }
-                        }
-                        ui.text("Random directions:");
-                        direction_checkbox(
-                            &ui,
-                            possible_directions,
-                            im_str!("Up"),
-                            CompassDirection::Up,
-                        );
-                        direction_checkbox(
-                            &ui,
-                            possible_directions,
-                            im_str!("Up Right"),
-                            CompassDirection::UpRight,
-                        );
-                        direction_checkbox(
-                            &ui,
-                            possible_directions,
-                            im_str!("Right"),
-                            CompassDirection::Right,
-                        );
-                        direction_checkbox(
-                            &ui,
-                            possible_directions,
-                            im_str!("Down Right"),
-                            CompassDirection::DownRight,
-                        );
-                        direction_checkbox(
-                            &ui,
-                            possible_directions,
-                            im_str!("Down"),
-                            CompassDirection::Down,
-                        );
-                        direction_checkbox(
-                            &ui,
-                            possible_directions,
-                            im_str!("Down Left"),
-                            CompassDirection::DownLeft,
-                        );
-                        direction_checkbox(
-                            &ui,
-                            possible_directions,
-                            im_str!("Left"),
-                            CompassDirection::Left,
-                        );
-                        direction_checkbox(
-                            &ui,
-                            possible_directions,
-                            im_str!("Up Left"),
-                            CompassDirection::UpLeft,
-                        );
-                    }
-                    _ => {}
-                }*/
             }
             MovementType::Bounce { initial_direction } => {
                 if ui.radio_button_bool(
@@ -3147,7 +3086,7 @@ fn choose_instructions<'a, 'b>(
     animation_editor: &mut AnimationEditor,
     filename: &Option<String>,
     instruction_mode: &mut InstructionMode,
-    selected_index: &mut usize,
+    selected_index: &mut Option<usize>,
     focus: &mut InstructionFocus,
 ) {
     match instruction_mode {
@@ -3163,10 +3102,10 @@ fn choose_instructions<'a, 'b>(
                             .flags(imgui::ImGuiTreeNodeFlags::SpanAvailWidth)
                             .bullet(true)
                             .leaf(true)
-                            .selected(*selected_index == i)
+                            .selected(*selected_index == Some(i))
                             .build(|| {
                                 if ui.is_item_clicked(imgui::MouseButton::Left) {
-                                    *selected_index = i;
+                                    *selected_index = Some(i);
                                 }
                                 if instruction.triggers.is_empty() {
                                     ui.text("\tEvery frame")
@@ -3189,44 +3128,51 @@ fn choose_instructions<'a, 'b>(
                         ui.separator();
                     }
                 });
-            if ui.small_button(im_str!("Up")) && *selected_index > 0 {
-                instructions.swap(*selected_index, *selected_index - 1);
-                *selected_index -= 1;
-            }
-            ui.same_line(0.0);
-            if ui.small_button(im_str!("Down")) && *selected_index + 1 < instructions.len() {
-                instructions.swap(*selected_index, *selected_index + 1);
-                *selected_index += 1;
-            }
-            ui.same_line(0.0);
+
             if ui.small_button(im_str!("Add")) {
                 instructions.push(wee::Instruction {
                     triggers: Vec::new(),
                     actions: Vec::new(),
                 });
-            }
-            ui.same_line(0.0);
-            if ui.small_button(im_str!("Edit")) {
+                *selected_index = Some(instructions.len() - 1);
                 *instruction_mode = InstructionMode::Edit;
             }
             ui.same_line(0.0);
-            if ui.small_button(im_str!("Delete")) && !instructions.is_empty() {
-                instructions.remove(*selected_index);
-                if *selected_index > 0 {
+            if let Some(selected_index) = selected_index {
+                if ui.small_button(im_str!("Edit")) {
+                    *instruction_mode = InstructionMode::Edit;
+                }
+                ui.same_line(0.0);
+                if ui.small_button(im_str!("Delete")) && !instructions.is_empty() {
+                    instructions.remove(*selected_index);
+                    if *selected_index > 0 {
+                        *selected_index -= 1;
+                    }
+                }
+                ui.same_line(0.0);
+                if ui.small_button(im_str!("Up")) && *selected_index > 0 {
+                    instructions.swap(*selected_index, *selected_index - 1);
                     *selected_index -= 1;
+                }
+                ui.same_line(0.0);
+                if ui.small_button(im_str!("Down")) && *selected_index + 1 < instructions.len() {
+                    instructions.swap(*selected_index, *selected_index + 1);
+                    *selected_index += 1;
                 }
             }
         }
         InstructionMode::Edit => {
+            let selected_index = selected_index.unwrap_or(0);
             choose_instruction(
-                &mut instructions[*selected_index],
+                &mut instructions[selected_index],
                 ui,
                 instruction_mode,
                 focus,
             );
         }
         InstructionMode::AddTrigger => {
-            let instruction = &mut instructions[*selected_index];
+            let selected_index = selected_index.unwrap_or(0);
+            let instruction = &mut instructions[selected_index];
             instruction.triggers.push(Trigger::Time(When::Start));
             *focus = InstructionFocus::Trigger {
                 index: instruction.triggers.len() - 1,
@@ -3234,7 +3180,8 @@ fn choose_instructions<'a, 'b>(
             *instruction_mode = InstructionMode::EditTrigger;
         }
         InstructionMode::AddAction => {
-            let instruction = &mut instructions[*selected_index];
+            let selected_index = selected_index.unwrap_or(0);
+            let instruction = &mut instructions[selected_index];
             instruction.actions.push(Action::Win);
             *focus = InstructionFocus::Action {
                 index: instruction.actions.len() - 1,
@@ -3242,13 +3189,13 @@ fn choose_instructions<'a, 'b>(
             *instruction_mode = InstructionMode::EditAction;
         }
         InstructionMode::EditTrigger => {
-            //let object_names: Vec<String> = game.objects.iter().map(|o| o.name.clone()).collect();
+            let selected_index = selected_index.unwrap_or(0);
             let trigger_index = match focus {
                 InstructionFocus::Trigger { index } => *index,
                 _ => unreachable!(),
             };
             choose_trigger(
-                &mut instructions[*selected_index].triggers[trigger_index],
+                &mut instructions[selected_index].triggers[trigger_index],
                 ui,
                 object_names,
                 game_length,
@@ -3259,13 +3206,13 @@ fn choose_instructions<'a, 'b>(
             );
         }
         InstructionMode::EditAction => {
-            //let object_names: Vec<String> = objects.iter().map(|o| o.name.clone()).collect();
+            let selected_index = selected_index.unwrap_or(0);
             let action_index = match focus {
                 InstructionFocus::Action { index } => *index,
                 _ => unreachable!(),
             };
             choose_action(
-                &mut instructions[*selected_index].actions[action_index],
+                &mut instructions[selected_index].actions[action_index],
                 ui,
                 object_names,
                 asset_files,
