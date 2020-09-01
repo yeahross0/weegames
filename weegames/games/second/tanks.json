@@ -1,0 +1,256 @@
+{
+  "format_version": "0.1",
+  "published": false,
+  "objects": [
+    {
+      "name": "Ground",
+      "sprite": {
+        "Colour": {
+          "r": 0.7837838,
+          "g": 0.6961294,
+          "b": 0.051445257,
+          "a": 1.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 800.0
+      },
+      "size": {
+        "width": 1600.0,
+        "height": 200.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "Player",
+      "sprite": {
+        "Colour": {
+          "r": 0.14943601,
+          "g": 0.5405406,
+          "b": 0.04174059,
+          "a": 1.0
+        }
+      },
+      "position": {
+        "x": 300.0,
+        "y": 665.0
+      },
+      "size": {
+        "width": 120.0,
+        "height": 75.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "Cannon",
+      "sprite": {
+        "Colour": {
+          "r": 0.01860437,
+          "g": 0.20077223,
+          "b": 0.0310249,
+          "a": 1.0
+        }
+      },
+      "position": {
+        "x": 325.0,
+        "y": 600.0
+      },
+      "size": {
+        "width": 20.0,
+        "height": 75.0
+      },
+      "angle": 0.0,
+      "origin": {
+        "x": 10.0,
+        "y": 75.0
+      },
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Angle": "RotateToMouse"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Enemy",
+      "sprite": {
+        "Colour": {
+          "r": 0.092067815,
+          "g": 0.12179319,
+          "b": 0.74517375,
+          "a": 1.0
+        }
+      },
+      "position": {
+        "x": 1200.0,
+        "y": 665.0
+      },
+      "size": {
+        "width": 120.0,
+        "height": 75.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "Bomb",
+      "sprite": {
+        "Colour": {
+          "r": 0.000001,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 1.0
+        }
+      },
+      "position": {
+        "x": 325.0,
+        "y": 600.0
+      },
+      "size": {
+        "width": 20.0,
+        "height": 20.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Release"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Bomb",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Angle": "Current"
+                  },
+                  "speed": "Fast"
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Accelerate": {
+                  "Continuous": {
+                    "direction": {
+                      "Direction": {
+                        "possible_directions": [
+                          "Down"
+                        ]
+                      }
+                    },
+                    "speed": "Normal"
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Bomb",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Angle": {
+                  "Match": {
+                    "name": "Cannon"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "background": [],
+  "asset_files": {
+    "images": {},
+    "audio": {},
+    "music": null,
+    "fonts": {}
+  },
+  "length": 4.0,
+  "intro_text": null,
+  "attribution": ""
+}

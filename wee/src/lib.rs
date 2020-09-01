@@ -318,7 +318,8 @@ impl fmt::Display for Trigger {
             Trigger::Time(When::Random { start, end }) => write!(
                 f,
                 "At a random time between {:.2} and {:.2} seconds",
-                start, end,
+                (*start as f32) / 60.0,
+                (*end as f32) / 60.0,
             ),
             Trigger::Collision(CollisionWith::Object { name }) => {
                 write!(f, "While this object collides with {}", name)
@@ -641,6 +642,17 @@ pub enum TargetType {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum Acceleration {
+    Continuous {
+        direction: MovementDirection,
+        speed: Speed,
+    },
+    SlowDown {
+        speed: Speed,
+    },
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum Motion {
     GoStraight {
         direction: MovementDirection,
@@ -661,10 +673,7 @@ pub enum Motion {
         offset: Vec2,
         speed: Speed,
     },
-    Accelerate {
-        direction: MovementDirection,
-        speed: Speed,
-    },
+    Accelerate(Acceleration),
     Stop,
 }
 
@@ -781,7 +790,7 @@ impl fmt::Display for Motion {
                     TargetType::StopWhenReached => write!(f, "Target {} {}{}", name, speed, offset),
                 }
             }
-            Motion::Accelerate { direction, speed } => match direction {
+            Motion::Accelerate(Acceleration::Continuous { direction, speed }) => match direction {
                 MovementDirection::Direction {
                     possible_directions: dirs,
                 } => {
@@ -812,6 +821,10 @@ impl fmt::Display for Motion {
                     ),
                 },
             },
+            Motion::Accelerate(Acceleration::SlowDown { speed }) => {
+                // TODO: Fill in
+                write!(f, "TODO")
+            }
         }
     }
 }
@@ -840,6 +853,7 @@ pub enum AngleSetter {
     Decrease(f32),
     Match { name: String },
     Clamp { min: f32, max: f32 },
+    RotateToObject { name: String },
     RotateToMouse,
 }
 
@@ -1001,6 +1015,7 @@ impl fmt::Display for Action {
                     "Clamp this object's angle to between {} and {} degrees",
                     min, max
                 ),
+                AngleSetter::RotateToObject { name } => write!(f, "Rotate towards {}", name),
                 AngleSetter::RotateToMouse => write!(f, "Rotate towards the mouse"),
             },
             Action::SetProperty(PropertySetter::Sprite(sprite)) => {
@@ -1129,6 +1144,10 @@ pub enum ActiveMotion {
     Accelerate {
         velocity: Vec2,
         acceleration: Vec2,
+    },
+    SlowDown {
+        velocity: Vec2,
+        deceleration: Vec2,
     },
     Stop,
 }
@@ -2238,6 +2257,14 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                         }
                         clamp_degrees(angle, *min, *max)
                     }
+                    AngleSetter::RotateToObject { name: other_name } => {
+                        let other_centre = self.objects.get_obj(other_name)?.position;
+                        let centre = self.objects[name].origin_in_world();
+                        (other_centre.y - centre.y)
+                            .atan2(other_centre.x - centre.x)
+                            .to_degrees()
+                            + 90.0
+                    }
                     AngleSetter::RotateToMouse => {
                         let centre = self.objects[name].origin_in_world();
                         (self.mouse.position.y - centre.y)
@@ -2462,6 +2489,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                             velocity: random_velocity(*speed),
                         },
                         MovementType::Bounce { initial_direction } => {
+                            // TODO: Handle speed here
                             let acceleration = -2.0 * (area.min.y - area.max.y) / (FPS * FPS);
                             let velocity = {
                                 let y_velocity =
@@ -2507,7 +2535,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                     offset: *offset,
                     speed: *speed,
                 },
-                Motion::Accelerate { direction, speed } => {
+                Motion::Accelerate(Acceleration::Continuous { direction, speed }) => {
                     let speed = Speed::Value(speed.as_value() / 40.0);
                     let acceleration = direction.to_vector(&self.objects[name], speed);
                     let velocity = match &self.objects[name].active_motion {
@@ -2520,11 +2548,39 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                             _ => Vec2::zero(),
                         },
                         ActiveMotion::Target { .. } => Vec2::zero(),
+                        ActiveMotion::SlowDown { velocity, .. } => *velocity,
                         ActiveMotion::Stop => Vec2::zero(),
                     };
                     ActiveMotion::Accelerate {
                         velocity,
                         acceleration,
+                    }
+                }
+                Motion::Accelerate(Acceleration::SlowDown { speed }) => {
+                    let velocity = match &self.objects[name].active_motion {
+                        ActiveMotion::Accelerate { velocity, .. } => *velocity,
+                        ActiveMotion::GoStraight { velocity } => *velocity,
+                        ActiveMotion::Roam { movement_type, .. } => match movement_type {
+                            ActiveRoam::Insect { velocity } => *velocity,
+                            ActiveRoam::Bounce { velocity, .. } => *velocity,
+                            ActiveRoam::Reflect { velocity, .. } => *velocity,
+                            _ => Vec2::zero(),
+                        },
+                        ActiveMotion::Target { .. } => Vec2::zero(),
+                        ActiveMotion::SlowDown { velocity, .. } => *velocity,
+                        ActiveMotion::Stop => Vec2::zero(),
+                    };
+                    if velocity.x == 0.0 && velocity.y == 0.0 {
+                        ActiveMotion::Stop
+                    } else {
+                        println!("VEL: {:?}", velocity);
+                        println!("UNIT: {:?}", velocity.unit());
+                        let deceleration = -(velocity.unit() * (speed.as_value() / 40.0));
+                        println!("{:?}", deceleration);
+                        ActiveMotion::SlowDown {
+                            velocity,
+                            deceleration,
+                        }
                     }
                 }
                 Motion::Stop => ActiveMotion::Stop,
@@ -2686,9 +2742,17 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                         } else if x < area.min.x {
                             direction = BounceDirection::Right;
                         }
-                        match direction {
-                            BounceDirection::Left => velocity.x = -speed.as_value(),
-                            BounceDirection::Right => velocity.x = speed.as_value(),
+                        // TODO: Untested
+                        if x >= area.min.x
+                            && x <= area.max.x
+                            && self.objects[name].size.width >= area.width()
+                        {
+                            velocity.x = 0.0;
+                        } else {
+                            match direction {
+                                BounceDirection::Left => velocity.x = -speed.as_value(),
+                                BounceDirection::Right => velocity.x = speed.as_value(),
+                            }
                         }
                         self.objects[name].position += velocity;
 
@@ -2783,6 +2847,23 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                 ActiveMotion::Accelerate {
                     velocity,
                     acceleration,
+                }
+            }
+            ActiveMotion::SlowDown {
+                mut velocity,
+                deceleration,
+            } => {
+                if velocity.magnitude() <= deceleration.magnitude() {
+                    println!("STOPPED");
+                    ActiveMotion::Stop
+                } else {
+                    //println!("velocity: {:?}, decel: {:?}", velocity, deceleration);
+                    self.objects[name].position += velocity;
+                    velocity += deceleration;
+                    ActiveMotion::SlowDown {
+                        velocity,
+                        deceleration,
+                    }
                 }
             }
             ActiveMotion::Stop => ActiveMotion::Stop,

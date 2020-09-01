@@ -1,0 +1,232 @@
+{
+  "format_version": "0.1",
+  "published": false,
+  "objects": [
+    {
+      "name": "Player",
+      "sprite": {
+        "Colour": {
+          "r": 0.8841699,
+          "g": 0.06827567,
+          "b": 0.06827567,
+          "a": 1.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 600.0
+      },
+      "size": {
+        "width": 150.0,
+        "height": 150.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "Roam": {
+                  "movement_type": {
+                    "Bounce": {
+                      "initial_direction": null
+                    }
+                  },
+                  "area": {
+                    "min": {
+                      "x": 800.0,
+                      "y": 100.0
+                    },
+                    "max": {
+                      "x": 800.0,
+                      "y": 750.0
+                    }
+                  },
+                  "speed": "VeryFast"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Bomb",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Angle": {
+                  "RotateToObject": {
+                    "name": "Bomb"
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Angle": {
+                  "Increase": 180.0
+                }
+              }
+            },
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Angle": "Current"
+                  },
+                  "speed": "VeryFast"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Bomb",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 1.0
+        }
+      },
+      "position": {
+        "x": 600.0,
+        "y": 300.0
+      },
+      "size": {
+        "width": 200.0,
+        "height": 200.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "Bomb"
+                    }
+                  },
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Coin",
+      "sprite": {
+        "Colour": {
+          "r": 1.0,
+          "g": 0.84313726,
+          "b": 0.0,
+          "a": 1.0
+        }
+      },
+      "position": {
+        "x": 1200.0,
+        "y": 300.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "Trampoline",
+      "sprite": {
+        "Colour": {
+          "r": 0.4870905,
+          "g": 0.071316786,
+          "b": 0.8030888,
+          "a": 1.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 850.0
+      },
+      "size": {
+        "width": 300.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
+    }
+  ],
+  "background": [],
+  "asset_files": {
+    "images": {},
+    "audio": {},
+    "music": null,
+    "fonts": {}
+  },
+  "length": 4.0,
+  "intro_text": null,
+  "attribution": ""
+}

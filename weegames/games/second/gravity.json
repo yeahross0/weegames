@@ -71,14 +71,16 @@
             {
               "Motion": {
                 "Accelerate": {
-                  "direction": {
-                    "Direction": {
-                      "possible_directions": [
-                        "Down"
-                      ]
-                    }
-                  },
-                  "speed": "Normal"
+                  "Continuous": {
+                    "direction": {
+                      "Direction": {
+                        "possible_directions": [
+                          "Down"
+                        ]
+                      }
+                    },
+                    "speed": "Normal"
+                  }
                 }
               }
             }
@@ -163,14 +165,16 @@
             {
               "Motion": {
                 "Accelerate": {
-                  "direction": {
-                    "Direction": {
-                      "possible_directions": [
-                        "Up"
-                      ]
-                    }
-                  },
-                  "speed": "Normal"
+                  "Continuous": {
+                    "direction": {
+                      "Direction": {
+                        "possible_directions": [
+                          "Up"
+                        ]
+                      }
+                    },
+                    "speed": "Normal"
+                  }
                 }
               }
             }

@@ -237,14 +237,16 @@
             {
               "Motion": {
                 "Accelerate": {
-                  "direction": {
-                    "Direction": {
-                      "possible_directions": [
-                        "Down"
-                      ]
-                    }
-                  },
-                  "speed": "Fast"
+                  "Continuous": {
+                    "direction": {
+                      "Direction": {
+                        "possible_directions": [
+                          "Down"
+                        ]
+                      }
+                    },
+                    "speed": "Fast"
+                  }
                 }
               }
             }
@@ -331,14 +333,16 @@
             {
               "Motion": {
                 "Accelerate": {
-                  "direction": {
-                    "Direction": {
-                      "possible_directions": [
-                        "Down"
-                      ]
-                    }
-                  },
-                  "speed": "Fast"
+                  "Continuous": {
+                    "direction": {
+                      "Direction": {
+                        "possible_directions": [
+                          "Down"
+                        ]
+                      }
+                    },
+                    "speed": "Fast"
+                  }
                 }
               }
             }

@@ -1,0 +1,356 @@
+{
+  "format_version": "0.1",
+  "published": false,
+  "objects": [
+    {
+      "name": "Bike",
+      "sprite": {
+        "Colour": {
+          "r": 0.9498069,
+          "g": 0.04767373,
+          "b": 0.04767373,
+          "a": 1.0
+        }
+      },
+      "position": {
+        "x": 240.0,
+        "y": 575.0
+      },
+      "size": {
+        "width": 270.0,
+        "height": 150.0
+      },
+      "angle": 0.0,
+      "origin": {
+        "x": 60.0,
+        "y": 80.0
+      },
+      "collision_area": {
+        "min": {
+          "x": 200.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 270.0,
+          "y": 150.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Down"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "WinStatus": "NotYetLost"
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Angle": {
+                  "Decrease": 1.0
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Up"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "WinStatus": "NotYetLost"
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Angle": {
+                  "Increase": 1.0
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Accelerate": {
+                  "SlowDown": {
+                    "speed": "Normal"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "WinStatus": "NotYetLost"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Right"
+                      ]
+                    }
+                  },
+                  "speed": "Slow"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Up"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Ground"
+                }
+              }
+            },
+            {
+              "WinStatus": "NotYetLost"
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Angle": {
+                  "Decrease": 1.0
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Top"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose",
+            {
+              "Motion": {
+                "Accelerate": {
+                  "SlowDown": {
+                    "speed": "Normal"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "WinStatus": "Lost"
+            },
+            {
+              "CheckProperty": {
+                "name": "Ground",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Angle": {
+                  "Decrease": 4.0
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Ground",
+      "sprite": {
+        "Colour": {
+          "r": 0.980695,
+          "g": 0.9226399,
+          "b": 0.18932338,
+          "a": 1.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 800.0
+      },
+      "size": {
+        "width": 1600.0,
+        "height": 300.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Bike"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Top",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.26666668
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 320.0
+      },
+      "size": {
+        "width": 1600.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "Finish",
+      "sprite": {
+        "Colour": {
+          "r": 0.000001,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 1.0
+        }
+      },
+      "position": {
+        "x": 1400.0,
+        "y": 800.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 300.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
+    }
+  ],
+  "background": [],
+  "asset_files": {
+    "images": {},
+    "audio": {},
+    "music": null,
+    "fonts": {}
+  },
+  "length": 4.0,
+  "intro_text": null,
+  "attribution": ""
+}

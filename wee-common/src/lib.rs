@@ -31,6 +31,17 @@ impl Vec2 {
     pub fn zero() -> Vec2 {
         Vec2::new(0.0, 0.0)
     }
+    pub fn magnitude(self) -> f32 {
+        (self.x * self.x + self.y * self.y).sqrt()
+    }
+    pub fn unit(self) -> Vec2 {
+        // TODO: Fix this
+        if self.magnitude() == 0.0 {
+            Vec2::zero()
+        } else {
+            self / self.magnitude()
+        }
+    }
 }
 impl std::ops::Neg for Vec2 {
     type Output = Vec2;

@@ -1,4 +1,5 @@
 // TODO: Get the viewports right for full screen editor
+// TODO: Replace all accelerations with continious accelerations
 
 #[macro_use]
 extern crate imgui;
@@ -260,7 +261,7 @@ pub fn run_editor(
         let mut play_game = false;
         if main_window_opened {
             imgui::Window::new(im_str!("Main Window"))
-                .size(window_size, imgui::Condition::FirstUseEver)
+                .size([500.0, 200.0], imgui::Condition::FirstUseEver)
                 .scroll_bar(true)
                 .scrollable(true)
                 .resizable(true)
@@ -576,6 +577,8 @@ pub fn run_editor(
                                     new_object.name = new_name_buffer.to_str().to_string();
                                     game.objects.push(new_object.clone());
                                     selected_index = Some(game.objects.len() - 1);
+                                    instruction_mode = InstructionMode::View;
+                                    instruction_index = None;
                                     ui.close_current_popup();
                                 }
                                 ui.same_line(0.0);
@@ -2572,6 +2575,7 @@ fn choose_angle_setter(setter: &mut AngleSetter, ui: &imgui::Ui, object_names: &
         im_str!("Decrease"),
         im_str!("Match"),
         im_str!("Clamp"),
+        im_str!("Rotate To Object"),
         im_str!("Rotate To Mouse"),
     ];
     let mut current_angle_position = match setter {
@@ -2580,7 +2584,8 @@ fn choose_angle_setter(setter: &mut AngleSetter, ui: &imgui::Ui, object_names: &
         AngleSetter::Decrease(_) => 2,
         AngleSetter::Match { .. } => 3,
         AngleSetter::Clamp { .. } => 4,
-        AngleSetter::RotateToMouse => 5,
+        AngleSetter::RotateToObject { .. } => 5,
+        AngleSetter::RotateToMouse => 6,
     };
     if imgui::ComboBox::new(im_str!("Angle Setter")).build_simple_string(
         &ui,
@@ -2598,7 +2603,10 @@ fn choose_angle_setter(setter: &mut AngleSetter, ui: &imgui::Ui, object_names: &
                 min: 0.0,
                 max: 360.0,
             },
-            5 => AngleSetter::RotateToMouse,
+            5 => AngleSetter::RotateToObject {
+                name: object_names[0].to_string(),
+            },
+            6 => AngleSetter::RotateToMouse,
             _ => unreachable!(),
         };
     }
@@ -2619,6 +2627,9 @@ fn choose_angle_setter(setter: &mut AngleSetter, ui: &imgui::Ui, object_names: &
         AngleSetter::Clamp { min, max } => {
             ui.input_float(im_str!("Min Angle"), min).build();
             ui.input_float(im_str!("Max Angle"), max).build();
+        }
+        AngleSetter::RotateToObject { name } => {
+            choose_object(name, ui, object_names);
         }
         _ => {}
     }
@@ -2653,7 +2664,8 @@ fn choose_motion(motion: &mut Motion, ui: &imgui::Ui, object_names: &Vec<&str>) 
         Motion::Roam { .. } => 3,
         Motion::Swap { .. } => 4,
         Motion::Target { .. } => 5,
-        Motion::Accelerate { .. } => 6,
+        Motion::Accelerate(Acceleration::Continuous { .. }) => 6,
+        Motion::Accelerate(Acceleration::SlowDown { .. }) => 7,
     };
     let motion_names = [
         im_str!("Stop"),
@@ -2663,6 +2675,7 @@ fn choose_motion(motion: &mut Motion, ui: &imgui::Ui, object_names: &Vec<&str>) 
         im_str!("Swap"),
         im_str!("Target"),
         im_str!("Accelerate"),
+        im_str!("Slow Down"),
     ];
     if imgui::ComboBox::new(im_str!("Motion")).build_simple_string(
         &ui,
@@ -2690,17 +2703,24 @@ fn choose_motion(motion: &mut Motion, ui: &imgui::Ui, object_names: &Vec<&str>) 
                 offset: Vec2::zero(),
                 speed: Speed::Normal,
             },
-            6 => Motion::Accelerate {
+            6 => Motion::Accelerate(Acceleration::Continuous {
                 direction: MovementDirection::Angle(Angle::Current),
                 speed: Speed::Normal,
-            },
+            }),
+            7 => Motion::Accelerate(Acceleration::SlowDown {
+                speed: Speed::Normal,
+            }),
             _ => unreachable!(),
         };
     }
 
     match motion {
-        Motion::GoStraight { direction, speed } | Motion::Accelerate { direction, speed } => {
+        Motion::GoStraight { direction, speed }
+        | Motion::Accelerate(Acceleration::Continuous { direction, speed }) => {
             direction.choose(ui);
+            speed.choose(ui);
+        }
+        Motion::Accelerate(Acceleration::SlowDown { speed }) => {
             speed.choose(ui);
         }
         Motion::JumpTo(jump_location) => {
@@ -3062,7 +3082,7 @@ fn choose_target(target: &mut Target, ui: &imgui::Ui, object_names: &Vec<&str>) 
 
 impl Choose for TargetType {
     fn choose(&mut self, ui: &imgui::Ui) {
-        if ui.radio_button_bool(im_str!("Follow Object"), *self == TargetType::Follow) {
+        if ui.radio_button_bool(im_str!("Follow"), *self == TargetType::Follow) {
             *self = TargetType::Follow;
         }
         if ui.radio_button_bool(

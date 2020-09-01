@@ -372,15 +372,17 @@
             {
               "Motion": {
                 "Accelerate": {
-                  "direction": {
-                    "Direction": {
-                      "possible_directions": [
-                        "Down"
-                      ]
+                  "Continuous": {
+                    "direction": {
+                      "Direction": {
+                        "possible_directions": [
+                          "Down"
+                        ]
+                      }
+                    },
+                    "speed": {
+                      "Value": 0.25
                     }
-                  },
-                  "speed": {
-                    "Value": 0.25
                   }
                 }
               }
