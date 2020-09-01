@@ -1,0 +1,215 @@
+{
+  "format_version": "0.1",
+  "published": false,
+  "objects": [
+    {
+      "name": "Ground",
+      "sprite": {
+        "Colour": {
+          "r": 0.14285713,
+          "g": 0.1428557,
+          "b": 0.1428557,
+          "a": 1.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 600.0
+      },
+      "size": {
+        "width": 1200.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "Player",
+      "sprite": {
+        "Colour": {
+          "r": 0.07565601,
+          "g": 0.45945948,
+          "b": 0.031931546,
+          "a": 1.0
+        }
+      },
+      "position": {
+        "x": 400.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 150.0,
+        "height": 200.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "Enemy",
+      "sprite": {
+        "Colour": {
+          "r": 0.02137712,
+          "g": 0.056180496,
+          "b": 0.9227799,
+          "a": 1.0
+        }
+      },
+      "position": {
+        "x": 1200.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 150.0,
+        "height": 200.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "Goal",
+      "sprite": {
+        "Colour": {
+          "r": 0.87664175,
+          "g": 0.93822396,
+          "b": 0.0,
+          "a": 1.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 120.0,
+        "height": 120.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "Roam": {
+                  "movement_type": "Insect",
+                  "area": {
+                    "min": {
+                      "x": 100.0,
+                      "y": 100.0
+                    },
+                    "max": {
+                      "x": 1500.0,
+                      "y": 800.0
+                    }
+                  },
+                  "speed": "Normal"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "Goal"
+                    }
+                  },
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Colour": {
+                    "r": 0.9227799,
+                    "g": 0.55691993,
+                    "b": 0.05344283,
+                    "a": 1.0
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "background": [
+    {
+      "sprite": {
+        "Colour": {
+          "r": 0.8399474,
+          "g": 0.6031514,
+          "b": 0.9189189,
+          "a": 1.0
+        }
+      },
+      "area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 1600.0,
+          "y": 900.0
+        }
+      }
+    }
+  ],
+  "asset_files": {
+    "images": {},
+    "audio": {},
+    "music": null,
+    "fonts": {}
+  },
+  "length": 6.0,
+  "intro_text": null,
+  "attribution": ""
+}

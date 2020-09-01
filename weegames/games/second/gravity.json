@@ -5,11 +5,8 @@
     {
       "name": "Player",
       "sprite": {
-        "Colour": {
-          "r": 0.0,
-          "g": 0.4627451,
-          "b": 0.80784315,
-          "a": 1.0
+        "Image": {
+          "name": "warp-idle-1"
         }
       },
       "position": {
@@ -17,15 +14,15 @@
         "y": 200.0
       },
       "size": {
-        "width": 100.0,
-        "height": 100.0
+        "width": 142.0,
+        "height": 134.0
       },
       "angle": 0.0,
       "origin": null,
       "collision_area": null,
       "flip": {
         "horizontal": false,
-        "vertical": false
+        "vertical": true
       },
       "layer": 0,
       "switch": "Off",
@@ -82,6 +79,11 @@
                     "speed": "Normal"
                   }
                 }
+              }
+            },
+            {
+              "SetProperty": {
+                "FlipVertical": "Flip"
               }
             }
           ]
@@ -177,6 +179,11 @@
                   }
                 }
               }
+            },
+            {
+              "SetProperty": {
+                "FlipVertical": "Flip"
+              }
             }
           ]
         },
@@ -219,11 +226,8 @@
     {
       "name": "Start",
       "sprite": {
-        "Colour": {
-          "r": 0.0,
-          "g": 0.42352942,
-          "b": 0.0,
-          "a": 1.0
+        "Image": {
+          "name": "warp-ground"
         }
       },
       "position": {
@@ -232,7 +236,7 @@
       },
       "size": {
         "width": 500.0,
-        "height": 100.0
+        "height": 50.0
       },
       "angle": 0.0,
       "origin": null,
@@ -277,11 +281,8 @@
     {
       "name": "End",
       "sprite": {
-        "Colour": {
-          "r": 0.0,
-          "g": 0.42352942,
-          "b": 0.0,
-          "a": 1.0
+        "Image": {
+          "name": "warp-ground"
         }
       },
       "position": {
@@ -290,7 +291,7 @@
       },
       "size": {
         "width": 300.0,
-        "height": 100.0
+        "height": 60.0
       },
       "angle": 0.0,
       "origin": null,
@@ -306,11 +307,8 @@
     {
       "name": "Platform",
       "sprite": {
-        "Colour": {
-          "r": 0.0,
-          "g": 0.42352942,
-          "b": 0.0,
-          "a": 1.0
+        "Image": {
+          "name": "warp-platform"
         }
       },
       "position": {
@@ -318,8 +316,8 @@
         "y": 600.0
       },
       "size": {
-        "width": 200.0,
-        "height": 100.0
+        "width": 184.0,
+        "height": 64.0
       },
       "angle": 0.0,
       "origin": null,
@@ -373,14 +371,38 @@
       ]
     }
   ],
-  "background": [],
+  "background": [
+    {
+      "sprite": {
+        "Image": {
+          "name": "warp-sky-2"
+        }
+      },
+      "area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 1600.0,
+          "y": 900.0
+        }
+      }
+    }
+  ],
   "asset_files": {
-    "images": {},
+    "images": {
+      "warp-sky": "warp-sky.png",
+      "warp-idle-1": "warp-idle-1.png",
+      "warp-ground": "warp-ground.png",
+      "warp-platform": "warp-platform.png",
+      "warp-sky-2": "warp-sky-2.png"
+    },
     "audio": {},
     "music": null,
     "fonts": {}
   },
-  "length": 8.0,
+  "length": 6.0,
   "intro_text": null,
   "attribution": ""
 }

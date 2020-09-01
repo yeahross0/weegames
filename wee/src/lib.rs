@@ -305,6 +305,7 @@ pub enum Trigger {
     WinStatus(WinStatus),
     Random { chance: f32 },
     CheckProperty { name: String, check: PropertyCheck },
+    // DifficultyLevel
 }
 
 impl fmt::Display for Trigger {
@@ -765,7 +766,7 @@ impl fmt::Display for Motion {
                 }
                 MovementType::Bounce { .. } => write!(
                     f,
-                    "Move like an insect {} between {}, {} and {}, {}",
+                    "Bounce {} between {}, {} and {}, {}",
                     speed, area.min.x, area.min.y, area.max.x, area.max.y,
                 ),
             },
@@ -822,8 +823,7 @@ impl fmt::Display for Motion {
                 },
             },
             Motion::Accelerate(Acceleration::SlowDown { speed }) => {
-                // TODO: Fill in
-                write!(f, "TODO")
+                write!(f, "Slow down {}", speed)
             }
         }
     }
@@ -955,6 +955,7 @@ pub enum Action {
     Random {
         random_actions: Vec<Action>,
     },
+    // EndEarly
 }
 
 impl fmt::Display for Action {
@@ -1165,6 +1166,7 @@ pub enum ActiveRoam {
         velocity: Vec2,
         acceleration: f32,
         direction: BounceDirection,
+        frames_in_bounce: f32,
     },
 }
 
@@ -2267,10 +2269,17 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                     }
                     AngleSetter::RotateToMouse => {
                         let centre = self.objects[name].origin_in_world();
-                        (self.mouse.position.y - centre.y)
-                            .atan2(self.mouse.position.x - centre.x)
-                            .to_degrees()
-                            + 90.0
+                        let error = 0.00001;
+                        if (centre.x - self.mouse.position.x).abs() < error
+                            && (centre.y - self.mouse.position.y).abs() < error
+                        {
+                            self.objects[name].angle
+                        } else {
+                            (self.mouse.position.y - centre.y)
+                                .atan2(self.mouse.position.x - centre.x)
+                                .to_degrees()
+                                + 90.0
+                        }
                     }
                 };
             }
@@ -2489,11 +2498,13 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                             velocity: random_velocity(*speed),
                         },
                         MovementType::Bounce { initial_direction } => {
-                            // TODO: Handle speed here
-                            let acceleration = -2.0 * (area.min.y - area.max.y) / (FPS * FPS);
+                            let frames_in_bounce =
+                                60.0 * Speed::Normal.as_value() / speed.as_value();
+                            let acceleration = -2.0 * (area.min.y - area.max.y)
+                                / (frames_in_bounce * frames_in_bounce);
                             let velocity = {
-                                let y_velocity =
-                                    2.0 * (area.min.y - self.objects[name].position.y) / FPS;
+                                let y_velocity = 2.0 * (area.min.y - self.objects[name].position.y)
+                                    / frames_in_bounce;
                                 Vec2::new(0.0, y_velocity)
                             };
                             let direction = initial_direction.clone().unwrap_or_else(|| {
@@ -2508,6 +2519,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                                 velocity,
                                 direction,
                                 acceleration,
+                                frames_in_bounce,
                             }
                         }
                     };
@@ -2727,6 +2739,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                         mut velocity,
                         mut direction,
                         acceleration,
+                        frames_in_bounce,
                     } => {
                         let (x, y) = (self.objects[name].position.x, self.objects[name].position.y);
                         if y < area.min.y && velocity.y < 0.0 {
@@ -2735,7 +2748,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                         if y < area.max.y {
                             velocity.y += acceleration;
                         } else if y > area.max.y {
-                            velocity.y = -acceleration * FPS;
+                            velocity.y = -acceleration * frames_in_bounce;
                         }
                         if x > area.max.x {
                             direction = BounceDirection::Left;
@@ -2760,6 +2773,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                             velocity,
                             direction,
                             acceleration,
+                            frames_in_bounce,
                         }
                     }
                 };
