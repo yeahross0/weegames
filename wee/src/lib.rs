@@ -28,6 +28,7 @@ use std::{
 
 const FPS: f32 = 60.0;
 pub const DEFAULT_GAME_SPEED: f32 = 1.0;
+pub const DEFAULT_DIFFICULTY: u32 = 1;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SerialiseObject {
@@ -155,16 +156,16 @@ impl SerialiseObjectList for Vec<SerialiseObject> {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-struct SerialiseMusic {
-    filename: String,
-    looped: bool,
+pub struct SerialiseMusic {
+    pub filename: String,
+    pub looped: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AssetFiles {
     pub images: HashMap<String, String>,
     pub audio: HashMap<String, String>,
-    music: Option<SerialiseMusic>,
+    pub music: Option<SerialiseMusic>,
     pub fonts: HashMap<String, FontLoadInfo>,
 }
 
@@ -305,7 +306,7 @@ pub enum Trigger {
     WinStatus(WinStatus),
     Random { chance: f32 },
     CheckProperty { name: String, check: PropertyCheck },
-    // DifficultyLevel
+    DifficultyLevel { level: u32 },
 }
 
 impl fmt::Display for Trigger {
@@ -402,6 +403,7 @@ impl fmt::Display for Trigger {
                 PropertyCheck::Timer => write!(f, "When this object's timer hits zero"),
             },
             Trigger::Random { chance } => write!(f, "With a {}% chance", chance * 100.0),
+            Trigger::DifficultyLevel { level } => write!(f, "If the difficulty is {}", level),
         }
     }
 }
@@ -557,7 +559,7 @@ impl Speed {
         match self {
             Speed::VerySlow => 32,
             Speed::Slow => 16,
-            Speed::Normal => 18,
+            Speed::Normal => 8,
             Speed::Fast => 4,
             Speed::VeryFast => 2,
             Speed::Value(value) => value as u32,
@@ -955,7 +957,9 @@ pub enum Action {
     Random {
         random_actions: Vec<Action>,
     },
-    // EndEarly
+    EndEarly {
+        time_to_end: u32,
+    },
 }
 
 impl fmt::Display for Action {
@@ -1081,7 +1085,10 @@ impl fmt::Display for Action {
                 LayerSetter::Increase => write!(f, "Increase this object's layer by 1"),
                 LayerSetter::Decrease => write!(f, "Decrease this object's layer by 1"),
             },
-            Action::Random { .. } => write!(f, "Chooses a random action"),
+            Action::Random { .. } => write!(f, "Choose a random action"),
+            Action::EndEarly { time_to_end } => {
+                write!(f, "End the game after {} frames", time_to_end)
+            }
         }
     }
 }
@@ -1512,7 +1519,7 @@ impl LoadSounds for Sounds {
     }
 }
 
-trait LoadMusic {
+pub trait LoadMusic {
     fn load<P: AsRef<Path>>(
         music_name: &Option<SerialiseMusic>,
         base_path: P,
@@ -1545,7 +1552,7 @@ impl LoadMusic for Music {
 pub struct Assets<'a, 'b> {
     pub images: Images,
     pub sounds: Sounds,
-    music: Option<Music>,
+    pub music: Option<Music>,
     pub fonts: Fonts<'a, 'b>,
 }
 
@@ -1581,7 +1588,7 @@ impl<'a, 'b> Assets<'a, 'b> {
         })
     }
 
-    fn start_music(&mut self, playback_rate: f32, volume: f32) {
+    pub fn start_music(&mut self, playback_rate: f32, volume: f32) {
         if let Some(music) = &mut self.music {
             music.data.set_playing_offset(SfmlTime::seconds(0.0));
             music.data.set_pitch(playback_rate);
@@ -1738,7 +1745,12 @@ impl<'a, 'b> LoadedGame<'a, 'b> {
         })
     }
 
-    pub fn start<'c>(self, playback_rate: f32, settings: GameSettings) -> Game<'a, 'b, 'c> {
+    pub fn start<'c>(
+        self,
+        playback_rate: f32,
+        difficulty: u32,
+        settings: GameSettings,
+    ) -> Game<'a, 'b, 'c> {
         let status = GameStatus {
             current: WinStatus::NotYetWon,
             next_frame: WinStatus::NotYetWon,
@@ -1772,6 +1784,7 @@ impl<'a, 'b> LoadedGame<'a, 'b> {
             drawn_over_text: HashMap::new(),
             playback_rate,
             settings,
+            difficulty,
         }
     }
 }
@@ -1788,6 +1801,12 @@ pub struct CompletedGame<'a, 'b> {
     pub completion: Completion,
     pub assets: Assets<'a, 'b>,
     pub has_been_won: bool,
+}
+
+#[derive(Debug, Copy, Clone, PartialEq)]
+enum EndEarly {
+    EndIn { frames: u32 },
+    Continue,
 }
 
 pub enum Completion {
@@ -1809,6 +1828,7 @@ pub struct Game<'a, 'b, 'c> {
     drawn_over_text: HashMap<String, Texture>,
     playback_rate: f32,
     settings: GameSettings,
+    difficulty: u32,
 }
 
 impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
@@ -1842,6 +1862,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
         event_pump: &mut EventPump,
     ) -> WeeResult<CompletedGame<'a, 'b>> {
         let mut escape = ButtonState::Up;
+        let mut end_early = EndEarly::Continue; // TODO: Put in self
         'game_running: loop {
             if self.is_finished() {
                 break 'game_running;
@@ -1864,8 +1885,11 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                         sound.pause();
                     }
                     let mut game =
-                        LoadedGame::load("games/system/pause-menu.json", self.intro_font)?
-                            .start(DEFAULT_GAME_SPEED, self.settings);
+                        LoadedGame::load("games/system/pause-menu.json", self.intro_font)?.start(
+                            DEFAULT_GAME_SPEED,
+                            DEFAULT_DIFFICULTY,
+                            self.settings,
+                        );
                     'pause_running: loop {
                         sdlglue::set_fullscreen(renderer, &event_pump)?;
 
@@ -1892,7 +1916,24 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                     }
                 }
                 sdlglue::set_fullscreen(renderer, &event_pump)?;
-                self.update_frame(event_pump, renderer.window.size())?;
+
+                if let EndEarly::EndIn { frames } = &mut end_early {
+                    if *frames == 0 {
+                        if let Some(music) = &mut self.assets.music {
+                            music.data.stop();
+                        }
+                        let has_been_won = self.has_been_won();
+
+                        return Ok(CompletedGame {
+                            completion: Completion::Finished,
+                            assets: self.assets,
+                            has_been_won,
+                        });
+                    }
+                    *frames -= 1;
+                }
+
+                self.update_frame(event_pump, renderer.window.size(), &mut end_early)?;
                 if self.settings.render_each_frame {
                     self.render_frame(renderer)?;
                 }
@@ -1931,6 +1972,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
         &mut self,
         event_pump: &mut EventPump,
         window_size: (u32, u32),
+        end_early: &mut EndEarly,
     ) -> WeeResult<()> {
         if sdlglue::has_quit(event_pump) {
             process::exit(0);
@@ -1941,7 +1983,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
         let played_sounds = if let Effect::Freeze = self.effect {
             Vec::new()
         } else {
-            self.update_objects()?
+            self.update_objects(end_early)?
         };
 
         self.update_status();
@@ -2095,6 +2137,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                 let roll = thread_rng().gen::<f32>();
                 roll < *chance
             }
+            Trigger::DifficultyLevel { level } => self.difficulty == *level,
         };
         Ok(triggered)
     }
@@ -2118,9 +2161,22 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
         name: &str,
         actions: &[Action],
         played_sounds: &mut Vec<String>,
+        end_early: &mut EndEarly,
     ) -> WeeResult<()> {
         for action in actions {
-            self.apply_action(name, action, played_sounds)?;
+            let status = self.apply_action(name, action, played_sounds)?;
+            if let EndEarly::EndIn { frames } = status {
+                if let EndEarly::EndIn {
+                    frames: current_frames,
+                } = end_early
+                {
+                    if frames < *current_frames {
+                        *end_early = status;
+                    }
+                } else {
+                    *end_early = status;
+                }
+            }
         }
         Ok(())
     }
@@ -2130,7 +2186,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
         name: &str,
         action: &Action,
         played_sounds: &mut Vec<String>,
-    ) -> WeeResult<()> {
+    ) -> WeeResult<EndEarly> {
         let try_to_set_status = |status: &mut GameStatus, opposite, next_frame| {
             *status = match status.current {
                 WinStatus::NotYetWon | WinStatus::NotYetLost => {
@@ -2384,11 +2440,16 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
             Action::Random { random_actions } => {
                 let action = random_actions.choose(&mut thread_rng());
                 if let Some(action) = action {
-                    self.apply_action(name, &action, played_sounds)?;
+                    return self.apply_action(name, &action, played_sounds);
                 }
             }
+            Action::EndEarly { time_to_end } => {
+                return Ok(EndEarly::EndIn {
+                    frames: *time_to_end,
+                });
+            }
         };
-        Ok(())
+        Ok(EndEarly::Continue)
     }
 
     fn move_object(&mut self, name: &str) -> WeeResult<()> {
@@ -2886,7 +2947,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
         Ok(active_motion)
     }
 
-    fn update_objects(&mut self) -> WeeResult<Vec<String>> {
+    fn update_objects(&mut self, end_early: &mut EndEarly) -> WeeResult<Vec<String>> {
         let mut played_sounds = Vec::new();
 
         let keys: Vec<String> = self.objects.keys().cloned().collect();
@@ -2897,7 +2958,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
 
             let actions = self.check_triggers(name)?;
 
-            self.apply_actions(name, &actions, &mut played_sounds)?;
+            self.apply_actions(name, &actions, &mut played_sounds, end_early)?;
 
             self.objects[name].update_animation();
 
@@ -2922,7 +2983,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
         event_pump: &mut EventPump,
     ) -> WeeResult<()> {
         self.frames.start_time = Instant::now();
-        self.update_frame(event_pump, renderer.window.size())?;
+        self.update_frame(event_pump, renderer.window.size(), &mut EndEarly::Continue)?;
         self.render_frame(renderer)?;
         self.sleep();
 

@@ -1,6 +1,8 @@
 // TODO: Show origin debug option
 // TODO: Exit fullscreen when in editor
 // TODO: Aspect ratio of edited game changes when window size changed
+// TODO: Change acceleration down speed in baby game, NORMAL might be ok
+// TODO: High scores screen
 
 //#![windows_subsystem = "windows"]
 
@@ -118,9 +120,12 @@ struct Progress {
     playback_rate: f32,
     score: i32,
     lives: i32,
+    difficulty: u32,
 }
 
 const MAX_LIVES: i32 = 4;
+const UP_TO_DIFFICULTY_TWO: i32 = 15;
+const UP_TO_DIFFICULTY_THREE: i32 = 30;
 
 impl Progress {
     fn new(playback_rate: f32) -> Progress {
@@ -128,6 +133,7 @@ impl Progress {
             playback_rate,
             score: 0,
             lives: MAX_LIVES,
+            difficulty: DEFAULT_DIFFICULTY,
         }
     }
 
@@ -136,6 +142,11 @@ impl Progress {
             self.score += 1;
             if self.score % 5 == 0 {
                 self.playback_rate += playback_increase;
+            }
+            if self.score >= UP_TO_DIFFICULTY_THREE {
+                self.difficulty = 3;
+            } else if self.score >= UP_TO_DIFFICULTY_TWO {
+                self.difficulty = 2;
             }
             self.playback_rate = self.playback_rate.min(playback_max);
         } else {
@@ -236,7 +247,7 @@ fn run_main_loop<'a, 'b>(
 
                 LoadedGame::load(filename, &intro_font)
                     .map_err(|error| format!("Couldn't load {}\n{}", filename, error))?
-                    .start(DEFAULT_GAME_SPEED, config.settings())
+                    .start(DEFAULT_GAME_SPEED, DEFAULT_DIFFICULTY, config.settings())
             };
 
             'menu_running: loop {
@@ -272,7 +283,7 @@ fn run_main_loop<'a, 'b>(
                 Ok(()) => {
                     let completed_game =
                         LoadedGame::load("games/system/prelude.json", &intro_font)?
-                            .start(DEFAULT_GAME_SPEED, config.settings())
+                            .start(DEFAULT_GAME_SPEED, DEFAULT_DIFFICULTY, config.settings())
                             .play(renderer, event_pump)?;
 
                     match rx.recv() {
@@ -343,7 +354,11 @@ fn run_main_loop<'a, 'b>(
             }
 
             let completed_game = loaded_game
-                .start(progress.playback_rate, config.settings())
+                .start(
+                    progress.playback_rate,
+                    DEFAULT_DIFFICULTY,
+                    config.settings(),
+                )
                 .play(renderer, event_pump)?;
 
             let (filename, game_data) = rx.recv()?;
@@ -367,7 +382,7 @@ fn run_main_loop<'a, 'b>(
                 object.replace_text(progress.score, progress.lives);
             }
             loaded_game
-                .start(DEFAULT_GAME_SPEED, config.settings())
+                .start(DEFAULT_GAME_SPEED, DEFAULT_DIFFICULTY, config.settings())
                 .play(renderer, event_pump)?;
 
             game_mode = GameMode::Menu;
@@ -378,7 +393,11 @@ fn run_main_loop<'a, 'b>(
             mut progress,
         } => {
             let result = loaded_game
-                .start(progress.playback_rate, config.settings())
+                .start(
+                    progress.playback_rate,
+                    progress.difficulty,
+                    config.settings(),
+                )
                 .play(renderer, event_pump);
 
             match result {

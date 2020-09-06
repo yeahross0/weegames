@@ -1,5 +1,9 @@
 // TODO: Get the viewports right for full screen editor
-// TODO: Replace all accelerations with continious accelerations
+// TODO: Don't go back to main menu after error
+// TODO: Add sounds window
+// TODO: Check frame rate of gravity game
+// TODO: Pause during playing game in editor is weird
+// TODO: Unfullscreen after playing in full screen in preview
 
 #[macro_use]
 extern crate imgui;
@@ -68,9 +72,12 @@ pub fn run_editor(
     let mut rename_object: Option<RenameObject> = None;
     let mut new_object = SerialiseObject::default();
     let mut new_name_buffer = ImString::from("".to_string());
+    let mut playback_rate = 1.0;
+    let mut difficulty_level = 1;
 
     let mut fonts_window_opened = false;
     let mut background_window_opened = false;
+    let mut music_window_opened = false;
     let mut objects_window_opened = true;
     let mut main_window_opened = true;
     let mut demo_window_opened = false;
@@ -132,6 +139,9 @@ pub fn run_editor(
                                             }
                                         };
                                         filename = Some(file_path);
+                                        selected_index = None;
+                                        instruction_mode = InstructionMode::View;
+                                        instruction_index = None;
                                     }
                                     Err(error) => {
                                         log::error!("Couldn't open file {}", file_path);
@@ -237,6 +247,7 @@ pub fn run_editor(
                 //toggle(im_str!("Sound FX"), &mut windows.sound_fx.opened);
                 //toggle(im_str!("Music"), &mut windows.music.opened);
                 toggle(im_str!("Background"), &mut background_window_opened);
+                toggle(im_str!("Music"), &mut music_window_opened);
                 toggle(im_str!("Fonts"), &mut fonts_window_opened);
                 toggle(im_str!("Demo Window"), &mut demo_window_opened);
                 menu.end(ui);
@@ -276,12 +287,41 @@ pub fn run_editor(
                     )
                     .display_format(im_str!("%.1f"))
                     .build(&ui, &mut game.length);
+
+                    let mut intro_text = match game.intro_text.to_owned() {
+                        Some(text) => ImString::from(text),
+                        None => ImString::from("".to_string()),
+                    };
+                    ui.input_text(im_str!("Intro Text"), &mut intro_text)
+                        .resize_buffer(true)
+                        .build();
+
+                    game.intro_text = Some(intro_text.to_string());
+
+                    imgui::Slider::new(
+                        im_str!("Playback rate"),
+                        std::ops::RangeInclusive::new(0.1, 4.0),
+                    )
+                    .display_format(im_str!("%.01f"))
+                    .build(&ui, &mut playback_rate);
+
+                    imgui::Slider::new(
+                        im_str!("Difficulty Level"),
+                        std::ops::RangeInclusive::new(1, 3),
+                    )
+                    .build(&ui, &mut difficulty_level);
+
+                    let mut attr = ImString::from(game.attribution.to_owned());
+                    ui.input_text_multiline(im_str!("Attribution"), &mut attr, [300.0, 300.0])
+                        .resize_buffer(true)
+                        .build();
+                    game.attribution = attr.to_str().to_owned();
                 });
         }
 
         if play_game {
             let completed_game = LoadedGame::with_assets(game.clone(), assets, &intro_font)?
-                .start(1.0, settings)
+                .start(playback_rate, difficulty_level, settings)
                 .play(renderer, event_pump)?;
             assets = completed_game.assets;
         }
@@ -618,6 +658,81 @@ pub fn run_editor(
                             &mut instruction_focus,
                         );
                         game.objects[index] = object;
+                    }
+                });
+        }
+
+        if music_window_opened {
+            imgui::Window::new(im_str!("Music"))
+                .size(window_size, imgui::Condition::FirstUseEver)
+                .opened(&mut music_window_opened)
+                .menu_bar(true)
+                .resizable(false)
+                .build(&ui, || {
+                    fn load_music_file_dialog(
+                        game: &mut GameData,
+                        music: &mut Option<Music>,
+                    ) -> WeeResult<()> {
+                        let audio_path = std::env::current_dir().unwrap().join(Path::new("games"));
+                        let response = nfd::open_file_dialog(None, audio_path.to_str())?;
+
+                        if let Response::Okay(file) = response {
+                            let path = Path::new(&file);
+                            let file_name = path.file_name().unwrap().to_str().unwrap().to_string();
+                            /*.strip_prefix(std::env::current_dir().unwrap().as_path())
+                            .unwrap()
+                            .to_str()
+                            .unwrap()
+                            .to_string();*/
+
+                            log::debug!(
+                                "{:?}\n{:?}\n{:?}",
+                                path,
+                                file_name,
+                                std::env::current_dir().unwrap().as_path()
+                            );
+
+                            //Music::load(&Some(file_path.clone()))?;
+                            let music_load_info = SerialiseMusic {
+                                filename: file_name,
+                                looped: false,
+                            };
+
+                            *music = Music::load(
+                                &Some(music_load_info.clone()),
+                                path.parent().unwrap().parent().unwrap(), // TODO: Sort this out
+                            )?;
+                            if music.is_none() {
+                                log::error!("Couldn't load {:?}", path);
+                            }
+                            game.asset_files.music = Some(music_load_info);
+                        }
+
+                        Ok(())
+                    }
+                    let menu_bar = ui.begin_menu_bar();
+
+                    if let Some(bar) = menu_bar {
+                        let menu = ui.begin_menu(im_str!("File"), true);
+                        if let Some(menu) = menu {
+                            if imgui::MenuItem::new(im_str!("Set Music")).build(&ui) {
+                                if let Err(error) =
+                                    load_music_file_dialog(&mut game, &mut assets.music)
+                                {
+                                    log::error!("{}", error);
+                                }
+                            }
+
+                            menu.end(&ui);
+                        }
+
+                        bar.end(&ui);
+                    }
+
+                    if let Some(music) = &game.asset_files.music {
+                        if ui.button(&ImString::from(music.filename.clone()), NORMAL_BUTTON) {
+                            assets.start_music(1.0, 20.0); // TODO: Volume
+                        }
                     }
                 });
         }
@@ -2165,6 +2280,7 @@ fn choose_trigger(
             check: PropertyCheck::Timer,
             ..
         } => 8,
+        Trigger::DifficultyLevel { .. } => 9,
     };
     let trigger_names = [
         im_str!("Time"),
@@ -2176,6 +2292,7 @@ fn choose_trigger(
         im_str!("Check Sprite"),
         im_str!("Finished Animation"),
         im_str!("Timer"),
+        im_str!("Difficulty Level"),
     ];
     if imgui::ComboBox::new(im_str!("Trigger")).build_simple_string(
         &ui,
@@ -2207,6 +2324,7 @@ fn choose_trigger(
                 name: first_name(),
                 check: PropertyCheck::Timer,
             },
+            9 => Trigger::DifficultyLevel { level: 1 },
             _ => unreachable!(),
         }
     }
@@ -2230,6 +2348,13 @@ fn choose_trigger(
         Trigger::CheckProperty { name, check } => {
             choose_object(name, ui, object_names);
             choose_property_check(check, ui, images, asset_files, filename);
+        }
+        Trigger::DifficultyLevel { level } => {
+            imgui::Slider::new(
+                im_str!("Difficulty Level"),
+                std::ops::RangeInclusive::new(1, 3),
+            )
+            .build(&ui, level);
         }
     }
     if ui.small_button(im_str!("Back")) {
@@ -2259,6 +2384,7 @@ fn choose_action<'a, 'b>(
         Action::Animate { .. } => 7,
         Action::DrawText { .. } => 8,
         Action::Random { .. } => 9,
+        Action::EndEarly { .. } => 10,
     };
     let action_names = [
         im_str!("Win"),
@@ -2271,6 +2397,7 @@ fn choose_action<'a, 'b>(
         im_str!("Animate"),
         im_str!("Draw Text"),
         im_str!("Random Action"),
+        im_str!("End Early"),
     ];
     if imgui::ComboBox::new(im_str!("Action")).build_simple_string(
         &ui,
@@ -2301,6 +2428,7 @@ fn choose_action<'a, 'b>(
             9 => Action::Random {
                 random_actions: Vec::new(),
             },
+            10 => Action::EndEarly { time_to_end: 0 },
             _ => unreachable!(),
         }
     }
@@ -2377,6 +2505,9 @@ fn choose_action<'a, 'b>(
             if ui.button(im_str!("Add Action"), SMALL_BUTTON) {
                 random_actions.push(Action::Win);
             }
+        }
+        Action::EndEarly { time_to_end } => {
+            choose_u32(time_to_end, ui, im_str!("Time to end"));
         }
         _ => {}
     }
