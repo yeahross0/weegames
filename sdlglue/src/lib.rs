@@ -70,7 +70,7 @@ impl Texture {
                 .blended(to_sdl(colour))
                 .map_err(|e| e.to_string())?;
             let texture = Texture::init((surface.width(), surface.height()), gl::RGBA8, gl::BGRA)
-                .format_as(surface, gl::UNSIGNED_INT_8_8_8_8_REV)?;
+                .format_as_text(surface, gl::UNSIGNED_INT_8_8_8_8_REV)?;
             Ok(Some(texture))
         }
     }
@@ -82,6 +82,32 @@ impl Texture {
             gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::CLAMP_TO_EDGE as i32);
             gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::CLAMP_TO_EDGE as i32);
             // TODO: Check if I should be using LINEAR or NEAREST
+            gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::NEAREST as i32);
+            gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::NEAREST as i32);
+            let surface = surface.without_lock().ok_or("Could not get surface")?;
+            gl::TexImage2D(
+                gl::TEXTURE_2D,
+                0,
+                self.internal_format as i32,
+                self.width as i32,
+                self.height as i32,
+                0,
+                self.image_format,
+                data_type,
+                surface as *const _ as *const c_void,
+            );
+            self.unbind();
+        }
+        Ok(self)
+    }
+
+    // TODO: Remove duplicate code
+    fn format_as_text(mut self, surface: Surface, data_type: GLenum) -> WeeResult<Texture> {
+        unsafe {
+            gl::GenTextures(1, &mut self.id);
+            self.bind();
+            gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::CLAMP_TO_EDGE as i32);
+            gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::CLAMP_TO_EDGE as i32);
             gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR as i32);
             gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as i32);
             let surface = surface.without_lock().ok_or("Could not get surface")?;

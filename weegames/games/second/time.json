@@ -5,20 +5,17 @@
     {
       "name": "Ground",
       "sprite": {
-        "Colour": {
-          "r": 0.13922021,
-          "g": 0.4054054,
-          "b": 0.08452467,
-          "a": 1.0
+        "Image": {
+          "name": "ground"
         }
       },
       "position": {
         "x": 800.0,
-        "y": 800.0
+        "y": 808.0
       },
       "size": {
         "width": 1600.0,
-        "height": 200.0
+        "height": 186.0
       },
       "angle": 0.0,
       "origin": null,
@@ -34,20 +31,17 @@
     {
       "name": "Player",
       "sprite": {
-        "Colour": {
-          "r": 0.80784315,
-          "g": 0.08235294,
-          "b": 0.08235294,
-          "a": 1.0
+        "Image": {
+          "name": "skeleton-6"
         }
       },
       "position": {
-        "x": 500.0,
-        "y": 600.0
+        "x": 480.0,
+        "y": 620.0
       },
       "size": {
-        "width": 200.0,
-        "height": 200.0
+        "width": 192.0,
+        "height": 192.0
       },
       "angle": 0.0,
       "origin": null,
@@ -72,15 +66,46 @@
           ],
           "actions": [
             {
-              "SetProperty": {
-                "Sprite": {
-                  "Colour": {
-                    "r": 0.4745098,
-                    "g": 0.09411765,
-                    "b": 0.6901961,
-                    "a": 1.0
+              "Animate": {
+                "animation_type": "PlayOnce",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "skeleton-6"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "skeleton-5"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "skeleton-4"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "skeleton-3"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "skeleton-2"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "skeleton-1"
+                    }
                   }
-                }
+                ],
+                "speed": "VeryFast"
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "hello"
               }
             }
           ]
@@ -98,15 +123,84 @@
           ],
           "actions": [
             {
-              "SetProperty": {
-                "Sprite": {
-                  "Colour": {
-                    "r": 0.8069498,
-                    "g": 0.08100653,
-                    "b": 0.08100653,
-                    "a": 1.0
+              "Animate": {
+                "animation_type": "PlayOnce",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "skeleton-1"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "skeleton-2"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "skeleton-3"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "skeleton-4"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "skeleton-5"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "skeleton-6"
+                    }
                   }
+                ],
+                "speed": "VeryFast"
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "bye"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Player",
+                "check": "FinishedAnimation"
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Enemy",
+                "check": {
+                  "Switch": "On"
                 }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "Loop",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "skeleton-idle-1"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "skeleton-idle-2"
+                    }
+                  }
+                ],
+                "speed": "Normal"
               }
             }
           ]
@@ -116,20 +210,17 @@
     {
       "name": "Enemy",
       "sprite": {
-        "Colour": {
-          "r": 1.0,
-          "g": 0.5634826,
-          "b": 0.06563705,
-          "a": 1.0
+        "Image": {
+          "name": "red-skeleton-attack-1"
         }
       },
       "position": {
         "x": 800.0,
-        "y": 600.0
+        "y": 608.0
       },
       "size": {
-        "width": 100.0,
-        "height": 200.0
+        "width": 240.0,
+        "height": 216.0
       },
       "angle": 0.0,
       "origin": null,
@@ -161,6 +252,29 @@
                   "speed": "VerySlow"
                 }
               }
+            },
+            {
+              "Animate": {
+                "animation_type": "Loop",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "red-skeleton-attack-1"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "red-skeleton-attack-2"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "red-skeleton-attack-3"
+                    }
+                  }
+                ],
+                "speed": "Fast"
+              }
             }
           ]
         },
@@ -188,11 +302,11 @@
                     "area": {
                       "min": {
                         "x": 0.0,
-                        "y": 600.0
+                        "y": 608.0
                       },
                       "max": {
                         "x": 2200.0,
-                        "y": 600.0
+                        "y": 608.0
                       }
                     }
                   }
@@ -253,7 +367,7 @@
                     "y": 0.0
                   },
                   "max": {
-                    "x": 300.0,
+                    "x": 220.0,
                     "y": 900.0
                   }
                 }
@@ -591,17 +705,37 @@
   ],
   "asset_files": {
     "images": {
+      "red-skeleton-attack-2": "red-skeleton-attack-2.png",
+      "skeleton-4": "skeleton-4.png",
       "0749": "0749.png",
-      "0750": "0750.png",
+      "skeleton-idle-2": "skeleton-idle-2.png",
       "0751": "0751.png",
+      "skeleton-1": "skeleton-1.png",
+      "0752": "0752.png",
+      "ground": "ground.png",
+      "skeleton-6": "skeleton-6.png",
+      "skeleton-idle-1": "skeleton-idle-1.png",
+      "red-skeleton-attack-3": "red-skeleton-attack-3.png",
+      "0750": "0750.png",
+      "skeleton-5": "skeleton-5.png",
+      "skeleton-3": "skeleton-3.png",
+      "skeleton-2": "skeleton-2.png",
+      "red-skeleton-attack-1": "red-skeleton-attack-1.png",
       "0748": "0748.png",
-      "0752": "0752.png"
+      "skeleton-idle": "skeleton-idle.png"
     },
-    "audio": {},
-    "music": null,
+    "audio": {
+      "bye": "bye.ogg",
+      "hello": "hello.ogg",
+      "damage": "damage.ogg"
+    },
+    "music": {
+      "filename": "chipper.ogg",
+      "looped": false
+    },
     "fonts": {}
   },
-  "length": 4.0,
-  "intro_text": "",
-  "attribution": ""
+  "length": 3.8,
+  "intro_text": "Rewind Time!",
+  "attribution": "Skeletons: https://jesse-m.itch.io/skeleton-pack\nGround: https://bakudas.itch.io/generic-platformer-pack\nClock: https://corymcd.itch.io/100-tick-clock\n\nSound effects by BCKR licenced under CC BY 4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://bckr.itch.io/sdap\n\n'Chipper' #2 Over World Loop by Smoothie Games is licenced under CC BY-ND 4.0\nhttps://creativecommons.org/licenses/by-nd/4.0/legalcode\nhttps://smoothie-games.itch.io/chipper-over-world-loop"
 }

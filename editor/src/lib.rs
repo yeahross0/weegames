@@ -4,6 +4,10 @@
 // TODO: Check frame rate of gravity game
 // TODO: Pause during playing game in editor is weird
 // TODO: Unfullscreen after playing in full screen in preview
+// TODO: No linear resizing for some sprites?
+// TODO: If there is a sprite loaded then it should be the first option
+// TODO: Ignore input after finishing preview
+// TODO: Hover over `animation` it plays animation
 
 #[macro_use]
 extern crate imgui;
@@ -2075,6 +2079,7 @@ fn choose_animation(
     for (index, sprite) in animation.iter().enumerate() {
         match sprite {
             Sprite::Image { name } => {
+                // TODO: Must have problem when two buttons have the same id
                 let image_id = images[name].id;
                 if imgui::ImageButton::new(
                     imgui::TextureId::from(image_id as usize),
@@ -2089,6 +2094,7 @@ fn choose_animation(
                 }
             }
             Sprite::Colour(colour) => {
+                // TODO: Does this work with all the buttons having the same id?
                 if imgui::ColorButton::new(
                     im_str!("##Colour"),
                     [colour.r, colour.g, colour.b, colour.a],
@@ -2636,7 +2642,7 @@ impl Choose for FlipSetter {
         self.radio(ui);
 
         if let FlipSetter::SetFlip(flip) = self {
-            if ui.radio_button_bool(im_str!("Switch"), *flip) {
+            if ui.radio_button_bool(im_str!("Flipped?"), *flip) {
                 *flip = !*flip;
             }
         }
