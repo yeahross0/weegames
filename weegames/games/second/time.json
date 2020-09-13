@@ -726,8 +726,7 @@
     },
     "audio": {
       "bye": "bye.ogg",
-      "hello": "hello.ogg",
-      "damage": "damage.ogg"
+      "hello": "hello.ogg"
     },
     "music": {
       "filename": "chipper.ogg",

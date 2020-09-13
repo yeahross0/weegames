@@ -5,11 +5,8 @@
     {
       "name": "Player",
       "sprite": {
-        "Colour": {
-          "r": 0.020751012,
-          "g": 0.11024528,
-          "b": 0.8957529,
-          "a": 1.0
+        "Image": {
+          "name": "car"
         }
       },
       "position": {
@@ -17,15 +14,24 @@
         "y": 600.0
       },
       "size": {
-        "width": 100.0,
-        "height": 150.0
+        "width": 99.25,
+        "height": 245.25
       },
       "angle": 0.0,
       "origin": null,
-      "collision_area": null,
+      "collision_area": {
+        "min": {
+          "x": 40.0,
+          "y": 200.0
+        },
+        "max": {
+          "x": 60.0,
+          "y": 245.25
+        }
+      },
       "flip": {
         "horizontal": false,
-        "vertical": false
+        "vertical": true
       },
       "layer": 0,
       "switch": "Off",
@@ -96,6 +102,79 @@
               }
             }
           ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Random": {
+                "random_actions": [
+                  {
+                    "PlaySound": {
+                      "name": "rising"
+                    }
+                  },
+                  {
+                    "PlaySound": {
+                      "name": "woosh"
+                    }
+                  },
+                  {
+                    "PlaySound": {
+                      "name": "impact"
+                    }
+                  },
+                  {
+                    "PlaySound": {
+                      "name": "small-explosion"
+                    }
+                  },
+                  {
+                    "PlaySound": {
+                      "name": "small-blast"
+                    }
+                  },
+                  {
+                    "PlaySound": {
+                      "name": "gong"
+                    }
+                  },
+                  {
+                    "PlaySound": {
+                      "name": "charge"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "WinStatus": "HasBeenWon"
+            }
+          ],
+          "actions": [
+            {
+              "PlaySound": {
+                "name": "woo"
+              }
+            }
+          ]
         }
       ]
     },
@@ -106,7 +185,7 @@
           "r": 0.0,
           "g": 0.0,
           "b": 0.0,
-          "a": 0.35686275
+          "a": 0.0
         }
       },
       "position": {
@@ -127,16 +206,284 @@
       "layer": 0,
       "switch": "Off",
       "instructions": []
+    },
+    {
+      "name": "Checkpoint 1",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 580.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 400.0,
+        "height": 20.0
+      },
+      "angle": 45.0,
+      "origin": {
+        "x": 420.0,
+        "y": 10.0
+      },
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Player"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Checkpoint 2",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 580.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 400.0,
+        "height": 20.0
+      },
+      "angle": 135.0,
+      "origin": {
+        "x": 420.0,
+        "y": 10.0
+      },
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Player"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Checkpoint 1",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Checkpoint 3",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 580.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 400.0,
+        "height": 20.0
+      },
+      "angle": 225.0,
+      "origin": {
+        "x": 420.0,
+        "y": 10.0
+      },
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Player"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Checkpoint 2",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Checkpoint 4",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 580.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 400.0,
+        "height": 20.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Player"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Checkpoint 3",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Win"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Start",
+      "sprite": {
+        "Image": {
+          "name": "Start"
+        }
+      },
+      "position": {
+        "x": 600.0,
+        "y": 425.0
+      },
+      "size": {
+        "width": 298.4391,
+        "height": 92.45363
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Checkpoint 3",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "Finish"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
     }
   ],
   "background": [
     {
       "sprite": {
-        "Colour": {
-          "r": 0.059942756,
-          "g": 0.4054054,
-          "b": 0.039131787,
-          "a": 1.0
+        "Image": {
+          "name": "track"
         }
       },
       "area": {
@@ -152,12 +499,26 @@
     }
   ],
   "asset_files": {
-    "images": {},
-    "audio": {},
+    "images": {
+      "Finish": "Finish.png",
+      "Start": "Start.png",
+      "track": "track.png",
+      "car": "car.png"
+    },
+    "audio": {
+      "small-explosion": "small-explosion.ogg",
+      "impact": "impact.ogg",
+      "woo": "woo.ogg",
+      "charge": "charge.ogg",
+      "small-blast": "small-blast.ogg",
+      "gong": "gong.ogg",
+      "woosh": "woosh.ogg",
+      "rising": "rising.ogg"
+    },
     "music": null,
     "fonts": {}
   },
-  "length": 8.0,
-  "intro_text": null,
-  "attribution": ""
+  "length": 6.0,
+  "intro_text": "Do a lap",
+  "attribution": "car: https://looneybits.itch.io/2d-race-cars\ntrack: https://free-game-assets.itch.io/free-race-track-tile-set\n\nsound effects:\nhttps://jdwasabi.itch.io/8-bit-16-bit-sound-effects-pack\nhttps://cohexbruh.itch.io/fire-woosh-sound-effects-pack-vol1\nhttps://harvey656.itch.io/8-bit-game-sound-effects-collection\nhttps://void1gaming.itch.io/halftone-sound-effects-pack-lite\nhttps://soundsbydane.itch.io/8-bit-sound-pack\n\nSound effects by BCKR licenced under CC BY 4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://bckr.itch.io/sdap"
 }

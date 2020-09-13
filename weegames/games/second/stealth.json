@@ -261,39 +261,7 @@
       },
       "layer": 0,
       "switch": "Off",
-      "instructions": [
-        {
-          "triggers": [
-            {
-              "Input": {
-                "Mouse": {
-                  "over": {
-                    "Object": {
-                      "name": "Player"
-                    }
-                  },
-                  "interaction": "Hover"
-                }
-              }
-            }
-          ],
-          "actions": [
-            {
-              "Motion": {
-                "Target": {
-                  "target": "Mouse",
-                  "target_type": "Follow",
-                  "offset": {
-                    "x": 0.0,
-                    "y": 0.0
-                  },
-                  "speed": "Normal"
-                }
-              }
-            }
-          ]
-        }
-      ]
+      "instructions": []
     },
     {
       "name": "Red",
@@ -367,16 +335,157 @@
       "layer": 2,
       "switch": "Off",
       "instructions": []
+    },
+    {
+      "name": "A",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.85490197,
+          "a": 1.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "B",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "B"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "B",
+      "sprite": {
+        "Colour": {
+          "r": 0.7294118,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "A"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Target": {
+                  "target": "Mouse",
+                  "target_type": "Follow",
+                  "offset": {
+                    "x": 0.0,
+                    "y": 0.0
+                  },
+                  "speed": "Normal"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Cover 1"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        }
+      ]
     }
   ],
   "background": [],
   "asset_files": {
     "images": {},
     "audio": {},
-    "music": null,
+    "music": {
+      "filename": "take-cover-2.ogg",
+      "looped": false
+    },
     "fonts": {}
   },
   "length": 6.0,
-  "intro_text": null,
+  "intro_text": "",
   "attribution": ""
 }

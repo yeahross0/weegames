@@ -5,11 +5,8 @@
     {
       "name": "Player",
       "sprite": {
-        "Colour": {
-          "r": 0.8841699,
-          "g": 0.06827567,
-          "b": 0.06827567,
-          "a": 1.0
+        "Image": {
+          "name": "king-jump"
         }
       },
       "position": {
@@ -17,8 +14,8 @@
         "y": 600.0
       },
       "size": {
-        "width": 150.0,
-        "height": 150.0
+        "width": 185.0,
+        "height": 145.0
       },
       "angle": 0.0,
       "origin": null,
@@ -48,11 +45,11 @@
                   "area": {
                     "min": {
                       "x": 800.0,
-                      "y": 100.0
+                      "y": 140.0
                     },
                     "max": {
                       "x": 800.0,
-                      "y": 750.0
+                      "y": 630.0
                     }
                   },
                   "speed": "VeryFast"
@@ -77,7 +74,7 @@
               "SetProperty": {
                 "Angle": {
                   "RotateToObject": {
-                    "name": "Bomb"
+                    "name": "Bomb Centre"
                   }
                 }
               }
@@ -98,6 +95,15 @@
                   "speed": "VeryFast"
                 }
               }
+            },
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "king-hit-2"
+                  }
+                }
+              }
             }
           ]
         }
@@ -106,26 +112,32 @@
     {
       "name": "Bomb",
       "sprite": {
-        "Colour": {
-          "r": 0.0,
-          "g": 0.0,
-          "b": 0.0,
-          "a": 1.0
+        "Image": {
+          "name": "Idle"
         }
       },
       "position": {
-        "x": 600.0,
-        "y": 300.0
+        "x": 680.0,
+        "y": 340.0
       },
       "size": {
-        "width": 200.0,
-        "height": 200.0
+        "width": 330.0,
+        "height": 210.0
       },
       "angle": 0.0,
       "origin": null,
-      "collision_area": null,
+      "collision_area": {
+        "min": {
+          "x": 100.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 330.0,
+          "y": 210.0
+        }
+      },
       "flip": {
-        "horizontal": false,
+        "horizontal": true,
         "vertical": false
       },
       "layer": 0,
@@ -157,25 +169,69 @@
               }
             }
           ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Bomb",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "PlayOnce",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "cannon-1"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "cannon-2"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "cannon-3"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "Idle"
+                    }
+                  }
+                ],
+                "speed": "Normal"
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "small-explosion"
+              }
+            }
+          ]
         }
       ]
     },
     {
       "name": "Coin",
       "sprite": {
-        "Colour": {
-          "r": 1.0,
-          "g": 0.84313726,
-          "b": 0.0,
-          "a": 1.0
+        "Image": {
+          "name": "diamond"
         }
       },
       "position": {
         "x": 1200.0,
-        "y": 300.0
+        "y": 260.0
       },
       "size": {
-        "width": 100.0,
+        "width": 120.0,
         "height": 100.0
       },
       "angle": 0.0,
@@ -185,27 +241,108 @@
         "horizontal": false,
         "vertical": false
       },
-      "layer": 0,
+      "layer": 1,
       "switch": "Off",
-      "instructions": []
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Player"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 2000.0,
+                    "y": 2000.0
+                  }
+                }
+              }
+            },
+            "Win",
+            {
+              "PlaySound": {
+                "name": "coin"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Area": {
+                    "min": {
+                      "x": 1100.0,
+                      "y": 200.0
+                    },
+                    "max": {
+                      "x": 1300.0,
+                      "y": 400.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
     },
     {
       "name": "Trampoline",
       "sprite": {
-        "Colour": {
-          "r": 0.4870905,
-          "g": 0.071316786,
-          "b": 0.8030888,
-          "a": 1.0
+        "Image": {
+          "name": "pig"
         }
       },
       "position": {
         "x": 800.0,
-        "y": 850.0
+        "y": 728.0
       },
       "size": {
-        "width": 300.0,
-        "height": 100.0
+        "width": 135.0,
+        "height": 120.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "Bomb Centre",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 600.0,
+        "y": 340.0
+      },
+      "size": {
+        "width": 20.0,
+        "height": 20.0
       },
       "angle": 0.0,
       "origin": null,
@@ -219,14 +356,52 @@
       "instructions": []
     }
   ],
-  "background": [],
+  "background": [
+    {
+      "sprite": {
+        "Image": {
+          "name": "bg4"
+        }
+      },
+      "area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 1600.0,
+          "y": 900.0
+        }
+      }
+    }
+  ],
   "asset_files": {
-    "images": {},
-    "audio": {},
-    "music": null,
+    "images": {
+      "cannon-1": "cannon-1.png",
+      "Idle": "Idle.png",
+      "king-hit-2": "king-hit-2.png",
+      "diamond": "diamond.png",
+      "bg2": "bg2.png",
+      "cannon-2": "cannon-2.png",
+      "bg": "bg.png",
+      "bg3": "bg3.png",
+      "bg4": "bg4.png",
+      "pig": "pig.png",
+      "king-jump": "king-jump.png",
+      "king-hit-1": "king-hit-1.png",
+      "cannon-3": "cannon-3.png"
+    },
+    "audio": {
+      "coin": "coin.ogg",
+      "small-explosion": "small-explosion.ogg"
+    },
+    "music": {
+      "filename": "friday-afternoon.ogg",
+      "looped": false
+    },
     "fonts": {}
   },
   "length": 4.0,
-  "intro_text": null,
-  "attribution": ""
+  "intro_text": "Blast!",
+  "attribution": "images: https://pixelfrog-store.itch.io/kings-and-pigs\n\nexplosion: https://harvey656.itch.io/8-bit-game-sound-effects-collection\ncoin: https://void1gaming.itch.io/halftone-sound-effects-pack-lite\n\nFriday Afternoon by Tim Beek is licenced under CC-BY-4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://timbeek.itch.io/royalty-free-music-pack\n\n\n"
 }

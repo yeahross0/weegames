@@ -5,11 +5,8 @@
     {
       "name": "Bike",
       "sprite": {
-        "Colour": {
-          "r": 0.9498069,
-          "g": 0.04767373,
-          "b": 0.04767373,
-          "a": 1.0
+        "Image": {
+          "name": "off-road-full"
         }
       },
       "position": {
@@ -66,6 +63,11 @@
                 "Angle": {
                   "Decrease": 1.0
                 }
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "damage"
               }
             }
           ]
@@ -223,6 +225,87 @@
               }
             }
           ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Bike",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "off-road-full"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "Loop",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "off-road-1"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "off-road-2"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "off-road-3"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "off-road-4"
+                    }
+                  }
+                ],
+                "speed": "VeryFast"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Ground",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "off-road-full"
+                  }
+                }
+              }
+            }
+          ]
         }
       ]
     },
@@ -230,10 +313,10 @@
       "name": "Ground",
       "sprite": {
         "Colour": {
-          "r": 0.980695,
-          "g": 0.9226399,
-          "b": 0.18932338,
-          "a": 1.0
+          "r": 0.98039216,
+          "g": 0.92156863,
+          "b": 0.1882353,
+          "a": 0.0
         }
       },
       "position": {
@@ -246,7 +329,16 @@
       },
       "angle": 0.0,
       "origin": null,
-      "collision_area": null,
+      "collision_area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 2000.0,
+          "y": 300.0
+        }
+      },
       "flip": {
         "horizontal": false,
         "vertical": false
@@ -291,7 +383,7 @@
           "r": 0.0,
           "g": 0.0,
           "b": 0.0,
-          "a": 0.26666668
+          "a": 0.0
         }
       },
       "position": {
@@ -316,41 +408,106 @@
     {
       "name": "Finish",
       "sprite": {
-        "Colour": {
-          "r": 0.000001,
-          "g": 0.0,
-          "b": 0.0,
-          "a": 1.0
+        "Image": {
+          "name": "orange"
         }
       },
       "position": {
         "x": 1400.0,
-        "y": 800.0
+        "y": 600.0
       },
       "size": {
-        "width": 100.0,
-        "height": 300.0
+        "width": 128.0,
+        "height": 128.0
       },
       "angle": 0.0,
       "origin": null,
-      "collision_area": null,
+      "collision_area": {
+        "min": {
+          "x": 0.0,
+          "y": -200.0
+        },
+        "max": {
+          "x": 128.0,
+          "y": 200.0
+        }
+      },
       "flip": {
         "horizontal": false,
         "vertical": false
       },
-      "layer": 0,
+      "layer": 1,
       "switch": "Off",
-      "instructions": []
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Bike"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Win",
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 2000.0,
+                    "y": 2000.0
+                  }
+                }
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "power-up"
+              }
+            }
+          ]
+        }
+      ]
     }
   ],
-  "background": [],
+  "background": [
+    {
+      "sprite": {
+        "Image": {
+          "name": "background"
+        }
+      },
+      "area": {
+        "min": {
+          "x": 0.0,
+          "y": -300.0
+        },
+        "max": {
+          "x": 1600.0,
+          "y": 900.0
+        }
+      }
+    }
+  ],
   "asset_files": {
-    "images": {},
-    "audio": {},
+    "images": {
+      "off-road-1": "off-road-1.png",
+      "off-road-full": "off-road-full.png",
+      "off-road-4": "off-road-4.png",
+      "off-road-2": "off-road-2.png",
+      "background": "background.png",
+      "off-road-3": "off-road-3.png",
+      "orange": "orange.png"
+    },
+    "audio": {
+      "damage": "damage.ogg",
+      "power-up": "power-up.ogg"
+    },
     "music": null,
     "fonts": {}
   },
   "length": 4.0,
-  "intro_text": null,
-  "attribution": ""
+  "intro_text": "Get that orange!",
+  "attribution": "bike: https://overcrafted.itch.io/free-paid-vehicle-car-sprites-\nbackground: https://raventale.itch.io/parallax-background\norange: https://ravenmore.itch.io/2d-pickups-pack\n\nDamage sound effect by BCKR licenced under CC BY 4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://bckr.itch.io/sdap\n\npower up sound effect: https://void1gaming.itch.io/halftone-sound-effects-pack-lite"
 }

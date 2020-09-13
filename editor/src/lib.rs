@@ -8,6 +8,9 @@
 // TODO: If there is a sprite loaded then it should be the first option
 // TODO: Ignore input after finishing preview
 // TODO: Hover over `animation` it plays animation
+// TODO: Change wavs to ogg
+// TODO: choose_object fails if object has been deleted
+// TODO: Stop setting object size to image size when new image added but have option to match image size
 
 #[macro_use]
 extern crate imgui;
@@ -78,6 +81,7 @@ pub fn run_editor(
     let mut new_name_buffer = ImString::from("".to_string());
     let mut playback_rate = 1.0;
     let mut difficulty_level = 1;
+    let mut last_win_status = None;
 
     let mut fonts_window_opened = false;
     let mut background_window_opened = false;
@@ -139,6 +143,7 @@ pub fn run_editor(
                                             Ok(assets) => assets,
                                             Err(error) => {
                                                 menu.end(ui);
+                                                bar.end(ui);
                                                 return Err(error);
                                             }
                                         };
@@ -315,6 +320,8 @@ pub fn run_editor(
                     )
                     .build(&ui, &mut difficulty_level);
 
+                    ui.text(format!("Last win status: {:?}", last_win_status));
+
                     let mut attr = ImString::from(game.attribution.to_owned());
                     ui.input_text_multiline(im_str!("Attribution"), &mut attr, [300.0, 300.0])
                         .resize_buffer(true)
@@ -328,6 +335,7 @@ pub fn run_editor(
                 .start(playback_rate, difficulty_level, settings)
                 .play(renderer, event_pump)?;
             assets = completed_game.assets;
+            last_win_status = Some(completed_game.has_been_won);
         }
 
         if objects_window_opened {
@@ -1832,7 +1840,7 @@ fn choose_percent(percent: &mut f32, ui: &imgui::Ui) {
     ui.drag_float(im_str!("Chance"), &mut chance_percent)
         .min(0.0)
         .max(100.0)
-        .speed(1.0)
+        .speed(0.1)
         .display_format(im_str!("%.01f%%"))
         .build();
     *percent = chance_percent / 100.0;
@@ -2508,6 +2516,25 @@ fn choose_action<'a, 'b>(
                 }
             }
             list_actions(&ui, &random_actions);
+            for (i, action) in random_actions.iter_mut().enumerate() {
+                let stack = ui.push_id(i as i32);
+                if let Action::Random { .. } = action {
+                } else {
+                    choose_action(
+                        action,
+                        ui,
+                        object_names,
+                        asset_files,
+                        assets,
+                        ttf_context,
+                        animation_editor,
+                        filename,
+                        instruction_mode,
+                    );
+                }
+                stack.pop(ui);
+            }
+
             if ui.button(im_str!("Add Action"), SMALL_BUTTON) {
                 random_actions.push(Action::Win);
             }
