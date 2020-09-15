@@ -1066,7 +1066,7 @@ impl fmt::Display for Action {
                 if let Switch::On = switch { "on" } else { "off" }
             ),
             Action::SetProperty(PropertySetter::Timer { time }) => {
-                write!(f, "Set the timer to {:.2} seconds ", time)
+                write!(f, "Set the timer to {:.2} seconds ", (*time as f32) / 60.0)
             }
             Action::SetProperty(PropertySetter::FlipHorizontal(FlipSetter::Flip)) => {
                 write!(f, "Flip this object horizontally")

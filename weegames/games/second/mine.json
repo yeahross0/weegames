@@ -5,20 +5,17 @@
     {
       "name": "Stone 1",
       "sprite": {
-        "Colour": {
-          "r": 0.8108108,
-          "g": 0.118960656,
-          "b": 0.118960656,
-          "a": 1.0
+        "Image": {
+          "name": "stone"
         }
       },
       "position": {
-        "x": 800.0,
-        "y": 450.0
+        "x": 850.0,
+        "y": 150.0
       },
       "size": {
-        "width": 160.0,
-        "height": 160.0
+        "width": 100.0,
+        "height": 114.0
       },
       "angle": 0.0,
       "origin": null,
@@ -34,21 +31,20 @@
           "triggers": [
             {
               "Time": "Start"
+            },
+            {
+              "Random": {
+                "chance": 0.5
+              }
             }
           ],
           "actions": [
             {
               "Motion": {
                 "JumpTo": {
-                  "Area": {
-                    "min": {
-                      "x": 200.0,
-                      "y": 200.0
-                    },
-                    "max": {
-                      "x": 1400.0,
-                      "y": 700.0
-                    }
+                  "Point": {
+                    "x": 450.0,
+                    "y": 550.0
                   }
                 }
               }
@@ -80,27 +76,18 @@
                 "animation_type": "PlayOnce",
                 "sprites": [
                   {
-                    "Colour": {
-                      "r": 0.66023165,
-                      "g": 0.24471907,
-                      "b": 0.24471907,
-                      "a": 1.0
+                    "Image": {
+                      "name": "stone-1"
                     }
                   },
                   {
-                    "Colour": {
-                      "r": 0.4942085,
-                      "g": 0.3033944,
-                      "b": 0.3033944,
-                      "a": 1.0
+                    "Image": {
+                      "name": "stone-2"
                     }
                   },
                   {
-                    "Colour": {
-                      "r": 0.2934363,
-                      "g": 0.29343334,
-                      "b": 0.29343334,
-                      "a": 1.0
+                    "Image": {
+                      "name": "stone-3"
                     }
                   }
                 ],
@@ -170,11 +157,8 @@
             {
               "SetProperty": {
                 "Sprite": {
-                  "Colour": {
-                    "r": 0.8117647,
-                    "g": 0.11764706,
-                    "b": 0.11764706,
-                    "a": 1.0
+                  "Image": {
+                    "name": "stone"
                   }
                 }
               }
@@ -194,11 +178,8 @@
             {
               "SetProperty": {
                 "Sprite": {
-                  "Colour": {
-                    "r": 0.17374516,
-                    "g": 0.17374341,
-                    "b": 0.17374341,
-                    "a": 1.0
+                  "Image": {
+                    "name": "diamonds2"
                   }
                 }
               }
@@ -253,6 +234,450 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Noise",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Stone 1",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Noise",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Checker 1",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "PlaySound": {
+                "name": "small-impact"
+              }
+            },
+            {
+              "SetProperty": {
+                "Timer": {
+                  "time": 8
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Noise",
+                "check": "Timer"
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Stone 2",
+      "sprite": {
+        "Image": {
+          "name": "stone"
+        }
+      },
+      "position": {
+        "x": 750.0,
+        "y": 350.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 114.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            },
+            {
+              "Random": {
+                "chance": 0.5
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 1350.0,
+                    "y": 550.0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "Stone 2"
+                    }
+                  },
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "PlayOnce",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "stone-1"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "stone-2"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "stone-3"
+                    }
+                  }
+                ],
+                "speed": "Normal"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Checker 2",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "Stone 2"
+                    }
+                  },
+                  "interaction": {
+                    "Button": {
+                      "state": "Down"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Stone 2",
+                "check": {
+                  "Switch": "SwitchedOff"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "stone"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Stone 2",
+                "check": "FinishedAnimation"
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "diamonds2"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Checker 2",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Stone 2",
+                "check": "FinishedAnimation"
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Checker 1",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Checker 2",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Win"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Noise 2",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Stone 2",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Noise 2",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Checker 2",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "PlaySound": {
+                "name": "small-impact"
+              }
+            },
+            {
+              "SetProperty": {
+                "Timer": {
+                  "time": 8
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Noise 2",
+                "check": "Timer"
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        }
+      ]
     }
   ],
   "background": [
@@ -275,15 +700,50 @@
           "y": 900.0
         }
       }
+    },
+    {
+      "sprite": {
+        "Image": {
+          "name": "mine"
+        }
+      },
+      "area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 1600.0,
+          "y": 900.0
+        }
+      }
     }
   ],
   "asset_files": {
-    "images": {},
-    "audio": {},
-    "music": null,
+    "images": {
+      "mine": "mine.png",
+      "stone-2": "stone-2.png",
+      "blue-2": "blue-2.png",
+      "stone-1": "stone-1.png",
+      "diamonds2": "diamonds2.png",
+      "blue": "blue.png",
+      "blue-1": "blue-1.png",
+      "lighter-diamond": "lighter-diamond.png",
+      "stone-3": "stone-3.png",
+      "stone": "stone.png"
+    },
+    "audio": {
+      "impact": "impact.ogg",
+      "small-impact": "small-impact.ogg",
+      "found-something": "found-something.ogg"
+    },
+    "music": {
+      "filename": "track-2.ogg",
+      "looped": false
+    },
     "fonts": {}
   },
-  "length": 4.0,
-  "intro_text": null,
-  "attribution": ""
+  "length": 4.8,
+  "intro_text": "",
+  "attribution": "tiles and trees: https://mikemac2d.itch.io/adventure-tile-pack\ndiamonds: https://pixelfrog-store.itch.io/kings-and-pigs\n\nhttps://harvey656.itch.io/8-bit-game-sound-effects-collection\n\nLudum Dare 28 Track 2 by Abstraction's licencing information is located here http://abstractionmusic.com/#secLicensing\nhttp://abstractionmusic.bandcamp.com/"
 }

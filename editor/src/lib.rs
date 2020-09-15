@@ -8,9 +8,9 @@
 // TODO: If there is a sprite loaded then it should be the first option
 // TODO: Ignore input after finishing preview
 // TODO: Hover over `animation` it plays animation
-// TODO: Change wavs to ogg
 // TODO: choose_object fails if object has been deleted
 // TODO: Stop setting object size to image size when new image added but have option to match image size
+// TODO: Not loading oggs correctly sometimes?
 
 #[macro_use]
 extern crate imgui;
@@ -365,6 +365,9 @@ pub fn run_editor(
                                     from: String,
                                     to: String,
                                 },
+                                _Clone {
+                                    index: usize,
+                                },
                                 Delete {
                                     index: usize,
                                 },
@@ -476,12 +479,6 @@ pub fn run_editor(
                                     };
                                 }
 
-                                if ui.button(im_str!("Delete"), NORMAL_BUTTON) {
-                                    object_operation = ObjectOperation::Delete {
-                                        index: selected_index.unwrap(),
-                                    }
-                                }
-
                                 if ui.button(im_str!("Rename"), NORMAL_BUTTON) {
                                     rename_object = Some(RenameObject {
                                         index: selected_index.unwrap(),
@@ -492,6 +489,20 @@ pub fn run_editor(
                                     });
                                     ui.close_current_popup();
                                 }
+
+                                if ui.button(im_str!("Clone"), NORMAL_BUTTON) {
+                                    object_operation = ObjectOperation::_Clone {
+                                        index: selected_index.unwrap(),
+                                    }
+                                }
+
+                                if ui.button(im_str!("Delete"), NORMAL_BUTTON) {
+                                    object_operation = ObjectOperation::Delete {
+                                        index: selected_index.unwrap(),
+                                    }
+                                }
+
+                
 
                                 /*if let Some(rename_details) = &mut rename_object {
                                     if ui
@@ -572,6 +583,11 @@ pub fn run_editor(
                                         ui.close_current_popup();
                                     }
                                 }
+                                ObjectOperation::_Clone { index } => {
+                                    new_object = game.objects[index].clone();
+                                    new_name_buffer = ImString::from("".to_string());
+                                    ui.open_popup(im_str!("Clone Object"));
+                                }
                                 ObjectOperation::Move { direction, index } => match direction {
                                     MoveDirection::Up => {
                                         if index > 0 {
@@ -627,6 +643,36 @@ pub fn run_editor(
                                         ui.close_current_popup();
                                     }
                                     new_object.name = new_name_buffer.to_str().to_string();
+                                    game.objects.push(new_object.clone());
+                                    selected_index = Some(game.objects.len() - 1);
+                                    instruction_mode = InstructionMode::View;
+                                    instruction_index = None;
+                                    ui.close_current_popup();
+                                }
+                                ui.same_line(0.0);
+                                if ui.button(im_str!("Cancel"), NORMAL_BUTTON) {
+                                    ui.close_current_popup();
+                                }
+                            });
+
+                            ui.popup_modal(im_str!("Clone Object")).build(|| {
+                                let entered = ui
+                                    .input_text(im_str!("Name"), &mut new_name_buffer)
+                                    .resize_buffer(true)
+                                    .enter_returns_true(true)
+                                    .build();
+
+                                if entered || ui.button(im_str!("OK"), NORMAL_BUTTON) {
+                                    let duplicate =
+                                        game.objects.iter().any(|o| o.name == new_object.name);
+                                    if duplicate {
+                                        ui.open_popup(im_str!("Duplicate Name"));
+                                    } else {
+                                        ui.close_current_popup();
+                                    }
+                                    let new_name =  new_name_buffer.to_str().to_string();
+                                    rename_in_instructions(&mut new_object.instructions, &new_object.name, &new_name);
+                                    new_object.name = new_name;
                                     game.objects.push(new_object.clone());
                                     selected_index = Some(game.objects.len() - 1);
                                     instruction_mode = InstructionMode::View;
@@ -3981,11 +4027,11 @@ fn properties_window(
 
 pub fn rename_across_objects(objects: &mut Vec<SerialiseObject>, old_name: &str, new_name: &str) {
     for obj in objects.iter_mut() {
-        rename_object(&mut obj.instructions, old_name, new_name);
+        rename_in_instructions(&mut obj.instructions, old_name, new_name);
     }
 }
 
-fn rename_object(instructions: &mut Vec<Instruction>, old_name: &str, new_name: &str) {
+fn rename_in_instructions(instructions: &mut Vec<Instruction>, old_name: &str, new_name: &str) {
     let rename = |other_name: &mut String| {
         if *other_name == old_name {
             *other_name = new_name.to_string();
