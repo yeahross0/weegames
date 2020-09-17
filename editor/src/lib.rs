@@ -82,6 +82,7 @@ pub fn run_editor(
     let mut playback_rate = 1.0;
     let mut difficulty_level = 1;
     let mut last_win_status = None;
+    let mut draw_tasks = Vec::new();
 
     let mut fonts_window_opened = false;
     let mut background_window_opened = false;
@@ -502,8 +503,6 @@ pub fn run_editor(
                                     }
                                 }
 
-                
-
                                 /*if let Some(rename_details) = &mut rename_object {
                                     if ui
                                         .input_text(
@@ -670,8 +669,12 @@ pub fn run_editor(
                                     } else {
                                         ui.close_current_popup();
                                     }
-                                    let new_name =  new_name_buffer.to_str().to_string();
-                                    rename_in_instructions(&mut new_object.instructions, &new_object.name, &new_name);
+                                    let new_name = new_name_buffer.to_str().to_string();
+                                    rename_in_instructions(
+                                        &mut new_object.instructions,
+                                        &new_object.name,
+                                        &new_name,
+                                    );
                                     new_object.name = new_name;
                                     game.objects.push(new_object.clone());
                                     selected_index = Some(game.objects.len() - 1);
@@ -714,6 +717,7 @@ pub fn run_editor(
                             &mut instruction_mode,
                             &mut instruction_index,
                             &mut instruction_focus,
+                            &mut draw_tasks,
                         );
                         game.objects[index] = object;
                     }
@@ -1086,6 +1090,25 @@ pub fn run_editor(
             }
         }
 
+        for task in draw_tasks {
+            match task {
+                DrawTask::AABB(aabb) => {
+                    let rect = aabb.to_rect().move_position(game_position).scale(scale);
+                    let model = Model::new(rect, None, 0.0, Flip::default());
+                    renderer.fill_rectangle(model, Colour::rgba(0.0, 0.0, 1.0, 0.5));
+                }
+                DrawTask::Point(point) => {
+                    let rect = Rect::new(point.x, point.y, 20.0, 20.0)
+                        .move_position(game_position)
+                        .scale(scale);
+                    let model = Model::new(rect, None, 0.0, Flip::default());
+                    renderer.fill_rectangle(model, Colour::rgba(0.5, 0.0, 0.5, 0.5));
+                }
+            }
+        }
+
+        draw_tasks = Vec::new();
+
         imgui_frame.render(&renderer.window);
         renderer.present();
 
@@ -1422,6 +1445,11 @@ impl ImguiDisplayAction for Action {
     }
 }
 
+enum DrawTask {
+    AABB(AABB),
+    Point(Vec2),
+}
+
 fn right_window<'a, 'b>(
     ui: &imgui::Ui,
     object: &mut SerialiseObject,
@@ -1436,6 +1464,7 @@ fn right_window<'a, 'b>(
     instruction_mode: &mut InstructionMode,
     instruction_index: &mut Option<usize>,
     instruction_focus: &mut InstructionFocus,
+    draw_tasks: &mut Vec<DrawTask>,
 ) {
     imgui::ChildWindow::new(im_str!("Right"))
         .size([0.0, 0.0])
@@ -1481,6 +1510,7 @@ fn right_window<'a, 'b>(
                         instruction_mode,
                         instruction_index,
                         instruction_focus,
+                        draw_tasks,
                     );
                 });
             });
@@ -2432,6 +2462,7 @@ fn choose_action<'a, 'b>(
     animation_editor: &mut AnimationEditor,
     filename: &Option<String>,
     instruction_mode: &mut InstructionMode,
+    draw_tasks: &mut Vec<DrawTask>,
 ) {
     let mut current_action_position = match action {
         Action::Win => 0,
@@ -2470,8 +2501,14 @@ fn choose_action<'a, 'b>(
             2 => Action::Effect(Effect::None),
             3 => Action::Motion(Motion::Stop),
             4 => Action::PlaySound {
-                name: "".to_string(),
-            }, // TODO: assets.sounds.first
+                name: assets
+                    .sounds
+                    .keys()
+                    .next()
+                    .clone()
+                    .unwrap_or(&String::new())
+                    .to_owned(),
+            },
             5 => Action::StopMusic,
             6 => Action::SetProperty(PropertySetter::Angle(AngleSetter::Value(0.0))),
             7 => Action::Animate {
@@ -2481,7 +2518,13 @@ fn choose_action<'a, 'b>(
             },
             8 => Action::DrawText {
                 text: "".to_string(),
-                font: "".to_string(), // TODO: assets.fonts.first
+                font: assets
+                    .fonts
+                    .keys()
+                    .next()
+                    .clone()
+                    .unwrap_or(&String::new())
+                    .to_owned(),
                 colour: Colour::black(),
                 resize: TextResize::MatchObject,
             },
@@ -2498,7 +2541,7 @@ fn choose_action<'a, 'b>(
             effect.choose(ui);
         }
         Action::Motion(motion) => {
-            choose_motion(motion, ui, object_names);
+            choose_motion(motion, ui, object_names, draw_tasks);
         }
         Action::PlaySound { name } => {
             choose_sound(
@@ -2576,6 +2619,7 @@ fn choose_action<'a, 'b>(
                         animation_editor,
                         filename,
                         instruction_mode,
+                        draw_tasks,
                     );
                 }
                 stack.pop(ui);
@@ -2866,7 +2910,12 @@ impl Choose for Effect {
     }
 }
 
-fn choose_motion(motion: &mut Motion, ui: &imgui::Ui, object_names: &Vec<&str>) {
+fn choose_motion(
+    motion: &mut Motion,
+    ui: &imgui::Ui,
+    object_names: &Vec<&str>,
+    draw_tasks: &mut Vec<DrawTask>,
+) {
     let mut current_motion_position = match motion {
         Motion::Stop => 0,
         Motion::GoStraight { .. } => 1,
@@ -2934,7 +2983,7 @@ fn choose_motion(motion: &mut Motion, ui: &imgui::Ui, object_names: &Vec<&str>) 
             speed.choose(ui);
         }
         Motion::JumpTo(jump_location) => {
-            choose_jump_location(jump_location, ui, object_names);
+            choose_jump_location(jump_location, ui, object_names, draw_tasks);
         }
         Motion::Roam {
             movement_type,
@@ -2943,6 +2992,7 @@ fn choose_motion(motion: &mut Motion, ui: &imgui::Ui, object_names: &Vec<&str>) 
         } => {
             movement_type.choose(ui);
             area.choose(ui);
+            draw_tasks.push(DrawTask::AABB(*area));
             speed.choose(ui);
         }
         Motion::Swap { name } => {
@@ -3078,7 +3128,12 @@ impl Choose for HashSet<CompassDirection> {
     }
 }
 
-fn choose_jump_location(jump: &mut JumpLocation, ui: &imgui::Ui, object_names: &Vec<&str>) {
+fn choose_jump_location(
+    jump: &mut JumpLocation,
+    ui: &imgui::Ui,
+    object_names: &Vec<&str>,
+    draw_tasks: &mut Vec<DrawTask>,
+) {
     let jump_types = [
         im_str!("Point"),
         im_str!("Area"),
@@ -3128,6 +3183,8 @@ fn choose_jump_location(jump: &mut JumpLocation, ui: &imgui::Ui, object_names: &
                 .build();
             ui.input_float(im_str!("Area Max Y"), &mut area.max.y)
                 .build();
+
+            draw_tasks.push(DrawTask::AABB(*area));
         }
         JumpLocation::Object { name } => {
             let mut current_object = object_names
@@ -3148,8 +3205,11 @@ fn choose_jump_location(jump: &mut JumpLocation, ui: &imgui::Ui, object_names: &
             }
         }
         JumpLocation::Point(point) => {
+            // TODO: point.choose(ui);
             ui.input_float(im_str!("X"), &mut point.x).build();
             ui.input_float(im_str!("Y"), &mut point.y).build();
+
+            draw_tasks.push(DrawTask::Point(*point));
         }
         JumpLocation::Relative { to, distance } => {
             if ui.radio_button_bool(
@@ -3178,6 +3238,8 @@ fn choose_jump_location(jump: &mut JumpLocation, ui: &imgui::Ui, object_names: &
                 .build();
             ui.input_float(im_str!("Area Max Y"), &mut area.max.y)
                 .build();
+
+            draw_tasks.push(DrawTask::AABB(*area));
         }
         _ => {}
     }
@@ -3318,6 +3380,7 @@ fn choose_instructions<'a, 'b>(
     instruction_mode: &mut InstructionMode,
     selected_index: &mut Option<usize>,
     focus: &mut InstructionFocus,
+    draw_tasks: &mut Vec<DrawTask>,
 ) {
     match instruction_mode {
         InstructionMode::View => {
@@ -3451,6 +3514,7 @@ fn choose_instructions<'a, 'b>(
                 animation_editor,
                 filename,
                 instruction_mode,
+                draw_tasks,
             );
         }
     }

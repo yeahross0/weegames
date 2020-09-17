@@ -5,24 +5,30 @@
     {
       "name": "Player",
       "sprite": {
-        "Colour": {
-          "r": 0.7837838,
-          "g": 0.042366713,
-          "b": 0.042366713,
-          "a": 1.0
+        "Image": {
+          "name": "zombie-1"
         }
       },
       "position": {
         "x": 300.0,
-        "y": 200.0
+        "y": 250.0
       },
       "size": {
-        "width": 100.0,
-        "height": 100.0
+        "width": 95.0,
+        "height": 65.0
       },
       "angle": 0.0,
       "origin": null,
-      "collision_area": null,
+      "collision_area": {
+        "min": {
+          "x": 5.0,
+          "y": 15.0
+        },
+        "max": {
+          "x": 90.0,
+          "y": 50.0
+        }
+      },
       "flip": {
         "horizontal": false,
         "vertical": false
@@ -33,10 +39,42 @@
         {
           "triggers": [
             {
+              "Collision": {
+                "Object": {
+                  "name": "Ground"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": "Stop"
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
               "Time": "Start"
             }
           ],
           "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Area": {
+                    "min": {
+                      "x": 150.0,
+                      "y": 225.0
+                    },
+                    "max": {
+                      "x": 500.0,
+                      "y": 400.0
+                    }
+                  }
+                }
+              }
+            },
             {
               "Motion": {
                 "Accelerate": {
@@ -51,6 +89,24 @@
                     "speed": "VerySlow"
                   }
                 }
+              }
+            },
+            {
+              "Animate": {
+                "animation_type": "Loop",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "zombie-1"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "zombie-2"
+                    }
+                  }
+                ],
+                "speed": "Slow"
               }
             }
           ]
@@ -102,6 +158,11 @@
                   }
                 }
               }
+            },
+            {
+              "PlaySound": {
+                "name": "jump"
+              }
             }
           ]
         },
@@ -112,11 +173,11 @@
                 "Area": {
                   "min": {
                     "x": 0.0,
-                    "y": -200.0
+                    "y": 0.0
                   },
                   "max": {
                     "x": 1600.0,
-                    "y": 0.0
+                    "y": 200.0
                   }
                 }
               }
@@ -156,17 +217,36 @@
               }
             }
           ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Goal"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Win",
+            {
+              "Effect": "Freeze"
+            },
+            {
+              "PlaySound": {
+                "name": "found-something"
+              }
+            }
+          ]
         }
       ]
     },
     {
       "name": "Enemy 1",
       "sprite": {
-        "Colour": {
-          "r": 1.0,
-          "g": 0.99999,
-          "b": 0.99999,
-          "a": 1.0
+        "Image": {
+          "name": "hurt"
         }
       },
       "position": {
@@ -174,10 +254,10 @@
         "y": 450.0
       },
       "size": {
-        "width": 100.0,
-        "height": 100.0
+        "width": 32.0,
+        "height": 112.0
       },
-      "angle": 0.0,
+      "angle": 90.0,
       "origin": null,
       "collision_area": null,
       "flip": {
@@ -196,15 +276,31 @@
           "actions": [
             {
               "Motion": {
+                "JumpTo": {
+                  "Area": {
+                    "min": {
+                      "x": 600.0,
+                      "y": 200.0
+                    },
+                    "max": {
+                      "x": 1000.0,
+                      "y": 900.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
                 "Roam": {
                   "movement_type": "Insect",
                   "area": {
                     "min": {
-                      "x": 0.0,
-                      "y": 0.0
+                      "x": 600.0,
+                      "y": 200.0
                     },
                     "max": {
-                      "x": 1600.0,
+                      "x": 1000.0,
                       "y": 900.0
                     }
                   },
@@ -213,17 +309,37 @@
               }
             }
           ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Player"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose",
+            {
+              "Effect": "Freeze"
+            },
+            {
+              "PlaySound": {
+                "name": "alarm"
+              }
+            },
+            "StopMusic"
+          ]
         }
       ]
     },
     {
       "name": "Enemy 2",
       "sprite": {
-        "Colour": {
-          "r": 0.44787645,
-          "g": 0.44787198,
-          "b": 0.44787198,
-          "a": 1.0
+        "Image": {
+          "name": "death"
         }
       },
       "position": {
@@ -231,10 +347,10 @@
         "y": 450.0
       },
       "size": {
-        "width": 100.0,
-        "height": 100.0
+        "width": 32.0,
+        "height": 132.0
       },
-      "angle": 0.0,
+      "angle": 90.0,
       "origin": null,
       "collision_area": null,
       "flip": {
@@ -253,24 +369,61 @@
           "actions": [
             {
               "Motion": {
+                "JumpTo": {
+                  "Area": {
+                    "min": {
+                      "x": 700.0,
+                      "y": 200.0
+                    },
+                    "max": {
+                      "x": 1600.0,
+                      "y": 600.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
                 "Roam": {
                   "movement_type": "Insect",
                   "area": {
                     "min": {
-                      "x": 0.0,
-                      "y": 0.0
+                      "x": 700.0,
+                      "y": 200.0
                     },
                     "max": {
                       "x": 1600.0,
-                      "y": 900.0
+                      "y": 600.0
                     }
                   },
-                  "speed": {
-                    "Value": 10.0
-                  }
+                  "speed": "VerySlow"
                 }
               }
             }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Player"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose",
+            {
+              "Effect": "Freeze"
+            },
+            {
+              "PlaySound": {
+                "name": "alarm"
+              }
+            },
+            "StopMusic"
           ]
         }
       ]
@@ -279,18 +432,47 @@
       "name": "Goal",
       "sprite": {
         "Colour": {
-          "r": 0.11894894,
-          "g": 0.7065637,
-          "b": 0.09820962,
-          "a": 1.0
+          "r": 0.11764706,
+          "g": 0.7058824,
+          "b": 0.09803922,
+          "a": 0.0
         }
       },
       "position": {
-        "x": 1500.0,
-        "y": 450.0
+        "x": 1525.0,
+        "y": 850.0
       },
       "size": {
-        "width": 200.0,
+        "width": 80.0,
+        "height": 180.0
+      },
+      "angle": 45.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "Ground",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 275.0,
+        "y": 850.0
+      },
+      "size": {
+        "width": 600.0,
         "height": 200.0
       },
       "angle": 0.0,
@@ -308,11 +490,8 @@
   "background": [
     {
       "sprite": {
-        "Colour": {
-          "r": 0.28866586,
-          "g": 0.43735042,
-          "b": 0.79536676,
-          "a": 1.0
+        "Image": {
+          "name": "water"
         }
       },
       "area": {
@@ -328,12 +507,30 @@
     }
   ],
   "asset_files": {
-    "images": {},
-    "audio": {},
-    "music": null,
+    "images": {
+      "gello-4": "gello-4.png",
+      "water": "water.png",
+      "gello-2": "gello-2.png",
+      "hurt": "hurt.png",
+      "gello": "gello.png",
+      "gello-3": "gello-3.png",
+      "death": "death.png",
+      "zombie-1": "zombie-1.png",
+      "zombie-2": "zombie-2.png",
+      "gello-5": "gello-5.png"
+    },
+    "audio": {
+      "jump": "jump.ogg",
+      "found-something": "found-something.ogg",
+      "alarm": "alarm.ogg"
+    },
+    "music": {
+      "filename": "queens-loop.ogg",
+      "looped": false
+    },
     "fonts": {}
   },
-  "length": 6.0,
-  "intro_text": null,
-  "attribution": ""
+  "length": 8.0,
+  "intro_text": "Swim!",
+  "attribution": "https://chasersgaming.itch.io/platformer-asset-tile-set-underwater-lands-nes\nhttps://chasersgaming.itch.io/rpg-masset-character-zombie-nes\n\nhttps://void1gaming.itch.io/halftone-sound-effects-pack-lite\nhttps://harvey656.itch.io/8-bit-game-sound-effects-collection\nhttps://soundsbydane.itch.io/8-bit-sound-pack\n\nhttps://bonpos3r.itch.io/chiptune-8bit-short-pack"
 }

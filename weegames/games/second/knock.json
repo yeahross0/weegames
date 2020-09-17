@@ -3,51 +3,19 @@
   "published": false,
   "objects": [
     {
-      "name": "Ground",
-      "sprite": {
-        "Colour": {
-          "r": 0.14285713,
-          "g": 0.1428557,
-          "b": 0.1428557,
-          "a": 1.0
-        }
-      },
-      "position": {
-        "x": 800.0,
-        "y": 600.0
-      },
-      "size": {
-        "width": 1200.0,
-        "height": 100.0
-      },
-      "angle": 0.0,
-      "origin": null,
-      "collision_area": null,
-      "flip": {
-        "horizontal": false,
-        "vertical": false
-      },
-      "layer": 0,
-      "switch": "Off",
-      "instructions": []
-    },
-    {
       "name": "Player",
       "sprite": {
-        "Colour": {
-          "r": 0.07565601,
-          "g": 0.45945948,
-          "b": 0.031931546,
-          "a": 1.0
+        "Image": {
+          "name": "brawler-player"
         }
       },
       "position": {
-        "x": 400.0,
-        "y": 450.0
+        "x": 512.0,
+        "y": 564.0
       },
       "size": {
-        "width": 150.0,
-        "height": 200.0
+        "width": 64.0,
+        "height": 64.0
       },
       "angle": 0.0,
       "origin": null,
@@ -58,45 +26,233 @@
       },
       "layer": 0,
       "switch": "Off",
-      "instructions": []
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "Roam": {
+                  "movement_type": "Insect",
+                  "area": {
+                    "min": {
+                      "x": 668.0,
+                      "y": 564.0
+                    },
+                    "max": {
+                      "x": 766.0,
+                      "y": 564.0
+                    }
+                  },
+                  "speed": "Normal"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "WinStatus": "HasBeenWon"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": "Stop"
+            }
+          ]
+        },
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Enemy"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Player",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "PlaySound": {
+                "name": "hit"
+              }
+            }
+          ]
+        }
+      ]
     },
     {
       "name": "Enemy",
       "sprite": {
-        "Colour": {
-          "r": 0.02137712,
-          "g": 0.056180496,
-          "b": 0.9227799,
-          "a": 1.0
+        "Image": {
+          "name": "brawler-enemy"
         }
       },
       "position": {
-        "x": 1200.0,
-        "y": 450.0
+        "x": 1024.0,
+        "y": 564.0
       },
       "size": {
-        "width": 150.0,
-        "height": 200.0
+        "width": 64.0,
+        "height": 64.0
       },
       "angle": 0.0,
       "origin": null,
       "collision_area": null,
       "flip": {
-        "horizontal": false,
+        "horizontal": true,
         "vertical": false
       },
       "layer": 0,
       "switch": "Off",
-      "instructions": []
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "Roam": {
+                  "movement_type": "Insect",
+                  "area": {
+                    "min": {
+                      "x": 770.0,
+                      "y": 564.0
+                    },
+                    "max": {
+                      "x": 868.0,
+                      "y": 564.0
+                    }
+                  },
+                  "speed": "Normal"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "WinStatus": "HasBeenWon"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "UpRight"
+                      ]
+                    }
+                  },
+                  "speed": "VeryFast"
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Accelerate": {
+                  "Continuous": {
+                    "direction": {
+                      "Direction": {
+                        "possible_directions": [
+                          "Down"
+                        ]
+                      }
+                    },
+                    "speed": "Fast"
+                  }
+                }
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "gong"
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "power-up"
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "hit"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Area": {
+                  "min": {
+                    "x": 2000.0,
+                    "y": 0.0
+                  },
+                  "max": {
+                    "x": 2100.0,
+                    "y": 1800.0
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "EndEarly": {
+                "time_to_end": 0
+              }
+            }
+          ]
+        }
+      ]
     },
     {
       "name": "Goal",
       "sprite": {
-        "Colour": {
-          "r": 0.87664175,
-          "g": 0.93822396,
-          "b": 0.0,
-          "a": 1.0
+        "Image": {
+          "name": "thing-1"
         }
       },
       "position": {
@@ -104,8 +260,8 @@
         "y": 450.0
       },
       "size": {
-        "width": 120.0,
-        "height": 120.0
+        "width": 128.0,
+        "height": 128.0
       },
       "angle": 0.0,
       "origin": null,
@@ -141,6 +297,34 @@
                   "speed": "Normal"
                 }
               }
+            },
+            {
+              "Animate": {
+                "animation_type": "Loop",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "thing-1"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "thing-2"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "thing-3"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "thing-4"
+                    }
+                  }
+                ],
+                "speed": "VeryFast"
+              }
             }
           ]
         },
@@ -167,11 +351,120 @@
             {
               "SetProperty": {
                 "Sprite": {
-                  "Colour": {
-                    "r": 0.9227799,
-                    "g": 0.55691993,
-                    "b": 0.05344283,
-                    "a": 1.0
+                  "Image": {
+                    "name": "thing-done"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": "Stop"
+            },
+            "Win"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "p1",
+      "sprite": {
+        "Image": {
+          "name": "p1"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 64.0,
+        "height": 128.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Player"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 0.0,
+                      "y": -96.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "p2",
+      "sprite": {
+        "Image": {
+          "name": "p2"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 64.0,
+        "height": 128.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Enemy"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 0.0,
+                      "y": -96.0
+                    }
                   }
                 }
               }
@@ -184,11 +477,8 @@
   "background": [
     {
       "sprite": {
-        "Colour": {
-          "r": 0.8399474,
-          "g": 0.6031514,
-          "b": 0.9189189,
-          "a": 1.0
+        "Image": {
+          "name": "8"
         }
       },
       "area": {
@@ -204,12 +494,34 @@
     }
   ],
   "asset_files": {
-    "images": {},
-    "audio": {},
-    "music": null,
+    "images": {
+      "thing-2": "thing-2.png",
+      "thing-4": "thing-4.png",
+      "brawler-enemy": "brawler-enemy.png",
+      "8": "8.png",
+      "thing-3": "thing-3.png",
+      "fire-1": "fire-1.png",
+      "p1": "p1.png",
+      "fire-2": "fire-2.png",
+      "thing-done": "thing-done.png",
+      "fire-3": "fire-3.png",
+      "thing-1": "thing-1.png",
+      "brawler-player": "brawler-player.png",
+      "p2": "p2.png",
+      "fire-4": "fire-4.png"
+    },
+    "audio": {
+      "power-up": "power-up.ogg",
+      "hit": "hit.ogg",
+      "gong": "gong.ogg"
+    },
+    "music": {
+      "filename": "dna.ogg",
+      "looped": false
+    },
     "fonts": {}
   },
   "length": 6.0,
-  "intro_text": null,
-  "attribution": ""
+  "intro_text": "Click that thing",
+  "attribution": "https://s4m-ur4i.itch.io/free-sprites-elements-8x8-retro-pixelart-platformer-brawler\n\nhttps://jdwasabi.itch.io/8-bit-16-bit-sound-effects-pack\nhttps://void1gaming.itch.io/halftone-sound-effects-pack-lite\n\n8-Bit DNA by Tim Beek is licenced under CC-BY-4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://timbeek.itch.io/royalty-free-music-pack"
 }

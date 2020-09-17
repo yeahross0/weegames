@@ -2018,6 +2018,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
     fn play_sounds(&mut self, played_sounds: &[String], volume: f32) {
         unsafe {
             for name in played_sounds {
+                // TODO: Don't panic if sound not found
                 let mut sound = Sound::with_buffer(
                     &*(&self.assets.sounds[name] as *const SfBox<SoundBuffer>) as &SoundBuffer,
                 );

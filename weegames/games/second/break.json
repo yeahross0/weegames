@@ -5,11 +5,8 @@
     {
       "name": "Player",
       "sprite": {
-        "Colour": {
-          "r": 0.049850192,
-          "g": 0.5868726,
-          "b": 0.07058461,
-          "a": 1.0
+        "Image": {
+          "name": "knight iso char_slice down_0"
         }
       },
       "position": {
@@ -53,13 +50,174 @@
           ]
         },
         {
-          "triggers": [],
-          "actions": [
+          "triggers": [
             {
-              "SetProperty": {
-                "Angle": "RotateToMouse"
+              "CheckProperty": {
+                "name": "Down",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
               }
             }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "Loop",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "knight iso char_slice down_0"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "knight iso char_slice down_1"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "knight iso char_slice down_2"
+                    }
+                  }
+                ],
+                "speed": "Normal"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Up",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "Loop",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "knight iso char_slice up_0"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "knight iso char_slice up_1"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "knight iso char_slice up_2"
+                    }
+                  }
+                ],
+                "speed": "Normal"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Right",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "Loop",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "knight iso char_slice left_0"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "knight iso char_slice left_1"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "knight iso char_slice left_2"
+                    }
+                  }
+                ],
+                "speed": "Normal"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Left",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "Loop",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "knight iso char_slice right_0"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "knight iso char_slice right_1"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "knight iso char_slice right_2"
+                    }
+                  }
+                ],
+                "speed": "Normal"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Pot 1",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Pot 2",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Win"
           ]
         }
       ]
@@ -68,19 +226,19 @@
       "name": "Sword",
       "sprite": {
         "Colour": {
-          "r": 0.43629342,
-          "g": 0.43628904,
-          "b": 0.43628904,
-          "a": 1.0
+          "r": 0.43529412,
+          "g": 0.43529412,
+          "b": 0.43529412,
+          "a": 0.0
         }
       },
       "position": {
         "x": 800.0,
-        "y": 350.0
+        "y": 450.0
       },
       "size": {
-        "width": 40.0,
-        "height": 120.0
+        "width": 60.0,
+        "height": 60.0
       },
       "angle": 0.0,
       "origin": null,
@@ -112,18 +270,21 @@
                   }
                 }
               }
-            },
+            }
+          ]
+        },
+        {
+          "triggers": [
             {
-              "Motion": {
-                "JumpTo": {
-                  "Relative": {
-                    "to": "CurrentAngle",
-                    "distance": {
-                      "x": 0.0,
-                      "y": -100.0
-                    }
-                  }
-                }
+              "Random": {
+                "chance": 0.02
+              }
+            }
+          ],
+          "actions": [
+            {
+              "PlaySound": {
+                "name": "attack"
               }
             }
           ]
@@ -133,11 +294,8 @@
     {
       "name": "Pot 1",
       "sprite": {
-        "Colour": {
-          "r": 0.36293435,
-          "g": 0.1102367,
-          "b": 0.02382194,
-          "a": 1.0
+        "Image": {
+          "name": "pot-1"
         }
       },
       "position": {
@@ -145,8 +303,8 @@
         "y": 450.0
       },
       "size": {
-        "width": 150.0,
-        "height": 200.0
+        "width": 96.0,
+        "height": 96.0
       },
       "angle": 0.0,
       "origin": null,
@@ -155,7 +313,7 @@
         "horizontal": false,
         "vertical": false
       },
-      "layer": 0,
+      "layer": 1,
       "switch": "Off",
       "instructions": [
         {
@@ -170,12 +328,12 @@
                 "JumpTo": {
                   "Area": {
                     "min": {
-                      "x": 100.0,
-                      "y": 0.0
+                      "x": 200.0,
+                      "y": 100.0
                     },
                     "max": {
-                      "x": 600.0,
-                      "y": 900.0
+                      "x": 1450.0,
+                      "y": 650.0
                     }
                   }
                 }
@@ -191,19 +349,48 @@
                   "name": "Sword"
                 }
               }
+            },
+            {
+              "CheckProperty": {
+                "name": "Pot 1",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
             }
           ],
           "actions": [
             {
-              "SetProperty": {
-                "Sprite": {
-                  "Colour": {
-                    "r": 0.0,
-                    "g": 0.0,
-                    "b": 0.0,
-                    "a": 1.0
+              "Animate": {
+                "animation_type": "PlayOnce",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "pot-2"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "pot-3"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "pot-4"
+                    }
                   }
-                }
+                ],
+                "speed": "Normal"
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "weird-impact"
               }
             }
           ]
@@ -213,20 +400,17 @@
     {
       "name": "Pot 2",
       "sprite": {
-        "Colour": {
-          "r": 0.3647059,
-          "g": 0.10980392,
-          "b": 0.023529412,
-          "a": 1.0
+        "Image": {
+          "name": "pot-1"
         }
       },
       "position": {
-        "x": 1400.0,
+        "x": 200.0,
         "y": 450.0
       },
       "size": {
-        "width": 150.0,
-        "height": 200.0
+        "width": 96.0,
+        "height": 96.0
       },
       "angle": 0.0,
       "origin": null,
@@ -235,7 +419,7 @@
         "horizontal": false,
         "vertical": false
       },
-      "layer": 0,
+      "layer": 1,
       "switch": "Off",
       "instructions": [
         {
@@ -250,12 +434,12 @@
                 "JumpTo": {
                   "Area": {
                     "min": {
-                      "x": 1000.0,
-                      "y": 0.0
+                      "x": 200.0,
+                      "y": 100.0
                     },
                     "max": {
-                      "x": 1500.0,
-                      "y": 900.0
+                      "x": 1450.0,
+                      "y": 650.0
                     }
                   }
                 }
@@ -271,17 +455,136 @@
                   "name": "Sword"
                 }
               }
+            },
+            {
+              "CheckProperty": {
+                "name": "Pot 2",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "PlayOnce",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "pot-2"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "pot-3"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "pot-4"
+                    }
+                  }
+                ],
+                "speed": "Normal"
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "weird-impact"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Down",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.5882353,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 1090.0
+      },
+      "size": {
+        "width": 900.0,
+        "height": 900.0
+      },
+      "angle": 45.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "Down"
+                    }
+                  },
+                  "interaction": "Hover"
+                }
+              }
             }
           ],
           "actions": [
             {
               "SetProperty": {
-                "Sprite": {
-                  "Colour": {
-                    "r": 0.0,
-                    "g": 0.0,
-                    "b": 0.0,
-                    "a": 1.0
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Player"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 0.0,
+                      "y": 640.0
+                    }
                   }
                 }
               }
@@ -289,16 +592,352 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Up",
+      "sprite": {
+        "Colour": {
+          "r": 0.7647059,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": -190.0
+      },
+      "size": {
+        "width": 900.0,
+        "height": 900.0
+      },
+      "angle": 45.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "Up"
+                    }
+                  },
+                  "interaction": "Hover"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Player"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 0.0,
+                      "y": -640.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Left",
+      "sprite": {
+        "Colour": {
+          "r": 0.7647059,
+          "g": 0.0,
+          "b": 0.6666667,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 155.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 900.0,
+        "height": 900.0
+      },
+      "angle": 45.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "Left"
+                    }
+                  },
+                  "interaction": "Hover"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Player"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": -645.0,
+                      "y": 0.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Right",
+      "sprite": {
+        "Colour": {
+          "r": 0.050980393,
+          "g": 0.5176471,
+          "b": 0.96862745,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 1445.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 900.0,
+        "height": 900.0
+      },
+      "angle": 45.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "Right"
+                    }
+                  },
+                  "interaction": "Hover"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Player"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 645.0,
+                      "y": 0.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Veget",
+      "sprite": {
+        "Image": {
+          "name": "veget"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 1600.0,
+        "height": 900.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 12,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "Trees",
+      "sprite": {
+        "Image": {
+          "name": "trees"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 1600.0,
+        "height": 900.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
     }
   ],
   "background": [
     {
       "sprite": {
-        "Colour": {
-          "r": 0.9396277,
-          "g": 1.0,
-          "b": 0.33590734,
-          "a": 1.0
+        "Image": {
+          "name": "grass"
+        }
+      },
+      "area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 1600.0,
+          "y": 900.0
+        }
+      }
+    },
+    {
+      "sprite": {
+        "Image": {
+          "name": "shadows"
         }
       },
       "area": {
@@ -314,12 +953,39 @@
     }
   ],
   "asset_files": {
-    "images": {},
-    "audio": {},
-    "music": null,
+    "images": {
+      "grass": "grass.png",
+      "trees": "trees.png",
+      "pot-4": "pot-4.png",
+      "knight iso char_slice up_0": "knight iso char_slice up_0.png",
+      "knight iso char_slice left_2": "knight iso char_slice left_2.png",
+      "knight iso char_slice right_2": "knight iso char_slice right_2.png",
+      "knight iso char_slice down_2": "knight iso char_slice down_2.png",
+      "veget": "veget.png",
+      "knight iso char_slice left_0": "knight iso char_slice left_0.png",
+      "knight iso char_slice right_0": "knight iso char_slice right_0.png",
+      "pot-3": "pot-3.png",
+      "knight iso char_slice up_1": "knight iso char_slice up_1.png",
+      "knight iso char_slice down_1": "knight iso char_slice down_1.png",
+      "knight iso char_slice down_0": "knight iso char_slice down_0.png",
+      "knight iso char_slice up_2": "knight iso char_slice up_2.png",
+      "pot-2": "pot-2.png",
+      "pot-1": "pot-1.png",
+      "shadows": "shadows.png",
+      "knight iso char_slice right_1": "knight iso char_slice right_1.png",
+      "knight iso char_slice left_1": "knight iso char_slice left_1.png"
+    },
+    "audio": {
+      "attack": "attack.ogg",
+      "weird-impact": "weird-impact.ogg"
+    },
+    "music": {
+      "filename": "fields-of-ice.ogg",
+      "looped": false
+    },
     "fonts": {}
   },
-  "length": 4.0,
-  "intro_text": null,
-  "attribution": ""
+  "length": 5.0,
+  "intro_text": "Break the Pots!",
+  "attribution": "https://lionheart963.itch.io/4-directional-character\nhttps://seliel-the-shaper.itch.io/breakable-pots\nhttps://ansimuz.itch.io/trees-bushes-sprites\n\nhttps://harvey656.itch.io/8-bit-game-sound-effects-collection\n\nAttack by BCKR licenced under CC BY 4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://bckr.itch.io/sdap\nhttps://jonathan-so.itch.io/creatorpack"
 }
