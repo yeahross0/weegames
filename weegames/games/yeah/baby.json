@@ -380,9 +380,7 @@
                         ]
                       }
                     },
-                    "speed": {
-                      "Value": 0.25
-                    }
+                    "speed": "Normal"
                   }
                 }
               }
@@ -500,21 +498,21 @@
   ],
   "asset_files": {
     "images": {
-      "venice": "venice.jpg",
       "man": "baby-blue-man.webp",
+      "baby": "baby-blue-baby.webp",
       "trifle": "trifle-crop.webp",
-      "baby": "baby-blue-baby.webp"
+      "venice": "venice.jpg"
     },
     "audio": {
-      "oh no": "oh-no-2.ogg",
       "yay": "yippee-yay.ogg",
-      "wippee": "yippee-wippee.ogg"
+      "wippee": "yippee-wippee.ogg",
+      "oh no": "oh-no-2.ogg"
     },
-    "fonts": {},
     "music": {
       "filename": "peaceful-crop.ogg",
       "looped": false
-    }
+    },
+    "fonts": {}
   },
   "length": 8.0,
   "intro_text": "Keepie Uppie",

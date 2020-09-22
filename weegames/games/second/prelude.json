@@ -1,0 +1,142 @@
+{
+  "format_version": "0.1",
+  "published": false,
+  "objects": [
+    {
+      "name": "Mouse",
+      "sprite": {
+        "Image": {
+          "name": "mouse"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 700.0
+      },
+      "size": {
+        "width": 12.0,
+        "height": 19.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "Target": {
+                  "target": {
+                    "Object": {
+                      "name": "Icon"
+                    }
+                  },
+                  "target_type": "StopWhenReached",
+                  "offset": {
+                    "x": 0.0,
+                    "y": 0.0
+                  },
+                  "speed": "Normal"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Icon"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "mouse-grab"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Icon",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 450.0,
+        "y": 180.0
+      },
+      "size": {
+        "width": 200.0,
+        "height": 200.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
+    }
+  ],
+  "background": [
+    {
+      "sprite": {
+        "Image": {
+          "name": "intro"
+        }
+      },
+      "area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 1600.0,
+          "y": 900.0
+        }
+      }
+    }
+  ],
+  "asset_files": {
+    "images": {
+      "mouse-grab": "mouse-grab.png",
+      "intro": "intro.webp",
+      "mouse": "mouse.png"
+    },
+    "audio": {},
+    "music": null,
+    "fonts": {}
+  },
+  "length": 2.0,
+  "intro_text": "",
+  "attribution": ""
+}

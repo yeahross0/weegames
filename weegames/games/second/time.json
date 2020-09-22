@@ -1,6 +1,6 @@
 {
   "format_version": "0.1",
-  "published": false,
+  "published": true,
   "objects": [
     {
       "name": "Ground",
@@ -203,6 +203,24 @@
                 "speed": "Normal"
               }
             }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "End"
+            },
+            {
+              "CheckProperty": {
+                "name": "Enemy",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Win"
           ]
         }
       ]
@@ -705,23 +723,23 @@
   ],
   "asset_files": {
     "images": {
-      "red-skeleton-attack-2": "red-skeleton-attack-2.png",
-      "skeleton-4": "skeleton-4.png",
-      "0749": "0749.png",
-      "skeleton-idle-2": "skeleton-idle-2.png",
-      "0751": "0751.png",
-      "skeleton-1": "skeleton-1.png",
-      "0752": "0752.png",
       "ground": "ground.png",
-      "skeleton-6": "skeleton-6.png",
-      "skeleton-idle-1": "skeleton-idle-1.png",
-      "red-skeleton-attack-3": "red-skeleton-attack-3.png",
-      "0750": "0750.png",
-      "skeleton-5": "skeleton-5.png",
-      "skeleton-3": "skeleton-3.png",
       "skeleton-2": "skeleton-2.png",
-      "red-skeleton-attack-1": "red-skeleton-attack-1.png",
+      "0751": "0751.png",
+      "skeleton-idle-1": "skeleton-idle-1.png",
+      "skeleton-4": "skeleton-4.png",
+      "0750": "0750.png",
+      "skeleton-3": "skeleton-3.png",
       "0748": "0748.png",
+      "0749": "0749.png",
+      "skeleton-1": "skeleton-1.png",
+      "red-skeleton-attack-2": "red-skeleton-attack-2.png",
+      "skeleton-6": "skeleton-6.png",
+      "skeleton-5": "skeleton-5.png",
+      "red-skeleton-attack-1": "red-skeleton-attack-1.png",
+      "skeleton-idle-2": "skeleton-idle-2.png",
+      "0752": "0752.png",
+      "red-skeleton-attack-3": "red-skeleton-attack-3.png",
       "skeleton-idle": "skeleton-idle.png"
     },
     "audio": {

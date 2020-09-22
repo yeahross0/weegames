@@ -269,9 +269,7 @@
                         ]
                       }
                     },
-                    "speed": {
-                      "Value": 0.25
-                    }
+                    "speed": "Normal"
                   }
                 }
               }
@@ -343,22 +341,22 @@
   ],
   "asset_files": {
     "images": {
-      "tennis-ball-crop": "tennis-ball-crop.webp",
+      "tennis-court": "tennis-court.webp",
       "standing-dog-crop-rotated": "standing-dog-crop-rotated.webp",
       "beagle-ball-crop-without-ball": "beagle-ball-crop-without-ball.webp",
       "beagle-ball-crop": "beagle-ball-crop.webp",
-      "tennis-court": "tennis-court.webp"
+      "tennis-ball-crop": "tennis-ball-crop.webp"
     },
     "audio": {
       "bark-2-crop": "bark-2-crop.ogg",
-      "crunching": "crunching.ogg",
-      "bark-crop": "bark-crop.ogg"
+      "bark-crop": "bark-crop.ogg",
+      "crunching": "crunching.ogg"
     },
-    "fonts": {},
     "music": {
       "filename": "funky-crop.ogg",
       "looped": false
-    }
+    },
+    "fonts": {}
   },
   "length": 5.0,
   "intro_text": "Serve!",

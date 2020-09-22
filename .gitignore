@@ -5,3 +5,5 @@ Cargo.lock
 /weegames/*.dll
 
 .vscode
+
+high-scores.yaml

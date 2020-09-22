@@ -47,7 +47,8 @@
                   "b": 1.0,
                   "a": 1.0
                 },
-                "resize": "MatchText"
+                "resize": "MatchText",
+                "justify": "Centre"
               }
             },
             {

@@ -9,7 +9,7 @@
 #[macro_use]
 extern crate imgui;
 
-use rand::{seq::SliceRandom, thread_rng};
+use rand::{seq::SliceRandom, thread_rng, Rng};
 use sdl2::{
     image::InitFlag,
     messagebox::{self, MessageBoxFlag},
@@ -73,16 +73,16 @@ struct Config {
     render_each_frame: bool,
 }
 
+fn yaml_from_str<T: DeserializeOwned>(text: &str) -> WeeResult<T> {
+    match serde_yaml::from_str(text) {
+        Ok(data) => Ok(data),
+        Err(error) => Err(Box::new(error)),
+    }
+}
+
 impl Config {
     fn from_file<P: AsRef<Path>>(path: P) -> WeeResult<Config> {
         let yaml = fs::read_to_string(path)?;
-
-        fn yaml_from_str<T: DeserializeOwned>(text: &str) -> WeeResult<T> {
-            match serde_yaml::from_str(text) {
-                Ok(data) => Ok(data),
-                Err(error) => Err(Box::new(error)),
-            }
-        }
 
         yaml_from_str(&yaml)
     }
@@ -103,7 +103,10 @@ enum GameMode<'a, 'b> {
         progress: Progress,
     },
     Edit,
-    Prelude,
+    ChooseMode,
+    Prelude {
+        directory: Option<String>,
+    },
     Interlude {
         won: bool,
         games_list: GamesList,
@@ -111,6 +114,7 @@ enum GameMode<'a, 'b> {
     },
     GameOver {
         progress: Progress,
+        directory: String,
     },
     Error(Box<dyn Error + Send + Sync>),
 }
@@ -156,12 +160,17 @@ impl Progress {
 }
 
 #[derive(Debug)]
-struct GamesList(Vec<String>);
+struct GamesList {
+    games: Vec<String>,
+    next: Vec<String>,
+    directory: String,
+}
 
 impl GamesList {
-    fn new() -> WeeResult<GamesList> {
+    fn from_directory(directory: Option<&str>) -> WeeResult<GamesList> {
         let mut games_list = Vec::new();
-        for entry in WalkDir::new("games").into_iter().filter_map(|e| e.ok()) {
+        let directory = directory.unwrap_or("games");
+        for entry in WalkDir::new(directory).into_iter().filter_map(|e| e.ok()) {
             let metadata = entry.metadata()?;
             let right_extension = match entry.path().extension() {
                 Some(ext) => ext == "json",
@@ -191,15 +200,46 @@ impl GamesList {
             let error = Box::<dyn Error + Send + Sync>::from("No games found");
             Err(error)
         } else {
-            Ok(GamesList(games_list))
+            Ok(GamesList {
+                games: games_list,
+                next: Vec::new(),
+                directory: if directory == "games" {
+                    "games/system/".to_string()
+                } else {
+                    if directory.ends_with("/") {
+                        directory.to_string()
+                    } else {
+                        let mut directory = directory.to_string();
+                        directory.push_str("/");
+                        directory
+                    }
+                },
+            })
         }
     }
 
-    fn choose(&self) -> String {
-        self.0
-            .choose(&mut thread_rng())
-            .expect("Games list is empty")
-            .to_string()
+    // TODO: Tidy up
+    fn choose(&mut self) -> String {
+        assert!(!self.games.is_empty());
+        if self.next.is_empty() {
+            let mut games = self.games.clone();
+            for _ in 0..15 {
+                if games.is_empty() {
+                    games = self.games.clone();
+                }
+                let game = games.remove(thread_rng().gen_range(0, games.len()));
+                self.next.push(game);
+            }
+        }
+
+        log::debug!("{:?}", self.next);
+
+        self.next.remove(0)
+
+        /*self.games
+        .choose(&mut thread_rng())
+        .expect("Games list is empty")
+        .to_string()*/
     }
 }
 
@@ -256,7 +296,7 @@ fn run_main_loop<'a, 'b>(
                 game.update_and_render_frame(renderer, event_pump)?;
 
                 if wee::is_switched_on(&game.objects, "Play") {
-                    game_mode = GameMode::Prelude;
+                    game_mode = GameMode::ChooseMode;
                     break 'menu_running;
                 }
                 if wee::is_switched_on(&game.objects, "Edit") {
@@ -265,11 +305,44 @@ fn run_main_loop<'a, 'b>(
                 }
             }
         }
-        GameMode::Prelude => {
+        GameMode::ChooseMode => {
+            let mut game = {
+                let filename = "games/system/choose-mode.json";
+
+                LoadedGame::load(filename, &intro_font)
+                    .map_err(|error| format!("Couldn't load {}\n{}", filename, error))?
+                    .start(DEFAULT_GAME_SPEED, DEFAULT_DIFFICULTY, config.settings())
+            };
+
+            'choose_mode_running: loop {
+                sdlglue::set_fullscreen(renderer, event_pump)?;
+
+                game.update_and_render_frame(renderer, event_pump)?;
+
+                for (key, object) in game.objects.iter() {
+                    if object.switch == SwitchState::SwitchedOn {
+                        let pattern = "OpenFolder:";
+                        if key.starts_with(pattern) {
+                            let directory = key[pattern.len()..].to_string();
+                            game_mode = GameMode::Prelude {
+                                directory: Some(directory.to_string()),
+                            };
+                            break 'choose_mode_running;
+                        }
+                        let pattern = "Shuffle";
+                        if key.starts_with(pattern) {
+                            game_mode = GameMode::Prelude { directory: None };
+                            break 'choose_mode_running;
+                        }
+                    }
+                }
+            }
+        }
+        GameMode::Prelude { directory } => {
             let (tx, rx) = mpsc::channel();
 
             let handle = thread::spawn(move || -> WeeResult<()> {
-                let games_list = GamesList::new()?;
+                let mut games_list = GamesList::from_directory(directory.as_deref())?;
 
                 let filename = games_list.choose();
 
@@ -279,39 +352,55 @@ fn run_main_loop<'a, 'b>(
 
                 Ok(())
             });
+            // TODO: Not in parallel
             match handle.join().unwrap() {
-                Ok(()) => {
-                    let completed_game =
-                        LoadedGame::load("games/system/prelude.json", &intro_font)?
+                Ok(()) => match rx.recv() {
+                    Ok((games_list, game_data, filename)) => {
+                        let interlude_path = {
+                            let filename = if games_list.directory.ends_with("/") {
+                                "prelude.json"
+                            } else {
+                                "/prelude.json"
+                            };
+                            let mut s = games_list.directory.clone();
+                            s.push_str(filename);
+                            s
+                        };
+
+                        let loaded_game = {
+                            let game = LoadedGame::load(&interlude_path, &intro_font);
+                            if let Ok(game) = game {
+                                game
+                            } else {
+                                LoadedGame::load("games/system/prelude.json", &intro_font)?
+                            }
+                        };
+
+                        let completed_game = loaded_game
                             .start(DEFAULT_GAME_SPEED, DEFAULT_DIFFICULTY, config.settings())
                             .play(renderer, event_pump)?;
 
-                    match rx.recv() {
-                        Ok((list, game_data, filename)) => {
-                            let games_list = list;
+                        let game =
+                            LoadedGame::load_from_game_data(game_data, &filename, &intro_font)?;
 
-                            let game =
-                                LoadedGame::load_from_game_data(game_data, &filename, &intro_font)?;
+                        let progress = Progress::new(config.playback_rate.min);
 
-                            let progress = Progress::new(config.playback_rate.min);
+                        log::info!("{:?}", games_list);
 
-                            log::info!("{:?}", games_list);
-
-                            game_mode = if let Completion::Finished = completed_game.completion {
-                                GameMode::Play {
-                                    game,
-                                    games_list,
-                                    progress,
-                                }
-                            } else {
-                                GameMode::Menu
+                        game_mode = if let Completion::Finished = completed_game.completion {
+                            GameMode::Play {
+                                game,
+                                games_list,
+                                progress,
                             }
-                        }
-                        Err(error) => {
-                            game_mode = GameMode::Error(Box::new(error));
+                        } else {
+                            GameMode::Menu
                         }
                     }
-                }
+                    Err(error) => {
+                        game_mode = GameMode::Error(Box::new(error));
+                    }
+                },
                 Err(error) => {
                     game_mode = GameMode::Error(error);
                 }
@@ -319,7 +408,7 @@ fn run_main_loop<'a, 'b>(
         }
         GameMode::Interlude {
             won,
-            games_list,
+            mut games_list,
             progress,
         } => {
             let (tx, rx) = mpsc::channel();
@@ -336,7 +425,28 @@ fn run_main_loop<'a, 'b>(
                 Ok(())
             });
 
-            let mut loaded_game = LoadedGame::load("games/system/interlude.json", &intro_font)?;
+            // TODO: This happens right after, not in parallel
+            let (filename, game_data) = rx.recv()?;
+
+            let interlude_path = {
+                let filename = if games_list.directory.ends_with("/") {
+                    "interlude.json"
+                } else {
+                    "/interlude.json"
+                };
+                let mut s = games_list.directory.clone();
+                s.push_str(filename);
+                s
+            };
+
+            let mut loaded_game = {
+                let game = LoadedGame::load(&interlude_path, &intro_font);
+                if let Ok(game) = game {
+                    game
+                } else {
+                    LoadedGame::load("games/system/interlude.json", &intro_font)?
+                }
+            };
 
             for object in loaded_game.objects.iter_mut() {
                 let mut set_switch = |name, pred| {
@@ -351,6 +461,40 @@ fn run_main_loop<'a, 'b>(
                 set_switch("4", progress.lives >= 4);
 
                 object.replace_text(progress.score, progress.lives);
+
+                // TODO: Tidy up
+
+                for instruction in object.instructions.iter_mut() {
+                    fn replace_text_in_action(
+                        action: &mut Action,
+                        score: i32,
+                        lives: i32,
+                        filename: &str,
+                        intro_text: &str,
+                    ) {
+                        if let Action::DrawText { text, .. } = action {
+                            let path = Path::new(filename);
+                            // TODO: Have name field in game instead of filename for this
+                            *text =
+                                text.replace("{Game}", path.file_stem().unwrap().to_str().unwrap());
+                            *text = text.replace("{IntroText}", intro_text);
+                        } else if let Action::Random { random_actions } = action {
+                            for action in random_actions {
+                                replace_text_in_action(action, score, lives, filename, intro_text);
+                            }
+                        }
+                    }
+
+                    for action in instruction.actions.iter_mut() {
+                        replace_text_in_action(
+                            action,
+                            progress.score,
+                            progress.lives,
+                            &filename,
+                            game_data.intro_text.as_deref().unwrap_or(""),
+                        );
+                    }
+                }
             }
 
             let completed_game = loaded_game
@@ -360,8 +504,6 @@ fn run_main_loop<'a, 'b>(
                     config.settings(),
                 )
                 .play(renderer, event_pump)?;
-
-            let (filename, game_data) = rx.recv()?;
 
             let game = LoadedGame::load_from_game_data(game_data, &filename, &intro_font)?;
 
@@ -376,10 +518,80 @@ fn run_main_loop<'a, 'b>(
                 GameMode::Menu
             };
         }
-        GameMode::GameOver { progress } => {
-            let mut loaded_game = LoadedGame::load("games/system/game-over.json", &intro_font)?;
+        GameMode::GameOver {
+            progress,
+            directory,
+        } => {
+            let high_scores: (i32, i32, i32) = {
+                let path = Path::new(&directory).join("high-scores.yaml");
+                log::info!("path: {:?}", path);
+                let yaml = fs::read_to_string(&path);
+                let mut high_scores = if let Ok(yaml) = yaml {
+                    yaml_from_str(&yaml)?
+                } else {
+                    (0, 0, 0)
+                };
+
+                if progress.score >= high_scores.0 {
+                    high_scores.2 = high_scores.1;
+                    high_scores.1 = high_scores.0;
+                    high_scores.0 = progress.score;
+                } else if progress.score >= high_scores.1 {
+                    high_scores.2 = high_scores.1;
+                    high_scores.1 = progress.score;
+                } else if progress.score >= high_scores.2 {
+                    high_scores.2 = progress.score;
+                }
+
+                let s = serde_yaml::to_string(&high_scores)?;
+                std::fs::write(&path, s).unwrap_or_else(|e| log::error!("{}", e));
+
+                high_scores
+            };
+
+            //let mut loaded_game = LoadedGame::load("games/system/game-over.json", &intro_font)?;
+            let game_over_path = {
+                let filename = if directory.ends_with("/") {
+                    "game-over.json"
+                } else {
+                    "/game-over.json"
+                };
+                let mut s = directory.clone();
+                s.push_str(filename);
+                s
+            };
+
+            let mut loaded_game = {
+                let game = LoadedGame::load(&game_over_path, &intro_font);
+                if let Ok(game) = game {
+                    game
+                } else {
+                    LoadedGame::load("games/system/game-over.json", &intro_font)?
+                }
+            };
             for object in loaded_game.objects.iter_mut() {
                 object.replace_text(progress.score, progress.lives);
+
+                // TODO: Tidy up
+
+                for instruction in object.instructions.iter_mut() {
+                    fn replace_text_in_action(action: &mut Action, high_scores: (i32, i32, i32)) {
+                        if let Action::DrawText { text, .. } = action {
+                            // TODO: Have name field in game instead of filename for this
+                            *text = text.replace("{HighScore-1}", &high_scores.0.to_string());
+                            *text = text.replace("{HighScore-2}", &high_scores.1.to_string());
+                            *text = text.replace("{HighScore-3}", &high_scores.2.to_string());
+                        } else if let Action::Random { random_actions } = action {
+                            for action in random_actions {
+                                replace_text_in_action(action, high_scores);
+                            }
+                        }
+                    }
+
+                    for action in instruction.actions.iter_mut() {
+                        replace_text_in_action(action, high_scores);
+                    }
+                }
             }
             loaded_game
                 .start(DEFAULT_GAME_SPEED, DEFAULT_DIFFICULTY, config.settings())
@@ -413,7 +625,10 @@ fn run_main_loop<'a, 'b>(
                         log::info!("Playback Rate: {}", progress.playback_rate);
 
                         if progress.lives == 0 {
-                            GameMode::GameOver { progress }
+                            GameMode::GameOver {
+                                progress,
+                                directory: games_list.directory,
+                            }
                         } else {
                             GameMode::Interlude {
                                 won: has_won,

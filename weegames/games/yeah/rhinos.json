@@ -133,7 +133,7 @@
                       "y": 900.0
                     }
                   },
-                  "speed": "VerySlow"
+                  "speed": "Normal"
                 }
               }
             }
@@ -168,7 +168,7 @@
                       "y": 900.0
                     }
                   },
-                  "speed": "VerySlow"
+                  "speed": "Normal"
                 }
               }
             },
@@ -185,12 +185,12 @@
               "Collision": {
                 "Area": {
                   "min": {
-                    "x": 1428.0,
+                    "x": 1520.0,
                     "y": 438.0
                   },
                   "max": {
                     "x": 1541.0,
-                    "y": 659.0
+                    "y": 450.0
                   }
                 }
               }
@@ -202,16 +202,6 @@
                 "Sprite": {
                   "Image": {
                     "name": "man-and-ball-ball-with-woman-features-burst"
-                  }
-                }
-              }
-            },
-            {
-              "Motion": {
-                "JumpTo": {
-                  "Point": {
-                    "x": 1527.0,
-                    "y": 445.0
                   }
                 }
               }
@@ -233,12 +223,12 @@
               "Collision": {
                 "Area": {
                   "min": {
-                    "x": 55.0,
-                    "y": 459.0
+                    "x": 65.0,
+                    "y": 465.0
                   },
                   "max": {
-                    "x": 116.0,
-                    "y": 527.0
+                    "x": 100.0,
+                    "y": 500.0
                   }
                 }
               }
@@ -250,16 +240,6 @@
                 "Sprite": {
                   "Image": {
                     "name": "man-and-ball-ball-with-woman-features-burst"
-                  }
-                }
-              }
-            },
-            {
-              "Motion": {
-                "JumpTo": {
-                  "Point": {
-                    "x": 79.0,
-                    "y": 490.0
                   }
                 }
               }
@@ -343,7 +323,7 @@
                       "y": 900.0
                     }
                   },
-                  "speed": "VerySlow"
+                  "speed": "Normal"
                 }
               }
             }
@@ -378,7 +358,7 @@
                       "y": 900.0
                     }
                   },
-                  "speed": "VerySlow"
+                  "speed": "Normal"
                 }
               }
             },
@@ -395,12 +375,12 @@
               "Collision": {
                 "Area": {
                   "min": {
-                    "x": 1428.0,
+                    "x": 1520.0,
                     "y": 438.0
                   },
                   "max": {
                     "x": 1541.0,
-                    "y": 659.0
+                    "y": 450.0
                   }
                 }
               }
@@ -412,16 +392,6 @@
                 "Sprite": {
                   "Image": {
                     "name": "man-and-ball-ball-with-woman-features-burst"
-                  }
-                }
-              }
-            },
-            {
-              "Motion": {
-                "JumpTo": {
-                  "Point": {
-                    "x": 1527.0,
-                    "y": 445.0
                   }
                 }
               }
@@ -443,12 +413,12 @@
               "Collision": {
                 "Area": {
                   "min": {
-                    "x": 55.0,
-                    "y": 459.0
+                    "x": 65.0,
+                    "y": 465.0
                   },
                   "max": {
-                    "x": 116.0,
-                    "y": 527.0
+                    "x": 100.0,
+                    "y": 500.0
                   }
                 }
               }
@@ -460,16 +430,6 @@
                 "Sprite": {
                   "Image": {
                     "name": "man-and-ball-ball-with-woman-features-burst"
-                  }
-                }
-              }
-            },
-            {
-              "Motion": {
-                "JumpTo": {
-                  "Point": {
-                    "x": 79.0,
-                    "y": 490.0
                   }
                 }
               }
@@ -510,16 +470,16 @@
   "asset_files": {
     "images": {
       "man-and-ball-man-with-woman-features-smaller": "man-and-ball-man-with-woman-features-smaller.webp",
-      "man-and-ball-ball-with-woman-features": "man-and-ball-ball-with-woman-features.webp",
       "man-and-ball-ball-with-woman-features-burst": "man-and-ball-ball-with-woman-features-burst.webp",
-      "rhinos16x9": "rhinos16x9.webp"
+      "rhinos16x9": "rhinos16x9.webp",
+      "man-and-ball-ball-with-woman-features": "man-and-ball-ball-with-woman-features.webp"
     },
     "audio": {
       "kick": "kick.ogg",
       "pop": "pop.ogg"
     },
-    "fonts": {},
-    "music": null
+    "music": null,
+    "fonts": {}
   },
   "length": 4.0,
   "intro_text": "Bounce",

@@ -10,7 +10,10 @@
 // TODO: Hover over `animation` it plays animation
 // TODO: choose_object fails if object has been deleted
 // TODO: Stop setting object size to image size when new image added but have option to match image size
-// TODO: Not loading oggs correctly sometimes?
+// TODO: More pots
+// TODO: Multiple fonts with same size?
+// TODO: Option to justify text to left
+// TODO: File new doesn;t ask if want to save
 
 #[macro_use]
 extern crate imgui;
@@ -291,6 +294,11 @@ pub fn run_editor(
                     if ui.button(im_str!("Play"), NORMAL_BUTTON) {
                         play_game = true;
                     }
+
+                    if ui.radio_button_bool(im_str!("Published"), game.published) {
+                        game.published = !game.published;
+                    }
+
                     imgui::Slider::new(
                         im_str!("Game Length"),
                         std::ops::RangeInclusive::new(2.0, 8.0),
@@ -907,6 +915,7 @@ pub fn run_editor(
 
                     for (name, font) in game.asset_files.fonts.iter_mut() {
                         ui.text(name);
+                        // TODO: Errors if filename not saved!
                         let base_path = match &filename {
                             Some(filename) => Path::new(filename).parent().unwrap().join("fonts"),
                             None => Path::new("games").to_owned(),
@@ -1724,7 +1733,12 @@ fn choose_when(when: &mut When, ui: &imgui::Ui, game_length: f32) {
     }
 }
 
-fn choose_collision_with(with: &mut CollisionWith, ui: &imgui::Ui, object_names: &Vec<&str>) {
+fn choose_collision_with(
+    with: &mut CollisionWith,
+    ui: &imgui::Ui,
+    object_names: &Vec<&str>,
+    draw_tasks: &mut Vec<DrawTask>,
+) {
     let mut collision_type = if let CollisionWith::Object { .. } = with {
         0
     } else {
@@ -1779,6 +1793,7 @@ fn choose_collision_with(with: &mut CollisionWith, ui: &imgui::Ui, object_names:
                 .build();
             ui.input_float(im_str!("Collision Max Y"), &mut area.max.y)
                 .build();
+            draw_tasks.push(DrawTask::AABB(*area));
         }
     }
 }
@@ -2346,6 +2361,7 @@ fn choose_trigger(
     images: &mut Images,
     filename: &Option<String>,
     instruction_mode: &mut InstructionMode,
+    draw_tasks: &mut Vec<DrawTask>,
 ) {
     let first_name = || object_names[0].to_string();
     let mut current_trigger_position = match trigger {
@@ -2423,7 +2439,7 @@ fn choose_trigger(
             choose_when(when, ui, game_length);
         }
         Trigger::Collision(with) => {
-            choose_collision_with(with, ui, object_names);
+            choose_collision_with(with, ui, object_names, draw_tasks);
         }
         Trigger::Input(Input::Mouse { over, interaction }) => {
             choose_mouse_over(over, ui, object_names);
@@ -2527,6 +2543,7 @@ fn choose_action<'a, 'b>(
                     .to_owned(),
                 colour: Colour::black(),
                 resize: TextResize::MatchObject,
+                justify: JustifyText::Centre,
             },
             9 => Action::Random {
                 random_actions: Vec::new(),
@@ -2583,6 +2600,7 @@ fn choose_action<'a, 'b>(
             font,
             colour,
             resize,
+            justify,
         } => {
             text.choose(ui);
             choose_font(
@@ -2595,6 +2613,7 @@ fn choose_action<'a, 'b>(
             );
             colour.choose(ui);
             resize.choose(ui);
+            justify.choose(ui);
         }
         Action::Random { random_actions } => {
             // TODO: Finish this
@@ -2905,6 +2924,27 @@ impl Choose for Effect {
                 Effect::None
             } else {
                 Effect::Freeze
+            };
+        }
+    }
+}
+
+impl Choose for JustifyText {
+    fn choose(&mut self, ui: &imgui::Ui) {
+        let mut justify_type = if *self == JustifyText::Left { 0 } else { 1 };
+        let justify_typename = if justify_type == 0 {
+            "Left".to_string()
+        } else {
+            "Centre".to_string()
+        };
+        if imgui::Slider::new(im_str!("Justify Text"), std::ops::RangeInclusive::new(0, 1))
+            .display_format(&ImString::from(justify_typename))
+            .build(&ui, &mut justify_type)
+        {
+            *self = if justify_type == 0 {
+                JustifyText::Left
+            } else {
+                JustifyText::Centre
             };
         }
     }
@@ -3496,6 +3536,7 @@ fn choose_instructions<'a, 'b>(
                 &mut assets.images,
                 filename,
                 instruction_mode,
+                draw_tasks,
             );
         }
         InstructionMode::EditAction => {

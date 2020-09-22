@@ -932,6 +932,12 @@ impl Not for TextResize {
     }
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub enum JustifyText {
+    Centre,
+    Left,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum Action {
     Win,
@@ -953,6 +959,7 @@ pub enum Action {
         font: String,
         colour: Colour,
         resize: TextResize,
+        justify: JustifyText,
     },
     Random {
         random_actions: Vec<Action>,
@@ -990,7 +997,9 @@ impl fmt::Display for Action {
                 font,
                 colour,
                 resize,
+                justify,
             } => {
+                // TODO: Use justify
                 let change_size = if let TextResize::MatchText = resize {
                     " changing this object's size to match the text size"
                 } else {
@@ -1190,7 +1199,7 @@ pub struct Object {
     instructions: Vec<Instruction>,
     queued_motion: Vec<Motion>,
     active_motion: ActiveMotion,
-    switch: SwitchState,
+    pub switch: SwitchState,
     timer: Option<u32>,
     animation: AnimationStatus,
 }
@@ -2257,7 +2266,10 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                 font,
                 colour,
                 resize,
+                justify,
             } => {
+                let left_before =
+                    self.objects[name].position.x - self.objects[name].size.width / 2.0;
                 let texture = Texture::text(&self.assets.fonts[font], &text, *colour)?;
                 match texture {
                     Some(texture) => {
@@ -2273,6 +2285,16 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                         self.drawn_over_text.remove(name);
                     }
                 }
+                if let JustifyText::Left = justify {
+                    let left_now =
+                        self.objects[name].position.x - self.objects[name].size.width / 2.0;
+                    let position = self.objects[name].position;
+                    let offset = Vec2::new(left_before - left_now, 0.0);
+                    let motion = Motion::JumpTo(JumpLocation::Point(position + offset));
+                    self.objects[name].queued_motion.push(motion);
+                }
+                //let motion = match justify { Motion::Justify() }
+                //self.objects[name].queued_motion.push(motion.clone());
             }
             Action::SetProperty(PropertySetter::Angle(angle_setter)) => {
                 self.objects[name].angle = match angle_setter {
@@ -2647,10 +2669,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                     if velocity.x == 0.0 && velocity.y == 0.0 {
                         ActiveMotion::Stop
                     } else {
-                        println!("VEL: {:?}", velocity);
-                        println!("UNIT: {:?}", velocity.unit());
                         let deceleration = -(velocity.unit() * (speed.as_value() / 40.0));
-                        println!("{:?}", deceleration);
                         ActiveMotion::SlowDown {
                             velocity,
                             deceleration,
@@ -2825,8 +2844,8 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                             velocity.x = 0.0;
                         } else {
                             match direction {
-                                BounceDirection::Left => velocity.x = -speed.as_value(),
-                                BounceDirection::Right => velocity.x = speed.as_value(),
+                                BounceDirection::Left => velocity.x = -speed.as_value() / 2.0,
+                                BounceDirection::Right => velocity.x = speed.as_value() / 2.0,
                             }
                         }
                         self.objects[name].position += velocity;
