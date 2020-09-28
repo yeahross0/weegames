@@ -295,16 +295,54 @@ pub fn run_editor(
                         play_game = true;
                     }
 
+                    {
+                        let mut current_type_position = match &game.game_type {
+                            GameType::Minigame => 0,
+                            GameType::BossGame => 1,
+                            GameType::Other => 2,
+                        };
+                        let type_names =
+                            [im_str!("Minigame"), im_str!("Boss Game"), im_str!("Other")];
+                        if imgui::ComboBox::new(im_str!("Game Type")).build_simple_string(
+                            &ui,
+                            &mut current_type_position,
+                            &type_names,
+                        ) {
+                            game.game_type = match current_type_position {
+                                0 => GameType::Minigame,
+                                1 => GameType::BossGame,
+                                2 => GameType::Other,
+                                _ => unreachable!(),
+                            }
+                        }
+                    }
+
                     if ui.radio_button_bool(im_str!("Published"), game.published) {
                         game.published = !game.published;
                     }
 
-                    imgui::Slider::new(
-                        im_str!("Game Length"),
-                        std::ops::RangeInclusive::new(2.0, 8.0),
-                    )
-                    .display_format(im_str!("%.1f"))
-                    .build(&ui, &mut game.length);
+                    if ui.radio_button_bool(
+                        im_str!("Infinite Length"),
+                        game.length == Length::Infinite,
+                    ) {
+                        game.length = if game.length == Length::Infinite {
+                            Length::Seconds(4.0)
+                        } else {
+                            Length::Infinite
+                        }
+                    };
+
+                    match &mut game.length {
+                        Length::Seconds(seconds) => {
+                            imgui::Slider::new(
+                                im_str!("Game Length"),
+                                std::ops::RangeInclusive::new(2.0, 8.0),
+                            )
+                            .display_format(im_str!("%.1f"))
+                            .build(&ui, seconds);
+                        }
+                        _ => {}
+                    }
 
                     let mut intro_text = match game.intro_text.to_owned() {
                         Some(text) => ImString::from(text),
@@ -1467,7 +1505,7 @@ fn right_window<'a, 'b>(
     asset_files: &mut AssetFiles,
     assets: &mut Assets<'a, 'b>,
     ttf_context: &'a TtfContext,
-    game_length: f32,
+    game_length: Length,
     animation_editor: &mut AnimationEditor,
     filename: &Option<String>,
     instruction_mode: &mut InstructionMode,
@@ -1687,7 +1725,7 @@ trait Choose {
     fn choose(&mut self, ui: &imgui::Ui);
 }
 
-fn choose_when(when: &mut When, ui: &imgui::Ui, game_length: f32) {
+fn choose_when(when: &mut When, ui: &imgui::Ui, game_length: Length) {
     let mut current_when_position = match when {
         When::Start => 0,
         When::End => 1,
@@ -1720,15 +1758,23 @@ fn choose_when(when: &mut When, ui: &imgui::Ui, game_length: f32) {
             ui.input_int(im_str!("Time"), &mut changed_time).build();
             *time = changed_time as u32;
         }
-        When::Random { start, end } => {
-            let mut frames = [*start as i32, *end as i32];
-            ui.drag_int2(im_str!("Time"), &mut frames)
-                .min(0)
-                .max((game_length * 60.0) as i32)
-                .build();
-            *start = frames[0] as u32;
-            *end = frames[1] as u32;
-        }
+        When::Random { start, end } => match game_length {
+            Length::Seconds(seconds) => {
+                let mut frames = [*start as i32, *end as i32];
+                ui.drag_int2(im_str!("Time"), &mut frames)
+                    .min(0)
+                    .max((seconds * 60.0) as i32)
+                    .build();
+                *start = frames[0] as u32;
+                *end = frames[1] as u32;
+            }
+            Length::Infinite => {
+                let mut frames = [*start as i32, *end as i32];
+                ui.drag_int2(im_str!("Time"), &mut frames).min(0).build();
+                *start = frames[0] as u32;
+                *end = frames[1] as u32;
+            }
+        },
         _ => {}
     }
 }
@@ -2356,7 +2402,7 @@ fn choose_trigger(
     trigger: &mut Trigger,
     ui: &imgui::Ui,
     object_names: &Vec<&str>,
-    game_length: f32,
+    game_length: Length,
     asset_files: &mut AssetFiles,
     images: &mut Images,
     filename: &Option<String>,
@@ -3414,7 +3460,7 @@ fn choose_instructions<'a, 'b>(
     asset_files: &mut AssetFiles,
     assets: &mut Assets<'a, 'b>,
     ttf_context: &'a TtfContext,
-    game_length: f32,
+    game_length: Length,
     animation_editor: &mut AnimationEditor,
     filename: &Option<String>,
     instruction_mode: &mut InstructionMode,

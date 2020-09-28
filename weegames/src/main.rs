@@ -1,8 +1,7 @@
 // TODO: Show origin debug option
 // TODO: Exit fullscreen when in editor
 // TODO: Aspect ratio of edited game changes when window size changed
-// TODO: Change acceleration down speed in baby game, NORMAL might be ok
-// TODO: High scores screen
+// TODO: Holding in mouse button between main menu and choose mode causes it to flip
 
 //#![windows_subsystem = "windows"]
 
@@ -329,9 +328,12 @@ fn run_main_loop<'a, 'b>(
                             };
                             break 'choose_mode_running;
                         }
-                        let pattern = "Shuffle";
-                        if key.starts_with(pattern) {
+                        if key == "Shuffle" {
                             game_mode = GameMode::Prelude { directory: None };
+                            break 'choose_mode_running;
+                        }
+                        if key == "Back" {
+                            game_mode = GameMode::Menu;
                             break 'choose_mode_running;
                         }
                     }

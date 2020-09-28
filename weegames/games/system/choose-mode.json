@@ -345,6 +345,210 @@
           "triggers": [
             {
               "CheckProperty": {
+                "name": "Static",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "Loop",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "static-1"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "static-2"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "static-3"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "static-4"
+                    }
+                  }
+                ],
+                "speed": "Fast"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Yeah Hovered",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "Loop",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "screen1"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "screen2"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "screen3"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "screen4"
+                    }
+                  }
+                ],
+                "speed": {
+                  "Value": 60.0
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Rash Hovered",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "Loop",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "screen-rash-1"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "screen-rash-2"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "screen-rash-3"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "screen-rash-4"
+                    }
+                  }
+                ],
+                "speed": {
+                  "Value": 60.0
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Shuffle Hovered",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "Loop",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "shuffle-test-1"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "shuffle-test-2"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "shuffle-test-3"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "shuffle-test-4"
+                    }
+                  }
+                ],
+                "speed": {
+                  "Value": 60.0
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Yeah Hovered",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
                 "name": "OpenFolder:games/yeah",
                 "check": {
                   "Sprite": {
@@ -359,11 +563,383 @@
           "actions": [
             {
               "SetProperty": {
-                "Sprite": {
-                  "Image": {
-                    "name": "screen1"
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "OpenFolder:games/yeah",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "wasp-grey"
+                    }
                   }
                 }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Back",
+      "sprite": {
+        "Image": {
+          "name": "remote-dull"
+        }
+      },
+      "position": {
+        "x": 100.0,
+        "y": 750.0
+      },
+      "size": {
+        "width": 803.0,
+        "height": 392.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 0.0,
+          "y": 20.0
+        },
+        "max": {
+          "x": 700.0,
+          "y": 392.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "remote-dull"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "Back"
+                    }
+                  },
+                  "interaction": "Hover"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "remote"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "Back"
+                    }
+                  },
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Rash Hovered",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "OpenFolder:games/second",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "rash2"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "OpenFolder:games/second",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "rash2-grey"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Static",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Yeah Hovered",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Rash Hovered",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Shuffle Hovered",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Shuffle Hovered",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Shuffle",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "blender"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Shuffle",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "blender-grey"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
               }
             }
           ]
@@ -374,15 +950,34 @@
   "background": [],
   "asset_files": {
     "images": {
-      "rash": "rash.png",
-      "blender-grey": "blender-grey.webp",
-      "screen1": "screen1.jpg",
-      "blender": "blender.webp",
-      "rash2": "rash2.png",
-      "television": "television.webp",
+      "shuffle-test-2": "shuffle-test-2.png",
+      "shuffle-test-3": "shuffle-test-3.png",
       "wasp-grey": "wasp-grey.webp",
+      "rash": "rash.png",
+      "screen2": "screen2.jpg",
+      "screen4": "screen4.jpg",
+      "static-1": "static-1.png",
       "rash2-grey": "rash2-grey.png",
-      "wasp-orange": "wasp-orange.webp"
+      "shuffle-test-4": "shuffle-test-4.png",
+      "screen1": "screen1.jpg",
+      "screen-rash-2": "screen-rash-2.png",
+      "static-3": "static-3.png",
+      "static-2": "static-2.png",
+      "remote-dull": "remote-dull.webp",
+      "screen3": "screen3.jpg",
+      "screen-rash-4": "screen-rash-4.png",
+      "wasp-orange": "wasp-orange.webp",
+      "shuffle-2": "shuffle-2.png",
+      "static-4": "static-4.png",
+      "screen-rash-1": "screen-rash-1.png",
+      "remote": "remote.webp",
+      "television": "television.webp",
+      "shuffle": "shuffle.png",
+      "blender": "blender.webp",
+      "blender-grey": "blender-grey.webp",
+      "rash2": "rash2.png",
+      "screen-rash-3": "screen-rash-3.png",
+      "shuffle-test-1": "shuffle-test-1.png"
     },
     "audio": {},
     "music": null,
@@ -393,7 +988,7 @@
       }
     }
   },
-  "length": 4.0,
+  "length": 8.0,
   "intro_text": "",
   "attribution": "https://pixabay.com/photos/television-developing-countries-899265/"
 }

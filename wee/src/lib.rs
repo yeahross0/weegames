@@ -180,14 +180,34 @@ impl Default for AssetFiles {
     }
 }
 
+#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
+pub enum GameType {
+    Minigame,
+    BossGame,
+    Other,
+}
+
+#[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq)]
+pub enum Length {
+    Seconds(f32),
+    Infinite,
+}
+
+#[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq)]
+pub enum FrameCount {
+    Frames(u32),
+    Infinite,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GameData {
     pub format_version: String,
     pub published: bool,
+    pub game_type: GameType,
     pub objects: Vec<SerialiseObject>,
     pub background: Vec<BackgroundPart>,
     pub asset_files: AssetFiles,
-    pub length: f32,
+    pub length: Length,
     pub intro_text: Option<String>,
     pub attribution: String,
 }
@@ -197,10 +217,11 @@ impl Default for GameData {
         GameData {
             format_version: "0.1".to_string(),
             published: false,
+            game_type: GameType::Minigame,
             objects: Vec::new(),
             background: Vec::new(),
             asset_files: AssetFiles::default(),
-            length: 4.0,
+            length: Length::Seconds(4.0),
             intro_text: None,
             attribution: "".to_string(),
         }
@@ -1598,6 +1619,7 @@ impl<'a, 'b> Assets<'a, 'b> {
     }
 
     pub fn start_music(&mut self, playback_rate: f32, volume: f32) {
+        // audio_player.play_music(playback_rate);
         if let Some(music) = &mut self.music {
             music.data.set_playing_offset(SfmlTime::seconds(0.0));
             music.data.set_pitch(playback_rate);
@@ -1634,7 +1656,7 @@ impl<'a, 'b> LoadFonts<'a, 'b> for Fonts<'a, 'b> {
 
 #[derive(Copy, Clone, Debug)]
 struct FrameInfo {
-    total: u32,
+    total: FrameCount,
     ran: u32,
     steps_taken: u32,
     start_time: Instant,
@@ -1642,12 +1664,15 @@ struct FrameInfo {
 }
 
 impl FrameInfo {
-    fn remaining(self) -> u32 {
-        (self.total - self.ran).max(0)
+    fn remaining(self) -> FrameCount {
+        match self.total {
+            FrameCount::Frames(frames) => FrameCount::Frames((frames - self.ran).max(0)),
+            FrameCount::Infinite => FrameCount::Infinite,
+        }
     }
 
     fn is_final(self) -> bool {
-        self.remaining() == 1
+        self.remaining() == FrameCount::Frames(1)
     }
 }
 
@@ -1695,7 +1720,7 @@ pub struct LoadedGame<'a, 'b> {
     assets: Assets<'a, 'b>,
     intro_text: IntroText,
     intro_font: &'a IntroFont<'a, 'b>,
-    total_frames: u32,
+    total_frames: FrameCount,
 }
 
 impl<'a, 'b> LoadedGame<'a, 'b> {
@@ -1723,13 +1748,25 @@ impl<'a, 'b> LoadedGame<'a, 'b> {
 
         let background = game_data.background;
 
+        let total_frames = match game_data.length {
+            Length::Seconds(seconds) => FrameCount::Frames((seconds * FPS) as u32),
+            //  Length::Frames(frames) => FrameCount::Frames(frames),
+            Length::Infinite => FrameCount::Infinite,
+        };
+
+        /*if let Length::Seconds(seconds) = game_data.length {
+            Length::Frames((seconds * FPS) as u32)
+        } else {
+            game_data.length
+        };*/
+
         Ok(LoadedGame {
             objects,
             background,
             assets,
             intro_text,
             intro_font,
-            total_frames: (game_data.length * FPS) as u32,
+            total_frames,
         })
     }
 
@@ -1744,13 +1781,19 @@ impl<'a, 'b> LoadedGame<'a, 'b> {
 
         let background = game_data.background;
 
+        let total_frames = match game_data.length {
+            Length::Seconds(seconds) => FrameCount::Frames((seconds * FPS) as u32),
+            //Length::Frames(frames) => FrameCount::Frames(frames),
+            Length::Infinite => FrameCount::Infinite,
+        };
+
         Ok(LoadedGame {
             objects,
             background,
             assets,
             intro_text,
             intro_font,
-            total_frames: (game_data.length * FPS) as u32,
+            total_frames,
         })
     }
 
@@ -1858,11 +1901,14 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                 num_frames += 1.0;
             }
         }
-        (num_frames as u32).min(self.frames.remaining())
+        match self.frames.remaining() {
+            FrameCount::Frames(remaining) => (num_frames as u32).min(remaining),
+            FrameCount::Infinite => num_frames as u32,
+        }
     }
 
     fn is_finished(&self) -> bool {
-        self.frames.remaining() == 0
+        self.frames.remaining() == FrameCount::Frames(0)
     }
 
     pub fn play(
