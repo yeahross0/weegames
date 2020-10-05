@@ -8,29 +8,20 @@
 #[macro_use]
 extern crate imgui;
 
-use rand::{seq::SliceRandom, thread_rng, Rng};
+use rand::{thread_rng, Rng};
 use sdl2::{
     image::InitFlag,
     messagebox::{self, MessageBoxFlag},
+    ttf::Sdl2TtfContext as TtfContext,
     video::{gl_attr::GLAttr, GLContext, Window as SdlWindow},
-    EventPump,
+    EventPump, Sdl, VideoSubsystem,
 };
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
-use std::{error::Error, fs, path::Path, process, str, sync::mpsc, thread, time::Instant};
+use std::{error::Error, fs, path::Path, process, str, time::Instant};
 use walkdir::WalkDir;
 
-use sdlglue::Renderer;
-/*use wee::{
-    Action, Angle, AngleSetter, AnimationStatus, AnimationType, AssetFiles, Assets,
-    BounceDirection, ButtonState, CollisionWith, CompassDirection, Completion, DrawIntroText,
-    Effect, FontLoadInfo, GameData, GameSettings, ImageList, Images, Input, IntroFont,
-    IntroFontConfig, IntroText, JumpLocation, LoadImages, LoadedGame, Motion, MouseInteraction,
-    MouseOver, MovementDirection, MovementHandling, MovementType, PropertyCheck, PropertySetter,
-    RelativeTo, RenderScene, SerialiseObject, SerialiseObjectList, Speed, Sprite,
-    Switch, SwitchState, Target, TargetType, TextResize, Trigger, When, WinStatus,
-    DEFAULT_GAME_SPEED,
-};*/
 use editor::*;
+use sdlglue::Renderer;
 use wee::*;
 use wee_common::{Colour, WeeResult};
 
@@ -276,18 +267,36 @@ fn run_main_loop<'a, 'b>(
     renderer: &mut Renderer,
     event_pump: &mut EventPump,
     imgui: &mut Imgui,
-    intro_font: &'a IntroFont<'a, 'b>,
+    intro_font: &'a FontSystem<'a, 'b>,
     config: &Config,
 ) -> WeeResult<GameMode<'a, 'b>> {
+    let game_with_defaults = |filename| -> WeeResult<Game> {
+        let game = LoadedGame::load(filename, &intro_font)
+            .map_err(|error| format!("Couldn't load {}\n{}", filename, error))?
+            .start(DEFAULT_GAME_SPEED, DEFAULT_DIFFICULTY, config.settings());
+        Ok(game)
+    };
+    let mode_path = |directory: &str, filename| {
+        let mut path = directory.to_string();
+        if !path.ends_with("/") {
+            path.push_str("/");
+        };
+        path.push_str(filename);
+        path
+    };
+    let mode_game = |directory, filename| -> WeeResult<LoadedGame> {
+        let game_path = mode_path(directory, "prelude.json");
+
+        let game = LoadedGame::load(game_path, &intro_font);
+        if let Ok(game) = game {
+            Ok(game)
+        } else {
+            LoadedGame::load(format!("games/system/{}", filename), &intro_font)
+        }
+    };
     match game_mode {
         GameMode::Menu => {
-            let mut game = {
-                let filename = "games/system/main-menu.json";
-
-                LoadedGame::load(filename, &intro_font)
-                    .map_err(|error| format!("Couldn't load {}\n{}", filename, error))?
-                    .start(DEFAULT_GAME_SPEED, DEFAULT_DIFFICULTY, config.settings())
-            };
+            let mut game = game_with_defaults("games/system/main-menu.json")?;
 
             'menu_running: loop {
                 sdlglue::set_fullscreen(renderer, event_pump)?;
@@ -305,13 +314,7 @@ fn run_main_loop<'a, 'b>(
             }
         }
         GameMode::ChooseMode => {
-            let mut game = {
-                let filename = "games/system/choose-mode.json";
-
-                LoadedGame::load(filename, &intro_font)
-                    .map_err(|error| format!("Couldn't load {}\n{}", filename, error))?
-                    .start(DEFAULT_GAME_SPEED, DEFAULT_DIFFICULTY, config.settings())
-            };
+            let mut game = game_with_defaults("games/system/choose-mode.json")?;
 
             'choose_mode_running: loop {
                 sdlglue::set_fullscreen(renderer, event_pump)?;
@@ -341,115 +344,62 @@ fn run_main_loop<'a, 'b>(
             }
         }
         GameMode::Prelude { directory } => {
-            let (tx, rx) = mpsc::channel();
+            let mut games_list = GamesList::from_directory(directory.as_deref())?;
 
-            let handle = thread::spawn(move || -> WeeResult<()> {
-                let mut games_list = GamesList::from_directory(directory.as_deref())?;
+            let filename = games_list.choose();
 
-                let filename = games_list.choose();
+            let game_data = GameData::load(&filename)?;
 
-                let game_data = GameData::load(&filename)?;
+            let loaded_game = mode_game(&games_list.directory, "prelude.json")?;
 
-                tx.send((games_list, game_data, filename))?;
+            let completed_game = loaded_game
+                .start(DEFAULT_GAME_SPEED, DEFAULT_DIFFICULTY, config.settings())
+                .play(renderer, event_pump)?;
 
-                Ok(())
-            });
-            // TODO: Not in parallel
-            match handle.join().unwrap() {
-                Ok(()) => match rx.recv() {
-                    Ok((games_list, game_data, filename)) => {
-                        let interlude_path = {
-                            let filename = if games_list.directory.ends_with("/") {
-                                "prelude.json"
-                            } else {
-                                "/prelude.json"
-                            };
-                            let mut s = games_list.directory.clone();
-                            s.push_str(filename);
-                            s
-                        };
+            let game = LoadedGame::load_from_game_data(game_data, &filename, &intro_font)?;
 
-                        let loaded_game = {
-                            let game = LoadedGame::load(&interlude_path, &intro_font);
-                            if let Ok(game) = game {
-                                game
-                            } else {
-                                LoadedGame::load("games/system/prelude.json", &intro_font)?
-                            }
-                        };
+            let progress = Progress::new(config.playback_rate.min);
 
-                        let completed_game = loaded_game
-                            .start(DEFAULT_GAME_SPEED, DEFAULT_DIFFICULTY, config.settings())
-                            .play(renderer, event_pump)?;
+            log::info!("{:?}", games_list);
 
-                        let game =
-                            LoadedGame::load_from_game_data(game_data, &filename, &intro_font)?;
-
-                        let progress = Progress::new(config.playback_rate.min);
-
-                        log::info!("{:?}", games_list);
-
-                        game_mode = if let Completion::Finished = completed_game.completion {
-                            GameMode::Play {
-                                game,
-                                games_list,
-                                progress,
-                            }
-                        } else {
-                            GameMode::Menu
-                        }
-                    }
-                    Err(error) => {
-                        game_mode = GameMode::Error(Box::new(error));
-                    }
-                },
-                Err(error) => {
-                    game_mode = GameMode::Error(error);
+            game_mode = if let Completion::Finished = completed_game.completion {
+                GameMode::Play {
+                    game,
+                    games_list,
+                    progress,
                 }
-            }
+            } else {
+                GameMode::Menu
+            };
         }
         GameMode::Interlude {
             won,
             mut games_list,
             progress,
         } => {
-            let (tx, rx) = mpsc::channel();
-
             let filename = games_list.choose();
-            thread::spawn(move || -> WeeResult<()> {
-                let new_game = {
-                    let game_data = GameData::load(&filename.clone())?;
-                    (filename, game_data)
-                };
 
-                tx.send(new_game)?;
+            let game_data = GameData::load(&filename.clone())?;
 
-                Ok(())
-            });
+            let mut loaded_game = mode_game(&games_list.directory, "interlude.json")?;
 
-            // TODO: This happens right after, not in parallel
-            let (filename, game_data) = rx.recv()?;
-
-            let interlude_path = {
-                let filename = if games_list.directory.ends_with("/") {
-                    "interlude.json"
-                } else {
-                    "/interlude.json"
-                };
-                let mut s = games_list.directory.clone();
-                s.push_str(filename);
-                s
-            };
-
-            let mut loaded_game = {
-                let game = LoadedGame::load(&interlude_path, &intro_font);
-                if let Ok(game) = game {
-                    game
-                } else {
-                    LoadedGame::load("games/system/interlude.json", &intro_font)?
-                }
-            };
-
+            let text_replacements = vec![
+                ("{Score}", progress.score.to_string()),
+                ("{Lives}", progress.lives.to_string()),
+                (
+                    "{Game}",
+                    Path::new(&filename)
+                        .file_stem()
+                        .unwrap()
+                        .to_str()
+                        .unwrap()
+                        .to_string(),
+                ),
+                (
+                    "{IntroText}",
+                    game_data.intro_text.as_deref().unwrap_or("").to_string(),
+                ),
+            ];
             for object in loaded_game.objects.iter_mut() {
                 let mut set_switch = |name, pred| {
                     if object.name == name {
@@ -462,41 +412,7 @@ fn run_main_loop<'a, 'b>(
                 set_switch("3", progress.lives >= 3);
                 set_switch("4", progress.lives >= 4);
 
-                object.replace_text(progress.score, progress.lives);
-
-                // TODO: Tidy up
-
-                for instruction in object.instructions.iter_mut() {
-                    fn replace_text_in_action(
-                        action: &mut Action,
-                        score: i32,
-                        lives: i32,
-                        filename: &str,
-                        intro_text: &str,
-                    ) {
-                        if let Action::DrawText { text, .. } = action {
-                            let path = Path::new(filename);
-                            // TODO: Have name field in game instead of filename for this
-                            *text =
-                                text.replace("{Game}", path.file_stem().unwrap().to_str().unwrap());
-                            *text = text.replace("{IntroText}", intro_text);
-                        } else if let Action::Random { random_actions } = action {
-                            for action in random_actions {
-                                replace_text_in_action(action, score, lives, filename, intro_text);
-                            }
-                        }
-                    }
-
-                    for action in instruction.actions.iter_mut() {
-                        replace_text_in_action(
-                            action,
-                            progress.score,
-                            progress.lives,
-                            &filename,
-                            game_data.intro_text.as_deref().unwrap_or(""),
-                        );
-                    }
-                }
+                object.replace_text(&text_replacements);
             }
 
             let completed_game = loaded_game
@@ -551,49 +467,17 @@ fn run_main_loop<'a, 'b>(
                 high_scores
             };
 
-            //let mut loaded_game = LoadedGame::load("games/system/game-over.json", &intro_font)?;
-            let game_over_path = {
-                let filename = if directory.ends_with("/") {
-                    "game-over.json"
-                } else {
-                    "/game-over.json"
-                };
-                let mut s = directory.clone();
-                s.push_str(filename);
-                s
-            };
+            let mut loaded_game = mode_game(&directory, "game-over.json")?;
 
-            let mut loaded_game = {
-                let game = LoadedGame::load(&game_over_path, &intro_font);
-                if let Ok(game) = game {
-                    game
-                } else {
-                    LoadedGame::load("games/system/game-over.json", &intro_font)?
-                }
-            };
+            let text_replacements = vec![
+                ("{Score}", progress.score.to_string()),
+                ("{Lives}", progress.lives.to_string()),
+                ("{HighScore-1}", high_scores.0.to_string()),
+                ("{HighScore-2}", high_scores.1.to_string()),
+                ("{HighScore-3}", high_scores.2.to_string()),
+            ];
             for object in loaded_game.objects.iter_mut() {
-                object.replace_text(progress.score, progress.lives);
-
-                // TODO: Tidy up
-
-                for instruction in object.instructions.iter_mut() {
-                    fn replace_text_in_action(action: &mut Action, high_scores: (i32, i32, i32)) {
-                        if let Action::DrawText { text, .. } = action {
-                            // TODO: Have name field in game instead of filename for this
-                            *text = text.replace("{HighScore-1}", &high_scores.0.to_string());
-                            *text = text.replace("{HighScore-2}", &high_scores.1.to_string());
-                            *text = text.replace("{HighScore-3}", &high_scores.2.to_string());
-                        } else if let Action::Random { random_actions } = action {
-                            for action in random_actions {
-                                replace_text_in_action(action, high_scores);
-                            }
-                        }
-                    }
-
-                    for action in instruction.actions.iter_mut() {
-                        replace_text_in_action(action, high_scores);
-                    }
-                }
+                object.replace_text(&text_replacements);
             }
             loaded_game
                 .start(DEFAULT_GAME_SPEED, DEFAULT_DIFFICULTY, config.settings())
@@ -626,7 +510,7 @@ fn run_main_loop<'a, 'b>(
                         );
                         log::info!("Playback Rate: {}", progress.playback_rate);
 
-                        if progress.lives == 0 {
+                        if progress.lives <= 0 {
                             GameMode::GameOver {
                                 progress,
                                 directory: games_list.directory,
@@ -649,7 +533,7 @@ fn run_main_loop<'a, 'b>(
             }
         }
         GameMode::Edit => {
-            editor::run_editor(renderer, event_pump, imgui, intro_font, config.settings())?;
+            Editor::init().run(renderer, event_pump, imgui, intro_font, config.settings())?;
             game_mode = GameMode::Menu;
         }
         GameMode::Error(error) => {
@@ -695,8 +579,63 @@ fn run_main_loop<'a, 'b>(
     Ok(game_mode)
 }
 
+struct MainGame<'a, 'b> {
+    game_mode: GameMode<'a, 'b>,
+    renderer: Renderer,
+    event_pump: EventPump,
+    imgui: Imgui,
+    config: Config,
+}
+
+impl<'a, 'b> MainGame<'a, 'b> {
+    fn init(
+        config: Config,
+        sdl_context: &Sdl,
+        video_subsystem: &VideoSubsystem,
+        window: SdlWindow,
+    ) -> WeeResult<MainGame<'a, 'b>> {
+        let imgui = Imgui::init(&config.ui_font, &video_subsystem, &window)?;
+
+        let event_pump = sdl_context.event_pump()?;
+
+        let renderer = Renderer::new(window);
+
+        let game_mode = GameMode::Menu;
+
+        Ok(MainGame {
+            game_mode,
+            renderer,
+            event_pump,
+            imgui,
+            config,
+        })
+    }
+
+    fn run(mut self, font_system: &'a FontSystem<'a, 'b>) {
+        loop {
+            let loop_result = run_main_loop(
+                self.game_mode,
+                &mut self.renderer,
+                &mut self.event_pump,
+                &mut self.imgui,
+                font_system,
+                &self.config,
+            );
+            self.game_mode = match loop_result {
+                Ok(game_mode) => game_mode,
+                Err(error) => GameMode::Error(error),
+            };
+        }
+    }
+}
+
 fn main() -> WeeResult<()> {
     init_logger();
+
+    // TODO: Have a default config
+    let config = Config::from_file("config.yaml")
+        .map_err(|error| format!("Error loading configuration from config.yaml.\n{}", error))
+        .show_error()?;
 
     let sdl_context = sdl2::init().show_error()?;
 
@@ -731,32 +670,11 @@ fn main() -> WeeResult<()> {
 
     let ttf_context = sdl2::ttf::init().map_err(|e| e.to_string()).show_error()?;
 
-    let config = Config::from_file("config.yaml")
-        .map_err(|error| format!("Error loading configuration from config.yaml.\n{}", error))
-        .show_error()?;
+    let font_system = FontSystem::load(&config.intro_font, &ttf_context).show_error()?;
 
-    let mut imgui = Imgui::init(&config.ui_font, &video_subsystem, &window).show_error()?;
+    MainGame::init(config, &sdl_context, &video_subsystem, window)
+        .show_error()?
+        .run(&font_system);
 
-    let intro_font = IntroFont::load(&config.intro_font, &ttf_context).show_error()?;
-
-    let mut event_pump = sdl_context.event_pump().show_error()?;
-
-    let mut renderer = Renderer::new(window);
-
-    let mut game_mode = GameMode::Menu;
-
-    loop {
-        let loop_result = run_main_loop(
-            game_mode,
-            &mut renderer,
-            &mut event_pump,
-            &mut imgui,
-            &intro_font,
-            &config,
-        );
-        game_mode = match loop_result {
-            Ok(game_mode) => game_mode,
-            Err(error) => GameMode::Error(error),
-        };
-    }
+    Ok(())
 }

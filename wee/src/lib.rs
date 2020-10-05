@@ -64,20 +64,22 @@ impl Default for SerialiseObject {
 }
 
 impl SerialiseObject {
-    pub fn replace_text(&mut self, score: i32, lives: i32) {
-        for instruction in self.instructions.iter_mut() {
-            fn replace_text_in_action(action: &mut Action, score: i32, lives: i32) {
-                if let Action::DrawText { text, .. } = action {
-                    *text = text.replace("{Score}", &score.to_string());
-                    *text = text.replace("{Lives}", &lives.to_string());
-                } else if let Action::Random { random_actions } = action {
-                    for action in random_actions {
-                        replace_text_in_action(action, score, lives);
-                    }
+    pub fn replace_text(&mut self, text_replacements: &Vec<(&str, String)>) {
+        fn replace_text_in_action(action: &mut Action, text_replacements: &Vec<(&str, String)>) {
+            if let Action::DrawText { text, .. } = action {
+                for (before, after) in text_replacements {
+                    *text = text.replace(before, &after);
+                }
+            } else if let Action::Random { random_actions } = action {
+                for action in random_actions {
+                    replace_text_in_action(action, text_replacements);
                 }
             }
+        }
+
+        for instruction in self.instructions.iter_mut() {
             for action in instruction.actions.iter_mut() {
-                replace_text_in_action(action, score, lives);
+                replace_text_in_action(action, &text_replacements);
             }
         }
     }
@@ -1424,17 +1426,17 @@ pub struct IntroFontConfig {
     outline_width: Option<u16>,
 }
 
-pub struct IntroFont<'a, 'b> {
+pub struct FontSystem<'a, 'b> {
     main: Font<'a, 'b>,
     outline: Option<Font<'a, 'b>>,
     pub ttf_context: &'a TtfContext,
 }
 
-impl<'a, 'b> IntroFont<'a, 'b> {
+impl<'a, 'b> FontSystem<'a, 'b> {
     pub fn load(
         intro_font: &IntroFontConfig,
         ttf_context: &'a TtfContext,
-    ) -> WeeResult<IntroFont<'a, 'b>> {
+    ) -> WeeResult<FontSystem<'a, 'b>> {
         let main = ttf_context.load_font(&intro_font.info.filename, intro_font.info.size as u16)?;
         let outline = if let Some(outline_width) = intro_font.outline_width {
             if outline_width > 0 {
@@ -1448,7 +1450,7 @@ impl<'a, 'b> IntroFont<'a, 'b> {
         } else {
             None
         };
-        Ok(IntroFont {
+        Ok(FontSystem {
             main,
             outline,
             ttf_context,
@@ -1679,11 +1681,11 @@ impl FrameInfo {
 pub type IntroText = [Option<Texture>; 2];
 
 pub trait DrawIntroText {
-    fn new(intro_font: &IntroFont, text: &Option<String>) -> Self;
+    fn new(intro_font: &FontSystem, text: &Option<String>) -> Self;
 }
 
 impl DrawIntroText for IntroText {
-    fn new(intro_font: &IntroFont, text: &Option<String>) -> IntroText {
+    fn new(intro_font: &FontSystem, text: &Option<String>) -> IntroText {
         fn draw_intro_text(font: &Font, text: &Option<String>, colour: Colour) -> Option<Texture> {
             text.as_ref()
                 .map(|text| Texture::text(font, text, colour).warn().ok().flatten())
@@ -1719,14 +1721,14 @@ pub struct LoadedGame<'a, 'b> {
     background: Vec<BackgroundPart>,
     assets: Assets<'a, 'b>,
     intro_text: IntroText,
-    intro_font: &'a IntroFont<'a, 'b>,
+    intro_font: &'a FontSystem<'a, 'b>,
     total_frames: FrameCount,
 }
 
 impl<'a, 'b> LoadedGame<'a, 'b> {
     pub fn load<P: AsRef<Path>>(
         path: P,
-        intro_font: &'a IntroFont<'a, 'b>,
+        intro_font: &'a FontSystem<'a, 'b>,
     ) -> WeeResult<LoadedGame<'a, 'b>> {
         let json_string = fs::read_to_string(&path)?;
 
@@ -1738,7 +1740,7 @@ impl<'a, 'b> LoadedGame<'a, 'b> {
     pub fn load_from_game_data<P: AsRef<Path>>(
         game_data: GameData,
         path: P,
-        intro_font: &'a IntroFont<'a, 'b>,
+        intro_font: &'a FontSystem<'a, 'b>,
     ) -> WeeResult<LoadedGame<'a, 'b>> {
         let objects = game_data.objects.clone();
 
@@ -1773,7 +1775,7 @@ impl<'a, 'b> LoadedGame<'a, 'b> {
     pub fn with_assets(
         game_data: GameData,
         assets: Assets<'a, 'b>,
-        intro_font: &'a IntroFont<'a, 'b>,
+        intro_font: &'a FontSystem<'a, 'b>,
     ) -> WeeResult<LoadedGame<'a, 'b>> {
         let objects = game_data.objects.clone();
 
@@ -1870,7 +1872,7 @@ pub struct Game<'a, 'b, 'c> {
     pub objects: Objects,
     assets: Assets<'a, 'b>,
     background: Vec<BackgroundPart>,
-    intro_font: &'a IntroFont<'a, 'b>,
+    intro_font: &'a FontSystem<'a, 'b>,
     intro_text: IntroText,
     frames: FrameInfo,
     status: GameStatus,
