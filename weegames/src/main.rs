@@ -533,7 +533,7 @@ fn run_main_loop<'a, 'b>(
             }
         }
         GameMode::Edit => {
-            Editor::init().run(renderer, event_pump, imgui, intro_font, config.settings())?;
+            editor::run(renderer, event_pump, imgui, intro_font, config.settings())?;
             game_mode = GameMode::Menu;
         }
         GameMode::Error(error) => {
