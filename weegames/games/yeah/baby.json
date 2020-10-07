@@ -1,6 +1,7 @@
 {
   "format_version": "0.1",
   "published": true,
+  "game_type": "Minigame",
   "objects": [
     {
       "name": "man",
@@ -514,7 +515,9 @@
     },
     "fonts": {}
   },
-  "length": 8.0,
+  "length": {
+    "Seconds": 8.0
+  },
   "intro_text": "Keepie Uppie",
   "attribution": "man + baby: https://www.pexels.com/photo/photo-of-man-in-raising-baby-under-blue-sky-1166990/\ntrifle: https://en.wikipedia.org/wiki/File:Trifle-(cream-layer)-profile.jpg\nvenice: https://pixabay.com/photos/venice-italy-history-sea-656232/\n\noh no: https://freesound.org/people/ecfike/sounds/131407/\nyippee: https://freesound.org/people/Topschool/sounds/443493/\n\npeaceful: https://freesound.org/people/DishonoredBlood/sounds/342650/\n"
 }

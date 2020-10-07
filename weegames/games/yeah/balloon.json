@@ -1,6 +1,7 @@
 {
   "format_version": "0.1",
   "published": true,
+  "game_type": "Minigame",
   "objects": [
     {
       "name": "balloon",
@@ -502,7 +503,9 @@
       "looped": false
     }
   },
-  "length": 4.0,
+  "length": {
+    "Seconds": 4.0
+  },
   "intro_text": "Protect",
   "attribution": "\nballoon: https://openclipart.org/detail/300887/red-balloon-person\nroof: https://pixabay.com/photos/roof-scandinavia-red-building-598208/\ncrunch: https://openclipart.org/detail/309876/sounds-onomatopoeias-sonidos-onomatopeyas\njar: https://www.si.edu/object/jar:nmafa_89-13-27\n\nshatter: https://freesound.org/people/letssfx/sounds/147867/\npop: https://freesound.org/people/unfa/sounds/245646/\n----\nsparse\nhttps://freesound.org/people/starpause/sounds/12696/\n'burzGuit2.wav' by starpause is is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/\nI trimmed the audio.\n----"
 }

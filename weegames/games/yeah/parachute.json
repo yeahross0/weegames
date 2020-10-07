@@ -1,6 +1,7 @@
 {
   "format_version": "0.1",
   "published": true,
+  "game_type": "Minigame",
   "objects": [
     {
       "name": "parachute",
@@ -257,7 +258,9 @@
       "looped": false
     }
   },
-  "length": 5.0,
+  "length": {
+    "Seconds": 5.0
+  },
   "intro_text": "Pop!",
   "attribution": "parachute: http://www.picdrome.com/sports-and-recreation/sports-parachutist-skydiving.jpg.php\nsky: https://pixabay.com/photos/sky-clouds-outdoors-scenic-49520/\nhelicopter: http://www.picdrome.com/sports-and-recreation/military-helicopter-in-flight.jpg.php\n\noh no: https://freesound.org/people/ecfike/sounds/131407/\npop: https://freesound.org/people/unfa/sounds/245646/\nyippee: https://freesound.org/people/Topschool/sounds/443493/\n\n----\ndreamy:\nhttps://freesound.org/people/Timbre/sounds/462631/\n'dreamy loopable remix of mareproduction's Freesound #426354' by Timbre is licensed under CC BY-NC 3.0\nhttps://creativecommons.org/licenses/by-nc/3.0/legalcode\nI have trimmed the audio.\n----"
 }

@@ -1,6 +1,7 @@
 {
   "format_version": "0.1",
   "published": true,
+  "game_type": "Minigame",
   "objects": [
     {
       "name": "ground",
@@ -351,7 +352,9 @@
       "looped": false
     }
   },
-  "length": 4.0,
+  "length": {
+    "Seconds": 4.0
+  },
   "intro_text": "Splat!",
   "attribution": "splat: https://pixabay.com/vectors/splat-green-mess-splashing-style-42890/\nguitar-man: \nhttps://www.pexels.com/photo/man-playing-red-and-white-electric-guitar-2299499/\nabyss: https://pixabay.com/illustrations/abyss-window-sill-dangerous-2036211/\norange: http://www.clker.com/clipart-3993.html\n\neureka: https://freesound.org/people/cognito%20perceptu/sounds/151604/\n----\ngroan\nhttps://freesound.org/people/FritzSounds/sounds/366297/\n'A Few Groans Of Disappointment' by FritzSounds is licensed under CC BY-NC 3.0\nhttps://creativecommons.org/licenses/by-nc/3.0/legalcode\nI have trimmed the audio.\n----\n----\nwhales\nhttps://freesound.org/people/daveincamas/sounds/45563/\n'DeepCheering' by daveincamas is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\nI have trimmed the audio.\n----"
 }

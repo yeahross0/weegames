@@ -1,6 +1,7 @@
 {
   "format_version": "0.1",
   "published": true,
+  "game_type": "Minigame",
   "objects": [
     {
       "name": "Player",
@@ -985,7 +986,9 @@
     },
     "fonts": {}
   },
-  "length": 5.0,
+  "length": {
+    "Seconds": 5.0
+  },
   "intro_text": "Break the Pots!",
   "attribution": "https://lionheart963.itch.io/4-directional-character\nhttps://seliel-the-shaper.itch.io/breakable-pots\nhttps://ansimuz.itch.io/trees-bushes-sprites\n\nhttps://harvey656.itch.io/8-bit-game-sound-effects-collection\n\nAttack by BCKR licenced under CC BY 4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://bckr.itch.io/sdap\nhttps://jonathan-so.itch.io/creatorpack"
 }

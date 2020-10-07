@@ -1,6 +1,7 @@
 {
   "format_version": "0.1",
   "published": false,
+  "game_type": "Other",
   "objects": [
     {
       "name": "OpenFolder:games/yeah",
@@ -988,7 +989,9 @@
       }
     }
   },
-  "length": 8.0,
+  "length": {
+    "Seconds": 8.0
+  },
   "intro_text": "",
   "attribution": "https://pixabay.com/photos/television-developing-countries-899265/"
 }

@@ -1,6 +1,7 @@
 {
   "format_version": "0.1",
   "published": true,
+  "game_type": "Minigame",
   "objects": [
     {
       "name": "woman",
@@ -393,7 +394,9 @@
     },
     "fonts": {}
   },
-  "length": 4.0,
+  "length": {
+    "Seconds": 4.0
+  },
   "intro_text": "Cover Up!",
   "attribution": "woman-mask: https://www.pexels.com/photo/woman-wearing-face-mask-3902882/\nwoman-no-mask: https://www.pexels.com/photo/woman-wearing-face-mask-3902884/\nspider: https://publicdomainvectors.org/en/free-clipart/Spider-silhouette/66523.html\n----\nship\nCruise ship in holiday destination by alegri is licenced under CC-BY\nhttps://www.4freephotos.com/Cruise-ship-in-holiday-destination-7041.html\n----\n\nahh-eww: https://freesound.org/people/isabellaquintero97/sounds/363786/\n\n----\ntamba lambda\nhttps://freesound.org/people/zagi2/sounds/457744/\n'Tamba Lamba' by zagi2 is licenced under CC BY-NC 3.0\nhttps://creativecommons.org/licenses/by-nc/3.0/legalcode\nI have trimmed the audio.\n----"
 }

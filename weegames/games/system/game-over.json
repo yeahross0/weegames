@@ -1,6 +1,7 @@
 {
   "format_version": "0.1",
   "published": false,
+  "game_type": "Other",
   "objects": [
     {
       "name": "wasp",
@@ -138,7 +139,9 @@
     },
     "music": null
   },
-  "length": 2.5,
+  "length": {
+    "Seconds": 2.5
+  },
   "intro_text": null,
   "attribution": "bloody-hands: https://www.pexels.com/photo/person-s-hands-covered-with-blood-673862/\n----\nwasp:\nhttps://commons.wikimedia.org/w/index.php?curid=1999886\n'File:2 wasp 2007-04-25.jpg' by Trounce is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\nI changed the colour of the image.\n----\n\nswat: https://freesound.org/people/poorenglishjuggler/sounds/131461/\n----\nsquash:\nhttps://freesound.org/people/zimbot/sounds/244486/\n'CrushAndGrind' by zimbot is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\nI cropped the audio.\n----"
 }

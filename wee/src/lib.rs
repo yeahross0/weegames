@@ -1032,10 +1032,14 @@ impl fmt::Display for Action {
                     "red: {}, green: {}, blue: {}, alpha: {}",
                     colour.r, colour.g, colour.b, colour.a
                 );
+                let justification = match justify {
+                    JustifyText::Left => "left",
+                    JustifyText::Centre => "centre",
+                };
                 write!(
                     f,
-                    "Draws `{}` using the {} font with colour ({}) {}",
-                    text, font, colour, change_size
+                    "Draws `{}` using the {} font with colour ({}) {} justifying to the {}",
+                    text, font, colour, change_size, justification
                 )
             }
             Action::SetProperty(PropertySetter::Angle(angle_setter)) => match angle_setter {

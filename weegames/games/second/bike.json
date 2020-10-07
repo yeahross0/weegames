@@ -1,6 +1,7 @@
 {
   "format_version": "0.1",
   "published": true,
+  "game_type": "Minigame",
   "objects": [
     {
       "name": "Bike",
@@ -507,7 +508,9 @@
     "music": null,
     "fonts": {}
   },
-  "length": 4.0,
+  "length": {
+    "Seconds": 4.0
+  },
   "intro_text": "Get that orange!",
   "attribution": "bike: https://overcrafted.itch.io/free-paid-vehicle-car-sprites-\nbackground: https://raventale.itch.io/parallax-background\norange: https://ravenmore.itch.io/2d-pickups-pack\n\nDamage sound effect by BCKR licenced under CC BY 4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://bckr.itch.io/sdap\n\npower up sound effect: https://void1gaming.itch.io/halftone-sound-effects-pack-lite"
 }

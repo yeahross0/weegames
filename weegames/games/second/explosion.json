@@ -1,6 +1,7 @@
 {
   "format_version": "0.1",
   "published": true,
+  "game_type": "Minigame",
   "objects": [
     {
       "name": "Player",
@@ -401,7 +402,9 @@
     },
     "fonts": {}
   },
-  "length": 4.0,
+  "length": {
+    "Seconds": 4.0
+  },
   "intro_text": "Blast!",
   "attribution": "images: https://pixelfrog-store.itch.io/kings-and-pigs\n\nexplosion: https://harvey656.itch.io/8-bit-game-sound-effects-collection\ncoin: https://void1gaming.itch.io/halftone-sound-effects-pack-lite\n\nFriday Afternoon by Tim Beek is licenced under CC-BY-4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://timbeek.itch.io/royalty-free-music-pack\n\n\n"
 }

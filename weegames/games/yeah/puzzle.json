@@ -1,6 +1,7 @@
 {
   "format_version": "0.1",
   "published": true,
+  "game_type": "Minigame",
   "objects": [
     {
       "name": "depressio",
@@ -811,7 +812,9 @@
       "looped": false
     }
   },
-  "length": 7.0,
+  "length": {
+    "Seconds": 7.0
+  },
   "intro_text": null,
   "attribution": "dreamer: https://www.pdclipart.org/\nfox: https://wallpapers.io/photo/9370-fox-red-wallpaper\ndepression: https://pixabay.com/photos/depression-disease-fatigue-burnout-2826711/\n\nyippee: https://freesound.org/people/Topschool/sounds/443493/\n\nbeat: https://freesound.org/people/jerado/sounds/44193/\n"
 }

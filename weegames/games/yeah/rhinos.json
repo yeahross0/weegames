@@ -1,6 +1,7 @@
 {
   "format_version": "0.1",
   "published": true,
+  "game_type": "Minigame",
   "objects": [
     {
       "name": "person",
@@ -481,7 +482,9 @@
     "music": null,
     "fonts": {}
   },
-  "length": 4.0,
+  "length": {
+    "Seconds": 4.0
+  },
   "intro_text": "Bounce",
   "attribution": "man and ball: https://pixabay.com/illustrations/sport-football-movement-ball-1019776/\nrhinos: https://pixabay.com/photos/africa-white-rhinos-rhino-86621/\nwoman: \nhttps://pixabay.com/illustrations/woman-haematoma-fight-black-eye-2226178/\n\nkick: https://freesound.org/people/DWSD/sounds/171104/\npop: https://freesound.org/people/unfa/sounds/245646/"
 }

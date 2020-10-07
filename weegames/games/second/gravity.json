@@ -1,6 +1,7 @@
 {
   "format_version": "0.1",
   "published": true,
+  "game_type": "Minigame",
   "objects": [
     {
       "name": "Player",
@@ -890,7 +891,9 @@
     },
     "fonts": {}
   },
-  "length": 8.0,
+  "length": {
+    "Seconds": 8.0
+  },
   "intro_text": "Reverse Gravity!",
   "attribution": "warp graphics: https://ansimuz.itch.io/warped-city\n\n------------------\nSound effects by BCKR licenced under CC BY 4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://bckr.itch.io/sdap\n------------------\n\n------------------\nRace To Mars music by DOS88 licenced under under CC BY 4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://dos88.itch.io/dos-88-music-library\n------------------"
 }

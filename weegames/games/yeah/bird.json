@@ -1,6 +1,7 @@
 {
   "format_version": "0.1",
   "published": true,
+  "game_type": "Minigame",
   "objects": [
     {
       "name": "Bird Body",
@@ -387,7 +388,9 @@
     "fonts": {},
     "music": null
   },
-  "length": 4.0,
+  "length": {
+    "Seconds": 4.0
+  },
   "intro_text": "fit in",
   "attribution": "bird: https://avopix.com/photo/18046-bird-animal-white-background\nbirds: https://www.flickr.com/photos/mathiasappel/26665123862/in/photolist-GCiJjS-2b7gvKb-Mma6Pb-NfEEzJ-2bHrof5-VAEZeD-JvMr6M-HzEdHY-SmxoWJ-27YaXgq-2bqFMM9-nKtHWQ-2bqFMTG-26snjDM-28Uzayc-29zYAgs-NK2kt8-2bdFtcL-QbUuAY-2cjLj6H-295xLtL-js38AF-js5wcm-2bdEmAm-2cffV1s-N5LEoR-Fc9Wc-QoVbZ1-a6ZJoL-LBxZ2-26EgPQ1-Ya1AyT-2bdFctG-2bdwQH9-2aVVmxP-8qftQq-a6WRW2-Rt9feS-2b8Atk2-29A2RsV-NMw1Nx-TPHq9U-KG6hLu-2bQS1Ft-25G7sTU-2eVk98F-Zqxzu5-Jb82Qk-Nyydc8-HCy4P1\n\nputrid heartbeat: https://freesound.org/people/Asteroiderer/sounds/439410/\n----\neerie:\nhttps://freesound.org/people/tigersound/sounds/9078/\n'close encounters' by tigersound is licensed under CC BY-NC 3.0\nhttps://creativecommons.org/licenses/by-nc/3.0/legalcode\nI have trimmed the audio.\n----"
 }

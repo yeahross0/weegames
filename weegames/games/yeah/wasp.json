@@ -1,6 +1,7 @@
 {
   "format_version": "0.1",
   "published": true,
+  "game_type": "Minigame",
   "objects": [
     {
       "name": "wasp 1",
@@ -616,7 +617,9 @@
     },
     "fonts": {}
   },
-  "length": 8.0,
+  "length": {
+    "Seconds": 8.0
+  },
   "intro_text": "χτυπώ",
   "attribution": "swat: https://pixabay.com/vectors/fly-swatter-pest-control-swat-29407/\n----\nwasp:\nhttps://commons.wikimedia.org/w/index.php?curid=1999886\n'File:2 wasp 2007-04-25.jpg' by Trounce is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\nI cropped the image and fuzzed it.\n----\nbikes: http://www.picdrome.com/sports-and-recreation/gym-upright-cycles.jpg.php\n\nyippee: https://freesound.org/people/Topschool/sounds/443493/\noh-no-2: https://freesound.org/people/ecfike/sounds/131407/\nswat: https://freesound.org/people/poorenglishjuggler/sounds/131461/\n----\nsquash:\nhttps://freesound.org/people/zimbot/sounds/244486/\n'CrushAndGrind' by zimbot is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\nI trimmed the audio.\n----\n\n----\ndramatic beat\nhttps://freesound.org/people/tyops/sounds/462955/\n'Dramatic beat' by tyops is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\nI trimmed the audio."
 }

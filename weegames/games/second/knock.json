@@ -1,6 +1,7 @@
 {
   "format_version": "0.1",
   "published": true,
+  "game_type": "Minigame",
   "objects": [
     {
       "name": "Player",
@@ -521,7 +522,9 @@
     },
     "fonts": {}
   },
-  "length": 6.0,
+  "length": {
+    "Seconds": 6.0
+  },
   "intro_text": "Click that thing",
   "attribution": "https://s4m-ur4i.itch.io/free-sprites-elements-8x8-retro-pixelart-platformer-brawler\n\nhttps://jdwasabi.itch.io/8-bit-16-bit-sound-effects-pack\nhttps://void1gaming.itch.io/halftone-sound-effects-pack-lite\n\n8-Bit DNA by Tim Beek is licenced under CC-BY-4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://timbeek.itch.io/royalty-free-music-pack"
 }

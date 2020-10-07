@@ -12,7 +12,6 @@ use rand::{thread_rng, Rng};
 use sdl2::{
     image::InitFlag,
     messagebox::{self, MessageBoxFlag},
-    ttf::Sdl2TtfContext as TtfContext,
     video::{gl_attr::GLAttr, GLContext, Window as SdlWindow},
     EventPump, Sdl, VideoSubsystem,
 };
@@ -285,7 +284,7 @@ fn run_main_loop<'a, 'b>(
         path
     };
     let mode_game = |directory, filename| -> WeeResult<LoadedGame> {
-        let game_path = mode_path(directory, "prelude.json");
+        let game_path = mode_path(directory, filename);
 
         let game = LoadedGame::load(game_path, &intro_font);
         if let Ok(game) = game {
@@ -594,13 +593,21 @@ impl<'a, 'b> MainGame<'a, 'b> {
         video_subsystem: &VideoSubsystem,
         window: SdlWindow,
     ) -> WeeResult<MainGame<'a, 'b>> {
-        let imgui = Imgui::init(&config.ui_font, &video_subsystem, &window)?;
+        let mut imgui = Imgui::init(&config.ui_font, &video_subsystem, &window)?;
 
         let event_pump = sdl_context.event_pump()?;
 
         let renderer = Renderer::new(window);
 
         let game_mode = GameMode::Menu;
+
+        // This is a hack to get the mouse cursor to show up in relative mode
+        let imgui_frame = imgui.prepare_frame(
+            &renderer.window,
+            &event_pump.mouse_state(),
+            &mut std::time::Instant::now(),
+        );
+        imgui_frame.render(&renderer.window);
 
         Ok(MainGame {
             game_mode,
@@ -658,6 +665,8 @@ fn main() -> WeeResult<()> {
             .map_err(|e| e.to_string())
             .show_error()?
     };
+
+    sdl_context.mouse().show_cursor(false);
 
     let _gl_context = GLContext::from_sdl(&video_subsystem.gl_attr(), &window);
 

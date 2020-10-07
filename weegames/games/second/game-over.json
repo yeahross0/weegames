@@ -1,6 +1,7 @@
 {
   "format_version": "0.1",
   "published": false,
+  "game_type": "Other",
   "objects": [
     {
       "name": "Score",
@@ -300,7 +301,9 @@
       }
     }
   },
-  "length": 4.0,
+  "length": {
+    "Seconds": 4.0
+  },
   "intro_text": "",
   "attribution": ""
 }

@@ -1,6 +1,7 @@
 {
   "format_version": "0.1",
   "published": true,
+  "game_type": "Minigame",
   "objects": [
     {
       "name": "Cover 1",
@@ -1249,7 +1250,9 @@
     },
     "fonts": {}
   },
-  "length": 6.0,
+  "length": {
+    "Seconds": 6.0
+  },
   "intro_text": "Sneak over!",
   "attribution": "https://penusbmic.itch.io/sci-fi-planetone\n\nhttps://mome-g.itch.io/8dir-char\n\nSound effects by BCKR licenced under CC BY 4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://bckr.itch.io/sdap\n\nTake Cover by Tim Beek is licenced under CC-BY-4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://timbeek.itch.io/royalty-free-music-pack"
 }

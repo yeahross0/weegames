@@ -1,6 +1,7 @@
 {
   "format_version": "0.1",
   "published": true,
+  "game_type": "Minigame",
   "objects": [
     {
       "name": "Notebook",
@@ -215,7 +216,9 @@
     "fonts": {},
     "music": null
   },
-  "length": 3.0,
+  "length": {
+    "Seconds": 3.0
+  },
   "intro_text": "Disgrace",
   "attribution": "----\nnotebook:\nhttps://www.4freephotos.com/Notebook-with-open-pages-and-leaves-6810.html\n'Notebook with open pages and leaves' by alegri\n----\ndavid:\nhttps://en.wikipedia.org/wiki/File:%27David%27_by_Michelangelo_Fir_JBU002.jpg\n'File:'David' by Michelangelo Fir JBU002.jpg' by Jörg Bittner Unna is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\nThe image has been adapted into the notebook image.\n----\nrobot:\nhttps://commons.wikimedia.org/wiki/File:Angry_eyebrows_robot_(5231002371).jpg\n'Angry eyebrows robot' by Quinn Dombrowski is licensed under CC BY-SA 2.0\nhttps://creativecommons.org/licenses/by-sa/2.0/legalcode\nThe image has been adapted into the notebook image.\nI release my changes under CC BY-SA 2.0\n----\n\nhey: https://freesound.org/people/esperar/sounds/170786/"
 }

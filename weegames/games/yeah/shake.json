@@ -1,6 +1,7 @@
 {
   "format_version": "0.1",
   "published": true,
+  "game_type": "Minigame",
   "objects": [
     {
       "name": "dandy",
@@ -464,7 +465,9 @@
       "looped": false
     }
   },
-  "length": 3.5,
+  "length": {
+    "Seconds": 3.5
+  },
   "intro_text": "Shake!",
   "attribution": "dandelion: \nhttps://pixabay.com/photos/dandelion-sky-spring-blue-sky-745972/\nsky: https://pixabay.com/photos/sky-clouds-outdoors-scenic-49520/pills: \nhttps://freesound.org/people/gneube/sounds/315836/----\nwolf-whistle\nhttps://freesound.org/people/InspectorJ/sounds/411497/\n'Wolf Whistle, Fast, A (H1).wav' by InspectorJ is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\n----"
 }

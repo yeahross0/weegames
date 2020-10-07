@@ -1,6 +1,7 @@
 {
   "format_version": "0.1",
   "published": true,
+  "game_type": "Minigame",
   "objects": [
     {
       "name": "Player",
@@ -530,7 +531,9 @@
     },
     "fonts": {}
   },
-  "length": 8.0,
+  "length": {
+    "Seconds": 8.0
+  },
   "intro_text": "Swim!",
   "attribution": "https://chasersgaming.itch.io/platformer-asset-tile-set-underwater-lands-nes\nhttps://chasersgaming.itch.io/rpg-masset-character-zombie-nes\n\nhttps://void1gaming.itch.io/halftone-sound-effects-pack-lite\nhttps://harvey656.itch.io/8-bit-game-sound-effects-collection\nhttps://soundsbydane.itch.io/8-bit-sound-pack\n\nhttps://bonpos3r.itch.io/chiptune-8bit-short-pack"
 }

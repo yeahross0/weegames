@@ -1,6 +1,7 @@
 {
   "format_version": "0.1",
   "published": true,
+  "game_type": "Minigame",
   "objects": [
     {
       "name": "pumpkin top",
@@ -424,7 +425,9 @@
       "looped": false
     }
   },
-  "length": 7.0,
+  "length": {
+    "Seconds": 7.0
+  },
   "intro_text": "Light up",
   "attribution": "pumpkin: https://www.4freephotos.com/Halloween-lantern-legs-6539.html\ncandle: https://pixabay.com/photos/candle-torch-flame-fire-light-1115769/\n\nboo: https://freesound.org/people/unfa/sounds/187104/\nnexus: https://freesound.org/people/Greek555/sounds/414270/"
 }

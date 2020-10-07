@@ -31,7 +31,7 @@ use sdlglue::{Model, Renderer, Texture};
 use sfml::audio::SoundBuffer;
 use std::{
     collections::{HashMap, HashSet},
-    path::Path,
+    path::{Path, PathBuf},
     process, str, thread,
     time::{Duration, Instant},
 };
@@ -106,7 +106,6 @@ pub fn run<'a, 'b>(
                 process::exit(0);
             }
         }
-        //sdlglue::set_fullscreen(renderer, event_pump)?;
 
         let mut draw_tasks = Vec::new();
 
@@ -158,6 +157,7 @@ pub fn run<'a, 'b>(
         );
 
         if windows.music {
+            //standard_window(im_str!("Music"), &mut windows.music).build(ui, ||);
             imgui::Window::new(im_str!("Music"))
                 .size(WINDOW_SIZE, imgui::Condition::FirstUseEver)
                 .opened(&mut windows.music)
@@ -167,22 +167,15 @@ pub fn run<'a, 'b>(
                     fn load_music_file_dialog(
                         game: &mut GameData,
                         music: &mut Option<Music>,
+                        filename: &Option<String>,
                     ) -> WeeResult<()> {
-                        let audio_path = std::env::current_dir().unwrap().join(Path::new("games"));
+                        let audio_path = assets_path(filename, "audio");
                         let response = nfd::open_file_dialog(None, audio_path.to_str())?;
 
                         if let Response::Okay(file) = response {
                             let path = Path::new(&file);
                             let file_name = path.file_name().unwrap().to_str().unwrap().to_string();
 
-                            log::debug!(
-                                "{:?}\n{:?}\n{:?}",
-                                path,
-                                file_name,
-                                std::env::current_dir().unwrap().as_path()
-                            );
-
-                            //Music::load(&Some(file_path.clone()))?;
                             let music_load_info = SerialiseMusic {
                                 filename: file_name,
                                 looped: false,
@@ -200,23 +193,9 @@ pub fn run<'a, 'b>(
 
                         Ok(())
                     }
-                    let menu_bar = ui.begin_menu_bar();
-
-                    if let Some(bar) = menu_bar {
-                        let menu = ui.begin_menu(im_str!("File"), true);
-                        if let Some(menu) = menu {
-                            if imgui::MenuItem::new(im_str!("Set Music")).build(ui) {
-                                if let Err(error) =
-                                    load_music_file_dialog(&mut game, &mut assets.music)
-                                {
-                                    log::error!("{}", error);
-                                }
-                            }
-
-                            menu.end(ui);
-                        }
-
-                        bar.end(ui);
+                    if ui.button(im_str!("Set Music"), NORMAL_BUTTON) {
+                        load_music_file_dialog(&mut game, &mut assets.music, &filename)
+                            .unwrap_or_else(|error| log::error!("{}", error));
                     }
 
                     if let Some(music) = &game.asset_files.music {
@@ -262,14 +241,12 @@ pub fn run<'a, 'b>(
                                 &filename,
                             );
 
-                            ui.input_float(im_str!("Min X"), &mut game.background[i].area.min.x)
-                                .build();
-                            ui.input_float(im_str!("Min Y"), &mut game.background[i].area.min.y)
-                                .build();
-                            ui.input_float(im_str!("Max X"), &mut game.background[i].area.max.x)
-                                .build();
-                            ui.input_float(im_str!("Max Y"), &mut game.background[i].area.max.y)
-                                .build();
+                            let input_float =
+                                |label, value: &mut f32| ui.input_float(label, value).build();
+                            input_float(im_str!("Min X"), &mut game.background[i].area.min.x);
+                            input_float(im_str!("Min Y"), &mut game.background[i].area.min.y);
+                            input_float(im_str!("Max X"), &mut game.background[i].area.max.x);
+                            input_float(im_str!("Max Y"), &mut game.background[i].area.max.y);
                         }
 
                         stack.pop(ui);
@@ -308,38 +285,20 @@ pub fn run<'a, 'b>(
                 .resizable(true)
                 .opened(&mut windows.fonts)
                 .build(ui, || {
-                    let menu_bar = ui.begin_menu_bar();
-
-                    if let Some(bar) = menu_bar {
-                        let menu = ui.begin_menu(im_str!("File"), true);
-                        if let Some(menu) = menu {
-                            if imgui::MenuItem::new(im_str!("Add Fonts")).build(ui) {
-                                let path = match &filename {
-                                    Some(filename) => {
-                                        Path::new(filename).parent().unwrap().join("fonts")
-                                    }
-                                    None => Path::new("games").to_owned(),
-                                };
-                                choose_font_from_files(
-                                    &mut game.asset_files.fonts,
-                                    &mut assets.fonts,
-                                    path,
-                                    font_system.ttf_context,
-                                );
-                            }
-                            menu.end(ui);
-                        }
-
-                        bar.end(ui);
+                    if ui.button(im_str!("Add fonts"), NORMAL_BUTTON) {
+                        let path = assets_path(&filename, "fonts");
+                        choose_font_from_files(
+                            &mut game.asset_files.fonts,
+                            &mut assets.fonts,
+                            path,
+                            font_system.ttf_context,
+                        );
                     }
 
                     for (name, font) in game.asset_files.fonts.iter_mut() {
                         ui.text(name);
                         // TODO: Errors if filename not saved!
-                        let base_path = match &filename {
-                            Some(filename) => Path::new(filename).parent().unwrap().join("fonts"),
-                            None => Path::new("games").to_owned(),
-                        };
+                        let base_path = assets_path(&filename, "fonts");
                         let path = base_path.join(&font.filename);
                         // TODO: Min Max this
                         if ui.input_float(im_str!("Size"), &mut font.size).build() {
@@ -367,16 +326,18 @@ pub fn run<'a, 'b>(
                 scale = (scale + 0.1).min(4.0);
             }
 
-            if event_pump.keyboard_state().is_scancode_pressed(Scancode::W) {
+            let is_pressed = |scancode| event_pump.keyboard_state().is_scancode_pressed(scancode);
+
+            if is_pressed(Scancode::W) {
                 game_position.y += 2.0;
             }
-            if event_pump.keyboard_state().is_scancode_pressed(Scancode::S) {
+            if is_pressed(Scancode::S) {
                 game_position.y -= 2.0;
             }
-            if event_pump.keyboard_state().is_scancode_pressed(Scancode::A) {
+            if is_pressed(Scancode::A) {
                 game_position.x += 2.0;
             }
-            if event_pump.keyboard_state().is_scancode_pressed(Scancode::D) {
+            if is_pressed(Scancode::D) {
                 game_position.x -= 2.0;
             }
         }
@@ -395,30 +356,27 @@ pub fn run<'a, 'b>(
         }
 
         //renderer.draw_background(&game.background, &images)?;
+        // TODO: Move rendering code to sdlglue
         {
             for part in game.background.iter() {
                 match &part.sprite {
                     Sprite::Image { name } => {
                         let texture = assets.images.get_image(name)?;
 
-                        let mut dest = part.area.to_rect();
-                        dest.x += game_position.x;
-                        dest.y += game_position.y;
-                        dest.x *= scale;
-                        dest.y *= scale;
-                        dest.w *= scale;
-                        dest.h *= scale;
+                        let dest = part
+                            .area
+                            .to_rect()
+                            .move_position(game_position)
+                            .scale(scale);
 
                         renderer.prepare(&texture).set_dest(dest).draw();
                     }
                     Sprite::Colour(colour) => {
-                        let mut dest = part.area.to_rect();
-                        dest.x += game_position.x;
-                        dest.y += game_position.y;
-                        dest.x *= scale;
-                        dest.y *= scale;
-                        dest.w *= scale;
-                        dest.h *= scale;
+                        let dest = part
+                            .area
+                            .to_rect()
+                            .move_position(game_position)
+                            .scale(scale);
 
                         let model = Model::new(dest, None, 0.0, Flip::default());
 
@@ -436,44 +394,27 @@ pub fn run<'a, 'b>(
             for layer in layers.into_iter() {
                 for object in game.objects.iter() {
                     if object.layer == layer {
+                        let dest = Rect::new(
+                            object.position.x,
+                            object.position.y,
+                            object.size.width,
+                            object.size.height,
+                        )
+                        .move_position(game_position)
+                        .scale(scale);
                         match &object.sprite {
                             Sprite::Image { name: image_name } => {
                                 let texture = assets.images.get_image(image_name)?;
-                                let mut dest = Rect::new(
-                                    object.position.x + game_position.x,
-                                    object.position.y + game_position.y,
-                                    object.size.width,
-                                    object.size.height,
-                                );
-
-                                dest.x *= scale;
-                                dest.y *= scale;
-                                dest.w *= scale;
-                                dest.h *= scale;
-
-                                let origin = object.origin() * scale;
 
                                 renderer
                                     .prepare(&texture)
                                     .set_dest(dest)
                                     .set_angle(object.angle)
-                                    .set_origin(Some(origin))
+                                    .set_origin(Some(object.origin() * scale))
                                     .flip(object.flip)
                                     .draw();
                             }
                             Sprite::Colour(colour) => {
-                                let mut dest = Rect::new(
-                                    object.position.x + game_position.x,
-                                    object.position.y + game_position.y,
-                                    object.size.width,
-                                    object.size.height,
-                                );
-
-                                dest.x *= scale;
-                                dest.y *= scale;
-                                dest.w *= scale;
-                                dest.h *= scale;
-
                                 let model = Model::new(
                                     dest,
                                     Some(object.origin() * scale),
@@ -638,7 +579,10 @@ fn main_window_show(
                 )
                 .build(ui, &mut preview.difficulty_level);
 
-                ui.text(format!("Last win status: {:?}", preview.last_win_status));
+                if let Some(win_status) = preview.last_win_status {
+                    let win_status = if win_status { "Won" } else { "Lost " };
+                    ui.text(format!("Last win status: {:?}", win_status));
+                }
 
                 let mut attr = ImString::from(game.attribution.to_owned());
                 ui.input_text_multiline(im_str!("Attribution"), &mut attr, [300.0, 300.0])
@@ -649,6 +593,13 @@ fn main_window_show(
     }
 
     play_game
+}
+
+fn assets_path(filename: &Option<String>, assets_directory: &str) -> PathBuf {
+    match filename {
+        Some(filename) => Path::new(filename).parent().unwrap().join(assets_directory),
+        None => Path::new("games").to_owned(),
+    }
 }
 
 fn objects_window_show<'a>(
@@ -774,6 +725,19 @@ fn edit_object<'a>(
         });
 }
 
+/*fn change_image(object: &mut SerialiseObject, images: &Images, key: &Option<String>) {
+    match key {
+        Some(key) => {
+            object.sprite = Sprite::Image { name: key.clone() };
+            object.size.width = images[key].width as f32;
+            object.size.height = images[key].height as f32;
+        }
+        None => {
+            log::error!("None of the new images loaded correctly");
+        }
+    }
+}*/
+
 fn edit_object_properties(
     ui: &imgui::Ui,
     object: &mut SerialiseObject,
@@ -781,7 +745,14 @@ fn edit_object_properties(
     images: &mut Images,
     filename: &Option<String>,
 ) {
-    select_sprite_type(
+    choose_sprite(
+        &mut object.sprite,
+        ui,
+        &mut asset_files.images,
+        images,
+        filename,
+    );
+    /*select_sprite_type(
         &mut object.sprite,
         ui,
         &mut asset_files.images,
@@ -793,24 +764,13 @@ fn edit_object_properties(
         Sprite::Image { name: image_name } => {
             // TODO: Tidy up
             let mut current_image = images.keys().position(|k| k == image_name).unwrap_or(0);
-            let path = match filename {
-                Some(filename) => Path::new(filename).parent().unwrap().join("images"),
-                None => Path::new("games").to_owned(),
-            };
+            let path = assets_path(filename, "images");
 
             if images.is_empty() {
                 if ui.button(im_str!("Add a New Image"), NORMAL_BUTTON) {
                     let first_key = choose_image_from_files(&mut asset_files.images, images, path);
-                    match first_key {
-                        Some(key) => {
-                            object.sprite = Sprite::Image { name: key.clone() };
-                            object.size.width = images[&key].width as f32;
-                            object.size.height = images[&key].height as f32;
-                        }
-                        None => {
-                            log::error!("None of the new images loaded correctly");
-                        }
-                    }
+
+                    change_image(object, images, &first_key);
                 }
             } else {
                 let mut keys: Vec<ImString> =
@@ -820,6 +780,15 @@ fn edit_object_properties(
 
                 let image_names: Vec<&ImString> = keys.iter().collect();
 
+                let change_image = |object: &mut SerialiseObject, key| match key {
+                    Some(key) => {
+                        object.sprite = Sprite::Image { name: key };
+                    }
+                    None => {
+                        log::error!("None of the new images loaded correctly");
+                    }
+                };
+
                 if imgui::ComboBox::new(im_str!("Image")).build_simple_string(
                     ui,
                     &mut current_image,
@@ -828,27 +797,9 @@ fn edit_object_properties(
                     if current_image == image_names.len() - 1 {
                         let first_key =
                             choose_image_from_files(&mut asset_files.images, images, path);
-                        match first_key {
-                            Some(key) => {
-                                object.sprite = Sprite::Image { name: key.clone() };
-                                object.size.width = images[&key].width as f32;
-                                object.size.height = images[&key].height as f32;
-                            }
-                            None => {
-                                log::error!("None of the new images loaded correctly");
-                            }
-                        }
+                        change_image(object, first_key);
                     } else {
-                        match images.keys().nth(current_image) {
-                            Some(image) => {
-                                object.sprite = Sprite::Image {
-                                    name: image.clone(),
-                                };
-                            }
-                            None => {
-                                log::error!("Could not set image to index {}", current_image);
-                            }
-                        }
+                        change_image(object, images.keys().nth(current_image).cloned())
                     }
                 }
             };
@@ -856,30 +807,29 @@ fn edit_object_properties(
         Sprite::Colour(colour) => {
             colour.choose(ui);
         }
-    };
+    };*/
 
     ui.input_float(im_str!("Starting X"), &mut object.position.x)
         .build();
     ui.input_float(im_str!("Starting Y"), &mut object.position.y)
         .build();
-    ui.input_float(im_str!("Width"), &mut object.size.width)
-        .build();
-    ui.input_float(im_str!("Height"), &mut object.size.height)
-        .build();
+    object.size.choose(ui);
 
     choose_angle(&mut object.angle, ui);
 
+    let choose_origin = |origin: &mut Vec2| {
+        ui.input_float(im_str!("Origin X"), &mut origin.x).build()
+            || ui.input_float(im_str!("Origin Y"), &mut origin.y).build()
+    };
+
     object.origin = match object.origin {
         Some(mut origin) => {
-            ui.input_float(im_str!("Origin X"), &mut origin.x).build();
-            ui.input_float(im_str!("Origin Y"), &mut origin.y).build();
+            choose_origin(&mut origin);
             Some(origin)
         }
         None => {
             let mut origin = object.origin();
-            let changed = ui.input_float(im_str!("Origin X"), &mut origin.x).build()
-                || ui.input_float(im_str!("Origin Y"), &mut origin.y).build();
-            if changed {
+            if choose_origin(&mut origin) {
                 Some(origin)
             } else {
                 None
@@ -887,16 +837,23 @@ fn edit_object_properties(
         }
     };
 
+    let choose_collision_area = |area: &mut AABB| {
+        ui.input_float(im_str!("Collision Min X"), &mut area.min.x)
+            .build()
+            || ui
+                .input_float(im_str!("Collision Min Y"), &mut area.min.y)
+                .build()
+            || ui
+                .input_float(im_str!("Collision Max X"), &mut area.max.x)
+                .build()
+            || ui
+                .input_float(im_str!("Collision Max Y"), &mut area.max.y)
+                .build()
+    };
+
     object.collision_area = match object.collision_area {
         Some(mut area) => {
-            ui.input_float(im_str!("Collision Min X"), &mut area.min.x)
-                .build();
-            ui.input_float(im_str!("Collision Min Y"), &mut area.min.y)
-                .build();
-            ui.input_float(im_str!("Collision Max X"), &mut area.max.x)
-                .build();
-            ui.input_float(im_str!("Collision Max Y"), &mut area.max.y)
-                .build();
+            choose_collision_area(&mut area);
             Some(area)
         }
         None => {
@@ -906,19 +863,7 @@ fn edit_object_properties(
                 object.size.width as f32,
                 object.size.height as f32,
             );
-            let changed = ui
-                .input_float(im_str!("Collision Min X"), &mut area.min.x)
-                .build()
-                || ui
-                    .input_float(im_str!("Collision Min Y"), &mut area.min.y)
-                    .build()
-                || ui
-                    .input_float(im_str!("Collision Max X"), &mut area.max.x)
-                    .build()
-                || ui
-                    .input_float(im_str!("Collision Max Y"), &mut area.max.y)
-                    .build();
-            if changed {
+            if choose_collision_area(&mut area) {
                 Some(area)
             } else {
                 None
@@ -2000,6 +1945,7 @@ fn file_open<'a, 'b>(
                             instruction_state.index = None;
                         }
                         Err(error) => {
+                            // TODO: More than just logging here. Show error
                             log::error!("Couldn't open file {}", file_path);
                             log::error!("{}", error);
                         }
@@ -2687,6 +2633,13 @@ fn choose_mouse_over(over: &mut MouseOver, ui: &imgui::Ui, object_names: &Vec<&s
     }
 }
 
+impl Choose for Size {
+    fn choose(&mut self, ui: &imgui::Ui) {
+        ui.input_float(im_str!("Width"), &mut self.width).build();
+        ui.input_float(im_str!("Height"), &mut self.height).build();
+    }
+}
+
 impl Choose for MouseInteraction {
     fn choose(&mut self, ui: &imgui::Ui) {
         let button_states = [
@@ -2828,10 +2781,7 @@ fn select_sprite_type(
         match images.keys().next() {
             Some(name) => *sprite = Sprite::Image { name: name.clone() },
             None => {
-                let path = match filename {
-                    Some(filename) => Path::new(filename).parent().unwrap().join("images"),
-                    None => Path::new("games").to_owned(),
-                };
+                let path = assets_path(&filename, "images");
                 let image = choose_image_from_files(image_files, images, path);
                 if let Some(image) = image {
                     *sprite = Sprite::Image { name: image };
@@ -2870,10 +2820,7 @@ fn choose_font<'a, 'b>(
     ttf_context: &'a TtfContext,
     filename: &Option<String>,
 ) {
-    let path = match filename {
-        Some(filename) => Path::new(filename).parent().unwrap().join("fonts"),
-        None => Path::new("games").to_owned(),
-    };
+    let path = assets_path(filename, "fonts");
 
     if fonts.is_empty() {
         if ui.button(im_str!("Add a New Font"), NORMAL_BUTTON) {
@@ -2934,10 +2881,7 @@ fn choose_sound(
     sounds: &mut Sounds,
     filename: &Option<String>,
 ) {
-    let path = match filename {
-        Some(filename) => Path::new(filename).parent().unwrap().join("audio"),
-        None => Path::new("games").to_owned(),
-    };
+    let path = assets_path(&filename, "audio");
 
     if sounds.is_empty() {
         if ui.button(im_str!("Add a New Sound"), NORMAL_BUTTON) {
@@ -3110,10 +3054,7 @@ fn choose_sprite(
     match sprite {
         Sprite::Image { name: image_name } => {
             // TODO: Tidy up
-            let path = match filename {
-                Some(filename) => Path::new(filename).parent().unwrap().join("images"),
-                None => Path::new("games").to_owned(),
-            };
+            let path = assets_path(&filename, "images");
 
             if images.is_empty() {
                 if ui.button(im_str!("Add a New Image"), NORMAL_BUTTON) {

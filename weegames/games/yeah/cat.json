@@ -1,6 +1,7 @@
 {
   "format_version": "0.1",
   "published": true,
+  "game_type": "Minigame",
   "objects": [
     {
       "name": "car",
@@ -281,7 +282,9 @@
     "fonts": {},
     "music": null
   },
-  "length": 5.0,
+  "length": {
+    "Seconds": 5.0
+  },
   "intro_text": "Lift Off!",
   "attribution": "cat: https://pixabay.com/photos/cat-pet-animals-cute-cats-animal-641530/\n----\ncar:\nhttps://commons.wikimedia.org/wiki/File:Ford_Fiesta_Rally_car.JPG\n'Ford Fiesta Rally car'  by 100yen is licensed under CC BY-SA 3.0\nhttps://creativecommons.org/licenses/by-sa/3.0/legalcode\nI have removed the background. I release my changes under CC BY-SA 3.0.\n----\ntrophy: https://pixabay.com/illustrations/trophy-winner-cup-champion-gold-4145177/\nyippee: https://freesound.org/people/Topschool/sounds/443493/\n----\noh no: https://freesound.org/people/ecfike/sounds/131407/\nNot used\n----\n----\nlawnmower:\nhttps://freesound.org/people/gadzooks/sounds/20737/\n'lawnmower' by gadzooks is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\nI have trimmed the audio.\n----"
 }

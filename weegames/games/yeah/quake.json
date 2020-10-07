@@ -1,6 +1,7 @@
 {
   "format_version": "0.1",
   "published": true,
+  "game_type": "Minigame",
   "objects": [
     {
       "name": "earthquake",
@@ -267,7 +268,9 @@
       "looped": false
     }
   },
-  "length": 4.0,
+  "length": {
+    "Seconds": 4.0
+  },
   "intro_text": "Tattoo!",
   "attribution": "butterfly: https://pixabay.com/photos/man-move-tattoo-butterfly-distant-538730/\nearthquake: https://pixabay.com/photos/earthquake-rubble-collapse-disaster-1665885/\nback: https://commons.wikimedia.org/wiki/File:Edgar_Germain_Hilaire_Degas_029.jpg\n\nslap: https://freesound.org/people/MootMcnoodles/sounds/444407/\n----\noh no:\nhttps://freesound.org/people/AmeAngelofSin/sounds/168682/\n'evil/sarcastic: Oh no, you don't' by AmeAngelofSin is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\nI have trimmed the audio\n----\noi: https://freesound.org/people/rhink/sounds/245866/\n\n----\ndramatic increase\nhttps://freesound.org/people/tyops/sounds/415123/\n'Dramatic Increasing' by tyops is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\nI have trimmed the audio.\n----"
 }

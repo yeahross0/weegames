@@ -1,6 +1,7 @@
 {
   "format_version": "0.1",
   "published": true,
+  "game_type": "Minigame",
   "objects": [
     {
       "name": "hand",
@@ -296,7 +297,9 @@
       "looped": false
     }
   },
-  "length": 5.2,
+  "length": {
+    "Seconds": 5.2
+  },
   "intro_text": "Fight ye",
   "attribution": "amusement: https://libreshot.com/fairgroung-amusements/\nbackground: https://avopix.com/photo/32078-silhouette-of-mountain-with-galactic-background\nboxer: https://pixabay.com/photos/boxer-fight-sport-boxing-fitness-54512/\n\nplease don't do that: https://freesound.org/people/girlhurl/sounds/339161/\nouch: https://freesound.org/people/girlhurl/sounds/339162/\n\nspace: https://freesound.org/people/MrPork/sounds/271866/\n"
 }

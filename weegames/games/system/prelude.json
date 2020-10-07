@@ -1,6 +1,7 @@
 {
   "format_version": "0.1",
   "published": false,
+  "game_type": "Other",
   "objects": [
     {
       "name": "wasp1",
@@ -568,7 +569,9 @@
     "fonts": {},
     "music": null
   },
-  "length": 2.5,
+  "length": {
+    "Seconds": 2.5
+  },
   "intro_text": null,
   "attribution": "swat: https://pixabay.com/vectors/fly-swatter-pest-control-swat-29407/\n----\nwasp:\nhttps://commons.wikimedia.org/w/index.php?curid=1999886\n'File:2 wasp 2007-04-25.jpg' by Trounce is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\nI cropped the image.\n----\ncactus: https://www.pexels.com/photo/close-up-photo-of-three-green-cactus-plants-923548/\n\nswat: https://freesound.org/people/poorenglishjuggler/sounds/131461/"
 }

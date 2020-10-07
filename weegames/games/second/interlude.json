@@ -1,6 +1,7 @@
 {
   "format_version": "0.1",
   "published": false,
+  "game_type": "Other",
   "objects": [
     {
       "name": "First Background",
@@ -611,7 +612,9 @@
       }
     }
   },
-  "length": 2.0,
+  "length": {
+    "Seconds": 2.0
+  },
   "intro_text": "",
   "attribution": ""
 }

@@ -1,6 +1,7 @@
 {
   "format_version": "0.1",
   "published": true,
+  "game_type": "Minigame",
   "objects": [
     {
       "name": "monkeys",
@@ -688,7 +689,9 @@
       "looped": false
     }
   },
-  "length": 4.0,
+  "length": {
+    "Seconds": 4.0
+  },
   "intro_text": "Essen",
   "attribution": "monkeys: https://www.4freephotos.com/Monkeys-on-tourist-van-Gibraltar-7190.html\nbanana: https://pixabay.com/vectors/banana-yellow-fruit-isolated-food-25239/\nbanana-peel: https://pixabay.com/vectors/banana-yellow-peel-slip-fruit-30055/\n\nmonkey: https://freesound.org/people/saraonsins/sounds/219816/\ncrunching: https://freesound.org/people/lolamadeus/sounds/144172/\n\ntechno beat: https://freesound.org/people/davidou/sounds/88485/"
 }

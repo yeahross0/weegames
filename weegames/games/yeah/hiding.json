@@ -1,6 +1,7 @@
 {
   "format_version": "0.1",
   "published": true,
+  "game_type": "Minigame",
   "objects": [
     {
       "name": "hiding",
@@ -286,7 +287,9 @@
       "looped": false
     }
   },
-  "length": 4.0,
+  "length": {
+    "Seconds": 4.0
+  },
   "intro_text": "Find them (singular)",
   "attribution": "hiding: https://pixabay.com/photos/cat-hiding-place-autumn-rust-1040815/\ncity: https://pixabay.com/photos/city-evening-nature-sun-sunset-345609/\nhand: https://www.pexels.com/photo/persons-left-hand-on-window-3723686/\n\nmeow: https://freesound.org/people/deleted_user_7146007/sounds/383427/\n----\nwhistling\nhttps://freesound.org/people/dersuperanton/sounds/433651/\n'Whistling' by dersuperanton is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\n----"
 }

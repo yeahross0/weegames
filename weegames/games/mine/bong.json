@@ -1,6 +1,7 @@
 {
   "format_version": "0.1",
   "published": true,
+  "game_type": "Minigame",
   "objects": [
     {
       "name": "Player",
@@ -404,7 +405,9 @@
       "looped": false
     }
   },
-  "length": 8.0,
+  "length": {
+    "Seconds": 8.0
+  },
   "intro_text": "Rally!",
   "attribution": "beep: https://freesound.org/people/Davidsraba/sounds/347167/\narcade: https://freesound.org/people/maxstcroix/sounds/343151/"
 }

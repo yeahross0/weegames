@@ -1,6 +1,7 @@
 {
   "format_version": "0.1",
   "published": true,
+  "game_type": "Minigame",
   "objects": [
     {
       "name": "Cannon",
@@ -358,7 +359,9 @@
     },
     "fonts": {}
   },
-  "length": 5.0,
+  "length": {
+    "Seconds": 5.0
+  },
   "intro_text": "Serve!",
   "attribution": "standing-dog: https://www.pexels.com/photo/black-and-white-dog-on-grass-field-3590443/\ntennis-ball: https://pixabay.com/photos/tennis-ball-sidewalk-soil-game-501480/\ntennis-court: https://pixabay.com/photos/tennis-tennis-court-sports-play-1605799/\nbeagle-ball: https://www.4freephotos.com/Beagle-carrying-a-ball-6347.html\n\ncrunching: https://freesound.org/people/lolamadeus/sounds/144172/\n----\nfunky\nhttps://freesound.org/people/Timbre/sounds/462939/\n'Extra-70s remix of excerpt of Greek555's freesound#462856.flac' by Timbre is licensed under CC BY-NC 3.0\nhttps://creativecommons.org/licenses/by-nc/3.0/legalcode\nI have trimmed the audio.\n----\n----\nbark\nhttps://freesound.org/people/crazymonke9/sounds/418106/\n'single dog bark 2' by crazymonke9 is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\nI have trimmed the audio.\n----\nbark-2: https://freesound.org/people/ken788/sounds/386766/"
 }

@@ -1,6 +1,7 @@
 {
   "format_version": "0.1",
   "published": true,
+  "game_type": "Minigame",
   "objects": [
     {
       "name": "Ground",
@@ -949,7 +950,9 @@
     "music": null,
     "fonts": {}
   },
-  "length": 6.0,
+  "length": {
+    "Seconds": 6.0
+  },
   "intro_text": "Aim!",
   "attribution": "https://vnitti.itch.io/glacial-mountains-parallax-background\nhttps://ansimuz.itch.io/explosion-animations-pack\n\nhttps://void1gaming.itch.io/halftone-sound-effects-pack-lite\nhttps://soundsbydane.itch.io/8-bit-sound-pack"
 }

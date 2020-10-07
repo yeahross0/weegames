@@ -1,6 +1,7 @@
 {
   "format_version": "0.1",
   "published": true,
+  "game_type": "Minigame",
   "objects": [
     {
       "name": "Stone 1",
@@ -743,7 +744,9 @@
     },
     "fonts": {}
   },
-  "length": 4.8,
+  "length": {
+    "Seconds": 4.8
+  },
   "intro_text": "",
   "attribution": "tiles and trees: https://mikemac2d.itch.io/adventure-tile-pack\ndiamonds: https://pixelfrog-store.itch.io/kings-and-pigs\n\nhttps://harvey656.itch.io/8-bit-game-sound-effects-collection\n\nLudum Dare 28 Track 2 by Abstraction's licencing information is located here http://abstractionmusic.com/#secLicensing\nhttp://abstractionmusic.bandcamp.com/"
 }

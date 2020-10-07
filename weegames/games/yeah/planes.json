@@ -1,6 +1,7 @@
 {
   "format_version": "0.1",
   "published": true,
+  "game_type": "Minigame",
   "objects": [
     {
       "name": "plane1",
@@ -515,7 +516,9 @@
     },
     "fonts": {}
   },
-  "length": 4.0,
+  "length": {
+    "Seconds": 4.0
+  },
   "intro_text": "Vroom!",
   "attribution": "plane: http://www.picdrome.com/sports-and-recreation/supersonic-fighter-aircraft.jpg.php\nplanes: http://www.picdrome.com/sports-and-recreation/training-aircrafts-in-formation.jpg.php\nclear sky: https://pixabay.com/photos/dandelion-sky-spring-blue-sky-745972/\n\n----\ncar crash:\nhttps://freesound.org/people/nsstudios/sounds/351513/\n'car crash' by nsstudios is licensed under CC BY-NC 3.0\nhttps://creativecommons.org/licenses/by-nc/3.0/\nI have trimmed the audio.\n----\n----\nf1 car:\nhttps://freesound.org/people/stormlord/sounds/38567/\n'Rennwagen1' by stormlord is licensed under  Sampling Plus 1.0\nhttps://creativecommons.org/licenses/sampling+/1.0/legalcode\n----"
 }
