@@ -490,6 +490,14 @@ pub fn run<'a, 'b>(
     Ok(())
 }
 
+fn choose_difficulty_level(level: &mut u32, ui: &imgui::Ui) {
+    imgui::Slider::new(
+        im_str!("Difficulty Level"),
+        std::ops::RangeInclusive::new(1, 3),
+    )
+    .build(ui, level);
+}
+
 fn main_window_show(
     ui: &imgui::Ui,
     show_window: &mut bool,
@@ -573,11 +581,7 @@ fn main_window_show(
                 .display_format(im_str!("%.01f"))
                 .build(ui, &mut preview.playback_rate);
 
-                imgui::Slider::new(
-                    im_str!("Difficulty Level"),
-                    std::ops::RangeInclusive::new(1, 3),
-                )
-                .build(ui, &mut preview.difficulty_level);
+                choose_difficulty_level(&mut preview.difficulty_level, ui);
 
                 if let Some(win_status) = preview.last_win_status {
                     let win_status = if win_status { "Won" } else { "Lost " };
@@ -725,19 +729,6 @@ fn edit_object<'a>(
         });
 }
 
-/*fn change_image(object: &mut SerialiseObject, images: &Images, key: &Option<String>) {
-    match key {
-        Some(key) => {
-            object.sprite = Sprite::Image { name: key.clone() };
-            object.size.width = images[key].width as f32;
-            object.size.height = images[key].height as f32;
-        }
-        None => {
-            log::error!("None of the new images loaded correctly");
-        }
-    }
-}*/
-
 fn edit_object_properties(
     ui: &imgui::Ui,
     object: &mut SerialiseObject,
@@ -752,62 +743,6 @@ fn edit_object_properties(
         images,
         filename,
     );
-    /*select_sprite_type(
-        &mut object.sprite,
-        ui,
-        &mut asset_files.images,
-        images,
-        filename,
-    );
-
-    match &mut object.sprite {
-        Sprite::Image { name: image_name } => {
-            // TODO: Tidy up
-            let mut current_image = images.keys().position(|k| k == image_name).unwrap_or(0);
-            let path = assets_path(filename, "images");
-
-            if images.is_empty() {
-                if ui.button(im_str!("Add a New Image"), NORMAL_BUTTON) {
-                    let first_key = choose_image_from_files(&mut asset_files.images, images, path);
-
-                    change_image(object, images, &first_key);
-                }
-            } else {
-                let mut keys: Vec<ImString> =
-                    images.keys().map(|k| ImString::from(k.clone())).collect();
-
-                keys.push(ImString::new("Add a New Image"));
-
-                let image_names: Vec<&ImString> = keys.iter().collect();
-
-                let change_image = |object: &mut SerialiseObject, key| match key {
-                    Some(key) => {
-                        object.sprite = Sprite::Image { name: key };
-                    }
-                    None => {
-                        log::error!("None of the new images loaded correctly");
-                    }
-                };
-
-                if imgui::ComboBox::new(im_str!("Image")).build_simple_string(
-                    ui,
-                    &mut current_image,
-                    &image_names,
-                ) {
-                    if current_image == image_names.len() - 1 {
-                        let first_key =
-                            choose_image_from_files(&mut asset_files.images, images, path);
-                        change_image(object, first_key);
-                    } else {
-                        change_image(object, images.keys().nth(current_image).cloned())
-                    }
-                }
-            };
-        }
-        Sprite::Colour(colour) => {
-            colour.choose(ui);
-        }
-    };*/
 
     ui.input_float(im_str!("Starting X"), &mut object.position.x)
         .build();
@@ -870,7 +805,6 @@ fn edit_object_properties(
             }
         }
     };
-
     if ui.radio_button_bool(im_str!("Flip Horizontal"), object.flip.horizontal) {
         object.flip.horizontal = !object.flip.horizontal;
     }
@@ -887,6 +821,19 @@ fn edit_object_properties(
     let mut change_layer = object.layer as i32;
     ui.input_int(im_str!("Layer"), &mut change_layer).build();
     object.layer = change_layer.max(0).min(255) as u8;
+}
+
+fn move_back<T>(list: &mut Vec<T>, index: &mut usize) {
+    if *index > 0 {
+        list.swap(*index, *index - 1);
+        *index -= 1;
+    }
+}
+fn move_forward<T>(list: &mut Vec<T>, index: &mut usize) {
+    if *index + 1 < list.len() {
+        list.swap(*index, *index + 1);
+        *index += 1;
+    }
 }
 
 fn edit_instruction(
@@ -920,13 +867,9 @@ fn edit_instruction(
         match action {
             Action::Random { random_actions } => {
                 for action in random_actions.iter() {
-                    let selected = InstructionFocus::Action { index: i } == *focus;
-                    if imgui::Selectable::new(&ImString::new(format!("\t{}", action)))
+                    imgui::Selectable::new(&ImString::new(format!("\t{}", action)))
                         .selected(selected)
-                        .build(ui)
-                    {
-                        *focus = InstructionFocus::Action { index: i };
-                    }
+                        .build(ui);
                 }
             }
             _ => {}
@@ -941,25 +884,11 @@ fn edit_instruction(
     ui.same_line(0.0);
     if ui.small_button(im_str!("Up")) {
         match focus {
-            InstructionFocus::Trigger {
-                index: selected_index,
-            } => {
-                if *selected_index > 0 {
-                    instruction
-                        .triggers
-                        .swap(*selected_index, *selected_index - 1);
-                    *selected_index -= 1;
-                }
+            InstructionFocus::Trigger { index } => {
+                move_back(&mut instruction.triggers, index);
             }
-            InstructionFocus::Action {
-                index: selected_index,
-            } => {
-                if *selected_index > 0 {
-                    instruction
-                        .actions
-                        .swap(*selected_index, *selected_index - 1);
-                    *selected_index -= 1;
-                }
+            InstructionFocus::Action { index } => {
+                move_back(&mut instruction.actions, index);
             }
             InstructionFocus::None => {}
         }
@@ -967,25 +896,11 @@ fn edit_instruction(
     ui.same_line(0.0);
     if ui.small_button(im_str!("Down")) {
         match focus {
-            InstructionFocus::Trigger {
-                index: selected_index,
-            } => {
-                if *selected_index + 1 < instruction.triggers.len() {
-                    instruction
-                        .triggers
-                        .swap(*selected_index, *selected_index + 1);
-                    *selected_index += 1;
-                }
+            InstructionFocus::Trigger { index } => {
+                move_forward(&mut instruction.triggers, index);
             }
-            InstructionFocus::Action {
-                index: selected_index,
-            } => {
-                if *selected_index + 1 < instruction.actions.len() {
-                    instruction
-                        .actions
-                        .swap(*selected_index, *selected_index + 1);
-                    *selected_index += 1;
-                }
+            InstructionFocus::Action { index } => {
+                move_forward(&mut instruction.actions, index);
             }
             InstructionFocus::None => {}
         }
@@ -1003,27 +918,21 @@ fn edit_instruction(
         }
     }
     ui.same_line(0.0);
+    fn delete<T>(list: &mut Vec<T>, index: &mut usize) {
+        if !list.is_empty() {
+            list.remove(*index);
+            if *index > 0 {
+                *index -= 1;
+            }
+        }
+    }
     if ui.small_button(im_str!("Delete")) {
         match focus {
-            InstructionFocus::Trigger {
-                index: selected_index,
-            } => {
-                if !instruction.triggers.is_empty() {
-                    instruction.triggers.remove(*selected_index);
-                    if *selected_index > 0 {
-                        *selected_index -= 1;
-                    }
-                }
+            InstructionFocus::Trigger { index } => {
+                delete(&mut instruction.triggers, index);
             }
-            InstructionFocus::Action {
-                index: selected_index,
-            } => {
-                if !instruction.actions.is_empty() {
-                    instruction.actions.remove(*selected_index);
-                    if *selected_index > 0 {
-                        *selected_index -= 1;
-                    }
-                }
+            InstructionFocus::Action { index } => {
+                delete(&mut instruction.actions, index);
             }
             InstructionFocus::None => {}
         }
@@ -1044,12 +953,17 @@ fn edit_instruction_list<'a>(
     draw_tasks: &mut Vec<DrawTask>,
     ttf_context: &'a TtfContext,
 ) {
+    fn instruction_mut(
+        instructions: &mut Vec<Instruction>,
+        index: Option<usize>,
+    ) -> &mut Instruction {
+        let selected_index = index.unwrap_or(0);
+        instructions.get_mut(selected_index).unwrap()
+    }
     match instruction_state.mode {
         InstructionMode::View => {
             imgui::ChildWindow::new(im_str!("Test"))
                 .size([0.0, -ui.frame_height_with_spacing()])
-                //.border(true)
-                //.horizontal_scrollbar(true)
                 .horizontal_scrollbar(true)
                 .build(ui, || {
                     for (i, instruction) in instructions.iter().enumerate() {
@@ -1116,19 +1030,14 @@ fn edit_instruction_list<'a>(
                 }
             }
         }
-        InstructionMode::Edit => {
-            //InstructionEditor::from(&mut self).edit(ui);
-            let selected_index = instruction_state.index.unwrap_or(0);
-            edit_instruction(
-                &mut instructions[selected_index],
-                ui,
-                &mut instruction_state.mode,
-                &mut instruction_state.focus,
-            )
-        }
+        InstructionMode::Edit => edit_instruction(
+            &mut instruction_mut(instructions, instruction_state.index),
+            ui,
+            &mut instruction_state.mode,
+            &mut instruction_state.focus,
+        ),
         InstructionMode::AddTrigger => {
-            let selected_index = instruction_state.index.unwrap_or(0);
-            let instruction = &mut instructions[selected_index];
+            let instruction = instruction_mut(instructions, instruction_state.index);
             instruction.triggers.push(Trigger::Time(When::Start));
             instruction_state.focus = InstructionFocus::Trigger {
                 index: instruction.triggers.len() - 1,
@@ -1136,8 +1045,7 @@ fn edit_instruction_list<'a>(
             instruction_state.mode = InstructionMode::EditTrigger;
         }
         InstructionMode::AddAction => {
-            let selected_index = instruction_state.index.unwrap_or(0);
-            let instruction = &mut instructions[selected_index];
+            let instruction = instruction_mut(instructions, instruction_state.index);
             instruction.actions.push(Action::Win);
             instruction_state.focus = InstructionFocus::Action {
                 index: instruction.actions.len() - 1,
@@ -1145,14 +1053,14 @@ fn edit_instruction_list<'a>(
             instruction_state.mode = InstructionMode::EditAction;
         }
         InstructionMode::EditTrigger => {
-            let selected_index = instruction_state.index.unwrap_or(0);
+            let instruction = instruction_mut(instructions, instruction_state.index);
             let trigger_index = match instruction_state.focus {
                 InstructionFocus::Trigger { index } => index,
                 _ => unreachable!(),
             };
             edit_trigger(
                 ui,
-                &mut instructions[selected_index].triggers[trigger_index],
+                &mut instruction.triggers[trigger_index],
                 object_names,
                 game_length,
                 &mut assets.images,
@@ -1163,14 +1071,14 @@ fn edit_instruction_list<'a>(
             );
         }
         InstructionMode::EditAction => {
-            let selected_index = instruction_state.index.unwrap_or(0);
+            let instruction = instruction_mut(instructions, instruction_state.index);
             let action_index = match instruction_state.focus {
                 InstructionFocus::Action { index } => index,
                 _ => unreachable!(),
             };
             edit_action(
                 ui,
-                &mut instructions[selected_index].actions[action_index],
+                &mut instruction.actions[action_index],
                 assets,
                 asset_files,
                 filename,
@@ -1288,11 +1196,7 @@ fn edit_trigger(
             choose_property_check(check, ui, images, image_files, filename);
         }
         Trigger::DifficultyLevel { level } => {
-            imgui::Slider::new(
-                im_str!("Difficulty Level"),
-                std::ops::RangeInclusive::new(1, 3),
-            )
-            .build(ui, level);
+            choose_difficulty_level(level, ui);
         }
     }
     if ui.small_button(im_str!("Back")) {
@@ -1338,6 +1242,9 @@ fn edit_action<'a>(
         im_str!("Random Action"),
         im_str!("End Early"),
     ];
+    fn first_or_default<V>(list: &HashMap<String, V>) -> String {
+        list.keys().next().cloned().unwrap_or_default()
+    }
     if imgui::ComboBox::new(im_str!("Action")).build_simple_string(
         ui,
         &mut current_action_position,
@@ -1349,13 +1256,7 @@ fn edit_action<'a>(
             2 => Action::Effect(Effect::None),
             3 => Action::Motion(Motion::Stop),
             4 => Action::PlaySound {
-                name: assets
-                    .sounds
-                    .keys()
-                    .next()
-                    .clone()
-                    .unwrap_or(&String::new())
-                    .to_owned(),
+                name: first_or_default(&assets.sounds),
             },
             5 => Action::StopMusic,
             6 => Action::SetProperty(PropertySetter::Angle(AngleSetter::Value(0.0))),
@@ -1366,13 +1267,7 @@ fn edit_action<'a>(
             },
             8 => Action::DrawText {
                 text: "".to_string(),
-                font: assets
-                    .fonts
-                    .keys()
-                    .next()
-                    .clone()
-                    .unwrap_or(&String::new())
-                    .to_owned(),
+                font: first_or_default(&assets.fonts),
                 colour: Colour::black(),
                 resize: TextResize::MatchObject,
                 justify: JustifyText::Centre,
@@ -1564,7 +1459,6 @@ fn edit_objects_list(
                             // TODO: try selected_object instead
                             object_state.rename_object = None;
                         } else if ui.is_item_deactivated() {
-                            // TODO: Not deactivating anymore
                             object_operation = ObjectOperation::Rename {
                                 index: rename_details.index,
                                 from: rename_details.name.clone(),
@@ -1580,8 +1474,7 @@ fn edit_objects_list(
                         .build(ui)
                     {
                         object_state.index = Some(i);
-                        instruction_state.mode = InstructionMode::View;
-                        instruction_state.index = None;
+                        *instruction_state = InstructionState::default();
                     }
                     if ui.is_item_active() {
                         if up_pressed {
@@ -1608,46 +1501,43 @@ fn edit_objects_list(
             }
 
             ui.popup(im_str!("Edit Object"), || {
+                let index = object_state.index.unwrap();
                 if ui.button(im_str!("Move up"), NORMAL_BUTTON) {
                     object_operation = ObjectOperation::Move {
                         direction: MoveDirection::Up,
-                        index: object_state.index.unwrap(),
+                        index,
                     };
                 }
 
                 if ui.button(im_str!("Move down"), NORMAL_BUTTON) {
                     object_operation = ObjectOperation::Move {
                         direction: MoveDirection::Down,
-                        index: object_state.index.unwrap(),
+                        index,
                     };
                 }
 
                 if ui.button(im_str!("Rename"), NORMAL_BUTTON) {
                     object_state.rename_object = Some(RenameObject {
-                        index: object_state.index.unwrap(),
-                        name: objects[object_state.index.unwrap()].name.clone(),
-                        buffer: ImString::from(objects[object_state.index.unwrap()].name.clone()),
+                        index,
+                        name: objects[index].name.clone(),
+                        buffer: ImString::from(objects[index].name.clone()),
                     });
                     ui.close_current_popup();
                 }
 
                 if ui.button(im_str!("Clone"), NORMAL_BUTTON) {
-                    object_operation = ObjectOperation::_Clone {
-                        index: object_state.index.unwrap(),
-                    }
+                    object_operation = ObjectOperation::_Clone { index }
                 }
 
                 if ui.button(im_str!("Delete"), NORMAL_BUTTON) {
-                    object_operation = ObjectOperation::Delete {
-                        index: object_state.index.unwrap(),
-                    }
+                    object_operation = ObjectOperation::Delete { index }
                 }
             });
 
             if !ui.is_any_mouse_down() && ui.is_window_focused() {
                 if let Some(index) = &mut object_state.index {
                     if up_pressed {
-                        let previous_index = if *index == 0 { 0 } else { *index - 1 };
+                        let previous_index = (*index).max(1) - 1;
                         objects.swap(*index, previous_index);
                         *index = previous_index;
                     } else if down_pressed {
@@ -1672,8 +1562,7 @@ fn edit_objects_list(
                         // TODO: Add this popup
                         ui.open_popup(im_str!("Duplicate Name"));
                     } else {
-                        // TODO: Remove unnecessary cloning
-                        objects[index].name = to.clone();
+                        objects[index].name = to.to_owned();
                         rename_across_objects(objects, &from, &to);
                         ui.close_current_popup();
                     }
@@ -1683,28 +1572,26 @@ fn edit_objects_list(
                     object_state.new_name_buffer = ImString::from("".to_string());
                     ui.open_popup(im_str!("Clone Object"));
                 }
-                ObjectOperation::Move { direction, index } => match direction {
-                    MoveDirection::Up => {
-                        if index > 0 {
-                            objects.swap(index - 1, index);
-                            object_state.index = Some(index - 1);
+                ObjectOperation::Move {
+                    direction,
+                    mut index,
+                } => {
+                    match direction {
+                        MoveDirection::Up => {
+                            move_back(objects, &mut index);
+                        }
+                        MoveDirection::Down => {
+                            move_forward(objects, &mut index);
                         }
                     }
-                    MoveDirection::Down => {
-                        if index + 1 < objects.len() {
-                            objects.swap(index, index + 1);
-                            object_state.index = Some(index + 1);
-                        }
-                    }
-                },
+                    object_state.index = Some(index);
+                }
                 ObjectOperation::Delete { index } => {
                     objects.remove(index);
                     if objects.is_empty() {
                         object_state.index = None;
-                    } else if index == 0 {
-                        object_state.index = Some(0);
                     } else {
-                        object_state.index = Some(index - 1);
+                        object_state.index = Some(index.max(1) - 1);
                     }
                 }
                 _ => {}
@@ -1742,8 +1629,7 @@ fn edit_objects_list(
                         object_state.new_name_buffer.to_str().to_string();
                     objects.push(object_state.new_object.clone());
                     object_state.index = Some(objects.len() - 1);
-                    instruction_state.mode = InstructionMode::View;
-                    instruction_state.index = None;
+                    *instruction_state = InstructionState::default();
                     ui.close_current_popup();
                 }
                 ui.same_line(0.0);
@@ -1777,8 +1663,7 @@ fn edit_objects_list(
                     object_state.new_object.name = new_name;
                     objects.push(object_state.new_object.clone());
                     object_state.index = Some(objects.len() - 1);
-                    instruction_state.mode = InstructionMode::View;
-                    instruction_state.index = None;
+                    *instruction_state = InstructionState::default();
                     ui.close_current_popup();
                 }
                 ui.same_line(0.0);
@@ -1817,7 +1702,8 @@ fn file_show<'a, 'b>(
             selected_index,
             instruction_state,
         );
-        match file_open(
+
+        if let Err(error) = file_open(
             ui,
             game,
             assets,
@@ -1827,14 +1713,13 @@ fn file_show<'a, 'b>(
             selected_index,
             instruction_state,
         ) {
-            Ok(_) => {}
-            Err(error) => {
-                menu.end(ui);
-                return Err(error);
-            }
+            menu.end(ui);
+            return Err(error);
         }
 
         file_save(ui, filename, game);
+
+        *filename = file_save_as(ui, game);
 
         *editor_status = file_return_to_menu(ui);
 
@@ -1842,6 +1727,13 @@ fn file_show<'a, 'b>(
     }
 
     Ok(())
+}
+
+fn toggle_menu_item(ui: &imgui::Ui, label: &ImStr, opened: &mut bool) {
+    let mut toggled = *opened;
+    if imgui::MenuItem::new(label).build_with_ref(ui, &mut toggled) {
+        *opened = !(*opened);
+    }
 }
 
 fn main_menu_bar_show<'a, 'b>(
@@ -1859,7 +1751,7 @@ fn main_menu_bar_show<'a, 'b>(
 ) -> WeeResult<()> {
     let menu_bar = ui.begin_main_menu_bar();
     if let Some(bar) = menu_bar {
-        match file_show(
+        if let Err(error) = file_show(
             ui,
             game,
             assets,
@@ -1870,25 +1762,15 @@ fn main_menu_bar_show<'a, 'b>(
             instruction_state,
             editor_status,
         ) {
-            Ok(_) => {}
-            Err(error) => {
-                bar.end(ui);
-                return Err(error);
-            }
+            bar.end(ui);
+            return Err(error);
         }
 
         view_show(ui, windows);
 
         let menu = ui.begin_menu(im_str!("Debug"), true);
         if let Some(menu) = menu {
-            let toggle = |label, opened: &mut bool| {
-                let mut toggled = *opened;
-                if imgui::MenuItem::new(label).build_with_ref(ui, &mut toggled) {
-                    *opened = !(*opened);
-                }
-            };
-
-            toggle(im_str!("Show Collision Areas"), show_collision_areas);
+            toggle_menu_item(ui, im_str!("Show Collision Areas"), show_collision_areas);
             menu.end(ui);
         }
         bar.end(ui);
@@ -1910,8 +1792,7 @@ fn file_new(
         *assets = Assets::default();
         *filename = None;
         *selected_object_index = None;
-        instruction_state.mode = InstructionMode::View;
-        instruction_state.index = None;
+        *instruction_state = InstructionState::default();
     }
 }
 
@@ -1926,32 +1807,24 @@ fn file_open<'a, 'b>(
     instruction_state: &mut InstructionState,
 ) -> WeeResult<()> {
     if imgui::MenuItem::new(im_str!("Open")).build(ui) {
-        let games_path = std::env::current_dir().unwrap().join(Path::new("games"));
-        let response = nfd::open_file_dialog(None, games_path.to_str());
-        if let Ok(response) = response {
+        let response = nfd::open_file_dialog(None, Path::new("games").to_str());
+        if let Ok(Response::Okay(file_path)) = response {
             for _ in event_pump.poll_iter() {}
-            match response {
-                Response::Okay(file_path) => {
-                    log::info!("File path = {:?}", file_path);
-                    let new_data = GameData::load(&file_path);
-                    match new_data {
-                        Ok(new_data) => {
-                            *game = new_data;
-
-                            *assets = Assets::load(&game.asset_files, &file_path, ttf_context)?;
-                            *filename = Some(file_path);
-                            *selected_index = None;
-                            instruction_state.mode = InstructionMode::View;
-                            instruction_state.index = None;
-                        }
-                        Err(error) => {
-                            // TODO: More than just logging here. Show error
-                            log::error!("Couldn't open file {}", file_path);
-                            log::error!("{}", error);
-                        }
-                    }
+            log::info!("File path = {:?}", file_path);
+            let new_data = GameData::load(&file_path);
+            match new_data {
+                Ok(new_data) => {
+                    *game = new_data;
+                    *assets = Assets::load(&game.asset_files, &file_path, ttf_context)?;
+                    *filename = Some(file_path);
+                    *selected_index = None;
+                    *instruction_state = InstructionState::default();
                 }
-                _ => {}
+                Err(error) => {
+                    // TODO: More than just logging here. Show error
+                    log::error!("Couldn't open file {}", file_path);
+                    log::error!("{}", error);
+                }
             }
         } else {
             log::error!("Error opening file dialog");
@@ -1977,62 +1850,40 @@ pub fn file_save(ui: &imgui::Ui, filename: &mut Option<String>, game: &GameData)
                     }
                 }
             }
-            None => {
-                // TODO: Duplicate code
-                let games_path = std::env::current_dir().unwrap().join(Path::new("games"));
-                let response = nfd::open_save_dialog(None, games_path.to_str());
-                match response {
-                    Ok(response) => {
-                        if let Response::Okay(file_path) = response {
-                            log::info!("File path = {:?}", file_path);
-                            // let final_path = base_file_path.canonfile_path
-                            let s = serde_json::to_string_pretty(game);
-                            match s {
-                                Ok(s) => {
-                                    std::fs::write(&file_path, s)
-                                        .unwrap_or_else(|e| log::error!("{}", e));
-                                    *filename = Some(file_path);
-                                }
-                                Err(error) => {
-                                    log::error!("{}", error);
-                                }
-                            }
-                        }
-                    }
-                    Err(error) => {
-                        log::error!("{}", error);
-                    }
-                }
-            }
+            None => *filename = save_game_file_as(game),
         }
     }
 }
 
-pub fn file_save_as(ui: &imgui::Ui, filename: &mut Option<String>, game: &GameData) {
-    if imgui::MenuItem::new(im_str!("Save As")).build(ui) {
-        let games_path = std::env::current_dir().unwrap().join(Path::new("games"));
-        let response = nfd::open_save_dialog(None, games_path.to_str());
-        match response {
-            Ok(response) => {
-                if let Response::Okay(file_path) = response {
-                    log::info!("File path = {:?}", file_path);
-                    // let final_path = base_file_path.canonfile_path
-                    let s = serde_json::to_string_pretty(game);
-                    match s {
-                        Ok(s) => {
-                            std::fs::write(&file_path, s).unwrap_or_else(|e| log::error!("{}", e));
-                            *filename = Some(file_path);
-                        }
-                        Err(error) => {
-                            log::error!("{}", error);
-                        }
-                    }
+fn save_game_file_as(game: &GameData) -> Option<String> {
+    let response = nfd::open_save_dialog(None, Path::new("games").to_str());
+    match response {
+        Ok(Response::Okay(file_path)) => {
+            log::info!("File path = {:?}", file_path);
+            let s = serde_json::to_string_pretty(game);
+            match s {
+                Ok(s) => {
+                    std::fs::write(&file_path, s).unwrap_or_else(|e| log::error!("{}", e));
+                    return Some(file_path);
+                }
+                Err(error) => {
+                    log::error!("{}", error);
                 }
             }
-            Err(error) => {
-                log::error!("{}", error);
-            }
         }
+        Ok(_) => unreachable!(),
+        Err(error) => {
+            log::error!("{}", error);
+        }
+    }
+    return None;
+}
+
+fn file_save_as(ui: &imgui::Ui, game: &GameData) -> Option<String> {
+    if imgui::MenuItem::new(im_str!("Save As")).build(ui) {
+        save_game_file_as(game)
+    } else {
+        None
     }
 }
 
@@ -2046,10 +1897,7 @@ pub fn file_return_to_menu(ui: &imgui::Ui) -> EditorStatus {
 
 fn view_show(ui: &imgui::Ui, windows: &mut Windows) {
     let toggle = |label, opened: &mut bool| {
-        let mut toggled = *opened;
-        if imgui::MenuItem::new(label).build_with_ref(ui, &mut toggled) {
-            *opened = !(*opened);
-        }
+        toggle_menu_item(ui, label, opened);
     };
 
     let menu = ui.begin_menu(im_str!("View"), true);
@@ -2104,6 +1952,16 @@ struct InstructionState {
     mode: InstructionMode,
     index: Option<usize>,
     focus: InstructionFocus,
+}
+
+impl Default for InstructionState {
+    fn default() -> InstructionState {
+        InstructionState {
+            mode: InstructionMode::View,
+            index: None,
+            focus: InstructionFocus::None,
+        }
+    }
 }
 
 pub struct Imgui {
