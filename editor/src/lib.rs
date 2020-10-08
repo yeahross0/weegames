@@ -344,138 +344,23 @@ pub fn run<'a, 'b>(
 
         sdlglue::clear_screen(Colour::dull_grey());
 
-        {
-            let dest = Rect::new(
-                (PROJECTION_WIDTH / 2.0 + game_position.x) * scale,
-                (PROJECTION_HEIGHT / 2.0 + game_position.y) * scale,
-                PROJECTION_WIDTH * scale,
-                PROJECTION_HEIGHT * scale,
-            );
-            let model = Model::new(dest, None, 0.0, Flip::default());
-            renderer.fill_rectangle(model, Colour::light_grey());
-        }
+        let scene_location = SceneLocation {
+            position: game_position,
+            scale,
+        };
 
-        //renderer.draw_background(&game.background, &images)?;
-        // TODO: Move rendering code to sdlglue
-        {
-            for part in game.background.iter() {
-                match &part.sprite {
-                    Sprite::Image { name } => {
-                        let texture = assets.images.get_image(name)?;
+        renderer.clear_editor_screen(scene_location);
 
-                        let dest = part
-                            .area
-                            .to_rect()
-                            .move_position(game_position)
-                            .scale(scale);
+        renderer.draw_editor_background(&game.background, &assets.images, scene_location)?;
 
-                        renderer.prepare(&texture).set_dest(dest).draw();
-                    }
-                    Sprite::Colour(colour) => {
-                        let dest = part
-                            .area
-                            .to_rect()
-                            .move_position(game_position)
-                            .scale(scale);
+        renderer.draw_editor_objects(
+            &game.objects,
+            &assets.images,
+            scene_location,
+            show_collision_areas,
+        )?;
 
-                        let model = Model::new(dest, None, 0.0, Flip::default());
-
-                        renderer.fill_rectangle(model, *colour);
-                    }
-                }
-            }
-        }
-
-        {
-            let mut layers: Vec<u8> = game.objects.iter().map(|o| o.layer).collect();
-            layers.sort();
-            layers.dedup();
-            layers.reverse();
-            for layer in layers.into_iter() {
-                for object in game.objects.iter() {
-                    if object.layer == layer {
-                        let dest = Rect::new(
-                            object.position.x,
-                            object.position.y,
-                            object.size.width,
-                            object.size.height,
-                        )
-                        .move_position(game_position)
-                        .scale(scale);
-                        match &object.sprite {
-                            Sprite::Image { name: image_name } => {
-                                let texture = assets.images.get_image(image_name)?;
-
-                                renderer
-                                    .prepare(&texture)
-                                    .set_dest(dest)
-                                    .set_angle(object.angle)
-                                    .set_origin(Some(object.origin() * scale))
-                                    .flip(object.flip)
-                                    .draw();
-                            }
-                            Sprite::Colour(colour) => {
-                                let model = Model::new(
-                                    dest,
-                                    Some(object.origin() * scale),
-                                    object.angle,
-                                    object.flip,
-                                );
-
-                                renderer.fill_rectangle(model, *colour);
-                            }
-                        }
-
-                        if show_collision_areas {
-                            // TODO: Tidy up
-                            let game_object = object.clone().to_object();
-                            let poly = game_object.poly();
-
-                            for i in 0..poly.count() {
-                                let v = poly.get_vert(i);
-                                let rect = Rect::new(v.x(), v.y(), 10.0, 10.0)
-                                    .move_position(game_position)
-                                    .scale(scale);
-                                let model = Model::new(rect, None, 0.0, Flip::default());
-                                renderer.fill_rectangle(model, Colour::rgba(0.0, 1.0, 0.0, 0.5));
-                            }
-
-                            let aabb = game_object.collision_aabb();
-                            let mut origin = game_object.origin();
-                            if let Some(area) = game_object.collision_area {
-                                origin = Vec2::new(origin.x - area.min.x, origin.y - area.min.y);
-                            }
-                            let rect = aabb.to_rect().move_position(game_position).scale(scale);
-                            let model = Model::new(
-                                rect,
-                                Some(origin * scale),
-                                object.angle,
-                                Flip::default(),
-                            );
-                            // TODO: model.move().scale()
-                            renderer.fill_rectangle(model, Colour::rgba(1.0, 0.0, 0.0, 0.5));
-                        }
-                    }
-                }
-            }
-        }
-
-        for task in draw_tasks {
-            match task {
-                DrawTask::AABB(aabb) => {
-                    let rect = aabb.to_rect().move_position(game_position).scale(scale);
-                    let model = Model::new(rect, None, 0.0, Flip::default());
-                    renderer.fill_rectangle(model, Colour::rgba(0.0, 0.0, 1.0, 0.5));
-                }
-                DrawTask::Point(point) => {
-                    let rect = Rect::new(point.x, point.y, 20.0, 20.0)
-                        .move_position(game_position)
-                        .scale(scale);
-                    let model = Model::new(rect, None, 0.0, Flip::default());
-                    renderer.fill_rectangle(model, Colour::rgba(0.5, 0.0, 0.5, 0.5));
-                }
-            }
-        }
+        renderer.draw_tasks(&mut draw_tasks, scene_location);
 
         imgui_frame.render(&renderer.window);
         renderer.present();
@@ -488,6 +373,178 @@ pub fn run<'a, 'b>(
     }
 
     Ok(())
+}
+
+#[derive(Copy, Clone, Debug)]
+struct SceneLocation {
+    position: Vec2,
+    scale: f32,
+}
+trait RenderEditor {
+    fn clear_editor_screen(&self, location: SceneLocation);
+
+    fn draw_editor_background(
+        &self,
+        background: &[BackgroundPart],
+        images: &Images,
+        location: SceneLocation,
+    ) -> WeeResult<()>;
+
+    fn draw_editor_objects(
+        &self,
+        objects: &Vec<SerialiseObject>,
+        images: &Images,
+        location: SceneLocation,
+        show_collision_areas: bool,
+    ) -> WeeResult<()>;
+
+    fn draw_tasks(&self, draw_tasks: &mut Vec<DrawTask>, location: SceneLocation);
+}
+
+impl RenderEditor for Renderer {
+    fn clear_editor_screen(&self, location: SceneLocation) {
+        let dest = Rect::new(
+            (PROJECTION_WIDTH / 2.0 + location.position.x) * location.scale,
+            (PROJECTION_HEIGHT / 2.0 + location.position.y) * location.scale,
+            PROJECTION_WIDTH * location.scale,
+            PROJECTION_HEIGHT * location.scale,
+        );
+        let model = Model::new(dest, None, 0.0, Flip::default());
+        self.fill_rectangle(model, Colour::light_grey());
+    }
+
+    fn draw_editor_background(
+        &self,
+        background: &[BackgroundPart],
+        images: &Images,
+        location: SceneLocation,
+    ) -> WeeResult<()> {
+        for part in background.iter() {
+            let dest = part
+                .area
+                .to_rect()
+                .move_position(location.position)
+                .scale(location.scale);
+            match &part.sprite {
+                Sprite::Image { name } => {
+                    let texture = images.get_image(name)?;
+
+                    self.prepare(&texture).set_dest(dest).draw();
+                }
+                Sprite::Colour(colour) => {
+                    let model = Model::new(dest, None, 0.0, Flip::default());
+
+                    self.fill_rectangle(model, *colour);
+                }
+            }
+        }
+        Ok(())
+    }
+
+    fn draw_editor_objects(
+        &self,
+        objects: &Vec<SerialiseObject>,
+        images: &Images,
+        location: SceneLocation,
+        show_collision_areas: bool,
+    ) -> WeeResult<()> {
+        let mut layers: Vec<u8> = objects.iter().map(|o| o.layer).collect();
+        layers.sort();
+        layers.dedup();
+        layers.reverse();
+        for layer in layers.into_iter() {
+            for object in objects.iter() {
+                if object.layer == layer {
+                    let dest = Rect::new(
+                        object.position.x,
+                        object.position.y,
+                        object.size.width,
+                        object.size.height,
+                    )
+                    .move_position(location.position)
+                    .scale(location.scale);
+                    match &object.sprite {
+                        Sprite::Image { name: image_name } => {
+                            let texture = images.get_image(image_name)?;
+
+                            self.prepare(&texture)
+                                .set_dest(dest)
+                                .set_angle(object.angle)
+                                .set_origin(Some(object.origin() * location.scale))
+                                .flip(object.flip)
+                                .draw();
+                        }
+                        Sprite::Colour(colour) => {
+                            let model = Model::new(
+                                dest,
+                                Some(object.origin() * location.scale),
+                                object.angle,
+                                object.flip,
+                            );
+
+                            self.fill_rectangle(model, *colour);
+                        }
+                    }
+
+                    if show_collision_areas {
+                        // TODO: Tidy up
+                        let game_object = object.clone().to_object();
+                        let poly = game_object.poly();
+
+                        for i in 0..poly.count() {
+                            let v = poly.get_vert(i);
+                            let rect = Rect::new(v.x(), v.y(), 10.0, 10.0)
+                                .move_position(location.position)
+                                .scale(location.scale);
+                            let model = Model::new(rect, None, 0.0, Flip::default());
+                            self.fill_rectangle(model, Colour::rgba(0.0, 1.0, 0.0, 0.5));
+                        }
+
+                        let aabb = game_object.collision_aabb();
+                        let mut origin = game_object.origin();
+                        if let Some(area) = game_object.collision_area {
+                            origin = Vec2::new(origin.x - area.min.x, origin.y - area.min.y);
+                        }
+                        let rect = aabb
+                            .to_rect()
+                            .move_position(location.position)
+                            .scale(location.scale);
+                        let model = Model::new(
+                            rect,
+                            Some(origin * location.scale),
+                            object.angle,
+                            Flip::default(),
+                        );
+                        // TODO: model.move().scale()
+                        self.fill_rectangle(model, Colour::rgba(1.0, 0.0, 0.0, 0.5));
+                    }
+                }
+            }
+        }
+        Ok(())
+    }
+
+    fn draw_tasks(&self, draw_tasks: &mut Vec<DrawTask>, location: SceneLocation) {
+        for task in draw_tasks {
+            match task {
+                DrawTask::AABB(aabb) => {
+                    let rect = aabb
+                        .to_rect()
+                        .move_position(location.position)
+                        .scale(location.scale);
+                    let model = Model::new(rect, None, 0.0, Flip::default());
+                    self.fill_rectangle(model, Colour::rgba(0.0, 0.0, 1.0, 0.5));
+                }
+                DrawTask::Point(point) => {
+                    let rect = Rect::new(point.x, point.y, 20.0, 20.0)
+                        .move_position(location.position)
+                        .scale(location.scale);
+                    let model = Model::new(rect, None, 0.0, Flip::default());
+                    self.fill_rectangle(model, Colour::rgba(0.5, 0.0, 0.5, 0.5));
+                }
+            }
+        }
+    }
 }
 
 fn choose_difficulty_level(level: &mut u32, ui: &imgui::Ui) {
@@ -666,6 +723,20 @@ fn objects_window_show<'a>(
     }
 }
 
+fn choose_collision_area(area: &mut AABB, ui: &imgui::Ui) -> bool {
+    ui.input_float(im_str!("Collision Min X"), &mut area.min.x)
+        .build()
+        || ui
+            .input_float(im_str!("Collision Min Y"), &mut area.min.y)
+            .build()
+        || ui
+            .input_float(im_str!("Collision Max X"), &mut area.max.x)
+            .build()
+        || ui
+            .input_float(im_str!("Collision Max Y"), &mut area.max.y)
+            .build()
+}
+
 fn edit_object<'a>(
     ui: &imgui::Ui,
     object: &mut SerialiseObject,
@@ -772,23 +843,9 @@ fn edit_object_properties(
         }
     };
 
-    let choose_collision_area = |area: &mut AABB| {
-        ui.input_float(im_str!("Collision Min X"), &mut area.min.x)
-            .build()
-            || ui
-                .input_float(im_str!("Collision Min Y"), &mut area.min.y)
-                .build()
-            || ui
-                .input_float(im_str!("Collision Max X"), &mut area.max.x)
-                .build()
-            || ui
-                .input_float(im_str!("Collision Max Y"), &mut area.max.y)
-                .build()
-    };
-
     object.collision_area = match object.collision_area {
         Some(mut area) => {
-            choose_collision_area(&mut area);
+            choose_collision_area(&mut area, ui);
             Some(area)
         }
         None => {
@@ -798,7 +855,7 @@ fn edit_object_properties(
                 object.size.width as f32,
                 object.size.height as f32,
             );
-            if choose_collision_area(&mut area) {
+            if choose_collision_area(&mut area, ui) {
                 Some(area)
             } else {
                 None
@@ -2061,38 +2118,37 @@ impl ImguiDisplayTrigger for Trigger {
             }
         };
 
+        // TODO: Sort through these closures
         let object_tooltip = |object_name: &str| {
             if ui.is_item_hovered() {
                 ui.tooltip(|| match sprites.get(object_name) {
-                    Some(sprite) => match &sprite {
-                        Sprite::Image { name: image_name } => {
-                            if let Some(texture) = &images.get(image_name) {
-                                let w = texture.width as f32;
-                                let h = texture.height as f32;
-                                let m = w.max(h);
-                                let w = w / m * 200.0;
-                                let h = h / m * 200.0;
-                                imgui::Image::new(
-                                    imgui::TextureId::from(texture.id as usize),
-                                    [w, h],
-                                )
-                                .build(ui);
-                            } else {
-                                ui.text_colored(
-                                    [1.0, 0.0, 0.0, 1.0],
-                                    format!("Warning: Image `{}` not found", image_name),
-                                );
-                            }
-                        }
-                        Sprite::Colour(colour) => {
-                            imgui::ColorButton::new(
-                                im_str!("##Colour"),
-                                [colour.r, colour.g, colour.b, colour.a],
+                    Some(Sprite::Image { name: image_name }) => {
+                        if let Some(texture) = &images.get(image_name) {
+                            let width = texture.width as f32;
+                            let height = texture.height as f32;
+                            let max_side = width.max(height);
+                            let width = width / max_side * 200.0;
+                            let height = height / max_side * 200.0;
+                            imgui::Image::new(
+                                imgui::TextureId::from(texture.id as usize),
+                                [width, height],
                             )
-                            .size([80.0, 80.0])
                             .build(ui);
+                        } else {
+                            ui.text_colored(
+                                [1.0, 0.0, 0.0, 1.0],
+                                format!("Warning: Image `{}` not found", image_name),
+                            );
                         }
-                    },
+                    }
+                    Some(Sprite::Colour(colour)) => {
+                        imgui::ColorButton::new(
+                            im_str!("##Colour"),
+                            [colour.r, colour.g, colour.b, colour.a],
+                        )
+                        .size([80.0, 80.0])
+                        .build(ui);
+                    }
                     None => {
                         ui.text_colored(
                             [1.0, 0.0, 0.0, 1.0],
@@ -2166,6 +2222,7 @@ impl ImguiDisplayTrigger for Trigger {
                             object_button(name);
                         }
                         MouseOver::Area(area) => {
+                            // TODO: Draw task which highlights the area when hovered here
                             ui.text(format!(
                                 "the area between {}, {} and {}, {}",
                                 area.min.x, area.min.y, area.max.x, area.max.y
@@ -2309,7 +2366,15 @@ pub enum InstructionFocus {
 }
 
 trait Choose {
+    // TODO: Should return bool?
     fn choose(&mut self, ui: &imgui::Ui);
+}
+
+impl Choose for Vec2 {
+    fn choose(&mut self, ui: &imgui::Ui) {
+        ui.input_float(im_str!("X"), &mut self.x).build();
+        ui.input_float(im_str!("Y"), &mut self.y).build();
+    }
 }
 
 fn choose_when(when: &mut When, ui: &imgui::Ui, game_length: Length) {
@@ -2356,6 +2421,7 @@ fn choose_when(when: &mut When, ui: &imgui::Ui, game_length: Length) {
                 *end = frames[1] as u32;
             }
             Length::Infinite => {
+                // TODO: Have a look at how this looks
                 let mut frames = [*start as i32, *end as i32];
                 ui.drag_int2(im_str!("Time"), &mut frames).min(0).build();
                 *start = frames[0] as u32;
@@ -2366,18 +2432,38 @@ fn choose_when(when: &mut When, ui: &imgui::Ui, game_length: Length) {
     }
 }
 
+fn find_object(object_names: &Vec<&str>, name: &str) -> usize {
+    object_names
+        .iter()
+        .position(|obj_name| *obj_name == name)
+        .unwrap()
+}
+
+fn object_keys(object_names: &Vec<&str>) -> Vec<ImString> {
+    object_names
+        .iter()
+        .map(|name| ImString::from(name.to_string()))
+        .collect()
+}
+
+fn combo_keys<'a>(keys: &Vec<ImString>) -> Vec<&ImString> {
+    keys.iter().collect()
+}
+
 fn choose_collision_with(
     with: &mut CollisionWith,
     ui: &imgui::Ui,
     object_names: &Vec<&str>,
     draw_tasks: &mut Vec<DrawTask>,
 ) {
+    const OBJECT: i32 = 0;
+    const AREA: i32 = 1;
     let mut collision_type = if let CollisionWith::Object { .. } = with {
-        0
+        OBJECT
     } else {
-        1
+        AREA
     };
-    let collision_typename = if collision_type == 0 {
+    let collision_typename = if collision_type == OBJECT {
         "Object".to_string()
     } else {
         "Area".to_string()
@@ -2389,7 +2475,7 @@ fn choose_collision_with(
     .display_format(&ImString::from(collision_typename))
     .build(ui, &mut collision_type)
     {
-        *with = if collision_type == 0 {
+        *with = if collision_type == OBJECT {
             CollisionWith::Object {
                 name: object_names[0].to_string(),
             }
@@ -2400,32 +2486,10 @@ fn choose_collision_with(
 
     match with {
         CollisionWith::Object { name } => {
-            let mut current_object = object_names
-                .iter()
-                .position(|obj_name| obj_name == name)
-                .unwrap();
-            let keys: Vec<ImString> = object_names
-                .iter()
-                .map(|name| ImString::from(name.to_string()))
-                .collect();
-            let combo_keys: Vec<_> = keys.iter().collect();
-            if imgui::ComboBox::new(im_str!("Object")).build_simple_string(
-                ui,
-                &mut current_object,
-                &combo_keys,
-            ) {
-                *name = object_names[current_object].to_string();
-            }
+            choose_object(name, ui, object_names);
         }
         CollisionWith::Area(area) => {
-            ui.input_float(im_str!("Collision Min X"), &mut area.min.x)
-                .build();
-            ui.input_float(im_str!("Collision Min Y"), &mut area.min.y)
-                .build();
-            ui.input_float(im_str!("Collision Max X"), &mut area.max.x)
-                .build();
-            ui.input_float(im_str!("Collision Max Y"), &mut area.max.y)
-                .build();
+            choose_collision_area(area, ui);
             draw_tasks.push(DrawTask::AABB(*area));
         }
     }
@@ -2460,32 +2524,10 @@ fn choose_mouse_over(over: &mut MouseOver, ui: &imgui::Ui, object_names: &Vec<&s
     }
     match over {
         MouseOver::Object { name } => {
-            let mut current_object = object_names
-                .iter()
-                .position(|obj_name| obj_name == name)
-                .unwrap();
-            let keys: Vec<ImString> = object_names
-                .iter()
-                .map(|name| ImString::from(name.to_string()))
-                .collect();
-            let combo_keys: Vec<_> = keys.iter().collect();
-            if imgui::ComboBox::new(im_str!("Object")).build_simple_string(
-                ui,
-                &mut current_object,
-                &combo_keys,
-            ) {
-                *name = object_names[current_object].to_string();
-            }
+            choose_object(name, ui, object_names);
         }
         MouseOver::Area(area) => {
-            ui.input_float(im_str!("Area Min X"), &mut area.min.x)
-                .build();
-            ui.input_float(im_str!("Area Min Y"), &mut area.min.y)
-                .build();
-            ui.input_float(im_str!("Area Max X"), &mut area.max.x)
-                .build();
-            ui.input_float(im_str!("Area Max Y"), &mut area.max.y)
-                .build();
+            area.choose(ui);
         }
         _ => {}
     }
@@ -2578,19 +2620,12 @@ fn choose_percent(percent: &mut f32, ui: &imgui::Ui) {
 }
 
 fn choose_object(object: &mut String, ui: &imgui::Ui, object_names: &Vec<&str>) {
-    let mut current_object = object_names
-        .iter()
-        .position(|obj_name| obj_name == object)
-        .unwrap();
-    let keys: Vec<ImString> = object_names
-        .iter()
-        .map(|name| ImString::from(name.to_string()))
-        .collect();
-    let combo_keys: Vec<_> = keys.iter().collect();
+    let mut current_object = find_object(object_names, object);
+    let keys = object_keys(object_names);
     if imgui::ComboBox::new(im_str!("Object")).build_simple_string(
         ui,
         &mut current_object,
-        &combo_keys,
+        &combo_keys(&keys),
     ) {
         *object = object_names[current_object].to_string();
     }
@@ -3542,39 +3577,15 @@ fn choose_jump_location(
 
     match jump {
         JumpLocation::Area(area) => {
-            ui.input_float(im_str!("Area Min X"), &mut area.min.x)
-                .build();
-            ui.input_float(im_str!("Area Min Y"), &mut area.min.y)
-                .build();
-            ui.input_float(im_str!("Area Max X"), &mut area.max.x)
-                .build();
-            ui.input_float(im_str!("Area Max Y"), &mut area.max.y)
-                .build();
+            area.choose(ui);
 
             draw_tasks.push(DrawTask::AABB(*area));
         }
         JumpLocation::Object { name } => {
-            let mut current_object = object_names
-                .iter()
-                .position(|obj_name| obj_name == name)
-                .unwrap();
-            let keys: Vec<ImString> = object_names
-                .iter()
-                .map(|name| ImString::from(name.to_string()))
-                .collect();
-            let combo_keys: Vec<_> = keys.iter().collect();
-            if imgui::ComboBox::new(im_str!("Object")).build_simple_string(
-                ui,
-                &mut current_object,
-                &combo_keys,
-            ) {
-                *name = object_names[current_object].to_string();
-            }
+            choose_object(name, ui, object_names);
         }
         JumpLocation::Point(point) => {
-            // TODO: point.choose(ui);
-            ui.input_float(im_str!("X"), &mut point.x).build();
-            ui.input_float(im_str!("Y"), &mut point.y).build();
+            point.choose(ui);
 
             draw_tasks.push(DrawTask::Point(*point));
         }
@@ -3597,14 +3608,7 @@ fn choose_jump_location(
                 .build();
         }
         JumpLocation::ClampPosition { area } => {
-            ui.input_float(im_str!("Area Min X"), &mut area.min.x)
-                .build();
-            ui.input_float(im_str!("Area Min Y"), &mut area.min.y)
-                .build();
-            ui.input_float(im_str!("Area Max X"), &mut area.max.x)
-                .build();
-            ui.input_float(im_str!("Area Max Y"), &mut area.max.y)
-                .build();
+            area.choose(ui);
 
             draw_tasks.push(DrawTask::AABB(*area));
         }
@@ -3916,33 +3920,20 @@ fn load_textures(
     image_filenames: Vec<(WeeResult<String>, String)>,
 ) -> Option<String> {
     let mut first_key = None;
-    for (key, path) in &image_filenames {
-        match key {
-            Ok(key) => {
-                let texture = Texture::from_file(path);
-                match texture {
-                    Ok(texture) => {
-                        images.insert(key.clone(), texture);
-                        let filename = Path::new(path)
-                            .file_name()
-                            .unwrap()
-                            .to_str()
-                            .unwrap()
-                            .to_string();
-                        image_files.insert(key.clone(), filename);
-                        first_key = Some(key.clone());
-                    }
-                    Err(error) => {
-                        log::error!("Could not add image with filename {}", path);
-                        log::error!("{}", error);
-                    }
-                }
-            }
-            Err(error) => {
-                log::error!("Could not add image with filename {}", path);
-                log::error!("{}", error);
-            }
-        }
+    for (key, path) in image_filenames {
+        key.map(|key| {
+            Texture::from_file(&path).map(|texture| {
+                images.insert(key.clone(), texture);
+                let filename = get_filename(&path).unwrap();
+                image_files.insert(key.clone(), filename);
+                first_key = Some(key.clone());
+            })
+        })
+        .map_err(|error| {
+            log::error!("Could not add image with filename {}", path);
+            log::error!("{}", error);
+        })
+        .ok();
     }
     first_key
 }
@@ -3953,32 +3944,20 @@ fn load_sounds(
     sound_filenames: Vec<(WeeResult<String>, String)>,
 ) -> Option<String> {
     let mut first_key = None;
-    for (key, path) in &sound_filenames {
-        match key {
-            Ok(key) => {
-                let sound = SoundBuffer::from_file(path);
-                match sound {
-                    Some(sound) => {
-                        sounds.insert(key.clone(), sound);
-                        let filename = Path::new(path)
-                            .file_name()
-                            .unwrap()
-                            .to_str()
-                            .unwrap()
-                            .to_string();
-                        audio_files.insert(key.clone(), filename);
-                        first_key = Some(key.clone());
-                    }
-                    None => {
-                        log::error!("Could not add sound with filename {}", path);
-                    }
-                }
-            }
-            Err(error) => {
-                log::error!("Could not add sound with filename {}", path);
-                log::error!("{}", error);
-            }
-        }
+    for (key, path) in sound_filenames {
+        key.map(|key| {
+            SoundBuffer::from_file(&path).map(|sound| {
+                sounds.insert(key.clone(), sound);
+                let filename = get_filename(&path).unwrap();
+                audio_files.insert(key.clone(), filename);
+                first_key = Some(key.clone());
+            })
+        })
+        .map_err(|error| {
+            log::error!("Could not add sound with filename {}", path);
+            log::error!("{}", error);
+        })
+        .ok();
     }
     first_key
 }
@@ -3990,37 +3969,24 @@ fn load_fonts<'a, 'b>(
     ttf_context: &'a TtfContext,
 ) -> Option<String> {
     let mut first_key = None;
-    for (key, path) in &font_filenames {
-        match key {
-            Ok(key) => {
-                let font = ttf_context.load_font(&path, 128);
-                match font {
-                    Ok(font) => {
-                        fonts.insert(key.clone(), font);
-                        let filename = Path::new(&path)
-                            .file_name()
-                            .unwrap()
-                            .to_str()
-                            .unwrap()
-                            .to_string();
-                        let load_info = FontLoadInfo {
-                            filename,
-                            size: 128.0,
-                        };
-                        font_files.insert(key.clone(), load_info);
-                        first_key = Some(key.clone());
-                    }
-                    Err(error) => {
-                        log::error!("Could not add font with filename {}", path);
-                        log::error!("{}", error);
-                    }
-                }
-            }
-            Err(error) => {
-                log::error!("Could not add font with filename {}", path);
-                log::error!("{}", error);
-            }
-        }
+    for (key, path) in font_filenames {
+        key.map(|key| {
+            ttf_context.load_font(&path, 128).map(|font| {
+                fonts.insert(key.clone(), font);
+                let filename = get_filename(&path).unwrap();
+                let load_info = FontLoadInfo {
+                    filename,
+                    size: 128.0,
+                };
+                font_files.insert(key.clone(), load_info);
+                first_key = Some(key.clone());
+            })
+        })
+        .map_err(|error| {
+            log::error!("Could not add font with filename {}", path);
+            log::error!("{}", error);
+        })
+        .ok();
     }
     first_key
 }
@@ -4036,6 +4002,31 @@ fn get_main_filename_part(path: &Path) -> WeeResult<String> {
         .to_string();
     Ok(name)
 }
+
+fn get_relative_file_path(path: &Path) -> String {
+    path.strip_prefix(std::env::current_dir().unwrap().as_path())
+        .unwrap()
+        .to_str()
+        .unwrap()
+        .to_string()
+}
+
+fn get_filename<P: AsRef<Path>>(path: P) -> WeeResult<String> {
+    path.as_ref()
+        .file_name()
+        .map(|s| s.to_str())
+        .flatten()
+        .map(|s| s.to_string())
+        .ok_or(format!("Couldn't get the filename from {:?}", path.as_ref()).into())
+}
+
+fn get_separate_file_parts(file_path: String) -> (WeeResult<String>, String) {
+    let path = std::path::Path::new(&file_path);
+    let name = get_main_filename_part(&path);
+    let file_path = get_relative_file_path(&path);
+    (name, file_path)
+}
+
 fn choose_image_from_files<P: AsRef<Path>>(
     image_files: &mut HashMap<String, String>,
     images: &mut Images,
@@ -4049,20 +4040,8 @@ fn choose_image_from_files<P: AsRef<Path>>(
         }
         Response::OkayMultiple(files) => {
             log::info!("Files {:?}", files);
-            let image_filenames: Vec<(WeeResult<String>, String)> = files
-                .into_iter()
-                .map(|file_path| {
-                    let path = std::path::Path::new(&file_path);
-                    let name = get_main_filename_part(&path);
-                    let file_path = path
-                        .strip_prefix(std::env::current_dir().unwrap().as_path())
-                        .unwrap()
-                        .to_str()
-                        .unwrap()
-                        .to_string();
-                    (name, file_path)
-                })
-                .collect();
+            let image_filenames: Vec<(WeeResult<String>, String)> =
+                files.into_iter().map(get_separate_file_parts).collect();
 
             load_textures(image_files, images, image_filenames)
         }
@@ -4083,20 +4062,8 @@ fn choose_sound_from_files<P: AsRef<Path>>(
         }
         Response::OkayMultiple(files) => {
             log::info!("Files {:?}", files);
-            let sound_filenames: Vec<(WeeResult<String>, String)> = files
-                .into_iter()
-                .map(|file_path| {
-                    let path = std::path::Path::new(&file_path);
-                    let name = get_main_filename_part(&path);
-                    let file_path = path
-                        .strip_prefix(std::env::current_dir().unwrap().as_path())
-                        .unwrap()
-                        .to_str()
-                        .unwrap()
-                        .to_string();
-                    (name, file_path)
-                })
-                .collect();
+            let sound_filenames: Vec<(WeeResult<String>, String)> =
+                files.into_iter().map(get_separate_file_parts).collect();
 
             load_sounds(audio_files, sounds, sound_filenames)
         }
@@ -4118,20 +4085,8 @@ fn choose_font_from_files<'a, 'b, P: AsRef<Path>>(
         }
         Response::OkayMultiple(files) => {
             log::info!("Files {:?}", files);
-            let font_filenames: Vec<(WeeResult<String>, String)> = files
-                .into_iter()
-                .map(|file_path| {
-                    let path = std::path::Path::new(&file_path);
-                    let name = get_main_filename_part(&path);
-                    let file_path = path
-                        .strip_prefix(std::env::current_dir().unwrap().as_path())
-                        .unwrap()
-                        .to_str()
-                        .unwrap()
-                        .to_string();
-                    (name, file_path)
-                })
-                .collect();
+            let font_filenames: Vec<(WeeResult<String>, String)> =
+                files.into_iter().map(get_separate_file_parts).collect();
 
             load_fonts(font_files, fonts, font_filenames, ttf_context)
         }
