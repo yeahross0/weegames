@@ -1,4 +1,3 @@
-// TODO: If there is a sprite loaded then it should be the first option
 // TODO: Ignore input after finishing preview
 // TODO: Hover over `animation` it plays animation
 // TODO: choose_object fails if object has been deleted
@@ -13,6 +12,7 @@
 // TODO: Units in time trigger
 // TODO: Add ability to delete images, music, sounds, fonts
 // TODO: Keep game 16:9 after window is resized
+// TODO: Let choose initial size in create object
 
 #[macro_use]
 extern crate imgui;
@@ -2975,7 +2975,13 @@ fn choose_animation(
 
     if ui.button(im_str!("Add Sprite"), NORMAL_BUTTON) {
         ui.open_popup(im_str!("Add Animation Sprite"));
-        editor.new_sprite = Sprite::Colour(Colour::black());
+        if images.is_empty() {
+            editor.new_sprite = Sprite::Colour(Colour::black());
+        } else {
+            editor.new_sprite = Sprite::Image {
+                name: images.keys().next().unwrap().to_string(),
+            };
+        }
     }
     ui.popup(im_str!("Add Animation Sprite"), || {
         choose_sprite(
@@ -3698,7 +3704,10 @@ impl Choose for MovementType {
                 0 => MovementType::Wiggle,
                 1 => MovementType::Insect,
                 2 => MovementType::Reflect {
-                    initial_direction: MovementDirection::Angle(Angle::Current),
+                    initial_direction: MovementDirection::Angle(Angle::Random {
+                        min: 0.0,
+                        max: 360.0,
+                    }),
                     movement_handling: MovementHandling::Anywhere,
                 },
                 3 => MovementType::Bounce {
