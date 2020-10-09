@@ -1,4 +1,3 @@
-// TODO: No linear resizing for some sprites?
 // TODO: If there is a sprite loaded then it should be the first option
 // TODO: Ignore input after finishing preview
 // TODO: Hover over `animation` it plays animation
