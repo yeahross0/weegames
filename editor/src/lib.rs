@@ -1,5 +1,4 @@
 // TODO: Get the viewports right for full screen editor
-// TODO: Don't go back to main menu after error
 // TODO: Add sounds window
 // TODO: Unfullscreen after playing in full screen in preview
 // TODO: Unfullscreen when coming from menu to editor
@@ -16,6 +15,7 @@
 // TODO: Show origin debug option
 // TODO: Exit fullscreen when in editor
 // TODO: Aspect ratio of edited game changes when window size changed
+// TODO: Units in time trigger
 
 #[macro_use]
 extern crate imgui;
@@ -96,6 +96,7 @@ pub fn run<'a, 'b>(
     let mut plus_button = ButtonState::Up;
     let mut show_collision_areas = false;
     let mut new_background = Sprite::Colour(Colour::black());
+    let mut show_error = None;
 
     'editor_running: loop {
         for event in event_pump.poll_iter() {
@@ -113,6 +114,19 @@ pub fn run<'a, 'b>(
         let imgui_frame =
             imgui.prepare_frame(&renderer.window, &event_pump.mouse_state(), &mut last_frame);
         let ui = &imgui_frame.ui;
+
+        if show_error.is_some() {
+            ui.open_popup(im_str!("Game Error"));
+        }
+        ui.popup_modal(im_str!("Game Error")).build(|| {
+            if let Some(error) = &show_error {
+                ui.text(format!("{}", error));
+            }
+            if ui.button(im_str!("OK"), NORMAL_BUTTON) {
+                show_error = None;
+                ui.close_current_popup();
+            }
+        });
 
         if windows.demo {
             ui.show_demo_window(&mut windows.demo);
@@ -135,11 +149,24 @@ pub fn run<'a, 'b>(
         let play_game = main_window_show(ui, &mut windows.main, &mut game, &mut preview);
 
         if play_game {
-            let completed_game = LoadedGame::with_assets(game.clone(), assets, &font_system)?
-                .start(preview.playback_rate, preview.difficulty_level, settings)
-                .play(renderer, event_pump)?;
-            assets = completed_game.assets;
-            preview.last_win_status = Some(completed_game.has_been_won);
+            let mut game = LoadedGame::with_assets(game.clone(), assets, &font_system)?.start(
+                preview.playback_rate,
+                preview.difficulty_level,
+                settings,
+            );
+            let completion = game.preview(renderer, event_pump);
+
+            match completion {
+                Ok(_) => {
+                    preview.last_win_status = Some(game.has_been_won());
+                }
+                Err(error) => {
+                    show_error = Some(error);
+                    preview.last_win_status = None;
+                }
+            }
+            assets = game.assets;
+            assets.music.stop();
         }
 
         //ObjectListEditor::from(&mut self).edit();

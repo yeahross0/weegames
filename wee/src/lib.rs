@@ -19,6 +19,7 @@ use sfml::{
 use std::{
     collections::{HashMap, HashSet},
     default::Default,
+    error::Error,
     fmt, fs,
     ops::Not,
     path::Path,
@@ -1595,6 +1596,18 @@ impl LoadMusic for Music {
     }
 }
 
+pub trait MusicPlayer {
+    fn stop(&mut self);
+}
+
+impl MusicPlayer for Option<Music> {
+    fn stop(&mut self) {
+        if let Some(music) = self {
+            music.data.stop();
+        }
+    }
+}
+
 pub struct Assets<'a, 'b> {
     pub images: Images,
     pub sounds: Sounds,
@@ -1872,6 +1885,11 @@ pub struct CompletedGame<'a, 'b> {
     pub has_been_won: bool,
 }
 
+pub struct ErrorGame<'a, 'b> {
+    pub assets: Assets<'a, 'b>,
+    pub error: Box<dyn Error + Send + Sync>,
+}
+
 #[derive(Debug, Copy, Clone, PartialEq)]
 enum EndEarly {
     EndIn { frames: u32 },
@@ -1885,7 +1903,7 @@ pub enum Completion {
 
 pub struct Game<'a, 'b, 'c> {
     pub objects: Objects,
-    assets: Assets<'a, 'b>,
+    pub assets: Assets<'a, 'b>,
     background: Vec<BackgroundPart>,
     intro_font: &'a FontSystem<'a, 'b>,
     intro_text: IntroText,
@@ -1993,9 +2011,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
 
                 if let EndEarly::EndIn { frames } = &mut end_early {
                     if *frames == 0 {
-                        if let Some(music) = &mut self.assets.music {
-                            music.data.stop();
-                        }
+                        self.assets.music.stop();
                         let has_been_won = self.has_been_won();
 
                         return Ok(CompletedGame {
@@ -2020,9 +2036,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
             self.sleep();
         }
 
-        if let Some(music) = &mut self.assets.music {
-            music.data.stop();
-        }
+        self.assets.music.stop();
 
         let has_been_won = self.has_been_won();
 
@@ -2031,6 +2045,92 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
             assets: self.assets,
             has_been_won,
         })
+    }
+
+    // TODO: Remove duplicate code
+    pub fn preview(
+        &mut self,
+        renderer: &mut Renderer,
+        event_pump: &mut EventPump,
+    ) -> WeeResult<Completion> {
+        let mut escape = ButtonState::Up;
+        let mut end_early = EndEarly::Continue; // TODO: Put in self
+        self.initial_mouse_button_held = event_pump.mouse_state().left();
+        'game_running: loop {
+            if self.is_finished() {
+                break 'game_running;
+            }
+
+            self.init_frame();
+
+            let esc_down = |event_pump: &EventPump| {
+                event_pump
+                    .keyboard_state()
+                    .is_scancode_pressed(Scancode::Escape)
+            };
+            for _ in 0..self.frames.to_run {
+                escape.update(esc_down(event_pump));
+                if escape == ButtonState::Press {
+                    if let Some(music) = &mut self.assets.music {
+                        music.data.pause();
+                    }
+                    for sound in &mut self.playing_sounds {
+                        sound.pause();
+                    }
+                    let mut game =
+                        LoadedGame::load("games/system/pause-menu.json", self.intro_font)?.start(
+                            DEFAULT_GAME_SPEED,
+                            DEFAULT_DIFFICULTY,
+                            self.settings,
+                        );
+                    'pause_running: loop {
+                        sdlglue::set_fullscreen(renderer, &event_pump)?;
+
+                        game.update_and_render_frame(renderer, event_pump)?;
+
+                        escape.update(esc_down(event_pump));
+                        if escape == ButtonState::Press || is_switched_on(&game.objects, "Continue")
+                        {
+                            if let Some(music) = &mut self.assets.music {
+                                music.data.play();
+                            }
+                            for sound in &mut self.playing_sounds {
+                                sound.play();
+                            }
+                            break 'pause_running;
+                        }
+                        if is_switched_on(&game.objects, "Quit") {
+                            return Ok(Completion::Quit);
+                        }
+                    }
+                }
+                sdlglue::set_fullscreen(renderer, &event_pump)?;
+
+                if let EndEarly::EndIn { frames } = &mut end_early {
+                    if *frames == 0 {
+                        self.assets.music.stop();
+
+                        return Ok(Completion::Finished);
+                    }
+                    *frames -= 1;
+                }
+
+                self.update_frame(event_pump, renderer.window.size(), &mut end_early)?;
+                if self.settings.render_each_frame {
+                    self.render_frame(renderer)?;
+                }
+            }
+
+            if !self.settings.render_each_frame {
+                self.render_frame(renderer)?;
+            }
+
+            self.sleep();
+        }
+
+        self.assets.music.stop();
+
+        Ok(Completion::Finished)
     }
 
     fn sleep(&self) {
@@ -2301,9 +2401,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                 played_sounds.push(sound_name.clone());
             }
             Action::StopMusic => {
-                if let Some(music) = &mut self.assets.music {
-                    music.data.stop();
-                }
+                self.assets.music.stop();
             }
             Action::Animate {
                 animation_type,
