@@ -1,6 +1,6 @@
 // TODO: Ignore input after finishing preview
 // TODO: Hover over `animation` it plays animation
-// TODO: choose_object fails if object has been deleted
+// TODO: choose_object fails if object has been deleted. error when right clicking object too
 // TODO: Stop setting object size to image size when new image added but have option to match image size
 // TODO: More pots in higher difficulties
 // TODO: Multiple fonts with same size?
@@ -1609,6 +1609,7 @@ fn edit_objects_list(
                     if ui.is_item_clicked(imgui::MouseButton::Right) {
                         ui.open_popup(im_str!("Edit Object"));
                         object_state.index = Some(i);
+                        *instruction_state = InstructionState::default();
                     }
                 }
             }
@@ -2170,6 +2171,7 @@ impl ImguiDisplayTrigger for Trigger {
             if ui.is_item_hovered() {
                 ui.tooltip(|| {
                     let texture_id = images[image_name].id;
+                    // TODO: Restrict size to ratio?
                     imgui::Image::new(imgui::TextureId::from(texture_id as usize), [200.0, 200.0])
                         .build(ui);
                 });
@@ -2889,6 +2891,7 @@ fn choose_sound(
 struct AnimationEditor {
     new_sprite: Sprite,
     index: usize,
+    // TODO: Maybe put animation preview state here
 }
 
 fn choose_animation(
