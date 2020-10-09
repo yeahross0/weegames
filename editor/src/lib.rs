@@ -1,7 +1,6 @@
 // TODO: Get the viewports right for full screen editor
 // TODO: Don't go back to main menu after error
 // TODO: Add sounds window
-// TODO: Pause during playing game in editor is weird
 // TODO: Unfullscreen after playing in full screen in preview
 // TODO: Unfullscreen when coming from menu to editor
 // TODO: No linear resizing for some sprites?
