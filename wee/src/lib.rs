@@ -1983,8 +1983,8 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                         if is_switched_on(&game.objects, "Quit") {
                             return Ok(CompletedGame {
                                 completion: Completion::Quit,
-                                assets: game.assets,
                                 has_been_won: self.has_been_won(),
+                                assets: self.assets,
                             });
                         }
                     }
