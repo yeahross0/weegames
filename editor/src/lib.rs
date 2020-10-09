@@ -1,20 +1,22 @@
 // TODO: Get the viewports right for full screen editor
 // TODO: Don't go back to main menu after error
 // TODO: Add sounds window
-// TODO: Check frame rate of gravity game
 // TODO: Pause during playing game in editor is weird
 // TODO: Unfullscreen after playing in full screen in preview
+// TODO: Unfullscreen when coming from menu to editor
 // TODO: No linear resizing for some sprites?
 // TODO: If there is a sprite loaded then it should be the first option
 // TODO: Ignore input after finishing preview
 // TODO: Hover over `animation` it plays animation
 // TODO: choose_object fails if object has been deleted
 // TODO: Stop setting object size to image size when new image added but have option to match image size
-// TODO: More pots
+// TODO: More pots in higher difficulties
 // TODO: Multiple fonts with same size?
-// TODO: Option to justify text to left
 // TODO: File new doesn;t ask if want to save
-// TODO: EditedGame struct that turns into GameData when save. Has unified assets and asset_files
+// TODO: EditedGame struct that turns into GameData when saved? Has unified assets and asset_files
+// TODO: Show origin debug option
+// TODO: Exit fullscreen when in editor
+// TODO: Aspect ratio of edited game changes when window size changed
 
 #[macro_use]
 extern crate imgui;
@@ -642,7 +644,7 @@ fn main_window_show(
 
                 if let Some(win_status) = preview.last_win_status {
                     let win_status = if win_status { "Won" } else { "Lost " };
-                    ui.text(format!("Last win status: {:?}", win_status));
+                    ui.text(format!("Last win status: {}", win_status));
                 }
 
                 let mut attr = ImString::from(game.attribution.to_owned());
@@ -1774,9 +1776,9 @@ fn file_show<'a, 'b>(
             return Err(error);
         }
 
-        file_save(ui, filename, game);
+        file_save(ui, game, filename);
 
-        *filename = file_save_as(ui, game);
+        file_save_as(ui, game, filename);
 
         *editor_status = file_return_to_menu(ui);
 
@@ -1892,7 +1894,7 @@ fn file_open<'a, 'b>(
     Ok(())
 }
 
-pub fn file_save(ui: &imgui::Ui, filename: &mut Option<String>, game: &GameData) {
+pub fn file_save(ui: &imgui::Ui, game: &GameData, filename: &mut Option<String>) {
     if imgui::MenuItem::new(im_str!("Save")).build(ui) {
         match filename {
             Some(filename) => {
@@ -1907,12 +1909,12 @@ pub fn file_save(ui: &imgui::Ui, filename: &mut Option<String>, game: &GameData)
                     }
                 }
             }
-            None => *filename = save_game_file_as(game),
+            None => save_game_file_as(game, filename),
         }
     }
 }
 
-fn save_game_file_as(game: &GameData) -> Option<String> {
+fn save_game_file_as(game: &GameData, filename: &mut Option<String>) {
     let response = nfd::open_save_dialog(None, Path::new("games").to_str());
     match response {
         Ok(Response::Okay(file_path)) => {
@@ -1921,26 +1923,23 @@ fn save_game_file_as(game: &GameData) -> Option<String> {
             match s {
                 Ok(s) => {
                     std::fs::write(&file_path, s).unwrap_or_else(|e| log::error!("{}", e));
-                    return Some(file_path);
+                    *filename = Some(file_path);
                 }
                 Err(error) => {
                     log::error!("{}", error);
                 }
             }
         }
-        Ok(_) => unreachable!(),
+        Ok(_) => {}
         Err(error) => {
             log::error!("{}", error);
         }
     }
-    return None;
 }
 
-fn file_save_as(ui: &imgui::Ui, game: &GameData) -> Option<String> {
+fn file_save_as(ui: &imgui::Ui, game: &GameData, filename: &mut Option<String>) {
     if imgui::MenuItem::new(im_str!("Save As")).build(ui) {
-        save_game_file_as(game)
-    } else {
-        None
+        save_game_file_as(game, filename);
     }
 }
 

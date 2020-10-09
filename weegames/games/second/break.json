@@ -215,6 +215,22 @@
                   "Switch": "On"
                 }
               }
+            },
+            {
+              "CheckProperty": {
+                "name": "Pot 3",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Pot 4",
+                "check": {
+                  "Switch": "On"
+                }
+              }
             }
           ],
           "actions": [
@@ -915,6 +931,218 @@
       "layer": 0,
       "switch": "Off",
       "instructions": []
+    },
+    {
+      "name": "Pot 3",
+      "sprite": {
+        "Image": {
+          "name": "pot-1"
+        }
+      },
+      "position": {
+        "x": 200.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 96.0,
+        "height": 96.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Area": {
+                    "min": {
+                      "x": 200.0,
+                      "y": 100.0
+                    },
+                    "max": {
+                      "x": 1450.0,
+                      "y": 650.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Sword"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Pot 3",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "PlayOnce",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "pot-2"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "pot-3"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "pot-4"
+                    }
+                  }
+                ],
+                "speed": "Normal"
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "weird-impact"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Pot 4",
+      "sprite": {
+        "Image": {
+          "name": "pot-1"
+        }
+      },
+      "position": {
+        "x": 200.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 96.0,
+        "height": 96.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Area": {
+                    "min": {
+                      "x": 200.0,
+                      "y": 100.0
+                    },
+                    "max": {
+                      "x": 1450.0,
+                      "y": 650.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Sword"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Pot 4",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "PlayOnce",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "pot-2"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "pot-3"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "pot-4"
+                    }
+                  }
+                ],
+                "speed": "Normal"
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "weird-impact"
+              }
+            }
+          ]
+        }
+      ]
     }
   ],
   "background": [
@@ -955,26 +1183,26 @@
   ],
   "asset_files": {
     "images": {
-      "grass": "grass.png",
-      "trees": "trees.png",
-      "pot-4": "pot-4.png",
-      "knight iso char_slice up_0": "knight iso char_slice up_0.png",
-      "knight iso char_slice left_2": "knight iso char_slice left_2.png",
-      "knight iso char_slice right_2": "knight iso char_slice right_2.png",
-      "knight iso char_slice down_2": "knight iso char_slice down_2.png",
       "veget": "veget.png",
-      "knight iso char_slice left_0": "knight iso char_slice left_0.png",
-      "knight iso char_slice right_0": "knight iso char_slice right_0.png",
+      "knight iso char_slice down_2": "knight iso char_slice down_2.png",
+      "knight iso char_slice left_1": "knight iso char_slice left_1.png",
       "pot-3": "pot-3.png",
-      "knight iso char_slice up_1": "knight iso char_slice up_1.png",
+      "pot-2": "pot-2.png",
+      "knight iso char_slice left_2": "knight iso char_slice left_2.png",
+      "knight iso char_slice right_0": "knight iso char_slice right_0.png",
+      "knight iso char_slice right_1": "knight iso char_slice right_1.png",
+      "knight iso char_slice up_2": "knight iso char_slice up_2.png",
+      "shadows": "shadows.png",
+      "pot-1": "pot-1.png",
       "knight iso char_slice down_1": "knight iso char_slice down_1.png",
       "knight iso char_slice down_0": "knight iso char_slice down_0.png",
-      "knight iso char_slice up_2": "knight iso char_slice up_2.png",
-      "pot-2": "pot-2.png",
-      "pot-1": "pot-1.png",
-      "shadows": "shadows.png",
-      "knight iso char_slice right_1": "knight iso char_slice right_1.png",
-      "knight iso char_slice left_1": "knight iso char_slice left_1.png"
+      "grass": "grass.png",
+      "knight iso char_slice up_0": "knight iso char_slice up_0.png",
+      "knight iso char_slice right_2": "knight iso char_slice right_2.png",
+      "knight iso char_slice up_1": "knight iso char_slice up_1.png",
+      "trees": "trees.png",
+      "pot-4": "pot-4.png",
+      "knight iso char_slice left_0": "knight iso char_slice left_0.png"
     },
     "audio": {
       "attack": "attack.ogg",

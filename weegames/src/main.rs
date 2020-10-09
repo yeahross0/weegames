@@ -1,7 +1,4 @@
-// TODO: Show origin debug option
-// TODO: Exit fullscreen when in editor
-// TODO: Aspect ratio of edited game changes when window size changed
-// TODO: Holding in mouse button between main menu and choose mode causes it to flip
+// TODO: Tidy up initial_mouse_button_held thing
 
 //#![windows_subsystem = "windows"]
 

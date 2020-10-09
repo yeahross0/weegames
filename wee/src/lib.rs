@@ -1411,7 +1411,12 @@ impl Mouse {
         }
     }
 
-    fn update(&mut self, event_pump: &mut EventPump, window_size: (u32, u32)) {
+    fn update(
+        &mut self,
+        event_pump: &mut EventPump,
+        window_size: (u32, u32),
+        initial_mouse_button_held: &mut bool,
+    ) {
         let mouse_state = event_pump.mouse_state();
         let calc_mouse_position =
             |p, window_size, projection| p as f32 / window_size as f32 * projection;
@@ -1420,7 +1425,12 @@ impl Mouse {
             calc_mouse_position(mouse_state.y(), window_size.1, PROJECTION_HEIGHT),
         );
 
-        self.state.update(mouse_state.left());
+        if !(*initial_mouse_button_held) {
+            self.state.update(mouse_state.left());
+        }
+        if !event_pump.mouse_state().left() {
+            *initial_mouse_button_held = false;
+        }
     }
 }
 
@@ -1843,6 +1853,7 @@ impl<'a, 'b> LoadedGame<'a, 'b> {
             playback_rate,
             settings,
             difficulty,
+            initial_mouse_button_held: true,
         }
     }
 }
@@ -1887,6 +1898,7 @@ pub struct Game<'a, 'b, 'c> {
     playback_rate: f32,
     settings: GameSettings,
     difficulty: u32,
+    initial_mouse_button_held: bool,
 }
 
 impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
@@ -1924,6 +1936,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
     ) -> WeeResult<CompletedGame<'a, 'b>> {
         let mut escape = ButtonState::Up;
         let mut end_early = EndEarly::Continue; // TODO: Put in self
+        self.initial_mouse_button_held = event_pump.mouse_state().left();
         'game_running: loop {
             if self.is_finished() {
                 break 'game_running;
@@ -2039,7 +2052,8 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
             process::exit(0);
         }
 
-        self.mouse.update(event_pump, window_size);
+        self.mouse
+            .update(event_pump, window_size, &mut self.initial_mouse_button_held);
 
         let played_sounds = if let Effect::Freeze = self.effect {
             Vec::new()
