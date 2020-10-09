@@ -1879,6 +1879,36 @@ pub fn is_switched_on(objects: &Objects, name: &str) -> bool {
     }
 }
 
+pub fn play_sounds(
+    playing_sounds: &mut Vec<Sound>,
+    new_sounds: &[String],
+    sound_assets: &Sounds,
+    playback_rate: f32,
+    volume: f32,
+) {
+    unsafe {
+        for name in new_sounds {
+            // TODO: Don't panic if sound not found
+            let mut sound = Sound::with_buffer(
+                &*(&sound_assets[name] as *const SfBox<SoundBuffer>) as &SoundBuffer,
+            );
+            sound.set_volume(volume);
+            sound.set_pitch(playback_rate);
+            sound.play();
+            playing_sounds.push(sound);
+        }
+    }
+
+    fn remove_stopped_sounds(playing_sounds: &mut Vec<Sound>) {
+        playing_sounds.retain(|sound| match sound.status() {
+            SoundStatus::Stopped => false,
+            _ => true,
+        });
+    }
+
+    remove_stopped_sounds(playing_sounds);
+}
+
 pub struct CompletedGame<'a, 'b> {
     pub completion: Completion,
     pub assets: Assets<'a, 'b>,
@@ -2191,27 +2221,13 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
     }
 
     fn play_sounds(&mut self, played_sounds: &[String], volume: f32) {
-        unsafe {
-            for name in played_sounds {
-                // TODO: Don't panic if sound not found
-                let mut sound = Sound::with_buffer(
-                    &*(&self.assets.sounds[name] as *const SfBox<SoundBuffer>) as &SoundBuffer,
-                );
-                sound.set_volume(volume);
-                sound.set_pitch(self.playback_rate);
-                sound.play();
-                self.playing_sounds.push(sound);
-            }
-        }
-
-        fn remove_stopped_sounds(playing_sounds: &mut Vec<Sound>) {
-            playing_sounds.retain(|sound| match sound.status() {
-                SoundStatus::Stopped => false,
-                _ => true,
-            });
-        }
-
-        remove_stopped_sounds(&mut self.playing_sounds);
+        play_sounds(
+            &mut self.playing_sounds,
+            played_sounds,
+            &self.assets.sounds,
+            self.playback_rate,
+            volume,
+        );
     }
 
     fn update_status(&mut self) {

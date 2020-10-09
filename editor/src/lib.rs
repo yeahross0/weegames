@@ -1,4 +1,3 @@
-// TODO: Add sounds window
 // TODO: Unfullscreen after playing in full screen in preview
 // TODO: Unfullscreen when coming from menu to editor
 // TODO: No linear resizing for some sprites?
@@ -64,6 +63,7 @@ pub fn run<'a, 'b>(
         background: false,
         fonts: false,
         music: false,
+        sounds: false,
         demo: false,
     };
 
@@ -98,6 +98,7 @@ pub fn run<'a, 'b>(
     let mut show_collision_areas = false;
     let mut new_background = Sprite::Colour(Colour::black());
     let mut show_error = None;
+    let mut playing_sounds = Vec::new();
 
     'editor_running: loop {
         for event in event_pump.poll_iter() {
@@ -128,10 +129,6 @@ pub fn run<'a, 'b>(
                 ui.close_current_popup();
             }
         });
-
-        if windows.demo {
-            ui.show_demo_window(&mut windows.demo);
-        }
 
         main_menu_bar_show(
             &mut game,
@@ -170,7 +167,9 @@ pub fn run<'a, 'b>(
             assets.music.stop();
         }
 
-        //ObjectListEditor::from(&mut self).edit();
+        if windows.demo {
+            ui.show_demo_window(&mut windows.demo);
+        }
 
         objects_window_show(
             ui,
@@ -234,6 +233,39 @@ pub fn run<'a, 'b>(
                     }
                 });
         }
+
+        let mut new_sounds = Vec::new();
+        if windows.sounds {
+            imgui::Window::new(im_str!("Sounds"))
+                .size(WINDOW_SIZE, imgui::Condition::FirstUseEver)
+                .menu_bar(true)
+                .resizable(true)
+                .opened(&mut windows.sounds)
+                .build(ui, || {
+                    if ui.button(im_str!("Add sounds"), NORMAL_BUTTON) {
+                        let path = assets_path(&filename, "sounds");
+                        choose_sound_from_files(
+                            &mut game.asset_files.audio,
+                            &mut assets.sounds,
+                            path,
+                        );
+                    }
+
+                    for name in game.asset_files.audio.keys() {
+                        if ui.button(&ImString::from(name.clone()), SMALL_BUTTON) {
+                            new_sounds.push(name.clone());
+                        }
+                    }
+                });
+        }
+
+        play_sounds(
+            &mut playing_sounds,
+            &mut new_sounds,
+            &assets.sounds,
+            1.0,
+            settings.volume,
+        );
 
         if windows.background {
             // TODO: Fix up
@@ -1988,9 +2020,9 @@ fn view_show(ui: &imgui::Ui, windows: &mut Windows) {
     if let Some(menu) = menu {
         toggle(im_str!("Main Window"), &mut windows.main);
         toggle(im_str!("Objects"), &mut windows.objects);
-        //toggle(im_str!("Sound FX"), &mut windows.sound_fx.opened);
         toggle(im_str!("Background"), &mut windows.background);
         toggle(im_str!("Music"), &mut windows.music);
+        toggle(im_str!("Sound FX"), &mut windows.sounds);
         toggle(im_str!("Fonts"), &mut windows.fonts);
         toggle(im_str!("Demo Window"), &mut windows.demo);
         menu.end(ui);
@@ -2014,6 +2046,7 @@ struct Windows {
     background: bool,
     fonts: bool,
     music: bool,
+    sounds: bool,
     demo: bool,
 }
 
