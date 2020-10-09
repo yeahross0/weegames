@@ -525,6 +525,48 @@ impl Renderer {
         //Renderer::set_viewport(&self.window);
         self.window.gl_swap_window();
     }
+
+    pub fn exit_fullscreen(&mut self) -> WeeResult<()> {
+        match self.window.fullscreen_state() {
+            FullscreenType::Desktop | FullscreenType::True => {
+                let size = self.full_screen_info.old_size;
+                self.window.set_size(size.0, size.1)?;
+                self.window.set_fullscreen(FullscreenType::Off)?;
+            }
+            _ => {}
+        }
+
+        Ok(())
+    }
+
+    pub fn adjust_fullscreen(&mut self, event_pump: &EventPump) -> WeeResult<()> {
+        if event_pump.keyboard_state().is_scancode_pressed(Scancode::F) {
+            if !self.full_screen_info.recent_change {
+                let display_mode = self
+                    .window
+                    .subsystem()
+                    .current_display_mode(self.window.display_index()?)?;
+                match self.window.fullscreen_state() {
+                    FullscreenType::Off => {
+                        self.full_screen_info.old_size = self.window.size();
+                        self.window
+                            .set_size(display_mode.w as u32, display_mode.h as u32)?;
+                        self.window.set_fullscreen(FullscreenType::True)?;
+                    }
+                    _ => {
+                        let size = self.full_screen_info.old_size;
+                        self.window.set_size(size.0, size.1)?;
+                        self.window.set_fullscreen(FullscreenType::Off)?;
+                    }
+                }
+                self.full_screen_info.recent_change = true;
+            }
+        } else {
+            self.full_screen_info.recent_change = false;
+        }
+        self.update_viewport();
+        Ok(())
+    }
 }
 
 #[derive(Debug)]
@@ -643,36 +685,6 @@ pub fn clear_screen(colour: Colour) {
         gl::ClearColor(colour.r, colour.g, colour.b, colour.a);
         gl::Clear(gl::COLOR_BUFFER_BIT);
     }
-}
-
-pub fn set_fullscreen(renderer: &mut Renderer, event_pump: &EventPump) -> WeeResult<()> {
-    if event_pump.keyboard_state().is_scancode_pressed(Scancode::F) {
-        if !renderer.full_screen_info.recent_change {
-            let display_mode = renderer
-                .window
-                .subsystem()
-                .current_display_mode(renderer.window.display_index()?)?;
-            match renderer.window.fullscreen_state() {
-                FullscreenType::Off => {
-                    renderer.full_screen_info.old_size = renderer.window.size();
-                    renderer
-                        .window
-                        .set_size(display_mode.w as u32, display_mode.h as u32)?;
-                    renderer.window.set_fullscreen(FullscreenType::True)?;
-                }
-                _ => {
-                    let size = renderer.full_screen_info.old_size;
-                    renderer.window.set_size(size.0, size.1)?;
-                    renderer.window.set_fullscreen(FullscreenType::Off)?;
-                }
-            }
-            renderer.full_screen_info.recent_change = true;
-        }
-    } else {
-        renderer.full_screen_info.recent_change = false;
-    }
-    renderer.update_viewport();
-    Ok(())
 }
 
 pub fn has_quit(event_pump: &mut EventPump) -> bool {

@@ -296,7 +296,7 @@ fn run_main_loop<'a, 'b>(
             let mut game = game_with_defaults("games/system/main-menu.json")?;
 
             'menu_running: loop {
-                sdlglue::set_fullscreen(renderer, event_pump)?;
+                renderer.adjust_fullscreen(&event_pump)?;
 
                 game.update_and_render_frame(renderer, event_pump)?;
 
@@ -314,7 +314,7 @@ fn run_main_loop<'a, 'b>(
             let mut game = game_with_defaults("games/system/choose-mode.json")?;
 
             'choose_mode_running: loop {
-                sdlglue::set_fullscreen(renderer, event_pump)?;
+                renderer.adjust_fullscreen(&event_pump)?;
 
                 game.update_and_render_frame(renderer, event_pump)?;
 
@@ -530,6 +530,7 @@ fn run_main_loop<'a, 'b>(
             }
         }
         GameMode::Edit => {
+            renderer.exit_fullscreen()?;
             editor::run(renderer, event_pump, imgui, intro_font, config.settings())?;
             game_mode = GameMode::Menu;
         }
@@ -540,7 +541,7 @@ fn run_main_loop<'a, 'b>(
                 if sdlglue::has_quit(event_pump) {
                     process::exit(0);
                 }
-                sdlglue::set_fullscreen(renderer, event_pump)?;
+                renderer.adjust_fullscreen(&event_pump)?;
                 sdlglue::clear_screen(Colour::dull_grey());
 
                 let imgui_frame = imgui.prepare_frame(

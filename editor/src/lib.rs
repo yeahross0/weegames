@@ -1,5 +1,3 @@
-// TODO: Unfullscreen after playing in full screen in preview
-// TODO: Unfullscreen when coming from menu to editor
 // TODO: No linear resizing for some sprites?
 // TODO: If there is a sprite loaded then it should be the first option
 // TODO: Ignore input after finishing preview
@@ -165,6 +163,7 @@ pub fn run<'a, 'b>(
             }
             assets = game.assets;
             assets.music.stop();
+            renderer.exit_fullscreen()?;
         }
 
         if windows.demo {

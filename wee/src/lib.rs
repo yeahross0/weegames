@@ -2013,7 +2013,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                             self.settings,
                         );
                     'pause_running: loop {
-                        sdlglue::set_fullscreen(renderer, &event_pump)?;
+                        renderer.adjust_fullscreen(&event_pump)?;
 
                         game.update_and_render_frame(renderer, event_pump)?;
 
@@ -2037,7 +2037,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                         }
                     }
                 }
-                sdlglue::set_fullscreen(renderer, &event_pump)?;
+                renderer.adjust_fullscreen(&event_pump)?;
 
                 if let EndEarly::EndIn { frames } = &mut end_early {
                     if *frames == 0 {
@@ -2114,7 +2114,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                             self.settings,
                         );
                     'pause_running: loop {
-                        sdlglue::set_fullscreen(renderer, &event_pump)?;
+                        renderer.adjust_fullscreen(&event_pump)?;
 
                         game.update_and_render_frame(renderer, event_pump)?;
 
@@ -2134,7 +2134,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                         }
                     }
                 }
-                sdlglue::set_fullscreen(renderer, &event_pump)?;
+                renderer.adjust_fullscreen(&event_pump)?;
 
                 if let EndEarly::EndIn { frames } = &mut end_early {
                     if *frames == 0 {
