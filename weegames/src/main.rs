@@ -1,4 +1,5 @@
 // TODO: Tidy up initial_mouse_button_held thing
+// TODO: Have black borders to keep game 16:9
 
 //#![windows_subsystem = "windows"]
 

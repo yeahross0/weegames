@@ -1,4 +1,3 @@
-// TODO: Get the viewports right for full screen editor
 // TODO: Add sounds window
 // TODO: Unfullscreen after playing in full screen in preview
 // TODO: Unfullscreen when coming from menu to editor
@@ -16,6 +15,8 @@
 // TODO: Exit fullscreen when in editor
 // TODO: Aspect ratio of edited game changes when window size changed
 // TODO: Units in time trigger
+// TODO: Add ability to delete images, music, sounds, fonts
+// TODO: Keep game 16:9 after window is resized
 
 #[macro_use]
 extern crate imgui;
@@ -377,6 +378,7 @@ pub fn run<'a, 'b>(
             scale,
         };
 
+        renderer.update_viewport();
         renderer.clear_editor_screen(scene_location);
 
         renderer.draw_editor_background(&game.background, &assets.images, scene_location)?;
