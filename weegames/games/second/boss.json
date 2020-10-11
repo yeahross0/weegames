@@ -1,0 +1,111 @@
+{
+  "format_version": "0.1",
+  "published": false,
+  "game_type": "BossGame",
+  "objects": [
+    {
+      "name": "Ground1",
+      "sprite": {
+        "Image": {
+          "name": "terrain"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 808.0
+      },
+      "size": {
+        "width": 192.0,
+        "height": 192.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "Player",
+      "sprite": {
+        "Image": {
+          "name": "ninja-idle-1"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 652.0
+      },
+      "size": {
+        "width": 128.0,
+        "height": 128.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "ClampPosition": {
+                    "area": {
+                      "min": {
+                        "x": 0.0,
+                        "y": 652.0
+                      },
+                      "max": {
+                        "x": 1600.0,
+                        "y": 652.0
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Target": {
+                  "target": "Mouse",
+                  "target_type": "Follow",
+                  "offset": {
+                    "x": 0.0,
+                    "y": 0.0
+                  },
+                  "speed": "Normal"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "background": [],
+  "asset_files": {
+    "images": {
+      "ninja-idle-1": "ninja-idle-1.png",
+      "terrain": "terrain.png"
+    },
+    "audio": {},
+    "music": null,
+    "fonts": {}
+  },
+  "length": {
+    "Seconds": 3.7
+  },
+  "intro_text": null,
+  "attribution": ""
+}

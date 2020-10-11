@@ -208,7 +208,7 @@ impl Colour {
     }
 }
 
-#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Size {
     pub width: f32,
     pub height: f32,
@@ -220,7 +220,7 @@ impl Size {
     }
 }
 
-#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Flip {
     pub horizontal: bool,
     pub vertical: bool,

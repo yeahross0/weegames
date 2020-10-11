@@ -27,11 +27,11 @@ use std::{
     time::{Duration, Instant},
 };
 
-const FPS: f32 = 60.0;
+pub const FPS: f32 = 60.0;
 pub const DEFAULT_GAME_SPEED: f32 = 1.0;
 pub const DEFAULT_DIFFICULTY: u32 = 1;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct SerialiseObject {
     pub name: String,
     pub sprite: Sprite,
@@ -158,13 +158,13 @@ impl SerialiseObjectList for Vec<SerialiseObject> {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct SerialiseMusic {
     pub filename: String,
     pub looped: bool,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct AssetFiles {
     pub images: HashMap<String, String>,
     pub audio: HashMap<String, String>,
@@ -183,7 +183,7 @@ impl Default for AssetFiles {
     }
 }
 
-#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq)]
 pub enum GameType {
     Minigame,
     BossGame,
@@ -202,7 +202,7 @@ pub enum FrameCount {
     Infinite,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct GameData {
     pub format_version: String,
     pub published: bool,
@@ -231,7 +231,7 @@ impl Default for GameData {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum When {
     Start,
     End,
@@ -239,13 +239,13 @@ pub enum When {
     Random { start: u32, end: u32 },
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum CollisionWith {
     Object { name: String },
     Area(AABB),
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum MouseOver {
     Object { name: String },
     Area(AABB),
@@ -282,13 +282,13 @@ impl ButtonState {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum MouseInteraction {
     Button { state: ButtonState },
     Hover,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum Input {
     Mouse {
         over: MouseOver,
@@ -314,7 +314,7 @@ pub enum SwitchState {
     SwitchedOff,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum PropertyCheck {
     Switch(SwitchState),
     Sprite(Sprite),
@@ -322,7 +322,7 @@ pub enum PropertyCheck {
     Timer,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum Trigger {
     Time(When),
     Collision(CollisionWith),
@@ -438,7 +438,7 @@ pub enum Effect {
     None,
 }
 
-#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq)]
 pub enum Angle {
     Current,
     Degrees(f32),
@@ -540,7 +540,7 @@ fn vector_from_angle(angle: f32, speed: Speed) -> Vec2 {
     let angle = (angle - 90.0).to_radians();
     Vec2::new(speed * angle.cos(), speed * angle.sin())
 }
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum MovementDirection {
     Angle(Angle),
     Direction {
@@ -557,7 +557,7 @@ impl MovementDirection {
     }
 }
 
-#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq)]
 pub enum Speed {
     VerySlow,
     Slow,
@@ -579,7 +579,7 @@ impl Speed {
         }
     }
 
-    fn to_animation_time(self) -> u32 {
+    pub fn to_animation_time(self) -> u32 {
         match self {
             Speed::VerySlow => 32,
             Speed::Slow => 16,
@@ -621,7 +621,7 @@ pub enum RelativeTo {
     CurrentAngle,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum JumpLocation {
     Point(Vec2),
     Area(AABB),
@@ -637,7 +637,7 @@ pub enum BounceDirection {
     Right,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum MovementType {
     Wiggle,
     Insect,
@@ -650,7 +650,7 @@ pub enum MovementType {
     },
 }
 
-#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq)]
 pub enum MovementHandling {
     Anywhere,
     TryNotToOverlap,
@@ -668,7 +668,7 @@ pub enum TargetType {
     StopWhenReached,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum Acceleration {
     Continuous {
         direction: MovementDirection,
@@ -679,7 +679,7 @@ pub enum Acceleration {
     },
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum Motion {
     GoStraight {
         direction: MovementDirection,
@@ -872,7 +872,7 @@ impl Not for AnimationType {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum AngleSetter {
     Value(f32),
     Increase(f32),
@@ -883,13 +883,13 @@ pub enum AngleSetter {
     RotateToMouse,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum SizeDifference {
     Value(Size),
     Percent(Size),
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum SizeSetter {
     Value(Size),
     Grow(SizeDifference),
@@ -914,20 +914,20 @@ impl Not for Switch {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum FlipSetter {
     Flip,
     SetFlip(bool),
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum LayerSetter {
     Value(u8),
     Increase,
     Decrease,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum PropertySetter {
     Sprite(Sprite),
     Angle(AngleSetter),
@@ -962,7 +962,7 @@ pub enum JustifyText {
     Left,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum Action {
     Win,
     Lose,
@@ -1001,7 +1001,7 @@ impl fmt::Display for Action {
             Action::Lose => write!(f, "Lose the game"),
             Action::Effect(effect) => match effect {
                 Effect::Freeze => write!(f, "Freeze the screen"),
-                Effect::None => write!(f, "Remove screen effects"),
+                Effect::None => write!(f, "No effect"),
             },
             Action::PlaySound { name } => write!(f, "Play the {} sound", name),
             Action::StopMusic => write!(f, "Stop the music"),
@@ -1130,13 +1130,13 @@ impl fmt::Display for Action {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Instruction {
     pub triggers: Vec<Trigger>,
     pub actions: Vec<Action>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct FontLoadInfo {
     pub filename: String,
     pub size: f32,
@@ -1148,7 +1148,7 @@ pub enum Sprite {
     Colour(Colour),
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct BackgroundPart {
     pub sprite: Sprite,
     pub area: AABB,
@@ -1168,6 +1168,57 @@ pub enum AnimationStatus {
     Animating(Animation),
     Finished,
     None,
+}
+
+impl AnimationStatus {
+    pub fn start(
+        animation_type: &AnimationType,
+        sprites: &Vec<Sprite>,
+        speed: &Speed,
+    ) -> AnimationStatus {
+        let should_loop = match animation_type {
+            AnimationType::Loop => true,
+            AnimationType::PlayOnce => false,
+        };
+        AnimationStatus::Animating(Animation {
+            should_loop,
+            sprites: sprites.clone(),
+            index: 0,
+            speed: *speed,
+            time_to_next_change: speed.to_animation_time(),
+        })
+    }
+
+    pub fn update(&mut self) -> Option<Sprite> {
+        match self {
+            AnimationStatus::Animating(animation) => {
+                if animation.time_to_next_change == 0 {
+                    if animation.sprites.is_empty() {
+                    } else if animation.index == animation.sprites.len() - 1 {
+                        if animation.should_loop {
+                            animation.index = 0;
+                            animation.time_to_next_change = animation.speed.to_animation_time();
+                            return Some(animation.sprites[0].clone());
+                        } else {
+                            *self = AnimationStatus::Finished;
+                        }
+                    } else {
+                        animation.index += 1;
+                        animation.time_to_next_change = animation.speed.to_animation_time();
+                        return Some(animation.sprites[animation.index].clone());
+                    }
+                } else {
+                    animation.time_to_next_change -= 1;
+                }
+            }
+            AnimationStatus::Finished => {
+                *self = AnimationStatus::None;
+            }
+            AnimationStatus::None => {}
+        };
+
+        None
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -1238,7 +1289,7 @@ impl Object {
             .unwrap_or_else(|| Vec2::new(self.half_width(), self.half_height()))
     }
 
-    fn origin_in_world(&self) -> Vec2 {
+    pub fn origin_in_world(&self) -> Vec2 {
         self.top_left() + self.origin()
     }
 
@@ -1347,7 +1398,8 @@ impl Object {
     }
 
     fn update_animation(&mut self) {
-        let mut new_sprite = None;
+        /*let mut new_sprite = None;
+
         match &mut self.animation {
             AnimationStatus::Animating(animation) => {
                 if animation.time_to_next_change == 0 {
@@ -1373,8 +1425,8 @@ impl Object {
                 self.animation = AnimationStatus::None;
             }
             AnimationStatus::None => {}
-        };
-        if let Some(sprite) = new_sprite {
+        };*/
+        if let Some(sprite) = self.animation.update() {
             self.sprite = sprite;
         }
     }
@@ -2424,20 +2476,10 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                 sprites,
                 speed,
             } => {
-                let should_loop = match animation_type {
-                    AnimationType::Loop => true,
-                    AnimationType::PlayOnce => false,
-                };
-                self.objects[name].animation = AnimationStatus::Animating(Animation {
-                    should_loop,
-                    sprites: sprites.clone(),
-                    index: 0,
-                    speed: *speed,
-                    time_to_next_change: speed.to_animation_time(),
-                });
+                self.objects[name].animation =
+                    AnimationStatus::start(animation_type, sprites, speed);
 
-                let new_sprite = sprites.get(0).cloned();
-                if let Some(sprite) = new_sprite {
+                if let Some(sprite) = sprites.get(0).cloned() {
                     self.objects[name].sprite = sprite;
                 }
             }

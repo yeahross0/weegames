@@ -765,7 +765,7 @@
           "r": 1.0,
           "g": 0.0,
           "b": 0.0,
-          "a": 0.0
+          "a": 0.08627451
         }
       },
       "position": {
@@ -903,7 +903,7 @@
           "r": 0.0,
           "g": 0.0,
           "b": 1.0,
-          "a": 0.0
+          "a": 0.08627451
         }
       },
       "position": {
@@ -1226,19 +1226,19 @@
   ],
   "asset_files": {
     "images": {
-      "other-left": "other-left.png",
       "man-right-2": "man-right-2.png",
-      "scifi": "scifi.png",
-      "man-still": "man-still.png",
-      "robot-2": "robot-2.png",
-      "points": "points.png",
-      "man-right-3": "man-right-3.png",
-      "robot": "robot.png",
       "other-down": "other-down.png",
+      "man-right-3": "man-right-3.png",
+      "man-right-1": "man-right-1.png",
       "other-up": "other-up.png",
+      "other-left": "other-left.png",
+      "scifi": "scifi.png",
+      "points": "points.png",
+      "robot": "robot.png",
+      "man-still": "man-still.png",
       "man-right-4": "man-right-4.png",
       "other-right": "other-right.png",
-      "man-right-1": "man-right-1.png"
+      "robot-2": "robot-2.png"
     },
     "audio": {
       "gasp": "gasp.ogg",

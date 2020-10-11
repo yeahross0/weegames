@@ -23,7 +23,7 @@ use std::{
 };
 
 use shader::Shader;
-use wee_common::{Colour, Flip, Rect, Vec2, WeeResult, PROJECTION_HEIGHT, PROJECTION_WIDTH};
+use wee_common::{Colour, Flip, Rect, Size, Vec2, WeeResult, PROJECTION_HEIGHT, PROJECTION_WIDTH};
 #[derive(Debug)]
 pub struct Texture {
     pub id: GLuint,
@@ -166,6 +166,13 @@ impl Texture {
     fn unbind(&self) {
         unsafe {
             gl::BindTexture(gl::TEXTURE_2D, 0);
+        }
+    }
+
+    pub fn size(&self) -> Size {
+        Size {
+            width: self.width as f32,
+            height: self.height as f32,
         }
     }
 }

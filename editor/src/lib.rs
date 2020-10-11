@@ -1,18 +1,5 @@
-// TODO: Ignore input after finishing preview
-// TODO: Hover over `animation` it plays animation
-// TODO: choose_object fails if object has been deleted. error when right clicking object too
-// TODO: Stop setting object size to image size when new image added but have option to match image size
-// TODO: More pots in higher difficulties
 // TODO: Multiple fonts with same size?
-// TODO: File new doesn;t ask if want to save
-// TODO: EditedGame struct that turns into GameData when saved? Has unified assets and asset_files
-// TODO: Show origin debug option
-// TODO: Exit fullscreen when in editor
-// TODO: Aspect ratio of edited game changes when window size changed
-// TODO: Units in time trigger
 // TODO: Add ability to delete images, music, sounds, fonts
-// TODO: Keep game 16:9 after window is resized
-// TODO: Let choose initial size in create object
 
 #[macro_use]
 extern crate imgui;
@@ -52,7 +39,7 @@ pub fn run<'a, 'b>(
 ) -> WeeResult<()> {
     let mut game = GameData::default();
     let mut assets = Assets::default();
-    let mut filename = None;
+    let mut filename: Option<String> = None;
 
     let mut windows = Windows {
         main: true,
@@ -84,27 +71,34 @@ pub fn run<'a, 'b>(
     let mut animation_editor = AnimationEditor {
         new_sprite: Sprite::Colour(Colour::black()),
         index: 0,
+        preview: AnimationStatus::None,
+        displayed_sprite: None,
     };
 
     let mut last_frame = Instant::now();
-    let mut editor_status = EditorStatus::None;
     let mut game_position = Vec2::new(172.0, 106.0);
     let mut scale: f32 = 0.8;
     let mut minus_button = ButtonState::Up;
     let mut plus_button = ButtonState::Up;
     let mut show_collision_areas = false;
+    let mut show_origins = false;
     let mut new_background = Sprite::Colour(Colour::black());
     let mut show_error = None;
     let mut playing_sounds = Vec::new();
+    let mut new_fonts = Vec::new();
+    let mut font_state = 128;
 
     'editor_running: loop {
+        let mut file_task = FileTask::None;
+
         for event in event_pump.poll_iter() {
             imgui.sdl.handle_event(&mut imgui.context, &event);
             if imgui.sdl.ignore_event(&event) {
                 continue;
             }
             if let Event::Quit { .. } = event {
-                process::exit(0);
+                //process::exit(0);
+                file_task = FileTask::Exit;
             }
         }
 
@@ -127,19 +121,172 @@ pub fn run<'a, 'b>(
             }
         });
 
-        main_menu_bar_show(
-            &mut game,
-            &mut assets,
-            &mut filename,
-            &mut object_state.index,
-            &mut instruction_state,
-            ui,
-            event_pump,
-            &font_system.ttf_context,
-            &mut editor_status,
-            &mut show_collision_areas,
-            &mut windows,
-        )?;
+        {
+            let task = main_menu_bar_show(
+                /*&mut game,
+                &mut assets,
+                &mut filename,
+                &mut object_state.index,
+                &mut instruction_state,*/
+                ui,
+                /*event_pump,
+                &font_system.ttf_context,
+                &mut editor_status,*/
+                &mut show_collision_areas,
+                &mut show_origins,
+                &mut windows,
+            );
+            if file_task != FileTask::Exit {
+                file_task = task;
+            }
+        }
+
+        let has_unsaved_changes = |game: &GameData, filename: &Option<String>| {
+            if let Some(game_filename) = filename {
+                match GameData::load(game_filename) {
+                    Ok(old_game) => *game != old_game,
+                    Err(_) => true,
+                }
+            } else {
+                *game != GameData::default()
+            }
+        };
+
+        match file_task {
+            FileTask::New => {
+                if has_unsaved_changes(&game, &filename) {
+                    ui.open_popup(im_str!("New: Unsaved Changes"));
+                }
+            }
+            FileTask::Open => {
+                if has_unsaved_changes(&game, &filename) {
+                    ui.open_popup(im_str!("Open: Unsaved Changes"));
+                }
+            }
+            FileTask::ReturnToMenu => {
+                if has_unsaved_changes(&game, &filename) {
+                    ui.open_popup(im_str!("Return to Menu: Unsaved Changes"));
+                }
+            }
+            FileTask::Exit => {
+                if has_unsaved_changes(&game, &filename) {
+                    ui.open_popup(im_str!("Exit: Unsaved Changes"));
+                }
+            }
+            _ => {}
+        }
+
+        ui.popup_modal(im_str!("New: Unsaved Changes")).build(|| {
+            file_task = FileTask::None;
+            ui.text("Warning: If you make a new game you will lose your current work.");
+            if ui.button(im_str!("OK"), NORMAL_BUTTON) {
+                file_task = FileTask::New;
+                ui.close_current_popup();
+            }
+            ui.same_line(0.0);
+            if ui.button(im_str!("Cancel"), NORMAL_BUTTON) {
+                ui.close_current_popup();
+            }
+        });
+
+        ui.popup_modal(im_str!("Open: Unsaved Changes")).build(|| {
+            file_task = FileTask::None;
+            ui.text("Warning: If you open a new game you will lose your current work.");
+            if ui.button(im_str!("OK"), NORMAL_BUTTON) {
+                file_task = FileTask::Open;
+                ui.close_current_popup();
+            }
+            ui.same_line(0.0);
+            if ui.button(im_str!("Cancel"), NORMAL_BUTTON) {
+                ui.close_current_popup();
+            }
+        });
+
+        ui.popup_modal(im_str!("Return to Menu: Unsaved Changes"))
+            .build(|| {
+                file_task = FileTask::None;
+                ui.text("Warning: If you return to the menu you will lose your current work.");
+                if ui.button(im_str!("OK"), NORMAL_BUTTON) {
+                    file_task = FileTask::ReturnToMenu;
+                    ui.close_current_popup();
+                }
+                ui.same_line(0.0);
+                if ui.button(im_str!("Cancel"), NORMAL_BUTTON) {
+                    ui.close_current_popup();
+                }
+            });
+
+        ui.popup_modal(im_str!("Exit: Unsaved Changes")).build(|| {
+            file_task = FileTask::None;
+            ui.text("Warning: If you exit you will lose your current work.");
+            if ui.button(im_str!("OK"), NORMAL_BUTTON) {
+                file_task = FileTask::Exit;
+                ui.close_current_popup();
+            }
+            ui.same_line(0.0);
+            if ui.button(im_str!("Cancel"), NORMAL_BUTTON) {
+                ui.close_current_popup();
+            }
+        });
+
+        match file_task {
+            FileTask::New => {
+                game = GameData::default();
+                assets = Assets::default();
+                filename = None;
+                object_state.index = None;
+                instruction_state = InstructionState::default();
+            }
+            FileTask::Open => {
+                let response = nfd::open_file_dialog(None, Path::new("games").to_str());
+                if let Ok(Response::Okay(file_path)) = response {
+                    for _ in event_pump.poll_iter() {}
+                    log::info!("File path = {:?}", file_path);
+                    let new_data = GameData::load(&file_path);
+                    match new_data {
+                        Ok(new_data) => {
+                            game = new_data;
+                            assets = Assets::load(
+                                &game.asset_files,
+                                &file_path,
+                                font_system.ttf_context,
+                            )?;
+                            filename = Some(file_path);
+                            object_state.index = None;
+                            instruction_state = InstructionState::default();
+                        }
+                        Err(error) => {
+                            // TODO: More than just logging here. Show error
+                            log::error!("Couldn't open file {}", file_path);
+                            log::error!("{}", error);
+                        }
+                    }
+                } else {
+                    log::error!("Error opening file dialog");
+                }
+            }
+            FileTask::Save => match &filename {
+                Some(filename) => {
+                    let s = serde_json::to_string_pretty(&game);
+                    match s {
+                        Ok(s) => {
+                            std::fs::write(&filename, s).unwrap_or_else(|e| log::error!("{}", e));
+                            println!("SAVED! {}", filename);
+                        }
+                        Err(error) => {
+                            log::error!("{}", error);
+                        }
+                    }
+                }
+                None => save_game_file_as(&game, &mut filename),
+            },
+            FileTask::SaveAs => {
+                save_game_file_as(&game, &mut filename);
+            }
+            FileTask::ReturnToMenu => break 'editor_running,
+            FileTask::Exit => process::exit(0),
+            FileTask::None => {}
+        }
 
         let play_game = main_window_show(ui, &mut windows.main, &mut game, &mut preview);
 
@@ -346,13 +493,54 @@ pub fn run<'a, 'b>(
                 .build(ui, || {
                     if ui.button(im_str!("Add fonts"), NORMAL_BUTTON) {
                         let path = assets_path(&filename, "fonts");
-                        choose_font_from_files(
+                        let font_filenames = open_fonts_dialog(path);
+                        new_fonts.extend(font_filenames);
+                        /*choose_font_from_files(
                             &mut game.asset_files.fonts,
                             &mut assets.fonts,
                             path,
                             font_system.ttf_context,
-                        );
+                        );*/
                     }
+
+                    if !new_fonts.is_empty() {
+                        ui.open_popup(im_str!("Load Fonts"));
+                    }
+
+                    ui.popup_modal(im_str!("Load Fonts")).build(|| {
+                        if new_fonts.is_empty() {
+                            ui.close_current_popup();
+                        } else {
+                            let (key, _) = new_fonts.get_mut(0).unwrap();
+                            match key {
+                                Ok(key) => {
+                                    choose_string(key, ui, im_str!("Name"));
+                                    choose_u16(&mut font_state, ui, im_str!("Font Size"));
+                                    if ui.button(im_str!("OK"), NORMAL_BUTTON) {
+                                        let (key, path) = new_fonts.remove(0);
+                                        if let Err(error) = load_font(
+                                            &mut game.asset_files.fonts,
+                                            &mut assets.fonts,
+                                            (key, path),
+                                            font_system.ttf_context,
+                                            font_state,
+                                        ) {
+                                            log::error!("{}", error);
+                                        }
+                                    }
+                                    if ui.button(im_str!("Cancel"), NORMAL_BUTTON) {
+                                        new_fonts.remove(0).0.ok();
+                                    }
+                                }
+                                Err(error) => {
+                                    ui.text(format!("Error loading file: {}", error));
+                                    if ui.button(im_str!("OK"), NORMAL_BUTTON) {
+                                        new_fonts.remove(0).0.ok();
+                                    }
+                                }
+                            }
+                        }
+                    });
 
                     for (name, font) in game.asset_files.fonts.iter_mut() {
                         ui.text(name);
@@ -418,6 +606,7 @@ pub fn run<'a, 'b>(
             &assets.images,
             scene_location,
             show_collision_areas,
+            show_origins,
         )?;
 
         renderer.draw_tasks(&mut draw_tasks, scene_location);
@@ -427,9 +616,9 @@ pub fn run<'a, 'b>(
 
         thread::sleep(Duration::from_millis(10));
 
-        if let EditorStatus::ReturnToMenu = editor_status {
+        /*if let FileTask::ReturnToMenu = file_task {
             break 'editor_running;
-        }
+        }*/
     }
 
     Ok(())
@@ -456,6 +645,7 @@ trait RenderEditor {
         images: &Images,
         location: SceneLocation,
         show_collision_areas: bool,
+        show_origins: bool,
     ) -> WeeResult<()>;
 
     fn draw_tasks(&self, draw_tasks: &mut Vec<DrawTask>, location: SceneLocation);
@@ -507,6 +697,7 @@ impl RenderEditor for Renderer {
         images: &Images,
         location: SceneLocation,
         show_collision_areas: bool,
+        show_origins: bool,
     ) -> WeeResult<()> {
         let mut layers: Vec<u8> = objects.iter().map(|o| o.layer).collect();
         layers.sort();
@@ -577,6 +768,20 @@ impl RenderEditor for Renderer {
                         );
                         // TODO: model.move().scale()
                         self.fill_rectangle(model, Colour::rgba(1.0, 0.0, 0.0, 0.5));
+                    }
+                    if show_origins {
+                        // TODO: Don't clone and use game_object
+                        let game_object = object.clone().to_object();
+
+                        let origin = game_object.origin_in_world();
+
+                        let rect = Rect::new(origin.x, origin.y, 10.0, 10.0)
+                            .move_position(location.position)
+                            .scale(location.scale);
+
+                        let model = Model::new(rect, None, 0.0, Flip::default());
+
+                        self.fill_rectangle(model, Colour::rgba(1.0, 1.0, 0.0, 0.8));
                     }
                 }
             }
@@ -671,9 +876,14 @@ fn main_window_show(
 
                 match &mut game.length {
                     Length::Seconds(seconds) => {
+                        let max_length = if let GameType::BossGame = game.game_type {
+                            60.0
+                        } else {
+                            8.0
+                        };
                         imgui::Slider::new(
                             im_str!("Game Length"),
-                            std::ops::RangeInclusive::new(2.0, 8.0),
+                            std::ops::RangeInclusive::new(2.0, max_length),
                         )
                         .display_format(im_str!("%.1f"))
                         .build(ui, seconds);
@@ -689,7 +899,11 @@ fn main_window_show(
                     .resize_buffer(true)
                     .build();
 
-                game.intro_text = Some(intro_text.to_string());
+                game.intro_text = if intro_text.is_empty() {
+                    None
+                } else {
+                    Some(intro_text.to_string())
+                };
 
                 imgui::Slider::new(
                     im_str!("Playback rate"),
@@ -880,6 +1094,11 @@ fn edit_object_properties(
     ui.input_float(im_str!("Starting Y"), &mut object.position.y)
         .build();
     object.size.choose(ui);
+    if let Sprite::Image { name } = &object.sprite {
+        if ui.button(im_str!("Match Image Size"), NORMAL_BUTTON) {
+            object.size = images[name].size();
+        }
+    }
 
     choose_angle(&mut object.angle, ui);
 
@@ -909,12 +1128,7 @@ fn edit_object_properties(
             Some(area)
         }
         None => {
-            let mut area = wee_common::AABB::new(
-                0.0,
-                0.0,
-                object.size.width as f32,
-                object.size.height as f32,
-            );
+            let mut area = AABB::new(0.0, 0.0, object.size.width, object.size.height);
             if choose_collision_area(&mut area, ui) {
                 Some(area)
             } else {
@@ -958,6 +1172,7 @@ fn edit_instruction(
     ui: &imgui::Ui,
     instruction_mode: &mut InstructionMode,
     focus: &mut InstructionFocus,
+    animation_editor: &mut AnimationEditor,
 ) {
     ui.text("Triggers:");
     for (i, trigger) in instruction.triggers.iter().enumerate() {
@@ -1030,6 +1245,7 @@ fn edit_instruction(
             }
             InstructionFocus::Action { .. } => {
                 *instruction_mode = InstructionMode::EditAction;
+                animation_editor.reset();
             }
             InstructionFocus::None => {}
         }
@@ -1107,7 +1323,7 @@ fn edit_instruction_list<'a>(
                                     ui.text("\tDo nothing")
                                 } else {
                                     for action in instruction.actions.iter() {
-                                        action.display(ui, 0);
+                                        action.display(ui, 0, sprites, &assets.images);
                                     }
                                 }
                             });
@@ -1152,6 +1368,7 @@ fn edit_instruction_list<'a>(
             ui,
             &mut instruction_state.mode,
             &mut instruction_state.focus,
+            animation_editor,
         ),
         InstructionMode::AddTrigger => {
             let instruction = instruction_mut(instructions, instruction_state.index);
@@ -1349,7 +1566,7 @@ fn edit_action<'a>(
     let action_names = [
         im_str!("Win"),
         im_str!("Lose"),
-        im_str!("Effect"),
+        im_str!("Freeze"),
         im_str!("Motion"),
         im_str!("Play Sound"),
         im_str!("Stop Music"),
@@ -1370,7 +1587,7 @@ fn edit_action<'a>(
         *action = match current_action_position {
             0 => Action::Win,
             1 => Action::Lose,
-            2 => Action::Effect(Effect::None),
+            2 => Action::Effect(Effect::Freeze),
             3 => Action::Motion(Motion::Stop),
             4 => Action::PlaySound {
                 name: first_or_default(&assets.sounds),
@@ -1398,9 +1615,6 @@ fn edit_action<'a>(
     }
 
     match action {
-        Action::Effect(effect) => {
-            effect.choose(ui);
-        }
         Action::Motion(motion) => {
             choose_motion(motion, ui, object_names, draw_tasks);
         }
@@ -1428,16 +1642,55 @@ fn edit_action<'a>(
             sprites,
             speed,
         } => {
-            animation_type.choose(ui);
-            choose_animation(
-                sprites,
-                ui,
-                animation_editor,
-                asset_files,
-                &mut assets.images,
-                filename,
-            );
-            speed.choose(ui);
+            let mut modified = animation_type.choose(ui);
+            modified = modified
+                || choose_animation(
+                    sprites,
+                    ui,
+                    animation_editor,
+                    asset_files,
+                    &mut assets.images,
+                    filename,
+                );
+            modified = modified || speed.choose(ui);
+            modified = modified || ui.button(im_str!("Play Animation"), NORMAL_BUTTON);
+            if modified {
+                /*animation_editor.preview = AnimationStatus::Animating(Animation {
+                    should_loop:
+                })*/
+
+                animation_editor.preview = AnimationStatus::start(animation_type, sprites, speed);
+                if let Some(sprite) = sprites.get(0).cloned() {
+                    animation_editor.displayed_sprite = Some(sprite);
+                }
+            }
+            if let Some(sprite) = animation_editor.preview.update() {
+                animation_editor.displayed_sprite = Some(sprite);
+            }
+            if let Some(sprite) = &animation_editor.displayed_sprite {
+                match sprite {
+                    Sprite::Image { name } => {
+                        // TODO: Must have problem when two buttons have the same id
+                        let image_id = assets.images[name].id;
+                        imgui::ImageButton::new(
+                            imgui::TextureId::from(image_id as usize),
+                            [100.0, 100.0],
+                        )
+                        //.tint_col([0.9, 0.0, 0.0, 1.0])
+                        //.background_col([1.0, 0.0, 0.0, 0.5])
+                        .build(ui);
+                    }
+                    Sprite::Colour(colour) => {
+                        // TODO: Does this work with all the buttons having the same id?
+                        imgui::ColorButton::new(
+                            im_str!("##Colour"),
+                            [colour.r, colour.g, colour.b, colour.a],
+                        )
+                        .size([108.0, 108.0])
+                        .build(ui);
+                    }
+                }
+            }
         }
         Action::DrawText {
             text,
@@ -1677,9 +1930,8 @@ fn edit_objects_list(
                     if from == to {
                         ui.close_current_popup();
                     } else if duplicate {
-                        // TODO: Add this popup
                         ui.open_popup(im_str!("Duplicate Name"));
-                    } else {
+                    } else if !to.is_empty() {
                         objects[index].name = to.to_owned();
                         rename_across_objects(objects, &from, &to);
                         ui.close_current_popup();
@@ -1730,30 +1982,43 @@ fn edit_objects_list(
                     &filename,
                 );
                 if let Sprite::Image { name } = &object_state.new_object.sprite {
-                    object_state.new_object.size.width = images[name].width as f32;
-                    object_state.new_object.size.height = images[name].height as f32;
+                    object_state.new_object.size = images[name].size();
                 }
 
+                object_state.new_object.size.choose(ui);
+
                 if entered || ui.button(im_str!("OK"), NORMAL_BUTTON) {
-                    let duplicate = objects
-                        .iter()
-                        .any(|o| o.name == object_state.new_object.name);
+                    let new_name = object_state.new_name_buffer.to_str().to_string();
+                    let duplicate = objects.iter().any(|o| o.name == new_name);
                     if duplicate {
                         ui.open_popup(im_str!("Duplicate Name"));
+                    } else if new_name.is_empty() {
+                        ui.open_popup(im_str!("Empty Name"));
                     } else {
+                        object_state.new_object.name = new_name;
+                        objects.push(object_state.new_object.clone());
+                        object_state.index = Some(objects.len() - 1);
+                        *instruction_state = InstructionState::default();
                         ui.close_current_popup();
                     }
-                    object_state.new_object.name =
-                        object_state.new_name_buffer.to_str().to_string();
-                    objects.push(object_state.new_object.clone());
-                    object_state.index = Some(objects.len() - 1);
-                    *instruction_state = InstructionState::default();
-                    ui.close_current_popup();
                 }
                 ui.same_line(0.0);
                 if ui.button(im_str!("Cancel"), NORMAL_BUTTON) {
                     ui.close_current_popup();
                 }
+
+                ui.popup_modal(im_str!("Duplicate Name")).build(|| {
+                    ui.text(im_str!("An object with this name already exists"));
+                    if ui.button(im_str!("OK"), NORMAL_BUTTON) {
+                        ui.close_current_popup();
+                    }
+                });
+                ui.popup_modal(im_str!("Empty Name")).build(|| {
+                    ui.text(im_str!("Enter an object name"));
+                    if ui.button(im_str!("OK"), NORMAL_BUTTON) {
+                        ui.close_current_popup();
+                    }
+                });
             });
 
             ui.popup_modal(im_str!("Clone Object")).build(|| {
@@ -1764,55 +2029,77 @@ fn edit_objects_list(
                     .build();
 
                 if entered || ui.button(im_str!("OK"), NORMAL_BUTTON) {
-                    let duplicate = objects
-                        .iter()
-                        .any(|o| o.name == object_state.new_object.name);
+                    let new_name = object_state.new_name_buffer.to_str().to_string();
+                    let duplicate = objects.iter().any(|o| o.name == new_name);
                     if duplicate {
                         ui.open_popup(im_str!("Duplicate Name"));
+                    } else if new_name.is_empty() {
+                        ui.open_popup(im_str!("Empty Name"));
                     } else {
+                        rename_in_instructions(
+                            &mut object_state.new_object.instructions,
+                            &object_state.new_object.name,
+                            &new_name,
+                        );
+                        object_state.new_object.name = new_name;
+                        objects.push(object_state.new_object.clone());
+                        object_state.index = Some(objects.len() - 1);
+                        *instruction_state = InstructionState::default();
                         ui.close_current_popup();
                     }
-                    let new_name = object_state.new_name_buffer.to_str().to_string();
-                    rename_in_instructions(
-                        &mut object_state.new_object.instructions,
-                        &object_state.new_object.name,
-                        &new_name,
-                    );
-                    object_state.new_object.name = new_name;
-                    objects.push(object_state.new_object.clone());
-                    object_state.index = Some(objects.len() - 1);
-                    *instruction_state = InstructionState::default();
-                    ui.close_current_popup();
                 }
                 ui.same_line(0.0);
                 if ui.button(im_str!("Cancel"), NORMAL_BUTTON) {
                     ui.close_current_popup();
                 }
-            });
 
-            ui.popup_modal(im_str!("Duplicate Name")).build(|| {
-                ui.text(im_str!("An object with this name already exists"));
-                if ui.button(im_str!("OK"), NORMAL_BUTTON) {
-                    ui.close_current_popup();
-                }
+                ui.popup_modal(im_str!("Duplicate Name")).build(|| {
+                    ui.text(im_str!("An object with this name already exists"));
+                    if ui.button(im_str!("OK"), NORMAL_BUTTON) {
+                        ui.close_current_popup();
+                    }
+                });
+                ui.popup_modal(im_str!("Empty Name")).build(|| {
+                    ui.text(im_str!("Enter an object name"));
+                    if ui.button(im_str!("OK"), NORMAL_BUTTON) {
+                        ui.close_current_popup();
+                    }
+                });
             });
         });
 }
 
 fn file_show<'a, 'b>(
     ui: &imgui::Ui,
-    game: &mut GameData,
+    /*game: &mut GameData,
     assets: &mut Assets<'a, 'b>,
     event_pump: &mut EventPump,
     ttf_context: &'a TtfContext,
     filename: &mut Option<String>,
     selected_index: &mut Option<usize>,
     instruction_state: &mut InstructionState,
-    editor_status: &mut EditorStatus,
-) -> WeeResult<()> {
+    editor_status: &mut EditorStatus,*/
+) -> FileTask {
     let menu = ui.begin_menu(im_str!("File"), true);
+    let mut file_task = FileTask::None;
     if let Some(menu) = menu {
-        file_new(
+        if imgui::MenuItem::new(im_str!("New")).build(ui) {
+            file_task = FileTask::New;
+        }
+        if imgui::MenuItem::new(im_str!("Open")).build(ui) {
+            file_task = FileTask::Open;
+        }
+        if imgui::MenuItem::new(im_str!("Save")).build(ui) {
+            file_task = FileTask::Save;
+        }
+        if imgui::MenuItem::new(im_str!("Save As")).build(ui) {
+            file_task = FileTask::SaveAs;
+        }
+        if imgui::MenuItem::new(im_str!("Return to Menu")).build(ui) {
+            file_task = FileTask::ReturnToMenu;
+        }
+
+        /*file_new(
             ui,
             game,
             assets,
@@ -1839,12 +2126,12 @@ fn file_show<'a, 'b>(
 
         file_save_as(ui, game, filename);
 
-        *editor_status = file_return_to_menu(ui);
+        *editor_status = file_return_to_menu(ui);*/
 
         menu.end(ui);
     }
 
-    Ok(())
+    file_task
 }
 
 fn toggle_menu_item(ui: &imgui::Ui, label: &ImStr, opened: &mut bool) {
@@ -1855,21 +2142,23 @@ fn toggle_menu_item(ui: &imgui::Ui, label: &ImStr, opened: &mut bool) {
 }
 
 fn main_menu_bar_show<'a, 'b>(
-    game: &mut GameData,
+    /*game: &mut GameData,
     assets: &mut Assets<'a, 'b>,
     filename: &mut Option<String>,
     selected_index: &mut Option<usize>,
-    instruction_state: &mut InstructionState,
+    instruction_state: &mut InstructionState,*/
     ui: &imgui::Ui,
-    event_pump: &mut EventPump,
+    /*event_pump: &mut EventPump,
     ttf_context: &'a TtfContext,
-    editor_status: &mut EditorStatus,
+    editor_status: &mut EditorStatus,*/
     show_collision_areas: &mut bool,
+    show_origins: &mut bool,
     windows: &mut Windows,
-) -> WeeResult<()> {
+) -> FileTask {
     let menu_bar = ui.begin_main_menu_bar();
+    let mut file_task = FileTask::None;
     if let Some(bar) = menu_bar {
-        if let Err(error) = file_show(
+        /*if let Err(error) = file_show(
             ui,
             game,
             assets,
@@ -1882,22 +2171,35 @@ fn main_menu_bar_show<'a, 'b>(
         ) {
             bar.end(ui);
             return Err(error);
-        }
+        }*/
+        file_task = file_show(ui);
 
         view_show(ui, windows);
 
         let menu = ui.begin_menu(im_str!("Debug"), true);
         if let Some(menu) = menu {
             toggle_menu_item(ui, im_str!("Show Collision Areas"), show_collision_areas);
+            toggle_menu_item(ui, im_str!("Show Origins"), show_origins);
             menu.end(ui);
         }
         bar.end(ui);
     }
 
-    Ok(())
+    file_task
 }
 
-fn file_new(
+#[derive(Debug, Copy, Clone, PartialEq)]
+enum FileTask {
+    New,
+    Open,
+    Save,
+    SaveAs,
+    ReturnToMenu,
+    Exit,
+    None,
+}
+
+/*fn file_new(
     ui: &imgui::Ui,
     game: &mut GameData,
     assets: &mut Assets,
@@ -1905,13 +2207,55 @@ fn file_new(
     selected_object_index: &mut Option<usize>,
     instruction_state: &mut InstructionState,
 ) {
+    // TODO: Struct FileTask { New, Open, Save, SaveAs, None }
+    // TODO: fix this. popup won't be accessed because file bar isn't open
+    //let mut should_save = false;
     if imgui::MenuItem::new(im_str!("New")).build(ui) {
+        /*let mut unsaved_changes = false;
+        if let Some(filename) = filename {
+            match GameData::load(filename) {
+                Ok(old_game) => {
+                    if *game != old_game {
+                        ui.open_popup(im_str!("Unsaved Changes"));
+                        unsaved_changes = true;
+                        log::debug!("1");
+                    }
+                }
+                Err(_) => {
+                    ui.open_popup(im_str!("Unsaved Changes"));
+                    unsaved_changes = true;
+                    log::debug!("2");
+                }
+            }
+        } else {
+            if *game != GameData::default() {
+                ui.open_popup(im_str!("Unsaved Changes"));
+                unsaved_changes = true;
+                log::debug!("3");
+            }
+        }
+
+        if !unsaved_changes {
+            should_save = true;
+        }*/
+    }
+    /*ui.popup_modal(im_str!("Unsaved Changes")).build(|| {
+        ui.text("Warning: You have unsaved changes.");
+        if ui.button(im_str!("OK"), NORMAL_BUTTON) {
+            should_save = true;
+            ui.close_current_popup();
+        }
+        if ui.button(im_str!("Cancel"), NORMAL_BUTTON) {
+            ui.close_current_popup();
+        }
+    });
+    if should_save {
         *game = GameData::default();
         *assets = Assets::default();
         *filename = None;
         *selected_object_index = None;
         *instruction_state = InstructionState::default();
-    }
+    }*/
 }
 
 fn file_open<'a, 'b>(
@@ -1971,7 +2315,7 @@ pub fn file_save(ui: &imgui::Ui, game: &GameData, filename: &mut Option<String>)
             None => save_game_file_as(game, filename),
         }
     }
-}
+}*/
 
 fn save_game_file_as(game: &GameData, filename: &mut Option<String>) {
     let response = nfd::open_save_dialog(None, Path::new("games").to_str());
@@ -1996,11 +2340,11 @@ fn save_game_file_as(game: &GameData, filename: &mut Option<String>) {
     }
 }
 
-fn file_save_as(ui: &imgui::Ui, game: &GameData, filename: &mut Option<String>) {
+/*fn file_save_as(ui: &imgui::Ui, game: &GameData, filename: &mut Option<String>) {
     if imgui::MenuItem::new(im_str!("Save As")).build(ui) {
         save_game_file_as(game, filename);
     }
-}
+}*/
 
 pub fn file_return_to_menu(ui: &imgui::Ui) -> EditorStatus {
     if imgui::MenuItem::new(im_str!("Return to Menu")).build(ui) {
@@ -2170,6 +2514,7 @@ impl ImguiDisplayTrigger for Trigger {
         let image_tooltip = |image_name: &str| {
             if ui.is_item_hovered() {
                 ui.tooltip(|| {
+                    // TODO: What if doesn't exist
                     let texture_id = images[image_name].id;
                     // TODO: Restrict size to ratio?
                     imgui::Image::new(imgui::TextureId::from(texture_id as usize), [200.0, 200.0])
@@ -2184,14 +2529,16 @@ impl ImguiDisplayTrigger for Trigger {
                 ui.tooltip(|| match sprites.get(object_name) {
                     Some(Sprite::Image { name: image_name }) => {
                         if let Some(texture) = &images.get(image_name) {
-                            let width = texture.width as f32;
-                            let height = texture.height as f32;
-                            let max_side = width.max(height);
-                            let width = width / max_side * 200.0;
-                            let height = height / max_side * 200.0;
+                            let size = texture.size();
+                            let max_side = size.width.max(size.height);
+                            // TODO: Remove magic numbers
+                            let size = Size::new(
+                                size.width / max_side * 200.0,
+                                size.height / max_side * 200.0,
+                            );
                             imgui::Image::new(
                                 imgui::TextureId::from(texture.id as usize),
-                                [width, height],
+                                [size.width, size.height],
                             )
                             .build(ui);
                         } else {
@@ -2384,21 +2731,188 @@ impl ImguiDisplayTrigger for Trigger {
 }
 
 trait ImguiDisplayAction {
-    fn display(&self, ui: &imgui::Ui, indent: usize);
+    fn display(
+        &self,
+        ui: &imgui::Ui,
+        indent: usize,
+        sprites: &HashMap<&str, &Sprite>,
+        images: &Images,
+    );
 }
 
 impl ImguiDisplayAction for Action {
-    fn display(&self, ui: &imgui::Ui, indent: usize) {
+    fn display(
+        &self,
+        ui: &imgui::Ui,
+        indent: usize,
+        sprites: &HashMap<&str, &Sprite>,
+        images: &Images,
+    ) {
         ui.text("\t".repeat(indent));
         ui.same_line_with_spacing(0.0, 0.0);
+
+        // TODO: Duplicate code
+        let image_tooltip = |image_name: &str| {
+            if ui.is_item_hovered() {
+                ui.tooltip(|| {
+                    // TODO: What if doesn't exist
+                    let texture_id = images[image_name].id;
+                    // TODO: Restrict size to ratio?
+                    imgui::Image::new(imgui::TextureId::from(texture_id as usize), [200.0, 200.0])
+                        .build(ui);
+                });
+            }
+        };
+
+        // TODO: Sort through these closures
+        let object_tooltip = |object_name: &str| {
+            if ui.is_item_hovered() {
+                ui.tooltip(|| match sprites.get(object_name) {
+                    Some(Sprite::Image { name: image_name }) => {
+                        if let Some(texture) = &images.get(image_name) {
+                            let size = texture.size();
+                            let max_side = size.width.max(size.height);
+                            // TODO: Remove magic numbers
+                            let size = Size::new(
+                                size.width / max_side * 200.0,
+                                size.height / max_side * 200.0,
+                            );
+                            imgui::Image::new(
+                                imgui::TextureId::from(texture.id as usize),
+                                [size.width, size.height],
+                            )
+                            .build(ui);
+                        } else {
+                            ui.text_colored(
+                                [1.0, 0.0, 0.0, 1.0],
+                                format!("Warning: Image `{}` not found", image_name),
+                            );
+                        }
+                    }
+                    Some(Sprite::Colour(colour)) => {
+                        imgui::ColorButton::new(
+                            im_str!("##Colour"),
+                            [colour.r, colour.g, colour.b, colour.a],
+                        )
+                        .size([80.0, 80.0])
+                        .build(ui);
+                    }
+                    None => {
+                        ui.text_colored(
+                            [1.0, 0.0, 0.0, 1.0],
+                            format!("Warning: Object `{}` not found", object_name),
+                        );
+                    }
+                });
+            }
+        };
+
+        let object_button_with_label = |label: &ImStr, object_name: &str| {
+            if sprites.keys().any(|name| *name == object_name) {
+                ui.text(label);
+            } else {
+                ui.text_colored([1.0, 0.0, 0.0, 1.0], label);
+            }
+            object_tooltip(object_name);
+        };
+
+        let object_button = |object_name: &str| {
+            object_button_with_label(&ImString::from(object_name.to_string()), object_name);
+        };
+
+        let image_button_with_label = |label: &ImStr, image_name: &str| {
+            ui.text(label);
+            image_tooltip(image_name);
+        };
+
+        let image_button = |image_name: &str| {
+            image_button_with_label(&ImString::from(image_name.to_string()), image_name);
+        };
+
+        let sprite_button = |sprite: &Sprite| {
+            match sprite {
+                Sprite::Image { name } => {
+                    image_button(name);
+                }
+                Sprite::Colour(colour) => {
+                    ui.text(format!(
+                        "The colour {{ red: {}, green: {}, blue: {}, alpha: {} }}",
+                        colour.r, colour.g, colour.b, colour.a
+                    ));
+                    if ui.is_item_hovered() {
+                        ui.tooltip(|| {
+                            imgui::ColorButton::new(
+                                im_str!("##Colour"),
+                                [colour.r, colour.g, colour.b, colour.a],
+                            )
+                            .size([80.0, 80.0])
+                            .build(ui);
+                        })
+                    };
+                }
+            };
+        };
+
+        let same_line = || ui.same_line_with_spacing(0.0, 3.0);
 
         match self {
             Action::Random { random_actions } => {
                 ui.text("Chooses a random action");
                 for action in random_actions {
-                    action.display(ui, indent + 1);
+                    action.display(ui, indent + 1, sprites, images);
                 }
             }
+            Action::SetProperty(PropertySetter::Angle(AngleSetter::RotateToObject { name })) => {
+                ui.text("Rotate towards");
+                same_line();
+                object_button(name);
+            }
+            Action::SetProperty(PropertySetter::Sprite(sprite)) => {
+                ui.text("Set this object's sprite to");
+                same_line();
+                sprite_button(sprite);
+            }
+            Action::Motion(motion) => match motion {
+                Motion::JumpTo(JumpLocation::Object { name }) => {
+                    ui.text("Jump to");
+                    same_line();
+                    object_button_with_label(&im_str!("{}'s", name), name);
+                    same_line();
+                    ui.text("position");
+                }
+                Motion::Swap { name } => {
+                    ui.text("Swap position with");
+                    same_line();
+                    object_button(name);
+                }
+                Motion::Target {
+                    target,
+                    target_type,
+                    offset,
+                    speed,
+                } => {
+                    match target {
+                        Target::Object { name } => {
+                            let offset = if *offset == Vec2::zero() {
+                                "".to_string()
+                            } else {
+                                format!(" with an offset of {}, {}", offset.x, offset.y)
+                            };
+                            let target_type = match target_type {
+                                TargetType::Follow => "Follow",
+                                TargetType::StopWhenReached => "Target",
+                            };
+                            ui.text(target_type);
+                            same_line();
+                            object_button(name);
+                            same_line();
+                            ui.text(format!("{}{}", speed, offset));
+                        }
+                        Target::Mouse => ui.text(motion.to_string()),
+                    };
+                }
+                _ => ui.text(motion.to_string()),
+            },
             _ => ui.text(self.to_string()),
         };
     }
@@ -2426,14 +2940,13 @@ pub enum InstructionFocus {
 }
 
 trait Choose {
-    // TODO: Should return bool?
-    fn choose(&mut self, ui: &imgui::Ui);
+    fn choose(&mut self, ui: &imgui::Ui) -> bool;
 }
 
 impl Choose for Vec2 {
-    fn choose(&mut self, ui: &imgui::Ui) {
-        ui.input_float(im_str!("X"), &mut self.x).build();
-        ui.input_float(im_str!("Y"), &mut self.y).build();
+    fn choose(&mut self, ui: &imgui::Ui) -> bool {
+        ui.input_float(im_str!("X"), &mut self.x).build()
+            || ui.input_float(im_str!("Y"), &mut self.y).build()
     }
 }
 
@@ -2464,30 +2977,48 @@ fn choose_when(when: &mut When, ui: &imgui::Ui, game_length: Length) {
         };
     }
 
+    let to_seconds = |frame| frame as f32 / FPS;
+    let to_frames = |seconds| (seconds * FPS) as u32;
     match when {
         When::Exact { time } => {
-            let mut changed_time = *time as i32;
-            ui.input_int(im_str!("Time"), &mut changed_time).build();
-            *time = changed_time as u32;
+            let mut changed_time = to_seconds(*time);
+            match game_length {
+                Length::Seconds(seconds) => {
+                    ui.drag_float(im_str!("Seconds"), &mut changed_time)
+                        .min(0.0)
+                        .max(seconds)
+                        .speed(1.0 / FPS)
+                        .build();
+                }
+                Length::Infinite => {
+                    ui.drag_float(im_str!("Seconds"), &mut changed_time)
+                        .min(0.0)
+                        .speed(1.0 / FPS)
+                        .build();
+                }
+            }
+            *time = to_frames(changed_time);
         }
-        When::Random { start, end } => match game_length {
-            Length::Seconds(seconds) => {
-                let mut frames = [*start as i32, *end as i32];
-                ui.drag_int2(im_str!("Time"), &mut frames)
-                    .min(0)
-                    .max((seconds * 60.0) as i32)
-                    .build();
-                *start = frames[0] as u32;
-                *end = frames[1] as u32;
+        When::Random { start, end } => {
+            let mut times = [to_seconds(*start), to_seconds(*end)];
+            match game_length {
+                Length::Seconds(seconds) => {
+                    ui.drag_float2(im_str!("Between (seconds)"), &mut times)
+                        .min(0.0)
+                        .max(seconds)
+                        .speed(1.0 / FPS)
+                        .build();
+                }
+                Length::Infinite => {
+                    ui.drag_float2(im_str!("Between (seconds)"), &mut times)
+                        .min(0.0)
+                        .speed(1.0 / FPS)
+                        .build();
+                }
             }
-            Length::Infinite => {
-                // TODO: Have a look at how this looks
-                let mut frames = [*start as i32, *end as i32];
-                ui.drag_int2(im_str!("Time"), &mut frames).min(0).build();
-                *start = frames[0] as u32;
-                *end = frames[1] as u32;
-            }
-        },
+            *start = to_frames(times[0]);
+            *end = to_frames(times[1]);
+        }
         _ => {}
     }
 }
@@ -2594,14 +3125,14 @@ fn choose_mouse_over(over: &mut MouseOver, ui: &imgui::Ui, object_names: &Vec<&s
 }
 
 impl Choose for Size {
-    fn choose(&mut self, ui: &imgui::Ui) {
-        ui.input_float(im_str!("Width"), &mut self.width).build();
-        ui.input_float(im_str!("Height"), &mut self.height).build();
+    fn choose(&mut self, ui: &imgui::Ui) -> bool {
+        ui.input_float(im_str!("Width"), &mut self.width).build()
+            || ui.input_float(im_str!("Height"), &mut self.height).build()
     }
 }
 
 impl Choose for MouseInteraction {
-    fn choose(&mut self, ui: &imgui::Ui) {
+    fn choose(&mut self, ui: &imgui::Ui) -> bool {
         let button_states = [
             im_str!("Button Up"),
             im_str!("Button Down"),
@@ -2634,12 +3165,15 @@ impl Choose for MouseInteraction {
                 4 => MouseInteraction::Hover,
                 _ => unreachable!(),
             };
+            true
+        } else {
+            false
         }
     }
 }
 
 impl Choose for WinStatus {
-    fn choose(&mut self, ui: &imgui::Ui) {
+    fn choose(&mut self, ui: &imgui::Ui) -> bool {
         let win_states = [
             im_str!("Won"),
             im_str!("Lost"),
@@ -2664,6 +3198,9 @@ impl Choose for WinStatus {
                 5 => WinStatus::NotYetLost,
                 _ => unreachable!(),
             };
+            true
+        } else {
+            false
         }
     }
 }
@@ -2692,7 +3229,7 @@ fn choose_object(object: &mut String, ui: &imgui::Ui, object_names: &Vec<&str>) 
 }
 
 impl Choose for SwitchState {
-    fn choose(&mut self, ui: &imgui::Ui) {
+    fn choose(&mut self, ui: &imgui::Ui) -> bool {
         let switch_states = [
             im_str!("On"),
             im_str!("Off"),
@@ -2714,6 +3251,9 @@ impl Choose for SwitchState {
                 3 => SwitchState::SwitchedOff,
                 _ => SwitchState::On,
             };
+            true
+        } else {
+            false
         }
     }
 }
@@ -2892,6 +3432,16 @@ struct AnimationEditor {
     new_sprite: Sprite,
     index: usize,
     // TODO: Maybe put animation preview state here
+    preview: AnimationStatus,
+    displayed_sprite: Option<Sprite>,
+}
+
+impl AnimationEditor {
+    fn reset(&mut self) {
+        self.index = 0;
+        self.preview = AnimationStatus::None;
+        self.displayed_sprite = None;
+    }
 }
 
 fn choose_animation(
@@ -2901,7 +3451,8 @@ fn choose_animation(
     asset_files: &mut AssetFiles,
     images: &mut Images,
     filename: &Option<String>,
-) {
+) -> bool {
+    let mut modified = false;
     for (index, sprite) in animation.iter().enumerate() {
         match sprite {
             Sprite::Image { name } => {
@@ -2960,6 +3511,7 @@ fn choose_animation(
                 let tmp = animation[editor.index].clone();
                 animation[editor.index] = animation[editor.index - 1].clone();
                 animation[editor.index - 1] = tmp;
+                modified = true;
             }
         }
         AnimationTask::MoveAfter => {
@@ -2967,11 +3519,13 @@ fn choose_animation(
                 let tmp = animation[editor.index].clone();
                 animation[editor.index] = animation[editor.index + 1].clone();
                 animation[editor.index + 1] = tmp;
+                modified = true;
             }
         }
         AnimationTask::Delete => {
             log::info!("{}", editor.index);
             animation.remove(editor.index);
+            modified = true;
         }
         AnimationTask::None => {}
     }
@@ -2997,9 +3551,11 @@ fn choose_animation(
 
         if ui.button(im_str!("OK"), NORMAL_BUTTON) {
             animation.push(editor.new_sprite.clone());
+            modified = true;
             ui.close_current_popup();
         }
     });
+    return modified;
 }
 
 fn choose_sprite(
@@ -3089,45 +3645,66 @@ fn choose_property_check(
 }
 
 impl Choose for TextResize {
-    fn choose(&mut self, ui: &imgui::Ui) {
+    fn choose(&mut self, ui: &imgui::Ui) -> bool {
         if ui.radio_button_bool(
             im_str!("Adjust Object Size to Match Text"),
             *self == TextResize::MatchText,
         ) {
             *self = !*self;
+            true
+        } else {
+            false
         }
     }
 }
 
 impl Choose for Colour {
-    fn choose(&mut self, ui: &imgui::Ui) {
+    fn choose(&mut self, ui: &imgui::Ui) -> bool {
         let mut colour_array = [self.r, self.g, self.b, self.a];
-        imgui::ColorEdit::new(im_str!("Colour"), &mut colour_array)
+        if imgui::ColorEdit::new(im_str!("Colour"), &mut colour_array)
             .alpha(true)
-            .build(ui);
-        *self = Colour::rgba(
-            colour_array[0],
-            colour_array[1],
-            colour_array[2],
-            colour_array[3],
-        );
+            .build(ui)
+        {
+            *self = Colour::rgba(
+                colour_array[0],
+                colour_array[1],
+                colour_array[2],
+                colour_array[3],
+            );
+            true
+        } else {
+            false
+        }
     }
 }
 
 impl Choose for String {
-    fn choose(&mut self, ui: &imgui::Ui) {
-        let mut change_text = ImString::from(self.to_owned());
-        ui.input_text(im_str!("Text"), &mut change_text)
-            .resize_buffer(true)
-            .build();
-        *self = change_text.to_str().to_owned();
+    fn choose(&mut self, ui: &imgui::Ui) -> bool {
+        choose_string(self, ui, im_str!("Text"))
+    }
+}
+
+fn choose_string(text: &mut String, ui: &imgui::Ui, label: &ImStr) -> bool {
+    let mut change_text = ImString::from(text.to_owned());
+    if ui
+        .input_text(label, &mut change_text)
+        .resize_buffer(true)
+        .build()
+    {
+        *text = change_text.to_str().to_owned();
+        true
+    } else {
+        false
     }
 }
 
 impl Choose for AnimationType {
-    fn choose(&mut self, ui: &imgui::Ui) {
+    fn choose(&mut self, ui: &imgui::Ui) -> bool {
         if ui.radio_button_bool(im_str!("Loop Animation"), *self == AnimationType::Loop) {
             *self = !*self;
+            true
+        } else {
+            false
         }
     }
 }
@@ -3203,26 +3780,31 @@ fn choose_property_setter(
 }
 
 impl Choose for FlipSetter {
-    fn choose(&mut self, ui: &imgui::Ui) {
-        self.radio(ui);
+    fn choose(&mut self, ui: &imgui::Ui) -> bool {
+        let mut modified = self.radio(ui);
 
         if let FlipSetter::SetFlip(flip) = self {
             if ui.radio_button_bool(im_str!("Flipped?"), *flip) {
                 *flip = !*flip;
+                modified = true;
             }
         }
+        modified
     }
 }
 
 impl Choose for LayerSetter {
-    fn choose(&mut self, ui: &imgui::Ui) {
-        self.radio(ui);
+    fn choose(&mut self, ui: &imgui::Ui) -> bool {
+        let mut modified = self.radio(ui);
 
         if let LayerSetter::Value(value) = self {
             let mut v = *value as i32;
-            ui.input_int(im_str!("Layer"), &mut v).build();
-            *value = v as u8;
+            if ui.input_int(im_str!("Layer"), &mut v).build() {
+                *value = v as u8;
+                modified = true;
+            }
         }
+        modified
     }
 }
 
@@ -3232,41 +3814,54 @@ fn choose_u32(value: &mut u32, ui: &imgui::Ui, label: &ImStr) {
     *value = changed_value as u32;
 }
 
+fn choose_u16(value: &mut u16, ui: &imgui::Ui, label: &ImStr) {
+    let mut changed_value = *value as i32;
+    ui.input_int(label, &mut changed_value).build();
+    *value = changed_value as u16;
+}
+
 impl Choose for Switch {
-    fn choose(&mut self, ui: &imgui::Ui) {
+    fn choose(&mut self, ui: &imgui::Ui) -> bool {
         if ui.radio_button_bool(im_str!("Switch"), *self == Switch::On) {
             *self = !*self;
+            true
+        } else {
+            false
         }
     }
 }
 
 impl Choose for SizeSetter {
-    fn choose(&mut self, ui: &imgui::Ui) {
-        self.combo(ui);
-        match self {
-            SizeSetter::Value(size) => {
-                ui.input_float(im_str!("Width"), &mut size.width).build();
-                ui.input_float(im_str!("Height"), &mut size.height).build();
-            }
-            SizeSetter::Grow(size_difference) | SizeSetter::Shrink(size_difference) => {
-                size_difference.radio(ui);
+    fn choose(&mut self, ui: &imgui::Ui) -> bool {
+        let modified = self.combo(ui);
+        modified
+            || match self {
+                SizeSetter::Value(size) => {
+                    ui.input_float(im_str!("Width"), &mut size.width).build()
+                        || ui.input_float(im_str!("Height"), &mut size.height).build()
+                }
+                SizeSetter::Grow(size_difference) | SizeSetter::Shrink(size_difference) => {
+                    let modified = size_difference.radio(ui);
 
-                match size_difference {
-                    SizeDifference::Value(size) | SizeDifference::Percent(size) => {
-                        ui.input_float(im_str!("Width"), &mut size.width).build();
-                        ui.input_float(im_str!("Height"), &mut size.height).build();
-                    }
+                    modified
+                        || match size_difference {
+                            SizeDifference::Value(size) | SizeDifference::Percent(size) => {
+                                ui.input_float(im_str!("Width"), &mut size.width).build()
+                                    || ui.input_float(im_str!("Height"), &mut size.height).build()
+                            }
+                        }
+                }
+                SizeSetter::Clamp { min, max } => {
+                    ui.input_float(im_str!("Min Width"), &mut min.width).build()
+                        || ui
+                            .input_float(im_str!("Min Height"), &mut min.height)
+                            .build()
+                        || ui.input_float(im_str!("Max Width"), &mut max.width).build()
+                        || ui
+                            .input_float(im_str!("Max Height"), &mut max.height)
+                            .build()
                 }
             }
-            SizeSetter::Clamp { min, max } => {
-                ui.input_float(im_str!("Min Width"), &mut min.width).build();
-                ui.input_float(im_str!("Min Height"), &mut min.height)
-                    .build();
-                ui.input_float(im_str!("Max Width"), &mut max.width).build();
-                ui.input_float(im_str!("Max Height"), &mut max.height)
-                    .build();
-            }
-        }
     }
 }
 
@@ -3337,7 +3932,7 @@ fn choose_angle_setter(setter: &mut AngleSetter, ui: &imgui::Ui, object_names: &
     }
 }
 
-impl Choose for Effect {
+/*impl Choose for Effect {
     fn choose(&mut self, ui: &imgui::Ui) {
         let mut effect_type = if *self == Effect::None { 0 } else { 1 };
         let effect_typename = if effect_type == 0 {
@@ -3356,10 +3951,10 @@ impl Choose for Effect {
             };
         }
     }
-}
+}*/
 
 impl Choose for JustifyText {
-    fn choose(&mut self, ui: &imgui::Ui) {
+    fn choose(&mut self, ui: &imgui::Ui) -> bool {
         let mut justify_type = if *self == JustifyText::Left { 0 } else { 1 };
         let justify_typename = if justify_type == 0 {
             "Left".to_string()
@@ -3375,6 +3970,9 @@ impl Choose for JustifyText {
             } else {
                 JustifyText::Centre
             };
+            true
+        } else {
+            false
         }
     }
 }
@@ -3486,7 +4084,8 @@ fn choose_motion(
 }
 
 impl Choose for MovementDirection {
-    fn choose(&mut self, ui: &imgui::Ui) {
+    fn choose(&mut self, ui: &imgui::Ui) -> bool {
+        let mut modified = false;
         let direction_types = [
             im_str!("Current Angle"),
             im_str!("Chosen Angle"),
@@ -3516,28 +4115,26 @@ impl Choose for MovementDirection {
                 },
                 _ => unreachable!(),
             };
+            modified = true;
         }
-        match self {
-            MovementDirection::Angle(Angle::Degrees(angle)) => {
-                choose_angle(angle, ui);
+        modified
+            || match self {
+                MovementDirection::Angle(Angle::Degrees(angle)) => choose_angle(angle, ui),
+                MovementDirection::Angle(Angle::Random { min, max }) => {
+                    ui.input_float(im_str!("Min Angle"), min).build()
+                        || ui.input_float(im_str!("Max Angle"), max).build()
+                }
+                MovementDirection::Direction {
+                    possible_directions,
+                } => possible_directions.choose(ui),
+                _ => false,
             }
-            MovementDirection::Angle(Angle::Random { min, max }) => {
-                ui.input_float(im_str!("Min Angle"), min).build();
-                ui.input_float(im_str!("Max Angle"), max).build();
-            }
-            MovementDirection::Direction {
-                possible_directions,
-            } => {
-                possible_directions.choose(ui);
-            }
-            _ => {}
-        }
     }
 }
 
-fn choose_angle(angle: &mut f32, ui: &imgui::Ui) {
+fn choose_angle(angle: &mut f32, ui: &imgui::Ui) -> bool {
     let mut radians = angle.to_radians();
-    imgui::AngleSlider::new(im_str!("Angle"))
+    let mut modified = imgui::AngleSlider::new(im_str!("Angle"))
         .min_degrees(-360.0)
         .max_degrees(360.0)
         .build(ui, &mut radians);
@@ -3548,21 +4145,24 @@ fn choose_angle(angle: &mut f32, ui: &imgui::Ui) {
     }
 
     ui.popup(im_str!("Set specific angle"), || {
-        ui.input_float(im_str!("Angle"), angle).build();
+        modified = modified || ui.input_float(im_str!("Angle"), angle).build();
     });
+    modified
 }
 
 impl Choose for Speed {
-    fn choose(&mut self, ui: &imgui::Ui) {
-        self.combo(ui);
+    fn choose(&mut self, ui: &imgui::Ui) -> bool {
+        let mut modified = self.combo(ui);
         if let Speed::Value(value) = self {
-            ui.input_float(im_str!("Speed"), value).build();
+            modified = modified || ui.input_float(im_str!("Speed"), value).build();
         }
+        modified
     }
 }
 
 impl Choose for HashSet<CompassDirection> {
-    fn choose(&mut self, ui: &imgui::Ui) {
+    fn choose(&mut self, ui: &imgui::Ui) -> bool {
+        let mut modified = false;
         ui.text("Random directions:");
         let mut selectable = |direction| {
             let contains_direction = self.contains(&direction);
@@ -3576,6 +4176,7 @@ impl Choose for HashSet<CompassDirection> {
                 } else {
                     self.insert(direction);
                 }
+                modified = true;
             }
         };
 
@@ -3594,6 +4195,8 @@ impl Choose for HashSet<CompassDirection> {
         selectable(CompassDirection::Down);
         ui.same_line(0.0);
         selectable(CompassDirection::DownRight);
+
+        modified
     }
 }
 
@@ -3684,7 +4287,8 @@ fn choose_jump_location(
 }
 
 impl Choose for MovementType {
-    fn choose(&mut self, ui: &imgui::Ui) {
+    fn choose(&mut self, ui: &imgui::Ui) -> bool {
+        let mut modified = false;
         let movement_types = [
             im_str!("Wiggle"),
             im_str!("Insect"),
@@ -3718,6 +4322,7 @@ impl Choose for MovementType {
                 },
                 _ => unreachable!(),
             };
+            modified = true;
         }
 
         match self {
@@ -3739,9 +4344,10 @@ impl Choose for MovementType {
                         1 => MovementHandling::TryNotToOverlap,
                         _ => MovementHandling::Anywhere,
                     };
+                    modified = true;
                 }
 
-                initial_direction.choose(ui);
+                modified = modified || initial_direction.choose(ui);
             }
             MovementType::Bounce { initial_direction } => {
                 if ui.radio_button_bool(
@@ -3749,33 +4355,40 @@ impl Choose for MovementType {
                     *initial_direction == Some(BounceDirection::Left),
                 ) {
                     *initial_direction = Some(BounceDirection::Left);
+                    modified = true;
                 }
                 if ui.radio_button_bool(
                     im_str!("Initial Direction Right"),
                     *initial_direction == Some(BounceDirection::Right),
                 ) {
                     *initial_direction = Some(BounceDirection::Right);
+                    modified = true;
                 }
                 if ui.radio_button_bool(im_str!("No Initial Direction"), *initial_direction == None)
                 {
                     *initial_direction = None;
+                    modified = true;
                 }
             }
             _ => {}
         }
+        modified
     }
 }
 
 impl Choose for AABB {
-    fn choose(&mut self, ui: &imgui::Ui) {
+    fn choose(&mut self, ui: &imgui::Ui) -> bool {
         ui.input_float(im_str!("Area Min X"), &mut self.min.x)
-            .build();
-        ui.input_float(im_str!("Area Min Y"), &mut self.min.y)
-            .build();
-        ui.input_float(im_str!("Area Max X"), &mut self.max.x)
-            .build();
-        ui.input_float(im_str!("Area Max Y"), &mut self.max.y)
-            .build();
+            .build()
+            || ui
+                .input_float(im_str!("Area Min Y"), &mut self.min.y)
+                .build()
+            || ui
+                .input_float(im_str!("Area Max X"), &mut self.max.x)
+                .build()
+            || ui
+                .input_float(im_str!("Area Max Y"), &mut self.max.y)
+                .build()
     }
 }
 
@@ -3794,16 +4407,20 @@ fn choose_target(target: &mut Target, ui: &imgui::Ui, object_names: &Vec<&str>) 
 }
 
 impl Choose for TargetType {
-    fn choose(&mut self, ui: &imgui::Ui) {
+    fn choose(&mut self, ui: &imgui::Ui) -> bool {
+        let mut modified = false;
         if ui.radio_button_bool(im_str!("Follow"), *self == TargetType::Follow) {
             *self = TargetType::Follow;
+            modified = true;
         }
         if ui.radio_button_bool(
             im_str!("Stop When Reached"),
             *self == TargetType::StopWhenReached,
         ) {
             *self = TargetType::StopWhenReached;
+            modified = true;
         }
+        modified
     }
 }
 
@@ -3812,24 +4429,30 @@ trait EnumSetters: Sized {
 
     fn from_value(value: usize) -> Self;
 
-    fn component<F: Fn(&mut Self, &ImStr, &[&ImStr])>(&mut self, f: F);
+    fn component<F: Fn(&mut Self, &ImStr, &[&ImStr]) -> bool>(&mut self, f: F) -> bool;
 
-    fn combo(&mut self, ui: &imgui::Ui) {
+    fn combo(&mut self, ui: &imgui::Ui) -> bool {
         self.component(|s, label, types| {
             let mut position = s.to_value();
             if imgui::ComboBox::new(label).build_simple_string(ui, &mut position, types) {
                 *s = Self::from_value(position);
+                true
+            } else {
+                false
             }
         })
     }
 
-    fn radio(&mut self, ui: &imgui::Ui) {
+    fn radio(&mut self, ui: &imgui::Ui) -> bool {
         self.component(|s, _, types| {
+            let mut modified = false;
             for (i, t) in types.iter().enumerate() {
                 if ui.radio_button_bool(t, s.to_value() == i) {
                     *s = Self::from_value(i);
+                    modified = true;
                 }
             }
+            modified
         })
     }
 
@@ -3863,7 +4486,7 @@ impl EnumSetters for SizeSetter {
         }
     }
 
-    fn component<F: Fn(&mut Self, &ImStr, &[&ImStr])>(&mut self, f: F) {
+    fn component<F: Fn(&mut Self, &ImStr, &[&ImStr]) -> bool>(&mut self, f: F) -> bool {
         let setter_types = [
             im_str!("Value"),
             im_str!("Grow"),
@@ -3871,7 +4494,7 @@ impl EnumSetters for SizeSetter {
             im_str!("Clamp"),
         ];
 
-        f(self, im_str!("Size Setter"), &setter_types);
+        f(self, im_str!("Size Setter"), &setter_types)
     }
 }
 
@@ -3891,10 +4514,10 @@ impl EnumSetters for SizeDifference {
         }
     }
 
-    fn component<F: Fn(&mut Self, &ImStr, &[&ImStr])>(&mut self, f: F) {
+    fn component<F: Fn(&mut Self, &ImStr, &[&ImStr]) -> bool>(&mut self, f: F) -> bool {
         let setter_types = [im_str!("Value"), im_str!("Percent")];
 
-        f(self, im_str!("Size Difference"), &setter_types);
+        f(self, im_str!("Size Difference"), &setter_types)
     }
 }
 
@@ -3914,10 +4537,10 @@ impl EnumSetters for FlipSetter {
         }
     }
 
-    fn component<F: Fn(&mut Self, &ImStr, &[&ImStr])>(&mut self, f: F) {
+    fn component<F: Fn(&mut Self, &ImStr, &[&ImStr]) -> bool>(&mut self, f: F) -> bool {
         let setter_types = [im_str!("Flip"), im_str!("Set Flip")];
 
-        f(self, im_str!("Flip Setter"), &setter_types);
+        f(self, im_str!("Flip Setter"), &setter_types)
     }
 }
 
@@ -3939,10 +4562,10 @@ impl EnumSetters for LayerSetter {
         }
     }
 
-    fn component<F: Fn(&mut Self, &ImStr, &[&ImStr])>(&mut self, f: F) {
+    fn component<F: Fn(&mut Self, &ImStr, &[&ImStr]) -> bool>(&mut self, f: F) -> bool {
         let setter_types = [im_str!("Value"), im_str!("Increase"), im_str!("Decrease")];
 
-        f(self, im_str!("Layer Setter"), &setter_types);
+        f(self, im_str!("Layer Setter"), &setter_types)
     }
 }
 
@@ -3970,7 +4593,7 @@ impl EnumSetters for Speed {
         }
     }
 
-    fn component<F: Fn(&mut Self, &ImStr, &[&ImStr])>(&mut self, f: F) {
+    fn component<F: Fn(&mut Self, &ImStr, &[&ImStr]) -> bool>(&mut self, f: F) -> bool {
         let types = [
             im_str!("Very Slow"),
             im_str!("Slow"),
@@ -3980,7 +4603,7 @@ impl EnumSetters for Speed {
             im_str!("Value"),
         ];
 
-        f(self, im_str!("Speed Type"), &types);
+        f(self, im_str!("Speed Type"), &types)
     }
 }
 
@@ -4032,6 +4655,48 @@ fn load_sounds(
     first_key
 }
 
+fn load_font<'a, 'b>(
+    font_files: &mut HashMap<String, FontLoadInfo>,
+    fonts: &mut Fonts<'a, 'b>,
+    font_filename: (WeeResult<String>, String),
+    ttf_context: &'a TtfContext,
+    font_size: u16,
+) -> WeeResult<String> {
+    let (key, path) = font_filename;
+    let key = key?;
+    let font = ttf_context.load_font(&path, font_size)?;
+    fonts.insert(key.clone(), font);
+    let filename = get_filename(&path).unwrap();
+    let load_info = FontLoadInfo {
+        filename,
+        size: font_size as f32,
+    };
+    font_files.insert(key.clone(), load_info);
+    /*if let Ok(key) = key {
+        if let Ok(font) = ttf_context.load_font(&path, 128) {
+            fonts.insert(key.clone(), font);
+            let filename = get_filename(&path).unwrap();
+            let load_info = FontLoadInfo {
+                filename,
+                size: 128.0,
+            };
+            font_files.insert(key.clone(), load_info);
+        }
+    }*/
+    /*key.map(|key| {
+        ttf_context.load_font(&path, 128).map(|font| {
+            fonts.insert(key.clone(), font);
+            let filename = get_filename(&path).unwrap();
+            let load_info = FontLoadInfo {
+                filename,
+                size: 128.0,
+            };
+            font_files.insert(key.clone(), load_info);
+        })
+    });*/
+    Ok(key)
+}
+
 fn load_fonts<'a, 'b>(
     font_files: &mut HashMap<String, FontLoadInfo>,
     fonts: &mut Fonts<'a, 'b>,
@@ -4040,24 +4705,23 @@ fn load_fonts<'a, 'b>(
 ) -> Option<String> {
     let mut first_key = None;
     for (key, path) in font_filenames {
-        key.map(|key| {
-            ttf_context.load_font(&path, 128).map(|font| {
-                fonts.insert(key.clone(), font);
-                let filename = get_filename(&path).unwrap();
-                let load_info = FontLoadInfo {
-                    filename,
-                    size: 128.0,
-                };
-                font_files.insert(key.clone(), load_info);
-                first_key = Some(key.clone());
-            })
-        })
-        .map_err(|error| {
-            log::error!("Could not add font with filename {}", path);
-            log::error!("{}", error);
-        })
-        .ok();
+        match load_font(font_files, fonts, (key, path.clone()), ttf_context, 128) {
+            Ok(key) => first_key = Some(key),
+            Err(error) => {
+                log::error!("Could not add font with filename {}", path);
+                log::error!("{}", error);
+            }
+        }
     }
+    /*for (key, path) in font_filenames {
+        load_font(font_files, fonts, &(key, path), ttf_context)
+            .map(|_| first_key = Some(key.unwrap()))
+            .map_err(|error| {
+                log::error!("Could not add font with filename {}", path);
+                log::error!("{}", error);
+            })
+            .ok();
+    }*/
     first_key
 }
 
@@ -4141,12 +4805,7 @@ fn choose_sound_from_files<P: AsRef<Path>>(
     }
 }
 
-fn choose_font_from_files<'a, 'b, P: AsRef<Path>>(
-    font_files: &mut HashMap<String, FontLoadInfo>,
-    fonts: &mut Fonts<'a, 'b>,
-    fonts_path: P,
-    ttf_context: &'a TtfContext,
-) -> Option<String> {
+fn open_fonts_dialog<P: AsRef<Path>>(fonts_path: P) -> Vec<(WeeResult<String>, String)> {
     let result = nfd::open_file_multiple_dialog(None, fonts_path.as_ref().to_str()).unwrap();
 
     match result {
@@ -4155,13 +4814,20 @@ fn choose_font_from_files<'a, 'b, P: AsRef<Path>>(
         }
         Response::OkayMultiple(files) => {
             log::info!("Files {:?}", files);
-            let font_filenames: Vec<(WeeResult<String>, String)> =
-                files.into_iter().map(get_separate_file_parts).collect();
-
-            load_fonts(font_files, fonts, font_filenames, ttf_context)
+            files.into_iter().map(get_separate_file_parts).collect()
         }
-        _ => None,
+        _ => Vec::new(),
     }
+}
+
+fn choose_font_from_files<'a, 'b, P: AsRef<Path>>(
+    font_files: &mut HashMap<String, FontLoadInfo>,
+    fonts: &mut Fonts<'a, 'b>,
+    fonts_path: P,
+    ttf_context: &'a TtfContext,
+) -> Option<String> {
+    let font_filenames = open_fonts_dialog(fonts_path);
+    load_fonts(font_files, fonts, font_filenames, ttf_context)
 }
 
 pub fn rename_across_objects(objects: &mut Vec<SerialiseObject>, old_name: &str, new_name: &str) {
