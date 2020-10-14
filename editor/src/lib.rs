@@ -1,5 +1,11 @@
 // TODO: Multiple fonts with same size?
 // TODO: Add ability to delete images, music, sounds, fonts
+// TODO: Make timer be seconds and time to end in end early
+// TODO: Flip is confusing
+// TODO: Fix issues caused by short-circuiting on ||
+// TODO: Error in find_object when doesn't exist
+// TODO: If check sprite 99500 and check switch all cherries -> set sprite 99600
+// TODO: Sort sprite keys alphabetically in combo?
 
 #[macro_use]
 extern crate imgui;
@@ -32,7 +38,7 @@ const WINDOW_SIZE: [f32; 2] = [500.0, 600.0];
 
 pub fn run<'a, 'b>(
     renderer: &mut Renderer,
-    event_pump: &mut EventPump,
+    events: &mut EventState,
     imgui: &mut Imgui,
     font_system: &FontSystem<'a, 'b>,
     settings: GameSettings,
@@ -91,7 +97,7 @@ pub fn run<'a, 'b>(
     'editor_running: loop {
         let mut file_task = FileTask::None;
 
-        for event in event_pump.poll_iter() {
+        for event in events.pump.poll_iter() {
             imgui.sdl.handle_event(&mut imgui.context, &event);
             if imgui.sdl.ignore_event(&event) {
                 continue;
@@ -104,8 +110,11 @@ pub fn run<'a, 'b>(
 
         let mut draw_tasks = Vec::new();
 
-        let imgui_frame =
-            imgui.prepare_frame(&renderer.window, &event_pump.mouse_state(), &mut last_frame);
+        let imgui_frame = imgui.prepare_frame(
+            &renderer.window,
+            &events.pump.mouse_state(),
+            &mut last_frame,
+        );
         let ui = &imgui_frame.ui;
 
         if show_error.is_some() {
@@ -240,7 +249,7 @@ pub fn run<'a, 'b>(
             FileTask::Open => {
                 let response = nfd::open_file_dialog(None, Path::new("games").to_str());
                 if let Ok(Response::Okay(file_path)) = response {
-                    for _ in event_pump.poll_iter() {}
+                    for _ in events.pump.poll_iter() {}
                     log::info!("File path = {:?}", file_path);
                     let new_data = GameData::load(&file_path);
                     match new_data {
@@ -296,7 +305,7 @@ pub fn run<'a, 'b>(
                 preview.difficulty_level,
                 settings,
             );
-            let completion = game.preview(renderer, event_pump);
+            let completion = game.preview(renderer, events);
 
             match completion {
                 Ok(_) => {
@@ -309,7 +318,7 @@ pub fn run<'a, 'b>(
             }
             assets = game.assets;
             assets.music.stop();
-            renderer.exit_fullscreen()?;
+            renderer.exit_fullscreen(&events.mouse.utils)?;
         }
 
         if windows.demo {
@@ -562,8 +571,8 @@ pub fn run<'a, 'b>(
             event_pump.keyboard_state().is_scancode_pressed(scancode)
         };
 
-        minus_button.update(key_down(event_pump, Scancode::Minus));
-        plus_button.update(key_down(event_pump, Scancode::Equals));
+        minus_button.update(key_down(&events.pump, Scancode::Minus));
+        plus_button.update(key_down(&events.pump, Scancode::Equals));
 
         if !ui.io().want_capture_keyboard {
             if minus_button == ButtonState::Press {
@@ -573,7 +582,7 @@ pub fn run<'a, 'b>(
                 scale = (scale + 0.1).min(4.0);
             }
 
-            let is_pressed = |scancode| event_pump.keyboard_state().is_scancode_pressed(scancode);
+            let is_pressed = |scancode| events.pump.keyboard_state().is_scancode_pressed(scancode);
 
             if is_pressed(Scancode::W) {
                 game_position.y += 2.0;
@@ -612,6 +621,7 @@ pub fn run<'a, 'b>(
         renderer.draw_tasks(&mut draw_tasks, scene_location);
 
         imgui_frame.render(&renderer.window);
+        // Shoudn't need to be done here renderer.update_mouse(event_pump);
         renderer.present();
 
         thread::sleep(Duration::from_millis(10));
@@ -1974,15 +1984,16 @@ fn edit_objects_list(
                     .enter_returns_true(true)
                     .build();
 
-                choose_sprite(
+                if choose_sprite(
                     &mut object_state.new_object.sprite,
                     ui,
                     image_files,
                     images,
                     &filename,
-                );
-                if let Sprite::Image { name } = &object_state.new_object.sprite {
-                    object_state.new_object.size = images[name].size();
+                ) {
+                    if let Sprite::Image { name } = &object_state.new_object.sprite {
+                        object_state.new_object.size = images[name].size();
+                    }
                 }
 
                 object_state.new_object.size.choose(ui);
@@ -3024,10 +3035,11 @@ fn choose_when(when: &mut When, ui: &imgui::Ui, game_length: Length) {
 }
 
 fn find_object(object_names: &Vec<&str>, name: &str) -> usize {
+    // TODO: Should this return 0 if no found?
     object_names
         .iter()
         .position(|obj_name| *obj_name == name)
-        .unwrap()
+        .unwrap_or(0)
 }
 
 fn object_keys(object_names: &Vec<&str>) -> Vec<ImString> {
@@ -3127,7 +3139,7 @@ fn choose_mouse_over(over: &mut MouseOver, ui: &imgui::Ui, object_names: &Vec<&s
 impl Choose for Size {
     fn choose(&mut self, ui: &imgui::Ui) -> bool {
         ui.input_float(im_str!("Width"), &mut self.width).build()
-            || ui.input_float(im_str!("Height"), &mut self.height).build()
+            | ui.input_float(im_str!("Height"), &mut self.height).build()
     }
 }
 
@@ -3264,15 +3276,22 @@ fn select_sprite_type(
     image_files: &mut HashMap<String, String>,
     images: &mut Images,
     filename: &Option<String>,
-) {
+) -> bool {
+    let mut modified = false;
     let is_sprite = if let Sprite::Image { .. } = &sprite {
         true
     } else {
         false
     };
+    let mut sorted_keys: Vec<&String> = images.keys().collect();
+    sorted_keys.sort();
     if ui.radio_button_bool(im_str!("Sprite"), is_sprite) {
-        match images.keys().next() {
-            Some(name) => *sprite = Sprite::Image { name: name.clone() },
+        match sorted_keys.iter().next() {
+            Some(name) => {
+                *sprite = Sprite::Image {
+                    name: name.to_string(),
+                }
+            }
             None => {
                 let path = assets_path(&filename, "images");
                 let image = choose_image_from_files(image_files, images, path);
@@ -3281,11 +3300,14 @@ fn select_sprite_type(
                 }
             }
         }
+        modified = true;
     }
     ui.same_line(0.0);
     if ui.radio_button_bool(im_str!("Colour"), !is_sprite) {
         *sprite = Sprite::Colour(Colour::black());
+        modified = true;
     }
+    modified
 }
 
 fn choose_new_image<P: AsRef<Path>>(
@@ -3293,14 +3315,16 @@ fn choose_new_image<P: AsRef<Path>>(
     image_files: &mut HashMap<String, String>,
     images: &mut Images,
     path: P,
-) {
+) -> bool {
     let first_key = choose_image_from_files(image_files, images, path);
     match first_key {
         Some(key) => {
             *image = Sprite::Image { name: key.clone() };
+            true
         }
         None => {
             log::error!("None of the new images loaded correctly");
+            false
         }
     }
 }
@@ -3564,8 +3588,8 @@ fn choose_sprite(
     image_files: &mut HashMap<String, String>,
     images: &mut Images,
     filename: &Option<String>,
-) {
-    select_sprite_type(sprite, ui, image_files, images, filename);
+) -> bool {
+    let mut modified = select_sprite_type(sprite, ui, image_files, images, filename);
 
     match sprite {
         Sprite::Image { name: image_name } => {
@@ -3574,13 +3598,20 @@ fn choose_sprite(
 
             if images.is_empty() {
                 if ui.button(im_str!("Add a New Image"), NORMAL_BUTTON) {
-                    choose_new_image(sprite, image_files, images, path);
+                    modified |= choose_new_image(sprite, image_files, images, path);
                 }
             } else {
-                let mut current_image = images.keys().position(|k| k == image_name).unwrap_or(0);
+                let mut sorted_keys: Vec<&String> = images.keys().collect();
+                sorted_keys.sort();
+                let mut current_image = sorted_keys
+                    .iter()
+                    .position(|k| *k == image_name)
+                    .unwrap_or(0);
                 let keys = {
-                    let mut keys: Vec<ImString> =
-                        images.keys().map(|k| ImString::from(k.clone())).collect();
+                    let mut keys: Vec<ImString> = sorted_keys
+                        .iter()
+                        .map(|k| ImString::from(k.to_string()))
+                        .collect();
 
                     keys.push(ImString::new("Add a New Image"));
 
@@ -3595,16 +3626,18 @@ fn choose_sprite(
                     &image_names,
                 ) {
                     if current_image == image_names.len() - 1 {
-                        choose_new_image(sprite, image_files, images, path);
+                        modified |= choose_new_image(sprite, image_files, images, path);
                     } else {
-                        match images.keys().nth(current_image) {
+                        modified |= match sorted_keys.iter().nth(current_image) {
                             Some(image) => {
                                 *sprite = Sprite::Image {
-                                    name: image.clone(),
+                                    name: image.to_string(),
                                 };
+                                true
                             }
                             None => {
                                 log::error!("Could not set image to index {}", current_image);
+                                false
                             }
                         }
                     }
@@ -3613,7 +3646,7 @@ fn choose_sprite(
         }
         Sprite::Colour(colour) => {
             let mut colour_array = [colour.r, colour.g, colour.b, colour.a];
-            imgui::ColorEdit::new(im_str!("Colour"), &mut colour_array)
+            modified |= imgui::ColorEdit::new(im_str!("Colour"), &mut colour_array)
                 .alpha(true)
                 .build(ui);
             *colour = Colour::rgba(
@@ -3624,6 +3657,7 @@ fn choose_sprite(
             );
         }
     };
+    modified
 }
 
 fn choose_property_check(

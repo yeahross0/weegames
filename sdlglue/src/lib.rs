@@ -187,7 +187,7 @@ impl ToVector4 for Colour {
     }
 }
 
-struct FullScreenInfo {
+struct FullscreenInfo {
     recent_change: bool,
     old_size: (u32, u32),
 }
@@ -198,7 +198,8 @@ pub struct Renderer {
     quad_vao: u32,
     projection: Matrix4<f32>,
     pub window: SdlWindow,
-    full_screen_info: FullScreenInfo,
+    fullscreen_info: FullscreenInfo,
+    mouse: Texture,
 }
 
 mod shader {
@@ -334,7 +335,7 @@ mod shader {
 }
 
 impl Renderer {
-    pub fn new(window: SdlWindow) -> Renderer {
+    pub fn new(window: SdlWindow, mouse: Texture) -> Renderer {
         let projection = cgmath::ortho(0.0, PROJECTION_WIDTH, PROJECTION_HEIGHT, 0.0, -1.0, 1.0);
 
         let sprite_shader = {
@@ -400,7 +401,7 @@ impl Renderer {
 
         Renderer::set_viewport_from_window_size(window.size());
 
-        let full_screen_info = FullScreenInfo {
+        let fullscreen_info = FullscreenInfo {
             recent_change: false,
             old_size: (0, 0),
         };
@@ -411,7 +412,8 @@ impl Renderer {
             quad_vao,
             projection,
             window,
-            full_screen_info,
+            fullscreen_info,
+            mouse,
         }
     }
 
@@ -524,52 +526,98 @@ impl Renderer {
         texture.unbind();
     }
 
+    pub fn draw_mouse(&self, position: Vec2) {
+        match self.window.fullscreen_state() {
+            FullscreenType::Desktop | FullscreenType::True => {
+                let position = Vec2::new(
+                    position.x / self.window.size().0 as f32 * PROJECTION_WIDTH as f32,
+                    position.y / self.window.size().1 as f32 * PROJECTION_HEIGHT as f32,
+                );
+                self.draw_texture(
+                    &self.mouse,
+                    wee_common::AABB::new(
+                        position.x,
+                        position.y,
+                        position.x + self.mouse.width as f32,
+                        position.y + self.mouse.height as f32,
+                    )
+                    .to_rect(),
+                    Colour::white(),
+                    0.0,
+                    None,
+                    Flip::default(),
+                );
+            }
+            _ => {}
+        }
+    }
+
     pub fn present(&self) {
-        // TODO: Set viewport correctly in the right place
-        //unsafe {
-        //    gl::Viewport(100, 0, 800, 400);
-        //}
-        //Renderer::set_viewport(&self.window);
         self.window.gl_swap_window();
     }
 
-    pub fn exit_fullscreen(&mut self) -> WeeResult<()> {
+    pub fn exit_fullscreen(&mut self, mouse_util: &sdl2::mouse::MouseUtil) -> WeeResult<()> {
         match self.window.fullscreen_state() {
             FullscreenType::Desktop | FullscreenType::True => {
-                let size = self.full_screen_info.old_size;
+                let size = self.fullscreen_info.old_size;
                 self.window.set_size(size.0, size.1)?;
                 self.window.set_fullscreen(FullscreenType::Off)?;
+                mouse_util.set_relative_mouse_mode(false);
             }
             _ => {}
         }
 
+        self.update_viewport();
         Ok(())
     }
 
-    pub fn adjust_fullscreen(&mut self, event_pump: &EventPump) -> WeeResult<()> {
+    pub fn enter_fullscreen(&mut self, mouse_util: &sdl2::mouse::MouseUtil) -> WeeResult<()> {
+        if let FullscreenType::Off = self.window.fullscreen_state() {
+            let display_mode = self
+                .window
+                .subsystem()
+                .current_display_mode(self.window.display_index()?)?;
+            self.fullscreen_info.old_size = self.window.size();
+            self.window
+                .set_size(display_mode.w as u32, display_mode.h as u32)?;
+            self.window.set_fullscreen(FullscreenType::True)?;
+            mouse_util.set_relative_mouse_mode(true);
+        }
+
+        self.update_viewport();
+        Ok(())
+    }
+
+    pub fn adjust_fullscreen(
+        &mut self,
+        event_pump: &EventPump,
+        mouse_util: &sdl2::mouse::MouseUtil,
+    ) -> WeeResult<()> {
         if event_pump.keyboard_state().is_scancode_pressed(Scancode::F) {
-            if !self.full_screen_info.recent_change {
+            if !self.fullscreen_info.recent_change {
                 let display_mode = self
                     .window
                     .subsystem()
                     .current_display_mode(self.window.display_index()?)?;
                 match self.window.fullscreen_state() {
                     FullscreenType::Off => {
-                        self.full_screen_info.old_size = self.window.size();
+                        self.fullscreen_info.old_size = self.window.size();
                         self.window
                             .set_size(display_mode.w as u32, display_mode.h as u32)?;
                         self.window.set_fullscreen(FullscreenType::True)?;
+                        mouse_util.set_relative_mouse_mode(true);
                     }
                     _ => {
-                        let size = self.full_screen_info.old_size;
+                        let size = self.fullscreen_info.old_size;
                         self.window.set_size(size.0, size.1)?;
                         self.window.set_fullscreen(FullscreenType::Off)?;
+                        mouse_util.set_relative_mouse_mode(false);
                     }
                 }
-                self.full_screen_info.recent_change = true;
+                self.fullscreen_info.recent_change = true;
             }
         } else {
-            self.full_screen_info.recent_change = false;
+            self.fullscreen_info.recent_change = false;
         }
         self.update_viewport();
         Ok(())

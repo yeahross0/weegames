@@ -6,12 +6,12 @@
 #[macro_use]
 extern crate imgui;
 
-use rand::{thread_rng, Rng};
+use rand::{seq::SliceRandom, thread_rng, Rng};
 use sdl2::{
     image::InitFlag,
     messagebox::{self, MessageBoxFlag},
     video::{gl_attr::GLAttr, GLContext, Window as SdlWindow},
-    EventPump, Sdl, VideoSubsystem,
+    Sdl, VideoSubsystem,
 };
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use std::{error::Error, fs, path::Path, process, str, time::Instant};
@@ -58,6 +58,7 @@ struct Config {
     playback_rate: PlaybackConfig,
     volume: f32,
     render_each_frame: bool,
+    sensitivity: f32,
 }
 
 fn yaml_from_str<T: DeserializeOwned>(text: &str) -> WeeResult<T> {
@@ -98,6 +99,7 @@ enum GameMode<'a, 'b> {
         won: bool,
         games_list: GamesList,
         progress: Progress,
+        is_boss_game: bool,
     },
     GameOver {
         progress: Progress,
@@ -129,18 +131,18 @@ impl Progress {
     }
 
     fn update(&mut self, has_won: bool, playback_increase: f32, playback_max: f32) {
-        if has_won {
-            self.score += 1;
-            if self.score % 5 == 0 {
-                self.playback_rate += playback_increase;
-            }
-            if self.score >= UP_TO_DIFFICULTY_THREE {
-                self.difficulty = 3;
-            } else if self.score >= UP_TO_DIFFICULTY_TWO {
-                self.difficulty = 2;
-            }
-            self.playback_rate = self.playback_rate.min(playback_max);
-        } else {
+        // TODO: Should score still be incremented if you don't win?
+        self.score += 1;
+        if self.score % 5 == 0 {
+            self.playback_rate += playback_increase;
+        }
+        if self.score >= UP_TO_DIFFICULTY_THREE {
+            self.difficulty = 3;
+        } else if self.score >= UP_TO_DIFFICULTY_TWO {
+            self.difficulty = 2;
+        }
+        self.playback_rate = self.playback_rate.min(playback_max);
+        if !has_won {
             self.lives -= 1;
         }
     }
@@ -149,6 +151,7 @@ impl Progress {
 #[derive(Debug)]
 struct GamesList {
     games: Vec<String>,
+    bosses: Vec<String>,
     next: Vec<String>,
     directory: String,
 }
@@ -156,6 +159,7 @@ struct GamesList {
 impl GamesList {
     fn from_directory(directory: Option<&str>) -> WeeResult<GamesList> {
         let mut games_list = Vec::new();
+        let mut boss_list = Vec::new();
         let directory = directory.unwrap_or("games");
         for entry in WalkDir::new(directory).into_iter().filter_map(|e| e.ok()) {
             let metadata = entry.metadata()?;
@@ -172,7 +176,11 @@ impl GamesList {
                 match game_data {
                     Ok(data) => {
                         if data.published {
-                            games_list.push(filename.to_string());
+                            if data.game_type == GameType::Minigame {
+                                games_list.push(filename.to_string());
+                            } else if data.game_type == GameType::BossGame {
+                                boss_list.push(filename.to_string());
+                            }
                         }
                     }
                     Err(error) => {
@@ -189,6 +197,7 @@ impl GamesList {
         } else {
             Ok(GamesList {
                 games: games_list,
+                bosses: boss_list,
                 next: Vec::new(),
                 directory: if directory == "games" {
                     "games/system/".to_string()
@@ -203,6 +212,10 @@ impl GamesList {
                 },
             })
         }
+    }
+
+    fn choose_boss(&self) -> Option<String> {
+        self.bosses.choose(&mut thread_rng()).cloned()
     }
 
     // TODO: Tidy up
@@ -262,7 +275,7 @@ impl<T> MessageBoxError for Result<T, String> {
 fn run_main_loop<'a, 'b>(
     mut game_mode: GameMode<'a, 'b>,
     renderer: &mut Renderer,
-    event_pump: &mut EventPump,
+    events: &mut EventState,
     imgui: &mut Imgui,
     intro_font: &'a FontSystem<'a, 'b>,
     config: &Config,
@@ -296,9 +309,9 @@ fn run_main_loop<'a, 'b>(
             let mut game = game_with_defaults("games/system/main-menu.json")?;
 
             'menu_running: loop {
-                renderer.adjust_fullscreen(&event_pump)?;
+                renderer.adjust_fullscreen(&events.pump, &events.mouse.utils)?;
 
-                game.update_and_render_frame(renderer, event_pump)?;
+                game.update_and_render_frame(renderer, events)?;
 
                 if wee::is_switched_on(&game.objects, "Play") {
                     game_mode = GameMode::ChooseMode;
@@ -314,9 +327,9 @@ fn run_main_loop<'a, 'b>(
             let mut game = game_with_defaults("games/system/choose-mode.json")?;
 
             'choose_mode_running: loop {
-                renderer.adjust_fullscreen(&event_pump)?;
+                renderer.adjust_fullscreen(&events.pump, &events.mouse.utils)?;
 
-                game.update_and_render_frame(renderer, event_pump)?;
+                game.update_and_render_frame(renderer, events)?;
 
                 for (key, object) in game.objects.iter() {
                     if object.switch == SwitchState::SwitchedOn {
@@ -351,7 +364,7 @@ fn run_main_loop<'a, 'b>(
 
             let completed_game = loaded_game
                 .start(DEFAULT_GAME_SPEED, DEFAULT_DIFFICULTY, config.settings())
-                .play(renderer, event_pump)?;
+                .play(renderer, events)?;
 
             let game = LoadedGame::load_from_game_data(game_data, &filename, &intro_font)?;
 
@@ -373,65 +386,83 @@ fn run_main_loop<'a, 'b>(
             won,
             mut games_list,
             progress,
+            is_boss_game,
         } => {
-            let filename = games_list.choose();
-
-            let game_data = GameData::load(&filename.clone())?;
-
-            let mut loaded_game = mode_game(&games_list.directory, "interlude.json")?;
-
-            let text_replacements = vec![
-                ("{Score}", progress.score.to_string()),
-                ("{Lives}", progress.lives.to_string()),
-                (
-                    "{Game}",
-                    Path::new(&filename)
-                        .file_stem()
-                        .unwrap()
-                        .to_str()
-                        .unwrap()
-                        .to_string(),
-                ),
-                (
-                    "{IntroText}",
-                    game_data.intro_text.as_deref().unwrap_or("").to_string(),
-                ),
-            ];
-            for object in loaded_game.objects.iter_mut() {
-                let mut set_switch = |name, pred| {
-                    if object.name == name {
-                        object.switch = if pred { Switch::On } else { Switch::Off };
-                    }
-                };
-                set_switch("Won", won);
-                set_switch("1", progress.lives >= 1);
-                set_switch("2", progress.lives >= 2);
-                set_switch("3", progress.lives >= 3);
-                set_switch("4", progress.lives >= 4);
-
-                object.replace_text(&text_replacements);
-            }
-
-            let completed_game = loaded_game
-                .start(
-                    progress.playback_rate,
-                    DEFAULT_DIFFICULTY,
-                    config.settings(),
-                )
-                .play(renderer, event_pump)?;
-
-            let game = LoadedGame::load_from_game_data(game_data, &filename, &intro_font)?;
-
-            log::info!("Playing game: {}", filename);
-            game_mode = if let Completion::Finished = completed_game.completion {
-                GameMode::Play {
-                    game,
-                    games_list,
-                    progress,
-                }
+            let filename = if is_boss_game {
+                games_list.choose_boss()
             } else {
-                GameMode::Menu
+                Some(games_list.choose())
             };
+
+            if let Some(filename) = filename {
+                let game_data = GameData::load(&filename.clone())?;
+
+                let mut loaded_game = mode_game(&games_list.directory, "interlude.json")?;
+
+                let text_replacements = vec![
+                    ("{Score}", progress.score.to_string()),
+                    ("{Lives}", progress.lives.to_string()),
+                    (
+                        "{Game}",
+                        Path::new(&filename)
+                            .file_stem()
+                            .unwrap()
+                            .to_str()
+                            .unwrap()
+                            .to_string(),
+                    ),
+                    (
+                        "{IntroText}",
+                        game_data.intro_text.as_deref().unwrap_or("").to_string(),
+                    ),
+                ];
+                for object in loaded_game.objects.iter_mut() {
+                    let mut set_switch = |name, pred| {
+                        if object.name == name {
+                            object.switch = if pred { Switch::On } else { Switch::Off };
+                        }
+                    };
+                    set_switch("Won", won);
+                    set_switch("1", progress.lives >= 1);
+                    set_switch("2", progress.lives >= 2);
+                    set_switch("3", progress.lives >= 3);
+                    set_switch("4", progress.lives >= 4);
+
+                    object.replace_text(&text_replacements);
+                }
+
+                let completed_game = loaded_game
+                    .start(
+                        progress.playback_rate,
+                        DEFAULT_DIFFICULTY,
+                        config.settings(),
+                    )
+                    .play(renderer, events)?;
+
+                let game = LoadedGame::load_from_game_data(game_data, &filename, &intro_font)?;
+
+                log::info!("Playing game: {}", filename);
+                game_mode = if let Completion::Finished = completed_game.completion {
+                    GameMode::Play {
+                        game,
+                        games_list,
+                        progress,
+                    }
+                } else {
+                    GameMode::Menu
+                };
+            } else {
+                game_mode = if is_boss_game {
+                    GameMode::Interlude {
+                        won,
+                        games_list,
+                        progress,
+                        is_boss_game: false,
+                    }
+                } else {
+                    GameMode::Menu
+                }
+            }
         }
         GameMode::GameOver {
             progress,
@@ -478,7 +509,7 @@ fn run_main_loop<'a, 'b>(
             }
             loaded_game
                 .start(DEFAULT_GAME_SPEED, DEFAULT_DIFFICULTY, config.settings())
-                .play(renderer, event_pump)?;
+                .play(renderer, events)?;
 
             game_mode = GameMode::Menu;
         }
@@ -493,7 +524,7 @@ fn run_main_loop<'a, 'b>(
                     progress.difficulty,
                     config.settings(),
                 )
-                .play(renderer, event_pump);
+                .play(renderer, events);
 
             match result {
                 Ok(completed_game) => {
@@ -517,6 +548,11 @@ fn run_main_loop<'a, 'b>(
                                 won: has_won,
                                 games_list,
                                 progress,
+                                is_boss_game: if progress.score > 0 && progress.score % 15 == 0 {
+                                    true
+                                } else {
+                                    false
+                                },
                             }
                         }
                     } else {
@@ -530,23 +566,34 @@ fn run_main_loop<'a, 'b>(
             }
         }
         GameMode::Edit => {
-            renderer.exit_fullscreen()?;
-            editor::run(renderer, event_pump, imgui, intro_font, config.settings())?;
+            let was_fullscreen =
+                if let sdl2::video::FullscreenType::Off = renderer.window.fullscreen_state() {
+                    false
+                } else {
+                    true
+                };
+            renderer.exit_fullscreen(&events.mouse.utils)?;
+            events.mouse.utils.set_relative_mouse_mode(false);
+            editor::run(renderer, events, imgui, intro_font, config.settings())?;
+            if was_fullscreen {
+                renderer.enter_fullscreen(&events.mouse.utils)?;
+            }
             game_mode = GameMode::Menu;
         }
         GameMode::Error(error) => {
             let mut last_frame = Instant::now();
             let mut do_break = false;
             'error_running: loop {
-                if sdlglue::has_quit(event_pump) {
+                if sdlglue::has_quit(&mut events.pump) {
                     process::exit(0);
                 }
-                renderer.adjust_fullscreen(&event_pump)?;
+                renderer.adjust_fullscreen(&events.pump, &events.mouse.utils)?;
+                //event_state.update_mouse();
                 sdlglue::clear_screen(Colour::dull_grey());
 
                 let imgui_frame = imgui.prepare_frame(
                     &renderer.window,
-                    &event_pump.mouse_state(),
+                    &events.pump.mouse_state(),
                     &mut last_frame,
                 );
                 let ui = &imgui_frame.ui;
@@ -568,6 +615,8 @@ fn run_main_loop<'a, 'b>(
 
                 imgui_frame.render(&renderer.window);
 
+                renderer.draw_mouse(events.mouse.position);
+
                 renderer.present();
             }
 
@@ -580,7 +629,7 @@ fn run_main_loop<'a, 'b>(
 struct MainGame<'a, 'b> {
     game_mode: GameMode<'a, 'b>,
     renderer: Renderer,
-    event_pump: EventPump,
+    events: EventState,
     imgui: Imgui,
     config: Config,
 }
@@ -592,26 +641,24 @@ impl<'a, 'b> MainGame<'a, 'b> {
         video_subsystem: &VideoSubsystem,
         window: SdlWindow,
     ) -> WeeResult<MainGame<'a, 'b>> {
-        let mut imgui = Imgui::init(&config.ui_font, &video_subsystem, &window)?;
+        let imgui = Imgui::init(&config.ui_font, &video_subsystem, &window)?;
 
         let event_pump = sdl_context.event_pump()?;
+        let events = EventState {
+            pump: event_pump,
+            mouse: MouseState::new(config.sensitivity, sdl_context.mouse()),
+        };
 
-        let renderer = Renderer::new(window);
+        let mouse_texture = sdlglue::Texture::from_file("games/system/images/mouse.png")?;
+
+        let renderer = Renderer::new(window, mouse_texture);
 
         let game_mode = GameMode::Menu;
-
-        // This is a hack to get the mouse cursor to show up in relative mode
-        let imgui_frame = imgui.prepare_frame(
-            &renderer.window,
-            &event_pump.mouse_state(),
-            &mut std::time::Instant::now(),
-        );
-        imgui_frame.render(&renderer.window);
 
         Ok(MainGame {
             game_mode,
             renderer,
-            event_pump,
+            events,
             imgui,
             config,
         })
@@ -622,7 +669,7 @@ impl<'a, 'b> MainGame<'a, 'b> {
             let loop_result = run_main_loop(
                 self.game_mode,
                 &mut self.renderer,
-                &mut self.event_pump,
+                &mut self.events,
                 &mut self.imgui,
                 font_system,
                 &self.config,
@@ -665,7 +712,7 @@ fn main() -> WeeResult<()> {
             .show_error()?
     };
 
-    sdl_context.mouse().show_cursor(false);
+    sdl_context.mouse().set_relative_mouse_mode(false);
 
     let _gl_context = GLContext::from_sdl(&video_subsystem.gl_attr(), &window);
 

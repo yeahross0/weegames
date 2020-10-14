@@ -1466,22 +1466,41 @@ impl Mouse {
 
     fn update(
         &mut self,
-        event_pump: &mut EventPump,
+        events: &mut EventState,
         window_size: (u32, u32),
         initial_mouse_button_held: &mut bool,
     ) {
-        let mouse_state = event_pump.mouse_state();
+        //// events.mouse.update()
+        if events.mouse.utils.relative_mouse_mode() {
+            let mouse_state = events.pump.relative_mouse_state();
+
+            events.mouse.position.x += mouse_state.x() as f32 * events.mouse.sensitivity;
+            events.mouse.position.y += mouse_state.y() as f32 * events.mouse.sensitivity;
+
+            events.mouse.position.x = events.mouse.position.x.max(0.0).min(window_size.0 as f32);
+            events.mouse.position.y = events.mouse.position.y.max(0.0).min(window_size.1 as f32);
+        } else {
+            let mouse_state = events.pump.mouse_state();
+            events.mouse.position.x = mouse_state.x() as f32;
+            events.mouse.position.y = mouse_state.y() as f32;
+        }
+
         let calc_mouse_position =
             |p, window_size, projection| p as f32 / window_size as f32 * projection;
         self.position = Vec2::new(
-            calc_mouse_position(mouse_state.x(), window_size.0, PROJECTION_WIDTH),
-            calc_mouse_position(mouse_state.y(), window_size.1, PROJECTION_HEIGHT),
+            calc_mouse_position(events.mouse.position.x, window_size.0, PROJECTION_WIDTH),
+            calc_mouse_position(events.mouse.position.y, window_size.1, PROJECTION_HEIGHT),
         );
 
+        let left_pressed = if events.mouse.utils.relative_mouse_mode() {
+            events.pump.relative_mouse_state().left()
+        } else {
+            events.pump.mouse_state().left()
+        };
         if !(*initial_mouse_button_held) {
-            self.state.update(mouse_state.left());
+            self.state.update(left_pressed);
         }
-        if !event_pump.mouse_state().left() {
+        if !left_pressed {
             *initial_mouse_button_held = false;
         }
     }
@@ -1923,6 +1942,27 @@ impl<'a, 'b> LoadedGame<'a, 'b> {
     }
 }
 
+pub struct MouseState {
+    pub position: wee_common::Vec2,
+    pub sensitivity: f32,
+    pub utils: sdl2::mouse::MouseUtil,
+}
+
+impl MouseState {
+    pub fn new(sensitivity: f32, utils: sdl2::mouse::MouseUtil) -> MouseState {
+        MouseState {
+            position: wee_common::Vec2::zero(),
+            sensitivity,
+            utils,
+        }
+    }
+}
+
+pub struct EventState {
+    pub pump: EventPump,
+    pub mouse: MouseState,
+}
+
 pub fn is_switched_on(objects: &Objects, name: &str) -> bool {
     if let Some(obj) = objects.get(name) {
         obj.switch == SwitchState::SwitchedOn
@@ -2032,98 +2072,13 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
     pub fn play(
         mut self,
         renderer: &mut Renderer,
-        event_pump: &mut EventPump,
+        events: &mut EventState,
     ) -> WeeResult<CompletedGame<'a, 'b>> {
-        let mut escape = ButtonState::Up;
-        let mut end_early = EndEarly::Continue; // TODO: Put in self
-        self.initial_mouse_button_held = event_pump.mouse_state().left();
-        'game_running: loop {
-            if self.is_finished() {
-                break 'game_running;
-            }
-
-            self.init_frame();
-
-            let esc_down = |event_pump: &EventPump| {
-                event_pump
-                    .keyboard_state()
-                    .is_scancode_pressed(Scancode::Escape)
-            };
-            for _ in 0..self.frames.to_run {
-                escape.update(esc_down(event_pump));
-                if escape == ButtonState::Press {
-                    if let Some(music) = &mut self.assets.music {
-                        music.data.pause();
-                    }
-                    for sound in &mut self.playing_sounds {
-                        sound.pause();
-                    }
-                    let mut game =
-                        LoadedGame::load("games/system/pause-menu.json", self.intro_font)?.start(
-                            DEFAULT_GAME_SPEED,
-                            DEFAULT_DIFFICULTY,
-                            self.settings,
-                        );
-                    'pause_running: loop {
-                        renderer.adjust_fullscreen(&event_pump)?;
-
-                        game.update_and_render_frame(renderer, event_pump)?;
-
-                        escape.update(esc_down(event_pump));
-                        if escape == ButtonState::Press || is_switched_on(&game.objects, "Continue")
-                        {
-                            if let Some(music) = &mut self.assets.music {
-                                music.data.play();
-                            }
-                            for sound in &mut self.playing_sounds {
-                                sound.play();
-                            }
-                            break 'pause_running;
-                        }
-                        if is_switched_on(&game.objects, "Quit") {
-                            return Ok(CompletedGame {
-                                completion: Completion::Quit,
-                                has_been_won: self.has_been_won(),
-                                assets: self.assets,
-                            });
-                        }
-                    }
-                }
-                renderer.adjust_fullscreen(&event_pump)?;
-
-                if let EndEarly::EndIn { frames } = &mut end_early {
-                    if *frames == 0 {
-                        self.assets.music.stop();
-                        let has_been_won = self.has_been_won();
-
-                        return Ok(CompletedGame {
-                            completion: Completion::Finished,
-                            assets: self.assets,
-                            has_been_won,
-                        });
-                    }
-                    *frames -= 1;
-                }
-
-                self.update_frame(event_pump, renderer.window.size(), &mut end_early)?;
-                if self.settings.render_each_frame {
-                    self.render_frame(renderer)?;
-                }
-            }
-
-            if !self.settings.render_each_frame {
-                self.render_frame(renderer)?;
-            }
-
-            self.sleep();
-        }
-
-        self.assets.music.stop();
-
+        let completion = self.preview(renderer, events)?;
         let has_been_won = self.has_been_won();
 
         Ok(CompletedGame {
-            completion: Completion::Finished,
+            completion,
             assets: self.assets,
             has_been_won,
         })
@@ -2133,11 +2088,11 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
     pub fn preview(
         &mut self,
         renderer: &mut Renderer,
-        event_pump: &mut EventPump,
+        events: &mut EventState,
     ) -> WeeResult<Completion> {
         let mut escape = ButtonState::Up;
         let mut end_early = EndEarly::Continue; // TODO: Put in self
-        self.initial_mouse_button_held = event_pump.mouse_state().left();
+        self.initial_mouse_button_held = events.pump.mouse_state().left();
         'game_running: loop {
             if self.is_finished() {
                 break 'game_running;
@@ -2151,7 +2106,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                     .is_scancode_pressed(Scancode::Escape)
             };
             for _ in 0..self.frames.to_run {
-                escape.update(esc_down(event_pump));
+                escape.update(esc_down(&events.pump));
                 if escape == ButtonState::Press {
                     if let Some(music) = &mut self.assets.music {
                         music.data.pause();
@@ -2166,11 +2121,11 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                             self.settings,
                         );
                     'pause_running: loop {
-                        renderer.adjust_fullscreen(&event_pump)?;
+                        renderer.adjust_fullscreen(&events.pump, &events.mouse.utils)?;
 
-                        game.update_and_render_frame(renderer, event_pump)?;
+                        game.update_and_render_frame(renderer, events)?;
 
-                        escape.update(esc_down(event_pump));
+                        escape.update(esc_down(&events.pump));
                         if escape == ButtonState::Press || is_switched_on(&game.objects, "Continue")
                         {
                             if let Some(music) = &mut self.assets.music {
@@ -2186,7 +2141,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                         }
                     }
                 }
-                renderer.adjust_fullscreen(&event_pump)?;
+                renderer.adjust_fullscreen(&events.pump, &events.mouse.utils)?;
 
                 if let EndEarly::EndIn { frames } = &mut end_early {
                     if *frames == 0 {
@@ -2197,14 +2152,14 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                     *frames -= 1;
                 }
 
-                self.update_frame(event_pump, renderer.window.size(), &mut end_early)?;
+                self.update_frame(events, renderer.window.size(), &mut end_early)?;
                 if self.settings.render_each_frame {
-                    self.render_frame(renderer)?;
+                    self.render_frame(renderer, events.mouse.position)?;
                 }
             }
 
             if !self.settings.render_each_frame {
-                self.render_frame(renderer)?;
+                self.render_frame(renderer, events.mouse.position)?;
             }
 
             self.sleep();
@@ -2226,16 +2181,16 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
 
     fn update_frame(
         &mut self,
-        event_pump: &mut EventPump,
+        events: &mut EventState,
         window_size: (u32, u32),
         end_early: &mut EndEarly,
     ) -> WeeResult<()> {
-        if sdlglue::has_quit(event_pump) {
+        if sdlglue::has_quit(&mut events.pump) {
             process::exit(0);
         }
 
         self.mouse
-            .update(event_pump, window_size, &mut self.initial_mouse_button_held);
+            .update(events, window_size, &mut self.initial_mouse_button_held);
 
         let played_sounds = if let Effect::Freeze = self.effect {
             Vec::new()
@@ -2252,7 +2207,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
         Ok(())
     }
 
-    fn render_frame(&self, renderer: &Renderer) -> WeeResult<()> {
+    fn render_frame(&self, renderer: &Renderer, mouse_position: Vec2) -> WeeResult<()> {
         sdlglue::clear_screen(Colour::white());
 
         renderer.draw_background(&self.background, &self.assets.images)?;
@@ -2267,6 +2222,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
             }
         }
 
+        renderer.draw_mouse(mouse_position);
         renderer.present();
 
         Ok(())
@@ -2698,7 +2654,16 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
     }
 
     fn move_object(&mut self, name: &str) -> WeeResult<()> {
+        let mut clamps = Vec::new();
         for mut motion in self.objects[name].queued_motion.clone().into_iter() {
+            // TODO: Is this the best way to do this?
+            if let Motion::JumpTo(JumpLocation::ClampPosition { .. }) = &motion {
+            } else {
+                for area in clamps {
+                    clamp_position(&mut self.objects[name].position, area);
+                }
+                clamps = Vec::new();
+            }
             self.objects[name].active_motion = match &mut motion {
                 Motion::GoStraight { direction, speed } => {
                     let velocity = direction.to_vector(&self.objects[name], *speed);
@@ -2730,8 +2695,8 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                             }
                             self.objects[name].position = gen_in_area(*area);
                         }
-                        JumpLocation::ClampPosition { area } => {
-                            clamp_position(&mut self.objects[name].position, *area);
+                        JumpLocation::ClampPosition { .. } => {
+                            //clamp_position(&mut self.objects[name].position, *area);
                         }
                         JumpLocation::Object { name: other_name } => {
                             self.objects[name].position =
@@ -2741,7 +2706,12 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                             self.objects[name].position = self.mouse.position;
                         }
                     }
-                    ActiveMotion::Stop
+                    if let Motion::JumpTo(JumpLocation::ClampPosition { area }) = motion {
+                        clamps.push(area);
+                        self.objects[name].active_motion.clone()
+                    } else {
+                        ActiveMotion::Stop
+                    }
                 }
                 Motion::Roam {
                     movement_type,
@@ -2904,6 +2874,11 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
         self.objects[name].queued_motion = Vec::new();
 
         self.objects[name].active_motion = self.update_active_motion(name)?;
+
+        for area in clamps {
+            clamp_position(&mut self.objects[name].position, area);
+            self.objects[name].active_motion = ActiveMotion::Stop;
+        }
 
         Ok(())
     }
@@ -3171,10 +3146,8 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                 deceleration,
             } => {
                 if velocity.magnitude() <= deceleration.magnitude() {
-                    println!("STOPPED");
                     ActiveMotion::Stop
                 } else {
-                    //println!("velocity: {:?}, decel: {:?}", velocity, deceleration);
                     self.objects[name].position += velocity;
                     velocity += deceleration;
                     ActiveMotion::SlowDown {
@@ -3222,11 +3195,11 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
     pub fn update_and_render_frame(
         &mut self,
         renderer: &Renderer,
-        event_pump: &mut EventPump,
+        events: &mut EventState,
     ) -> WeeResult<()> {
         self.frames.start_time = Instant::now();
-        self.update_frame(event_pump, renderer.window.size(), &mut EndEarly::Continue)?;
-        self.render_frame(renderer)?;
+        self.update_frame(events, renderer.window.size(), &mut EndEarly::Continue)?;
+        self.render_frame(renderer, events.mouse.position)?;
         self.sleep();
 
         Ok(())

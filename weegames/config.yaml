@@ -13,3 +13,4 @@ playback_rate:
   - 0.1
 volume: 20.0
 render_each_frame: false
+sensitivity: 1.0

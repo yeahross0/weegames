@@ -1,22 +1,445 @@
 {
   "format_version": "0.1",
-  "published": false,
+  "published": true,
   "game_type": "BossGame",
   "objects": [
     {
-      "name": "Ground1",
+      "name": "Score",
       "sprite": {
         "Image": {
-          "name": "terrain"
+          "name": "099000"
         }
       },
       "position": {
-        "x": 800.0,
-        "y": 808.0
+        "x": 1300.0,
+        "y": 100.0
       },
       "size": {
-        "width": 192.0,
-        "height": 192.0
+        "width": 400.0,
+        "height": 140.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "All Cherries",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Score",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "099500"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "099600"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Score",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "099600"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "All Cherries",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "099700"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Score",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "099700"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "All Cherries",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "099800"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Score",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "099800"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "All Cherries",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "099900"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Score",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "099900"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "All Cherries",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "100000"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Score",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "099000"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "All Cherries",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "099100"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Score",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "099100"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "All Cherries",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "099200"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Score",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "099200"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "All Cherries",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "099300"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Score",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "099300"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "All Cherries",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "099400"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Score",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "099400"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "All Cherries",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "099500"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "DifficultyLevel": {
+                "level": 1
+              }
+            },
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "099500"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "DifficultyLevel": {
+                "level": 2
+              }
+            },
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "099300"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Score Label",
+      "sprite": {
+        "Image": {
+          "name": "Score"
+        }
+      },
+      "position": {
+        "x": 930.0,
+        "y": 92.0
+      },
+      "size": {
+        "width": 400.0,
+        "height": 140.0
       },
       "angle": 0.0,
       "origin": null,
@@ -46,6 +469,660 @@
       },
       "angle": 0.0,
       "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 20.0,
+          "y": 30.0
+        },
+        "max": {
+          "x": 108.0,
+          "y": 128.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Player",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "Target": {
+                  "target": "Mouse",
+                  "target_type": "Follow",
+                  "offset": {
+                    "x": 0.0,
+                    "y": 0.0
+                  },
+                  "speed": "Normal"
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "ClampPosition": {
+                    "area": {
+                      "min": {
+                        "x": 700.0,
+                        "y": 652.0
+                      },
+                      "max": {
+                        "x": 900.0,
+                        "y": 652.0
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Banana",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Banana"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Banana",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Left",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "FlipHorizontal": {
+                  "SetFlip": true
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Left",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "FlipHorizontal": {
+                  "SetFlip": false
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Player",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Ground Left",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "ClampPosition": {
+                    "area": {
+                      "min": {
+                        "x": 792.0,
+                        "y": 0.0
+                      },
+                      "max": {
+                        "x": 1600.0,
+                        "y": 900.0
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Ground Right",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "ClampPosition": {
+                    "area": {
+                      "min": {
+                        "x": 0.0,
+                        "y": 0.0
+                      },
+                      "max": {
+                        "x": 800.0,
+                        "y": 900.0
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Cherry 1"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Ground Centre",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "Collision": {
+                "Area": {
+                  "min": {
+                    "x": 0.0,
+                    "y": 0.0
+                  },
+                  "max": {
+                    "x": 760.0,
+                    "y": 900.0
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "ClampPosition": {
+                    "area": {
+                      "min": {
+                        "x": 0.0,
+                        "y": 0.0
+                      },
+                      "max": {
+                        "x": 750.0,
+                        "y": 900.0
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Ground Centre",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "Collision": {
+                "Area": {
+                  "min": {
+                    "x": 840.0,
+                    "y": 0.0
+                  },
+                  "max": {
+                    "x": 1600.0,
+                    "y": 900.0
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "ClampPosition": {
+                    "area": {
+                      "min": {
+                        "x": 850.0,
+                        "y": 0.0
+                      },
+                      "max": {
+                        "x": 1600.0,
+                        "y": 900.0
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Cherry 2"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Cherry 3"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Cherry 4"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Cherry 5"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "WinStatus": "HasBeenLost"
+            }
+          ],
+          "actions": [
+            {
+              "Effect": "Freeze"
+            },
+            {
+              "EndEarly": {
+                "time_to_end": 30
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Score",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "100000"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Win",
+            {
+              "Effect": "Freeze"
+            },
+            {
+              "EndEarly": {
+                "time_to_end": 30
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Banana",
+      "sprite": {
+        "Image": {
+          "name": "banana"
+        }
+      },
+      "position": {
+        "x": 765.0,
+        "y": 680.0
+      },
+      "size": {
+        "width": 56.0,
+        "height": 56.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Player",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Release"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Banana",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Left",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "UpRight"
+                      ]
+                    }
+                  },
+                  "speed": "Fast"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Banana",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "Target": {
+                  "target": {
+                    "Object": {
+                      "name": "Player"
+                    }
+                  },
+                  "target_type": "Follow",
+                  "offset": {
+                    "x": -35.0,
+                    "y": 28.0
+                  },
+                  "speed": "Fast"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Player",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Angle": {
+                  "Increase": 12.0
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Banana",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Left",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "UpLeft"
+                      ]
+                    }
+                  },
+                  "speed": "Fast"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Left",
+      "sprite": {
+        "Colour": {
+          "r": 0.99215686,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 0.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 1600.0,
+        "height": 1800.0
+      },
+      "angle": 0.0,
+      "origin": null,
       "collision_area": null,
       "flip": {
         "horizontal": false,
@@ -60,16 +1137,125 @@
             {
               "Motion": {
                 "JumpTo": {
-                  "ClampPosition": {
-                    "area": {
-                      "min": {
-                        "x": 0.0,
-                        "y": 652.0
-                      },
-                      "max": {
-                        "x": 1600.0,
-                        "y": 652.0
-                      }
+                  "Object": {
+                    "name": "Player"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": -800.0,
+                      "y": 0.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "Left"
+                    }
+                  },
+                  "interaction": "Hover"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Cherry 1",
+      "sprite": {
+        "Image": {
+          "name": "cherry-1"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 1100.0
+      },
+      "size": {
+        "width": 128.0,
+        "height": 128.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 36.0,
+          "y": 38.0
+        },
+        "max": {
+          "x": 90.0,
+          "y": 92.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Area": {
+                  "min": {
+                    "x": 0.0,
+                    "y": 1000.0
+                  },
+                  "max": {
+                    "x": 1600.0,
+                    "y": 1200.0
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Area": {
+                    "min": {
+                      "x": 100.0,
+                      "y": -100.0
+                    },
+                    "max": {
+                      "x": 1500.0,
+                      "y": -600.0
                     }
                   }
                 }
@@ -77,15 +1263,1145 @@
             },
             {
               "Motion": {
-                "Target": {
-                  "target": "Mouse",
-                  "target_type": "Follow",
-                  "offset": {
-                    "x": 0.0,
-                    "y": 0.0
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Down"
+                      ]
+                    }
                   },
-                  "speed": "Normal"
+                  "speed": "VerySlow"
                 }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Banana"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 800.0,
+                    "y": 1100.0
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Ground Left",
+      "sprite": {
+        "Image": {
+          "name": "terrain-left"
+        }
+      },
+      "position": {
+        "x": 720.0,
+        "y": 808.0
+      },
+      "size": {
+        "width": 80.0,
+        "height": 192.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Cherry 1"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Ground Left",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Colour": {
+                    "r": 0.0,
+                    "g": 0.0,
+                    "b": 0.0,
+                    "a": 0.0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Cherry 2"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Cherry 3"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Cherry 4"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Cherry 5"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Ground Left",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Ground Centre",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Ground Right",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Ground Centre",
+      "sprite": {
+        "Image": {
+          "name": "terrain-centre"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 808.0
+      },
+      "size": {
+        "width": 80.0,
+        "height": 192.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Cherry 1"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Ground Centre",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Colour": {
+                    "r": 0.0,
+                    "g": 0.0,
+                    "b": 0.0,
+                    "a": 0.0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Cherry 2"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Cherry 3"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Cherry 4"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Cherry 5"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Ground Right",
+      "sprite": {
+        "Image": {
+          "name": "terrain-right"
+        }
+      },
+      "position": {
+        "x": 880.0,
+        "y": 808.0
+      },
+      "size": {
+        "width": 80.0,
+        "height": 192.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Cherry 1"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Ground Right",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Colour": {
+                    "r": 0.0,
+                    "g": 0.0,
+                    "b": 0.0,
+                    "a": 0.0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Cherry 2"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Cherry 3"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Cherry 4"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Cherry 5"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Cherry 2",
+      "sprite": {
+        "Image": {
+          "name": "cherry-1"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 1100.0
+      },
+      "size": {
+        "width": 128.0,
+        "height": 128.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 36.0,
+          "y": 38.0
+        },
+        "max": {
+          "x": 90.0,
+          "y": 92.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Area": {
+                  "min": {
+                    "x": 0.0,
+                    "y": 1000.0
+                  },
+                  "max": {
+                    "x": 1600.0,
+                    "y": 1200.0
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Area": {
+                    "min": {
+                      "x": 100.0,
+                      "y": -100.0
+                    },
+                    "max": {
+                      "x": 1500.0,
+                      "y": -600.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Down"
+                      ]
+                    }
+                  },
+                  "speed": "VerySlow"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Banana"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 800.0,
+                    "y": 1100.0
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Cherry 3",
+      "sprite": {
+        "Image": {
+          "name": "cherry-1"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 1100.0
+      },
+      "size": {
+        "width": 128.0,
+        "height": 128.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 36.0,
+          "y": 38.0
+        },
+        "max": {
+          "x": 90.0,
+          "y": 92.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Area": {
+                  "min": {
+                    "x": 0.0,
+                    "y": 1000.0
+                  },
+                  "max": {
+                    "x": 1600.0,
+                    "y": 1200.0
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Area": {
+                    "min": {
+                      "x": 100.0,
+                      "y": -100.0
+                    },
+                    "max": {
+                      "x": 1500.0,
+                      "y": -600.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Down"
+                      ]
+                    }
+                  },
+                  "speed": "VerySlow"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Banana"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 800.0,
+                    "y": 1100.0
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Cherry 4",
+      "sprite": {
+        "Image": {
+          "name": "cherry-blue-1"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 1100.0
+      },
+      "size": {
+        "width": 128.0,
+        "height": 128.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 36.0,
+          "y": 38.0
+        },
+        "max": {
+          "x": 90.0,
+          "y": 92.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Area": {
+                  "min": {
+                    "x": 0.0,
+                    "y": 1000.0
+                  },
+                  "max": {
+                    "x": 1600.0,
+                    "y": 1200.0
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Area": {
+                    "min": {
+                      "x": 100.0,
+                      "y": -100.0
+                    },
+                    "max": {
+                      "x": 1500.0,
+                      "y": -600.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Down"
+                      ]
+                    }
+                  },
+                  "speed": "Slow"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Banana"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 800.0,
+                    "y": 1100.0
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Cherry 5",
+      "sprite": {
+        "Image": {
+          "name": "cherry-blue-1"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 1100.0
+      },
+      "size": {
+        "width": 128.0,
+        "height": 128.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 36.0,
+          "y": 38.0
+        },
+        "max": {
+          "x": 90.0,
+          "y": 92.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Area": {
+                  "min": {
+                    "x": 0.0,
+                    "y": 1000.0
+                  },
+                  "max": {
+                    "x": 1600.0,
+                    "y": 1200.0
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Area": {
+                    "min": {
+                      "x": 100.0,
+                      "y": -100.0
+                    },
+                    "max": {
+                      "x": 1500.0,
+                      "y": -600.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Down"
+                      ]
+                    }
+                  },
+                  "speed": "Slow"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Banana"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 800.0,
+                    "y": 1100.0
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "All Cherries",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Cherry 1",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Cherry 2",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Cherry 3",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Cherry 4",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Cherry 5",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
               }
             }
           ]
@@ -93,19 +2409,58 @@
       ]
     }
   ],
-  "background": [],
+  "background": [
+    {
+      "sprite": {
+        "Image": {
+          "name": "bg8"
+        }
+      },
+      "area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 1600.0,
+          "y": 900.0
+        }
+      }
+    }
+  ],
   "asset_files": {
     "images": {
+      "099200": "099200.png",
+      "099700": "099700.png",
+      "banana": "banana.png",
+      "100000": "100000.png",
+      "cherry-blue-1": "cherry-blue-1.png",
+      "099300": "099300.png",
+      "bg6": "bg6.png",
+      "099100": "099100.png",
+      "bg5": "bg5.png",
+      "bg1": "bg1.png",
+      "terrain-left": "terrain-left.png",
+      "Score": "Score.png",
       "ninja-idle-1": "ninja-idle-1.png",
+      "bg8": "bg8.png",
+      "terrain-centre": "terrain-centre.png",
+      "terrain-right": "terrain-right.png",
+      "099000": "099000.png",
+      "099800": "099800.png",
+      "bg7": "bg7.png",
+      "099600": "099600.png",
+      "099500": "099500.png",
+      "cherry-1": "cherry-1.png",
+      "099900": "099900.png",
+      "099400": "099400.png",
       "terrain": "terrain.png"
     },
     "audio": {},
     "music": null,
     "fonts": {}
   },
-  "length": {
-    "Seconds": 3.7
-  },
-  "intro_text": null,
+  "length": "Infinite",
+  "intro_text": "Get 100'000 Points",
   "attribution": ""
 }
