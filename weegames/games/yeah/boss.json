@@ -601,24 +601,159 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Watch",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.627451
+        }
+      },
+      "position": {
+        "x": -300.0,
+        "y": 700.0
+      },
+      "size": {
+        "width": 608.25,
+        "height": 372.75
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 1440
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "PlayOnce",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "watch-5"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "watch-4"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "watch-3"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "watch-2"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "watch-1"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "watch-0"
+                    }
+                  }
+                ],
+                "speed": {
+                  "Value": 60.0
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Target": {
+                  "target": {
+                    "Object": {
+                      "name": "Watch Target"
+                    }
+                  },
+                  "target_type": "StopWhenReached",
+                  "offset": {
+                    "x": 0.0,
+                    "y": 0.0
+                  },
+                  "speed": "Slow"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Watch Target",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 300.0,
+        "y": 700.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
     }
   ],
   "background": [],
   "asset_files": {
     "images": {
       "wasp-crop-small": "wasp-crop-small.png",
-      "stock-looking": "stock-looking.jpg",
-      "stock-looking-2": "stock-looking-2.jpg",
-      "stock-stung": "stock-stung.jpg",
+      "watch-3": "watch-3.webp",
       "stock-pointing": "stock-pointing.jpg",
-      "stock-not-looking": "stock-not-looking.jpg"
+      "stock-looking": "stock-looking.jpg",
+      "stock-not-looking": "stock-not-looking.jpg",
+      "watch-4": "watch-4.webp",
+      "watch-5": "watch-5.webp",
+      "stock-stung": "stock-stung.jpg",
+      "watch-1": "watch-1.webp",
+      "watch-0": "watch-0.webp",
+      "stock-looking-2": "stock-looking-2.jpg",
+      "watch-2": "watch-2.webp"
     },
     "audio": {
-      "humming-1": "humming-1.ogg",
       "humming-2": "humming-2.ogg",
       "scream-crop": "scream-crop.ogg",
-      "humming-3": "humming-3.ogg",
-      "ha-crop": "ha-crop.ogg"
+      "ha-crop": "ha-crop.ogg",
+      "humming-1": "humming-1.ogg",
+      "humming-3": "humming-3.ogg"
     },
     "music": null,
     "fonts": {}
