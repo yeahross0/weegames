@@ -283,6 +283,22 @@
           "actions": [
             {
               "Motion": {
+                "JumpTo": {
+                  "Area": {
+                    "min": {
+                      "x": 200.0,
+                      "y": 200.0
+                    },
+                    "max": {
+                      "x": 1400.0,
+                      "y": 700.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
                 "Roam": {
                   "movement_type": "Insect",
                   "area": {
@@ -496,20 +512,20 @@
   ],
   "asset_files": {
     "images": {
-      "thing-2": "thing-2.png",
-      "thing-4": "thing-4.png",
-      "brawler-enemy": "brawler-enemy.png",
       "8": "8.png",
-      "thing-3": "thing-3.png",
-      "fire-1": "fire-1.png",
-      "p1": "p1.png",
-      "fire-2": "fire-2.png",
       "thing-done": "thing-done.png",
-      "fire-3": "fire-3.png",
+      "fire-1": "fire-1.png",
       "thing-1": "thing-1.png",
-      "brawler-player": "brawler-player.png",
+      "thing-2": "thing-2.png",
+      "fire-2": "fire-2.png",
       "p2": "p2.png",
-      "fire-4": "fire-4.png"
+      "brawler-player": "brawler-player.png",
+      "brawler-enemy": "brawler-enemy.png",
+      "fire-4": "fire-4.png",
+      "thing-3": "thing-3.png",
+      "thing-4": "thing-4.png",
+      "p1": "p1.png",
+      "fire-3": "fire-3.png"
     },
     "audio": {
       "power-up": "power-up.ogg",

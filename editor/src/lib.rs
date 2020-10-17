@@ -6,6 +6,7 @@
 // TODO: Error in find_object when doesn't exist
 // TODO: If check sprite 99500 and check switch all cherries -> set sprite 99600
 // TODO: Sort sprite keys alphabetically in combo?
+// TODO: Set if music is looped
 
 #[macro_use]
 extern crate imgui;
@@ -378,6 +379,12 @@ pub fn run<'a, 'b>(
                     if ui.button(im_str!("Set Music"), NORMAL_BUTTON) {
                         load_music_file_dialog(&mut game, &mut assets.music, &filename)
                             .unwrap_or_else(|error| log::error!("{}", error));
+                    }
+
+                    if let Some(music) = &mut game.asset_files.music {
+                        if ui.radio_button_bool(im_str!("Looped?"), music.looped) {
+                            music.looped = !music.looped;
+                        }
                     }
 
                     if let Some(music) = &game.asset_files.music {

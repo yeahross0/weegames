@@ -62,6 +62,18 @@
                   "name": "Icon"
                 }
               }
+            },
+            {
+              "CheckProperty": {
+                "name": "Mouse",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "mouse"
+                    }
+                  }
+                }
+              }
             }
           ],
           "actions": [
@@ -72,6 +84,11 @@
                     "name": "mouse-grab"
                   }
                 }
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "switch"
               }
             }
           ]
@@ -133,13 +150,15 @@
       "intro": "intro.webp",
       "mouse": "mouse.png"
     },
-    "audio": {},
+    "audio": {
+      "switch": "switch.ogg"
+    },
     "music": null,
     "fonts": {}
   },
   "length": {
     "Seconds": 2.0
   },
-  "intro_text": "",
+  "intro_text": null,
   "attribution": ""
 }

@@ -126,6 +126,14 @@
                   }
                 }
               }
+            },
+            {
+              "CheckProperty": {
+                "name": "Player",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
             }
           ],
           "actions": [
@@ -896,31 +904,31 @@
   ],
   "asset_files": {
     "images": {
-      "back": "back.png",
-      "test-map": "test-map.png",
-      "player-run-4": "player-run-4.png",
-      "player-run-6": "player-run-6.png",
-      "frog-idle-3": "frog-idle-3.png",
-      "player-run-2": "player-run-2.png",
+      "frog-idle-2": "frog-idle-2.png",
+      "player-hurt-1": "player-hurt-1.png",
+      "enemy-death-6": "enemy-death-6.png",
+      "enemy-death-1": "enemy-death-1.png",
       "enemy-death-4": "enemy-death-4.png",
       "enemy-death-5": "enemy-death-5.png",
-      "enemy-death-2": "enemy-death-2.png",
-      "player-run-1": "player-run-1.png",
-      "player-jump-2": "player-jump-2.png",
-      "player-run-5": "player-run-5.png",
-      "player-run-3": "player-run-3.png",
-      "enemy-death-6": "enemy-death-6.png",
-      "frog-idle-2": "frog-idle-2.png",
-      "enemy-death-3": "enemy-death-3.png",
       "frog-idle-4": "frog-idle-4.png",
+      "player-jump-2": "player-jump-2.png",
+      "back": "back.png",
+      "player-run-2": "player-run-2.png",
+      "player-run-3": "player-run-3.png",
+      "frog-idle-3": "frog-idle-3.png",
+      "player-run-6": "player-run-6.png",
+      "player-run-1": "player-run-1.png",
+      "player-run-4": "player-run-4.png",
+      "player-run-5": "player-run-5.png",
+      "enemy-death-3": "enemy-death-3.png",
+      "player-jump-1": "player-jump-1.png",
       "frog-idle-1": "frog-idle-1.png",
-      "enemy-death-1": "enemy-death-1.png",
-      "player-hurt-1": "player-hurt-1.png",
-      "player-jump-1": "player-jump-1.png"
+      "enemy-death-2": "enemy-death-2.png",
+      "test-map": "test-map.png"
     },
     "audio": {
-      "pop": "pop.ogg",
-      "hit": "hit.ogg"
+      "hit": "hit.ogg",
+      "pop": "pop.ogg"
     },
     "music": {
       "filename": "sun-shine.ogg",

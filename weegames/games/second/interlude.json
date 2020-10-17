@@ -309,6 +309,18 @@
                   "name": "Link"
                 }
               }
+            },
+            {
+              "CheckProperty": {
+                "name": "Mouse",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "mouse"
+                    }
+                  }
+                }
+              }
             }
           ],
           "actions": [
@@ -319,6 +331,11 @@
                     "name": "mouse-grab"
                   }
                 }
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "switch"
               }
             }
           ]
@@ -595,15 +612,17 @@
   "background": [],
   "asset_files": {
     "images": {
-      "mouse": "mouse.png",
-      "heart": "heart.png",
-      "mouse-grab": "mouse-grab.png",
       "heart-black": "heart-black.png",
       "install2": "install2.png",
       "download": "download.png",
-      "install": "install.png"
+      "mouse-grab": "mouse-grab.png",
+      "install": "install.png",
+      "mouse": "mouse.png",
+      "heart": "heart.png"
     },
-    "audio": {},
+    "audio": {
+      "switch": "switch.ogg"
+    },
     "music": null,
     "fonts": {
       "Lato-Bold": {
@@ -615,6 +634,6 @@
   "length": {
     "Seconds": 2.0
   },
-  "intro_text": "",
+  "intro_text": null,
   "attribution": ""
 }

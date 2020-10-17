@@ -864,9 +864,20 @@
             },
             {
               "EndEarly": {
-                "time_to_end": 30
+                "time_to_end": 60
               }
-            }
+            },
+            {
+              "PlaySound": {
+                "name": "hit"
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "alarm"
+              }
+            },
+            "StopMusic"
           ]
         },
         {
@@ -891,9 +902,35 @@
             },
             {
               "EndEarly": {
-                "time_to_end": 30
+                "time_to_end": 120
               }
-            }
+            },
+            {
+              "PlaySound": {
+                "name": "rising"
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "charge"
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "coin"
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "jump"
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "gong"
+              }
+            },
+            "StopMusic"
           ]
         }
       ]
@@ -2405,6 +2442,25 @@
               }
             }
           ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "All Cherries",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "PlaySound": {
+                "name": "power-up"
+              }
+            }
+          ]
         }
       ]
     }
@@ -2431,33 +2487,46 @@
   "asset_files": {
     "images": {
       "099200": "099200.png",
-      "099700": "099700.png",
-      "banana": "banana.png",
-      "100000": "100000.png",
-      "cherry-blue-1": "cherry-blue-1.png",
-      "099300": "099300.png",
-      "bg6": "bg6.png",
-      "099100": "099100.png",
-      "bg5": "bg5.png",
-      "bg1": "bg1.png",
-      "terrain-left": "terrain-left.png",
-      "Score": "Score.png",
       "ninja-idle-1": "ninja-idle-1.png",
-      "bg8": "bg8.png",
-      "terrain-centre": "terrain-centre.png",
+      "099100": "099100.png",
+      "099300": "099300.png",
       "terrain-right": "terrain-right.png",
-      "099000": "099000.png",
-      "099800": "099800.png",
-      "bg7": "bg7.png",
-      "099600": "099600.png",
-      "099500": "099500.png",
+      "terrain": "terrain.png",
+      "bg1": "bg1.png",
+      "bg5": "bg5.png",
+      "bg8": "bg8.png",
       "cherry-1": "cherry-1.png",
+      "cherry-blue-1": "cherry-blue-1.png",
+      "terrain-centre": "terrain-centre.png",
+      "099600": "099600.png",
+      "100000": "100000.png",
+      "099800": "099800.png",
+      "099700": "099700.png",
       "099900": "099900.png",
+      "099000": "099000.png",
+      "099500": "099500.png",
       "099400": "099400.png",
-      "terrain": "terrain.png"
+      "bg7": "bg7.png",
+      "banana": "banana.png",
+      "Score": "Score.png",
+      "bg6": "bg6.png",
+      "terrain-left": "terrain-left.png"
     },
-    "audio": {},
-    "music": null,
+    "audio": {
+      "rising": "rising.ogg",
+      "power-up": "power-up.ogg",
+      "alarm": "alarm.ogg",
+      "gong": "gong.ogg",
+      "found-something": "found-something.ogg",
+      "hit": "hit.ogg",
+      "jump": "jump.ogg",
+      "coin": "coin.ogg",
+      "charge": "charge.ogg"
+    },
+    "music": {
+      "filename": "8Bit Platformer Loop.ogg",
+      "looped": true
+    },
     "fonts": {}
   },
   "length": "Infinite",

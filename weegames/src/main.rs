@@ -1,5 +1,6 @@
 // TODO: Tidy up initial_mouse_button_held thing
 // TODO: Have black borders to keep game 16:9
+// TODO: Stop all sounds action?
 
 //#![windows_subsystem = "windows"]
 
@@ -99,7 +100,6 @@ enum GameMode<'a, 'b> {
         won: bool,
         games_list: GamesList,
         progress: Progress,
-        is_boss_game: bool,
     },
     GameOver {
         progress: Progress,
@@ -117,8 +117,8 @@ struct Progress {
 }
 
 const MAX_LIVES: i32 = 4;
-const UP_TO_DIFFICULTY_TWO: i32 = 15;
-const UP_TO_DIFFICULTY_THREE: i32 = 30;
+const UP_TO_DIFFICULTY_TWO: i32 = 20;
+const UP_TO_DIFFICULTY_THREE: i32 = 40;
 
 impl Progress {
     fn new(playback_rate: f32) -> Progress {
@@ -132,17 +132,18 @@ impl Progress {
 
     fn update(&mut self, has_won: bool, playback_increase: f32, playback_max: f32) {
         // TODO: Should score still be incremented if you don't win?
-        self.score += 1;
-        if self.score % 5 == 0 {
-            self.playback_rate += playback_increase;
-        }
-        if self.score >= UP_TO_DIFFICULTY_THREE {
-            self.difficulty = 3;
-        } else if self.score >= UP_TO_DIFFICULTY_TWO {
-            self.difficulty = 2;
-        }
-        self.playback_rate = self.playback_rate.min(playback_max);
-        if !has_won {
+        if has_won {
+            self.score += 1;
+            if self.score % 5 == 0 {
+                self.playback_rate += playback_increase;
+            }
+            if self.score >= UP_TO_DIFFICULTY_THREE {
+                self.difficulty = 3;
+            } else if self.score >= UP_TO_DIFFICULTY_TWO {
+                self.difficulty = 2;
+            }
+            self.playback_rate = self.playback_rate.min(playback_max);
+        } else {
             self.lives -= 1;
         }
     }
@@ -152,6 +153,7 @@ impl Progress {
 struct GamesList {
     games: Vec<String>,
     bosses: Vec<String>,
+    is_boss_game: bool,
     next: Vec<String>,
     directory: String,
 }
@@ -198,6 +200,7 @@ impl GamesList {
             Ok(GamesList {
                 games: games_list,
                 bosses: boss_list,
+                is_boss_game: false,
                 next: Vec::new(),
                 directory: if directory == "games" {
                     "games/system/".to_string()
@@ -386,9 +389,8 @@ fn run_main_loop<'a, 'b>(
             won,
             mut games_list,
             progress,
-            is_boss_game,
         } => {
-            let filename = if is_boss_game {
+            let filename = if games_list.is_boss_game {
                 games_list.choose_boss()
             } else {
                 Some(games_list.choose())
@@ -452,12 +454,12 @@ fn run_main_loop<'a, 'b>(
                     GameMode::Menu
                 };
             } else {
-                game_mode = if is_boss_game {
+                game_mode = if games_list.is_boss_game {
+                    games_list.is_boss_game = false;
                     GameMode::Interlude {
                         won,
                         games_list,
                         progress,
-                        is_boss_game: false,
                     }
                 } else {
                     GameMode::Menu
@@ -515,7 +517,7 @@ fn run_main_loop<'a, 'b>(
         }
         GameMode::Play {
             game: loaded_game,
-            games_list,
+            mut games_list,
             mut progress,
         } => {
             let result = loaded_game
@@ -536,6 +538,9 @@ fn run_main_loop<'a, 'b>(
                             config.playback_rate.increase,
                             config.playback_rate.max,
                         );
+                        if has_won && games_list.is_boss_game {
+                            progress.lives = (progress.lives + 1).min(MAX_LIVES);
+                        }
                         log::info!("Playback Rate: {}", progress.playback_rate);
 
                         if progress.lives <= 0 {
@@ -544,15 +549,14 @@ fn run_main_loop<'a, 'b>(
                                 directory: games_list.directory,
                             }
                         } else {
+                            games_list.is_boss_game = progress.score > 0
+                                && progress.score % 15 == 0
+                                && !games_list.is_boss_game;
+
                             GameMode::Interlude {
                                 won: has_won,
                                 games_list,
                                 progress,
-                                is_boss_game: if progress.score > 0 && progress.score % 15 == 0 {
-                                    true
-                                } else {
-                                    false
-                                },
                             }
                         }
                     } else {

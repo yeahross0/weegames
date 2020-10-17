@@ -1585,7 +1585,7 @@ pub type Fonts<'a, 'b> = HashMap<String, Font<'a, 'b>>;
 
 pub struct Music {
     data: SfmlMusic,
-    looped: bool,
+    pub looped: bool,
 }
 
 pub trait LoadImages {

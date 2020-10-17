@@ -1,0 +1,631 @@
+{
+  "format_version": "0.1",
+  "published": true,
+  "game_type": "BossGame",
+  "objects": [
+    {
+      "name": "Wasp",
+      "sprite": {
+        "Image": {
+          "name": "wasp-crop-small"
+        }
+      },
+      "position": {
+        "x": 1400.0,
+        "y": 700.0
+      },
+      "size": {
+        "width": 109.0,
+        "height": 126.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 10.0,
+          "y": 10.0
+        },
+        "max": {
+          "x": 99.0,
+          "y": 126.0
+        }
+      },
+      "flip": {
+        "horizontal": true,
+        "vertical": true
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "Target": {
+                  "target": "Mouse",
+                  "target_type": "Follow",
+                  "offset": {
+                    "x": 0.0,
+                    "y": 0.0
+                  },
+                  "speed": {
+                    "Value": 1.5
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Catcher"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose"
+          ]
+        },
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Angle": "RotateToMouse"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "WinStatus": "HasBeenLost"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 1350.0,
+                    "y": 300.0
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Angle": {
+                  "Value": 180.0
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Man"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Win"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Man",
+      "sprite": {
+        "Image": {
+          "name": "stock-not-looking"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 1600.0,
+        "height": 900.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 400.0,
+          "y": 100.0
+        },
+        "max": {
+          "x": 680.0,
+          "y": 500.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Timer",
+                "check": "Timer"
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "PlayOnce",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "stock-looking-2"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "stock-looking-2"
+                    }
+                  }
+                ],
+                "speed": "VerySlow"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Man",
+                "check": "FinishedAnimation"
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "stock-not-looking"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "WinStatus": "HasBeenLost"
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "stock-pointing"
+                  }
+                }
+              }
+            },
+            {
+              "Effect": "Freeze"
+            },
+            {
+              "EndEarly": {
+                "time_to_end": 90
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "ha-crop"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "WinStatus": "HasBeenWon"
+            }
+          ],
+          "actions": [
+            {
+              "Effect": "Freeze"
+            },
+            {
+              "EndEarly": {
+                "time_to_end": 90
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "scream-crop"
+              }
+            },
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "stock-stung"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Timer",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": -500.0,
+        "y": -500.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Timer": {
+                  "time": 120
+                }
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "humming-2"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Man",
+                "check": "FinishedAnimation"
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Random": {
+                "random_actions": [
+                  {
+                    "SetProperty": {
+                      "Sprite": {
+                        "Colour": {
+                          "r": 1.0,
+                          "g": 0.0,
+                          "b": 0.0,
+                          "a": 1.0
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "SetProperty": {
+                      "Sprite": {
+                        "Colour": {
+                          "r": 0.0,
+                          "g": 1.0,
+                          "b": 0.0,
+                          "a": 1.0
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "SetProperty": {
+                      "Sprite": {
+                        "Colour": {
+                          "r": 0.0,
+                          "g": 0.0,
+                          "b": 1.0,
+                          "a": 1.0
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Timer",
+                "check": {
+                  "Sprite": {
+                    "Colour": {
+                      "r": 1.0,
+                      "g": 0.0,
+                      "b": 0.0,
+                      "a": 1.0
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Colour": {
+                    "r": 0.0,
+                    "g": 0.0,
+                    "b": 0.0,
+                    "a": 1.0
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Timer": {
+                  "time": 60
+                }
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "humming-1"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Timer",
+                "check": {
+                  "Sprite": {
+                    "Colour": {
+                      "r": 0.0,
+                      "g": 1.0,
+                      "b": 0.0,
+                      "a": 1.0
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Colour": {
+                    "r": 0.0,
+                    "g": 0.0,
+                    "b": 0.0,
+                    "a": 1.0
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Timer": {
+                  "time": 120
+                }
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "humming-2"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Timer",
+                "check": {
+                  "Sprite": {
+                    "Colour": {
+                      "r": 0.0,
+                      "g": 0.0,
+                      "b": 1.0,
+                      "a": 1.0
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Colour": {
+                    "r": 0.0,
+                    "g": 0.0,
+                    "b": 0.0,
+                    "a": 1.0
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Timer": {
+                  "time": 180
+                }
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "humming-3"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Catcher",
+      "sprite": {
+        "Colour": {
+          "r": 1.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": -800.0,
+        "y": -800.0
+      },
+      "size": {
+        "width": 800.0,
+        "height": 800.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Timer",
+                "check": "Timer"
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Wasp"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": -490.0,
+                      "y": 0.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Man",
+                "check": "FinishedAnimation"
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": -800.0,
+                    "y": -800.0
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "background": [],
+  "asset_files": {
+    "images": {
+      "wasp-crop-small": "wasp-crop-small.png",
+      "stock-looking": "stock-looking.jpg",
+      "stock-looking-2": "stock-looking-2.jpg",
+      "stock-stung": "stock-stung.jpg",
+      "stock-pointing": "stock-pointing.jpg",
+      "stock-not-looking": "stock-not-looking.jpg"
+    },
+    "audio": {
+      "humming-1": "humming-1.ogg",
+      "humming-2": "humming-2.ogg",
+      "scream-crop": "scream-crop.ogg",
+      "humming-3": "humming-3.ogg",
+      "ha-crop": "ha-crop.ogg"
+    },
+    "music": null,
+    "fonts": {}
+  },
+  "length": {
+    "Seconds": 30.0
+  },
+  "intro_text": "Sting!",
+  "attribution": ""
+}
