@@ -499,6 +499,77 @@
               }
             }
           ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            },
+            {
+              "CheckProperty": {
+                "name": "2",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "1",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Won",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "PlayOnce",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "heart"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "heart-black"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "heart"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "heart-black"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "heart"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "heart-black"
+                    }
+                  }
+                ],
+                "speed": "Normal"
+              }
+            }
+          ]
         }
       ]
     },
@@ -549,6 +620,77 @@
                     "name": "heart-black"
                   }
                 }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            },
+            {
+              "CheckProperty": {
+                "name": "3",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "2",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Won",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "PlayOnce",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "heart"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "heart-black"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "heart"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "heart-black"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "heart"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "heart-black"
+                    }
+                  }
+                ],
+                "speed": "Normal"
               }
             }
           ]
@@ -605,20 +747,120 @@
               }
             }
           ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            },
+            {
+              "CheckProperty": {
+                "name": "4",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "3",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Won",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "PlayOnce",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "heart"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "heart-black"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "heart"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "heart-black"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "heart"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "heart-black"
+                    }
+                  }
+                ],
+                "speed": "Normal"
+              }
+            }
+          ]
         }
       ]
+    },
+    {
+      "name": "Won",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
     }
   ],
   "background": [],
   "asset_files": {
     "images": {
       "heart-black": "heart-black.png",
-      "install2": "install2.png",
-      "download": "download.png",
-      "mouse-grab": "mouse-grab.png",
+      "heart": "heart.png",
       "install": "install.png",
+      "mouse-grab": "mouse-grab.png",
       "mouse": "mouse.png",
-      "heart": "heart.png"
+      "install2": "install2.png",
+      "download": "download.png"
     },
     "audio": {
       "switch": "switch.ogg"

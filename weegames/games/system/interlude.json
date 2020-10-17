@@ -547,6 +547,221 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Swat",
+      "sprite": {
+        "Image": {
+          "name": "fly-swat"
+        }
+      },
+      "position": {
+        "x": 2000.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 320.0,
+        "height": 640.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Won",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "4",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "4"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 0.0,
+                      "y": 220.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            },
+            {
+              "CheckProperty": {
+                "name": "Won",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "3",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "3"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 0.0,
+                      "y": 220.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            },
+            {
+              "CheckProperty": {
+                "name": "Won",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "2",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "2"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 0.0,
+                      "y": 220.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            },
+            {
+              "CheckProperty": {
+                "name": "Won",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "1",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "1"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 0.0,
+                      "y": 220.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
     }
   ],
   "background": [
@@ -570,22 +785,23 @@
   ],
   "asset_files": {
     "images": {
-      "wasp-green": "wasp-green.webp",
       "bloody-hands": "bloody-hands.webp",
       "wasp-green-hit": "wasp-green-hit.webp",
-      "wasp-blue": "wasp-blue.webp"
+      "wasp-blue": "wasp-blue.webp",
+      "wasp-green": "wasp-green.webp",
+      "fly-swat": "fly-swat.webp"
     },
     "audio": {
       "squash-crop": "squash-crop.ogg",
       "swat-crop": "swat-crop.ogg"
     },
+    "music": null,
     "fonts": {
       "libmono": {
         "filename": "LiberationMono-Regular.ttf",
         "size": 128.0
       }
-    },
-    "music": null
+    }
   },
   "length": {
     "Seconds": 1.0
