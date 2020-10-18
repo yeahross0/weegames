@@ -85,6 +85,33 @@
               }
             }
           ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 60
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "DrawText": {
+                "text": "",
+                "font": "libmono",
+                "colour": {
+                  "r": 0.0,
+                  "g": 0.0,
+                  "b": 0.0,
+                  "a": 1.0
+                },
+                "resize": "MatchObject",
+                "justify": "Centre"
+              }
+            }
+          ]
         }
       ]
     },
@@ -762,6 +789,108 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Boss",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 300.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 59
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Boss",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "EndEarly"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Boss",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "wasp-blue"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 60
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "DrawText": {
+                "text": "Boss Fight!",
+                "font": "libmono",
+                "colour": {
+                  "r": 1.0,
+                  "g": 1.0,
+                  "b": 1.0,
+                  "a": 1.0
+                },
+                "resize": "MatchText",
+                "justify": "Centre"
+              }
+            }
+          ]
+        }
+      ]
     }
   ],
   "background": [
@@ -785,15 +914,15 @@
   ],
   "asset_files": {
     "images": {
-      "bloody-hands": "bloody-hands.webp",
-      "wasp-green-hit": "wasp-green-hit.webp",
       "wasp-blue": "wasp-blue.webp",
+      "bloody-hands": "bloody-hands.webp",
       "wasp-green": "wasp-green.webp",
-      "fly-swat": "fly-swat.webp"
+      "fly-swat": "fly-swat.webp",
+      "wasp-green-hit": "wasp-green-hit.webp"
     },
     "audio": {
-      "squash-crop": "squash-crop.ogg",
-      "swat-crop": "swat-crop.ogg"
+      "swat-crop": "swat-crop.ogg",
+      "squash-crop": "squash-crop.ogg"
     },
     "music": null,
     "fonts": {
@@ -804,7 +933,7 @@
     }
   },
   "length": {
-    "Seconds": 1.0
+    "Seconds": 2.5
   },
   "intro_text": null,
   "attribution": "----\nwasp:\nhttps://commons.wikimedia.org/w/index.php?curid=1999886\n'File:2 wasp 2007-04-25.jpg' by Trounce is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\nI changed the colour of the image.\n----\nbloody-hands: https://www.pexels.com/photo/person-s-hands-covered-with-blood-673862/\n\nswat: https://freesound.org/people/poorenglishjuggler/sounds/131461/\n----\nsquash:\nhttps://freesound.org/people/zimbot/sounds/244486/\n'CrushAndGrind' by zimbot is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\nI cropped the audio.\n----\n"

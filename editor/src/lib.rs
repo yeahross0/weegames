@@ -426,7 +426,7 @@ pub fn run<'a, 'b>(
             &assets.sounds,
             1.0,
             settings.volume,
-        );
+        )?;
 
         if windows.background {
             // TODO: Fix up
@@ -1578,7 +1578,7 @@ fn edit_action<'a>(
         Action::Animate { .. } => 7,
         Action::DrawText { .. } => 8,
         Action::Random { .. } => 9,
-        Action::EndEarly { .. } => 10,
+        Action::EndEarly => 10,
     };
     let action_names = [
         im_str!("Win"),
@@ -1626,7 +1626,7 @@ fn edit_action<'a>(
             9 => Action::Random {
                 random_actions: Vec::new(),
             },
-            10 => Action::EndEarly { time_to_end: 0 },
+            10 => Action::EndEarly,
             _ => unreachable!(),
         }
     }
@@ -1761,9 +1761,6 @@ fn edit_action<'a>(
             if ui.button(im_str!("Add Action"), SMALL_BUTTON) {
                 random_actions.push(Action::Win);
             }
-        }
-        Action::EndEarly { time_to_end } => {
-            choose_u32(time_to_end, ui, im_str!("Time to end"));
         }
         _ => {}
     }

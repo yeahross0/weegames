@@ -1,6 +1,6 @@
 [package]
-name = "weegames"
-version = "0.1.0"
+name = "main-game"
+version = "0.2.0"
 authors = ["Ross <yeahross@protonmail.com>"]
 edition = "2018"
 

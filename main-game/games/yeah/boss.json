@@ -232,11 +232,6 @@
               "Effect": "Freeze"
             },
             {
-              "EndEarly": {
-                "time_to_end": 90
-              }
-            },
-            {
               "PlaySound": {
                 "name": "ha-crop"
               }
@@ -252,11 +247,6 @@
           "actions": [
             {
               "Effect": "Freeze"
-            },
-            {
-              "EndEarly": {
-                "time_to_end": 90
-              }
             },
             {
               "PlaySound": {
@@ -609,7 +599,7 @@
           "r": 0.0,
           "g": 0.0,
           "b": 0.0,
-          "a": 0.627451
+          "a": 0.0
         }
       },
       "position": {
@@ -730,30 +720,105 @@
       "layer": 0,
       "switch": "Off",
       "instructions": []
+    },
+    {
+      "name": "End Early",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "WinStatus": "HasBeenLost"
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Timer": {
+                  "time": 90
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "WinStatus": "HasBeenWon"
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Timer": {
+                  "time": 90
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "End Early",
+                "check": "Timer"
+              }
+            }
+          ],
+          "actions": [
+            "EndEarly"
+          ]
+        }
+      ]
     }
   ],
   "background": [],
   "asset_files": {
     "images": {
-      "wasp-crop-small": "wasp-crop-small.png",
-      "watch-3": "watch-3.webp",
-      "stock-pointing": "stock-pointing.jpg",
-      "stock-looking": "stock-looking.jpg",
+      "watch-5": "watch-5.webp",
+      "watch-2": "watch-2.webp",
       "stock-not-looking": "stock-not-looking.jpg",
       "watch-4": "watch-4.webp",
-      "watch-5": "watch-5.webp",
       "stock-stung": "stock-stung.jpg",
-      "watch-1": "watch-1.webp",
       "watch-0": "watch-0.webp",
       "stock-looking-2": "stock-looking-2.jpg",
-      "watch-2": "watch-2.webp"
+      "watch-1": "watch-1.webp",
+      "stock-pointing": "stock-pointing.jpg",
+      "wasp-crop-small": "wasp-crop-small.png",
+      "stock-looking": "stock-looking.jpg",
+      "watch-3": "watch-3.webp"
     },
     "audio": {
-      "humming-2": "humming-2.ogg",
       "scream-crop": "scream-crop.ogg",
-      "ha-crop": "ha-crop.ogg",
+      "humming-3": "humming-3.ogg",
       "humming-1": "humming-1.ogg",
-      "humming-3": "humming-3.ogg"
+      "humming-2": "humming-2.ogg",
+      "ha-crop": "ha-crop.ogg"
     },
     "music": null,
     "fonts": {}
@@ -762,5 +827,5 @@
     "Seconds": 30.0
   },
   "intro_text": "Sting!",
-  "attribution": ""
+  "attribution": "watch: https://commons.wikimedia.org/wiki/File:Relojcasioheavy.JPG\n----\nwasp:\nhttps://commons.wikimedia.org/w/index.php?curid=1999886\n'File:2 wasp 2007-04-25.jpg' by Trounce is licensed under CC BY 3.0\\nhttps://creativecommons.org/licenses/by/3.0/legalcode\n----\n----\nman:\nhttps://www.pexels.com/photo/man-in-blue-long-sleeve-talking-to-someone-3781887/\nhttps://www.pexels.com/photo/man-in-blue-sweater-holding-white-tablet-computer-3783249/\nhttps://www.pexels.com/photo/man-in-blue-sweater-holding-white-tablet-computer-3783250/\nhttps://www.pexels.com/photo/man-in-blue-sweater-reading-a-newspaper-3781935/\n----\n\nscream: https://freesound.org/people/samueleunimancer/sounds/386893/\nhumming: https://freesound.org/people/Topschool/sounds/361077/\nha: https://freesound.org/people/ellenmentor/sounds/419161/"
 }

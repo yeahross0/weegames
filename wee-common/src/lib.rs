@@ -35,7 +35,6 @@ impl Vec2 {
         (self.x * self.x + self.y * self.y).sqrt()
     }
     pub fn unit(self) -> Vec2 {
-        // TODO: Fix this
         if self.magnitude() == 0.0 {
             Vec2::zero()
         } else {

@@ -70,7 +70,7 @@ impl Texture {
                 .blended(to_sdl(colour))
                 .map_err(|e| e.to_string())?;
             let texture = Texture::init((surface.width(), surface.height()), gl::RGBA8, gl::BGRA)
-                .format_as_text(surface, gl::UNSIGNED_INT_8_8_8_8_REV)?;
+                .format_as_linear(surface, gl::UNSIGNED_INT_8_8_8_8_REV)?;
             Ok(Some(texture))
         }
     }
@@ -81,8 +81,6 @@ impl Texture {
             self.bind();
             gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::CLAMP_TO_EDGE as i32);
             gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::CLAMP_TO_EDGE as i32);
-            // TODO: Check if I should be using LINEAR or NEAREST
-            // TODO: Or choose for each game/image
             gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR as i32);
             gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::NEAREST as i32);
             let surface = surface.without_lock().ok_or("Could not get surface")?;
@@ -103,7 +101,7 @@ impl Texture {
     }
 
     // TODO: Remove duplicate code
-    fn format_as_text(mut self, surface: Surface, data_type: GLenum) -> WeeResult<Texture> {
+    fn format_as_linear(mut self, surface: Surface, data_type: GLenum) -> WeeResult<Texture> {
         unsafe {
             gl::GenTextures(1, &mut self.id);
             self.bind();
@@ -155,6 +153,36 @@ impl Texture {
         let surface = Surface::from_file(path)?;
 
         Texture::from_surface(surface)
+    }
+
+    // TODO: Remove duplicate code
+    fn from_surface_with_filtering(mut surface: Surface) -> WeeResult<Texture> {
+        let mut texture = Texture::init((surface.width(), surface.height()), gl::RGB, gl::RGB);
+
+        let format = surface.pixel_format();
+
+        unsafe {
+            let raw = format.raw();
+            if (*raw).format == PixelFormatEnum::ABGR8888 as u32 {
+                texture.image_format = gl::RGBA;
+                texture.internal_format = gl::RGBA;
+                texture.format_as_linear(surface, gl::UNSIGNED_INT_8_8_8_8_REV)
+            } else if (*raw).format == PixelFormatEnum::RGB24 as u32 {
+                texture.format_as_linear(surface, gl::UNSIGNED_BYTE)
+            } else {
+                (*raw).format = PixelFormatEnum::RGBA8888 as u32;
+                surface = surface.convert(&PixelFormat::from_ll(raw))?;
+                texture.image_format = gl::RGBA;
+                texture.internal_format = gl::RGBA;
+                texture.format_as_linear(surface, gl::UNSIGNED_BYTE)
+            }
+        }
+    }
+
+    pub fn from_file_with_filtering<P: AsRef<Path>>(path: P) -> WeeResult<Texture> {
+        let surface = Surface::from_file(path)?;
+
+        Texture::from_surface_with_filtering(surface)
     }
 
     fn bind(&self) {

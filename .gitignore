@@ -2,7 +2,7 @@ target/
 
 Cargo.lock
 
-/weegames/*.dll
+/main-game/*.dll
 
 .vscode
 

@@ -327,8 +327,10 @@
               }
             },
             {
-              "EndEarly": {
-                "time_to_end": 120
+              "SetProperty": {
+                "Timer": {
+                  "time": 120
+                }
               }
             },
             {
@@ -386,8 +388,10 @@
             },
             "StopMusic",
             {
-              "EndEarly": {
-                "time_to_end": 60
+              "SetProperty": {
+                "Timer": {
+                  "time": 60
+                }
               }
             }
           ]
@@ -411,6 +415,19 @@
           ],
           "actions": [
             "Lose"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Player",
+                "check": "Timer"
+              }
+            }
+          ],
+          "actions": [
+            "EndEarly"
           ]
         }
       ]
@@ -583,8 +600,8 @@
                       "initial_direction": {
                         "Direction": {
                           "possible_directions": [
-                            "Left",
-                            "Right"
+                            "Right",
+                            "Left"
                           ]
                         }
                       },
@@ -868,18 +885,18 @@
   ],
   "asset_files": {
     "images": {
-      "warp-jump-land": "warp-jump-land.png",
       "warp-idle-4": "warp-idle-4.png",
-      "warp-jump": "warp-jump.png",
-      "warp-ground": "warp-ground.png",
-      "warp-platform-design": "warp-platform-design.png",
-      "warp-lean-back": "warp-lean-back.png",
-      "warp-platform-smaller": "warp-platform-smaller.png",
-      "warp-idle-3": "warp-idle-3.png",
-      "warp-idle-1": "warp-idle-1.png",
       "warp-platform": "warp-platform.png",
       "warp-idle-2": "warp-idle-2.png",
-      "warp-sky-2": "warp-sky-2.png"
+      "warp-jump": "warp-jump.png",
+      "warp-ground": "warp-ground.png",
+      "warp-idle-1": "warp-idle-1.png",
+      "warp-jump-land": "warp-jump-land.png",
+      "warp-lean-back": "warp-lean-back.png",
+      "warp-idle-3": "warp-idle-3.png",
+      "warp-sky-2": "warp-sky-2.png",
+      "warp-platform-smaller": "warp-platform-smaller.png",
+      "warp-platform-design": "warp-platform-design.png"
     },
     "audio": {
       "woo": "woo.ogg",

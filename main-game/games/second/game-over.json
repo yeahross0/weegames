@@ -14,7 +14,7 @@
         }
       },
       "position": {
-        "x": 770.0,
+        "x": 610.0,
         "y": 700.0
       },
       "size": {
@@ -67,7 +67,7 @@
         }
       },
       "position": {
-        "x": 1200.0,
+        "x": 1290.0,
         "y": 200.0
       },
       "size": {
@@ -102,7 +102,7 @@
                   "a": 1.0
                 },
                 "resize": "MatchText",
-                "justify": "Left"
+                "justify": "Centre"
               }
             }
           ]
@@ -110,7 +110,7 @@
       ]
     },
     {
-      "name": "Score 1",
+      "name": "1st",
       "sprite": {
         "Colour": {
           "r": 0.0,
@@ -120,7 +120,7 @@
         }
       },
       "position": {
-        "x": 1200.0,
+        "x": 1290.0,
         "y": 350.0
       },
       "size": {
@@ -146,7 +146,7 @@
           "actions": [
             {
               "DrawText": {
-                "text": "1st: {HighScore-1}",
+                "text": "1st: {1st}",
                 "font": "Lato-Bold",
                 "colour": {
                   "r": 1.0,
@@ -155,7 +155,38 @@
                   "a": 1.0
                 },
                 "resize": "MatchText",
-                "justify": "Left"
+                "justify": "Centre"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            },
+            {
+              "CheckProperty": {
+                "name": "1st",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "DrawText": {
+                "text": "1st: {1st}",
+                "font": "Lato-Bold",
+                "colour": {
+                  "r": 0.8862745,
+                  "g": 0.90588236,
+                  "b": 0.0,
+                  "a": 1.0
+                },
+                "resize": "MatchText",
+                "justify": "Centre"
               }
             }
           ]
@@ -163,7 +194,7 @@
       ]
     },
     {
-      "name": "Score 2",
+      "name": "2nd",
       "sprite": {
         "Colour": {
           "r": 0.0,
@@ -173,7 +204,7 @@
         }
       },
       "position": {
-        "x": 1200.0,
+        "x": 1290.0,
         "y": 500.0
       },
       "size": {
@@ -199,7 +230,7 @@
           "actions": [
             {
               "DrawText": {
-                "text": "2nd: {HighScore-2}",
+                "text": "2nd: {2nd}",
                 "font": "Lato-Bold",
                 "colour": {
                   "r": 1.0,
@@ -208,7 +239,38 @@
                   "a": 1.0
                 },
                 "resize": "MatchText",
-                "justify": "Left"
+                "justify": "Centre"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            },
+            {
+              "CheckProperty": {
+                "name": "2nd",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "DrawText": {
+                "text": "2nd: {2nd}",
+                "font": "Lato-Bold",
+                "colour": {
+                  "r": 0.8862745,
+                  "g": 0.90588236,
+                  "b": 0.0,
+                  "a": 1.0
+                },
+                "resize": "MatchText",
+                "justify": "Centre"
               }
             }
           ]
@@ -216,7 +278,7 @@
       ]
     },
     {
-      "name": "Score 3",
+      "name": "3rd",
       "sprite": {
         "Colour": {
           "r": 0.0,
@@ -226,7 +288,7 @@
         }
       },
       "position": {
-        "x": 1200.0,
+        "x": 1290.0,
         "y": 650.0
       },
       "size": {
@@ -252,7 +314,7 @@
           "actions": [
             {
               "DrawText": {
-                "text": "3rd: {HighScore-3}",
+                "text": "3rd: {3rd}",
                 "font": "Lato-Bold",
                 "colour": {
                   "r": 1.0,
@@ -261,7 +323,38 @@
                   "a": 1.0
                 },
                 "resize": "MatchText",
-                "justify": "Left"
+                "justify": "Centre"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            },
+            {
+              "CheckProperty": {
+                "name": "3rd",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "DrawText": {
+                "text": "3rd: {3rd}",
+                "font": "Lato-Bold",
+                "colour": {
+                  "r": 0.8862745,
+                  "g": 0.90588236,
+                  "b": 0.0,
+                  "a": 1.0
+                },
+                "resize": "MatchText",
+                "justify": "Centre"
               }
             }
           ]

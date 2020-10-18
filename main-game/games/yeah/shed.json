@@ -112,7 +112,11 @@
                 }
               }
             },
-            "Lose"
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
           ]
         },
         {
@@ -200,6 +204,21 @@
               }
             }
           ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Man",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose"
+          ]
         }
       ]
     },
@@ -283,18 +302,18 @@
   ],
   "asset_files": {
     "images": {
-      "sliding-crop": "sliding-crop.png",
-      "shed": "shed.webp"
+      "shed": "shed.webp",
+      "sliding-crop": "sliding-crop.png"
     },
     "audio": {
       "robot-bye-bye": "robot-bye-bye.ogg",
       "you-won-robot": "you-won-robot-crop.ogg"
     },
-    "fonts": {},
     "music": {
       "filename": "lullaby-crop.ogg",
       "looped": false
-    }
+    },
+    "fonts": {}
   },
   "length": {
     "Seconds": 4.8

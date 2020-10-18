@@ -143,10 +143,10 @@ pub trait SerialiseObjectList {
 impl SerialiseObjectList for Vec<SerialiseObject> {
     fn get_obj(&self, name: &str) -> WeeResult<&SerialiseObject> {
         let index = self.iter().position(|o| o.name == name);
-        match index {
-            Some(index) => Ok(self.get(index).unwrap()),
-            None => Err("Cannot find object".into()), // TODO: Better error message
-        }
+        index
+            .map(|index| self.get(index))
+            .flatten()
+            .ok_or_else(|| format!("Couldn't find object with name {}", name).into())
     }
 
     fn sprites(&self) -> HashMap<&str, &Sprite> {
@@ -988,9 +988,7 @@ pub enum Action {
     Random {
         random_actions: Vec<Action>,
     },
-    EndEarly {
-        time_to_end: u32,
-    },
+    EndEarly,
 }
 
 impl fmt::Display for Action {
@@ -1023,7 +1021,6 @@ impl fmt::Display for Action {
                 resize,
                 justify,
             } => {
-                // TODO: Use justify
                 let change_size = if let TextResize::MatchText = resize {
                     " changing this object's size to match the text size"
                 } else {
@@ -1123,9 +1120,7 @@ impl fmt::Display for Action {
                 LayerSetter::Decrease => write!(f, "Decrease this object's layer by 1"),
             },
             Action::Random { .. } => write!(f, "Choose a random action"),
-            Action::EndEarly { time_to_end } => {
-                write!(f, "End the game after {} frames", time_to_end)
-            }
+            Action::EndEarly => write!(f, "End the game"),
         }
     }
 }
@@ -1938,6 +1933,7 @@ impl<'a, 'b> LoadedGame<'a, 'b> {
             settings,
             difficulty,
             initial_mouse_button_held: true,
+            end_early: false,
         }
     }
 }
@@ -1977,13 +1973,14 @@ pub fn play_sounds(
     sound_assets: &Sounds,
     playback_rate: f32,
     volume: f32,
-) {
+) -> WeeResult<()> {
     unsafe {
         for name in new_sounds {
-            // TODO: Don't panic if sound not found
-            let mut sound = Sound::with_buffer(
-                &*(&sound_assets[name] as *const SfBox<SoundBuffer>) as &SoundBuffer,
-            );
+            let asset = sound_assets
+                .get(name)
+                .ok_or_else(|| format!("Couldn't find sound with name: {}", name))?;
+            let mut sound =
+                Sound::with_buffer(&*(asset as *const SfBox<SoundBuffer>) as &SoundBuffer);
             sound.set_volume(volume);
             sound.set_pitch(playback_rate);
             sound.play();
@@ -1999,6 +1996,8 @@ pub fn play_sounds(
     }
 
     remove_stopped_sounds(playing_sounds);
+
+    Ok(())
 }
 
 pub struct CompletedGame<'a, 'b> {
@@ -2010,12 +2009,6 @@ pub struct CompletedGame<'a, 'b> {
 pub struct ErrorGame<'a, 'b> {
     pub assets: Assets<'a, 'b>,
     pub error: Box<dyn Error + Send + Sync>,
-}
-
-#[derive(Debug, Copy, Clone, PartialEq)]
-enum EndEarly {
-    EndIn { frames: u32 },
-    Continue,
 }
 
 pub enum Completion {
@@ -2039,6 +2032,7 @@ pub struct Game<'a, 'b, 'c> {
     settings: GameSettings,
     difficulty: u32,
     initial_mouse_button_held: bool,
+    end_early: bool,
 }
 
 impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
@@ -2074,7 +2068,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
         renderer: &mut Renderer,
         events: &mut EventState,
     ) -> WeeResult<CompletedGame<'a, 'b>> {
-        let completion = self.preview(renderer, events)?;
+        let completion = self.run(renderer, events)?;
         let has_been_won = self.has_been_won();
 
         Ok(CompletedGame {
@@ -2084,14 +2078,16 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
         })
     }
 
-    // TODO: Remove duplicate code
     pub fn preview(
         &mut self,
         renderer: &mut Renderer,
         events: &mut EventState,
     ) -> WeeResult<Completion> {
+        self.run(renderer, events)
+    }
+
+    fn run(&mut self, renderer: &mut Renderer, events: &mut EventState) -> WeeResult<Completion> {
         let mut escape = ButtonState::Up;
-        let mut end_early = EndEarly::Continue; // TODO: Put in self
         self.initial_mouse_button_held = events.pump.mouse_state().left();
         'game_running: loop {
             if self.is_finished() {
@@ -2143,16 +2139,13 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                 }
                 renderer.adjust_fullscreen(&events.pump, &events.mouse.utils)?;
 
-                if let EndEarly::EndIn { frames } = &mut end_early {
-                    if *frames == 0 {
-                        self.assets.music.stop();
+                if self.end_early {
+                    self.assets.music.stop();
 
-                        return Ok(Completion::Finished);
-                    }
-                    *frames -= 1;
+                    return Ok(Completion::Finished);
                 }
 
-                self.update_frame(events, renderer.window.size(), &mut end_early)?;
+                self.update_frame(events, renderer.window.size())?;
                 if self.settings.render_each_frame {
                     self.render_frame(renderer, events.mouse.position)?;
                 }
@@ -2179,12 +2172,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
         }
     }
 
-    fn update_frame(
-        &mut self,
-        events: &mut EventState,
-        window_size: (u32, u32),
-        end_early: &mut EndEarly,
-    ) -> WeeResult<()> {
+    fn update_frame(&mut self, events: &mut EventState, window_size: (u32, u32)) -> WeeResult<()> {
         if sdlglue::has_quit(&mut events.pump) {
             process::exit(0);
         }
@@ -2193,16 +2181,25 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
             .update(events, window_size, &mut self.initial_mouse_button_held);
 
         let played_sounds = if let Effect::Freeze = self.effect {
+            let keys: Vec<String> = self.objects.keys().cloned().collect();
+            for name in keys.iter() {
+                self.objects[name].update_timer();
+
+                let actions = self.check_triggers(name)?;
+
+                self.apply_frozen_actions(&actions)?;
+            }
+
             Vec::new()
         } else {
-            self.update_objects(end_early)?
+            self.update_objects()?
         };
 
         self.update_status();
 
         self.frames.ran += 1;
 
-        self.play_sounds(&played_sounds, self.settings.volume);
+        self.play_sounds(&played_sounds, self.settings.volume)?;
 
         Ok(())
     }
@@ -2228,14 +2225,14 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
         Ok(())
     }
 
-    fn play_sounds(&mut self, played_sounds: &[String], volume: f32) {
+    fn play_sounds(&mut self, played_sounds: &[String], volume: f32) -> WeeResult<()> {
         play_sounds(
             &mut self.playing_sounds,
             played_sounds,
             &self.assets.sounds,
             self.playback_rate,
             volume,
-        );
+        )
     }
 
     fn update_status(&mut self) {
@@ -2297,7 +2294,6 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                 let is_over = match over {
                     MouseOver::Object { name: other_name } => {
                         let other_obj = self.objects.get_obj(other_name)?;
-                        // TODO: Use 1x1 AABB instead?
                         other_obj
                             .poly()
                             .gjk(&c2::Circle::new(c2v(self.mouse.position), 1.0))
@@ -2361,22 +2357,9 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
         name: &str,
         actions: &[Action],
         played_sounds: &mut Vec<String>,
-        end_early: &mut EndEarly,
     ) -> WeeResult<()> {
         for action in actions {
-            let status = self.apply_action(name, action, played_sounds)?;
-            if let EndEarly::EndIn { frames } = status {
-                if let EndEarly::EndIn {
-                    frames: current_frames,
-                } = end_early
-                {
-                    if frames < *current_frames {
-                        *end_early = status;
-                    }
-                } else {
-                    *end_early = status;
-                }
-            }
+            self.apply_action(name, action, played_sounds)?;
         }
         Ok(())
     }
@@ -2386,7 +2369,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
         name: &str,
         action: &Action,
         played_sounds: &mut Vec<String>,
-    ) -> WeeResult<EndEarly> {
+    ) -> WeeResult<()> {
         let try_to_set_status = |status: &mut GameStatus, opposite, next_frame| {
             *status = match status.current {
                 WinStatus::NotYetWon | WinStatus::NotYetLost => {
@@ -2644,19 +2627,17 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                     return self.apply_action(name, &action, played_sounds);
                 }
             }
-            Action::EndEarly { time_to_end } => {
-                return Ok(EndEarly::EndIn {
-                    frames: *time_to_end,
-                });
+            Action::EndEarly => {
+                self.end_early = true;
             }
         };
-        Ok(EndEarly::Continue)
+
+        Ok(())
     }
 
     fn move_object(&mut self, name: &str) -> WeeResult<()> {
         let mut clamps = Vec::new();
         for mut motion in self.objects[name].queued_motion.clone().into_iter() {
-            // TODO: Is this the best way to do this?
             if let Motion::JumpTo(JumpLocation::ClampPosition { .. }) = &motion {
             } else {
                 for area in clamps {
@@ -3033,7 +3014,6 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                         } else if x < area.min.x {
                             direction = BounceDirection::Right;
                         }
-                        // TODO: Untested
                         if x >= area.min.x
                             && x <= area.max.x
                             && self.objects[name].size.width >= area.width()
@@ -3162,7 +3142,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
         Ok(active_motion)
     }
 
-    fn update_objects(&mut self, end_early: &mut EndEarly) -> WeeResult<Vec<String>> {
+    fn update_objects(&mut self) -> WeeResult<Vec<String>> {
         let mut played_sounds = Vec::new();
 
         let keys: Vec<String> = self.objects.keys().cloned().collect();
@@ -3173,7 +3153,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
 
             let actions = self.check_triggers(name)?;
 
-            self.apply_actions(name, &actions, &mut played_sounds, end_early)?;
+            self.apply_actions(name, &actions, &mut played_sounds)?;
 
             self.objects[name].update_animation();
 
@@ -3183,6 +3163,15 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
         }
 
         Ok(played_sounds)
+    }
+
+    fn apply_frozen_actions(&mut self, actions: &[Action]) -> WeeResult<()> {
+        for action in actions {
+            if let Action::EndEarly = action {
+                self.end_early = true;
+            }
+        }
+        Ok(())
     }
 
     pub fn has_been_won(&self) -> bool {
@@ -3198,7 +3187,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
         events: &mut EventState,
     ) -> WeeResult<()> {
         self.frames.start_time = Instant::now();
-        self.update_frame(events, renderer.window.size(), &mut EndEarly::Continue)?;
+        self.update_frame(events, renderer.window.size())?;
         self.render_frame(renderer, events.mouse.position)?;
         self.sleep();
 

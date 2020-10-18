@@ -1,5 +1,5 @@
 [workspace]
 
 members = [
-    "weegames", "wee-common", "wee", "sdlglue", "editor"
+    "main-game", "wee-common", "wee", "sdlglue", "editor"
 ]

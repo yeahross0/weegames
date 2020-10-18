@@ -126,7 +126,7 @@
       ]
     },
     {
-      "name": "Score 1",
+      "name": "1st",
       "sprite": {
         "Colour": {
           "r": 0.0,
@@ -161,12 +161,20 @@
                   "time": 150
                 }
               }
+            },
+            {
+              "CheckProperty": {
+                "name": "1st",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
             }
           ],
           "actions": [
             {
               "DrawText": {
-                "text": "1st: {HighScore-1}",
+                "text": "1st: {1st}",
                 "font": "LiberationMono-Regular",
                 "colour": {
                   "r": 1.0,
@@ -179,11 +187,46 @@
               }
             }
           ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 150
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "1st",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "DrawText": {
+                "text": "1st: {1st}",
+                "font": "LiberationMono-Regular",
+                "colour": {
+                  "r": 0.8862745,
+                  "g": 0.90588236,
+                  "b": 0.0,
+                  "a": 1.0
+                },
+                "resize": "MatchText",
+                "justify": "Centre"
+              }
+            }
+          ]
         }
       ]
     },
     {
-      "name": "Score 2",
+      "name": "2nd",
       "sprite": {
         "Colour": {
           "r": 0.0,
@@ -218,12 +261,20 @@
                   "time": 150
                 }
               }
+            },
+            {
+              "CheckProperty": {
+                "name": "2nd",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
             }
           ],
           "actions": [
             {
               "DrawText": {
-                "text": "2nd: {HighScore-2}",
+                "text": "2nd: {2nd}",
                 "font": "LiberationMono-Regular",
                 "colour": {
                   "r": 1.0,
@@ -236,11 +287,46 @@
               }
             }
           ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 150
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "2nd",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "DrawText": {
+                "text": "2nd: {2nd}",
+                "font": "LiberationMono-Regular",
+                "colour": {
+                  "r": 0.8862745,
+                  "g": 0.9254902,
+                  "b": 0.0,
+                  "a": 1.0
+                },
+                "resize": "MatchText",
+                "justify": "Centre"
+              }
+            }
+          ]
         }
       ]
     },
     {
-      "name": "Score 3",
+      "name": "3rd",
       "sprite": {
         "Colour": {
           "r": 0.0,
@@ -275,17 +361,60 @@
                   "time": 150
                 }
               }
+            },
+            {
+              "CheckProperty": {
+                "name": "3rd",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
             }
           ],
           "actions": [
             {
               "DrawText": {
-                "text": "3rd: {HighScore-3}",
+                "text": "3rd: {3rd}",
                 "font": "LiberationMono-Regular",
                 "colour": {
                   "r": 1.0,
                   "g": 1.0,
                   "b": 1.0,
+                  "a": 1.0
+                },
+                "resize": "MatchText",
+                "justify": "Centre"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 150
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "3rd",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "DrawText": {
+                "text": "3rd: {3rd}",
+                "font": "LiberationMono-Regular",
+                "colour": {
+                  "r": 0.8862745,
+                  "g": 0.90588236,
+                  "b": 0.0,
                   "a": 1.0
                 },
                 "resize": "MatchText",
@@ -322,8 +451,8 @@
       "bloody-hands": "bloody-hands.webp"
     },
     "audio": {
-      "squash-crop": "squash-crop.ogg",
-      "swat-crop": "swat-crop.ogg"
+      "swat-crop": "swat-crop.ogg",
+      "squash-crop": "squash-crop.ogg"
     },
     "music": null,
     "fonts": {

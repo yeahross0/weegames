@@ -1,7 +1,3 @@
-// TODO: Tidy up initial_mouse_button_held thing
-// TODO: Have black borders to keep game 16:9
-// TODO: Stop all sounds action?
-
 //#![windows_subsystem = "windows"]
 
 #[macro_use]
@@ -131,7 +127,6 @@ impl Progress {
     }
 
     fn update(&mut self, has_won: bool, playback_increase: f32, playback_max: f32) {
-        // TODO: Should score still be incremented if you don't win?
         if has_won {
             self.score += 1;
             if self.score % 5 == 0 {
@@ -221,7 +216,6 @@ impl GamesList {
         self.bosses.choose(&mut thread_rng()).cloned()
     }
 
-    // TODO: Tidy up
     fn choose(&mut self) -> String {
         assert!(!self.games.is_empty());
         if self.next.is_empty() {
@@ -238,11 +232,6 @@ impl GamesList {
         log::debug!("{:?}", self.next);
 
         self.next.remove(0)
-
-        /*self.games
-        .choose(&mut thread_rng())
-        .expect("Games list is empty")
-        .to_string()*/
     }
 }
 
@@ -323,6 +312,9 @@ fn run_main_loop<'a, 'b>(
                 if wee::is_switched_on(&game.objects, "Edit") {
                     game_mode = GameMode::Edit;
                     break 'menu_running;
+                }
+                if wee::is_switched_on(&game.objects, "Quit") {
+                    process::exit(0);
                 }
             }
         }
@@ -429,6 +421,7 @@ fn run_main_loop<'a, 'b>(
                     set_switch("2", progress.lives >= 2);
                     set_switch("3", progress.lives >= 3);
                     set_switch("4", progress.lives >= 4);
+                    set_switch("Boss", games_list.is_boss_game);
 
                     object.replace_text(&text_replacements);
                 }
@@ -470,44 +463,58 @@ fn run_main_loop<'a, 'b>(
             progress,
             directory,
         } => {
-            let high_scores: (i32, i32, i32) = {
-                let path = Path::new(&directory).join("high-scores.yaml");
+            let path = Path::new(&directory).join("high-scores.yaml");
+            let mut high_scores: (i32, i32, i32) = {
                 log::info!("path: {:?}", path);
                 let yaml = fs::read_to_string(&path);
-                let mut high_scores = if let Ok(yaml) = yaml {
+                if let Ok(yaml) = yaml {
                     yaml_from_str(&yaml)?
                 } else {
                     (0, 0, 0)
-                };
-
-                if progress.score >= high_scores.0 {
-                    high_scores.2 = high_scores.1;
-                    high_scores.1 = high_scores.0;
-                    high_scores.0 = progress.score;
-                } else if progress.score >= high_scores.1 {
-                    high_scores.2 = high_scores.1;
-                    high_scores.1 = progress.score;
-                } else if progress.score >= high_scores.2 {
-                    high_scores.2 = progress.score;
                 }
+            };
 
+            let high_score_position = if progress.score >= high_scores.0 {
+                high_scores.2 = high_scores.1;
+                high_scores.1 = high_scores.0;
+                high_scores.0 = progress.score;
+                Some(1)
+            } else if progress.score >= high_scores.1 {
+                high_scores.2 = high_scores.1;
+                high_scores.1 = progress.score;
+                Some(2)
+            } else if progress.score >= high_scores.2 {
+                high_scores.2 = progress.score;
+                Some(3)
+            } else {
+                None
+            };
+
+            {
                 let s = serde_yaml::to_string(&high_scores)?;
                 std::fs::write(&path, s).unwrap_or_else(|e| log::error!("{}", e));
-
-                high_scores
-            };
+            }
 
             let mut loaded_game = mode_game(&directory, "game-over.json")?;
 
             let text_replacements = vec![
                 ("{Score}", progress.score.to_string()),
                 ("{Lives}", progress.lives.to_string()),
-                ("{HighScore-1}", high_scores.0.to_string()),
-                ("{HighScore-2}", high_scores.1.to_string()),
-                ("{HighScore-3}", high_scores.2.to_string()),
+                ("{1st}", high_scores.0.to_string()),
+                ("{2nd}", high_scores.1.to_string()),
+                ("{3rd}", high_scores.2.to_string()),
             ];
             for object in loaded_game.objects.iter_mut() {
                 object.replace_text(&text_replacements);
+
+                let mut set_switch = |name, pred| {
+                    if object.name == name {
+                        object.switch = if pred { Switch::On } else { Switch::Off };
+                    }
+                };
+                set_switch("1st", high_score_position == Some(1));
+                set_switch("2nd", high_score_position == Some(2));
+                set_switch("3rd", high_score_position == Some(3));
             }
             loaded_game
                 .start(DEFAULT_GAME_SPEED, DEFAULT_DIFFICULTY, config.settings())
@@ -653,7 +660,8 @@ impl<'a, 'b> MainGame<'a, 'b> {
             mouse: MouseState::new(config.sensitivity, sdl_context.mouse()),
         };
 
-        let mouse_texture = sdlglue::Texture::from_file("games/system/images/mouse.png")?;
+        let mouse_texture =
+            sdlglue::Texture::from_file_with_filtering("games/system/images/mouse.png")?;
 
         let renderer = Renderer::new(window, mouse_texture);
 
@@ -689,7 +697,6 @@ impl<'a, 'b> MainGame<'a, 'b> {
 fn main() -> WeeResult<()> {
     init_logger();
 
-    // TODO: Have a default config
     let config = Config::from_file("config.yaml")
         .map_err(|error| format!("Error loading configuration from config.yaml.\n{}", error))
         .show_error()?;
