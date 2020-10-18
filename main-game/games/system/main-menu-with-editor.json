@@ -228,7 +228,7 @@
       ]
     },
     {
-      "name": "Quit",
+      "name": "Edit",
       "sprite": {
         "Image": {
           "name": "wasp-edit"
@@ -286,7 +286,7 @@
                 "Mouse": {
                   "over": {
                     "Object": {
-                      "name": "Quit"
+                      "name": "Edit"
                     }
                   },
                   "interaction": {
@@ -320,7 +320,7 @@
           "triggers": [
             {
               "CheckProperty": {
-                "name": "Quit",
+                "name": "Edit",
                 "check": "Timer"
               }
             }
@@ -358,7 +358,7 @@
   "asset_files": {
     "images": {
       "fly-swat": "fly-swat.webp",
-      "wasp-edit": "wasp-blue-quit.webp",
+      "wasp-edit": "wasp-edit.webp",
       "fly-swat-up": "fly-swat-up.webp",
       "wasp-play": "wasp-play.webp",
       "bench": "bench.jpg"
