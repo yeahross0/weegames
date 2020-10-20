@@ -199,14 +199,12 @@ impl GamesList {
                 next: Vec::new(),
                 directory: if directory == "games" {
                     "games/system/".to_string()
+                } else if directory.ends_with('/') {
+                    directory.to_string()
                 } else {
-                    if directory.ends_with("/") {
-                        directory.to_string()
-                    } else {
-                        let mut directory = directory.to_string();
-                        directory.push_str("/");
-                        directory
-                    }
+                    let mut directory = directory.to_string();
+                    directory.push_str("/");
+                    directory
                 },
             })
         }
@@ -280,7 +278,7 @@ fn run_main_loop<'a, 'b>(
     };
     let mode_path = |directory: &str, filename| {
         let mut path = directory.to_string();
-        if !path.ends_with("/") {
+        if !path.ends_with('/') {
             path.push_str("/");
         };
         path.push_str(filename);
@@ -332,7 +330,7 @@ fn run_main_loop<'a, 'b>(
                         if key.starts_with(pattern) {
                             let directory = key[pattern.len()..].to_string();
                             game_mode = GameMode::Prelude {
-                                directory: Some(directory.to_string()),
+                                directory: Some(directory),
                             };
                             break 'choose_mode_running;
                         }

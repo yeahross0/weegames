@@ -65,8 +65,8 @@ impl Default for SerialiseObject {
 }
 
 impl SerialiseObject {
-    pub fn replace_text(&mut self, text_replacements: &Vec<(&str, String)>) {
-        fn replace_text_in_action(action: &mut Action, text_replacements: &Vec<(&str, String)>) {
+    pub fn replace_text(&mut self, text_replacements: &[(&str, String)]) {
+        fn replace_text_in_action(action: &mut Action, text_replacements: &[(&str, String)]) {
             if let Action::DrawText { text, .. } = action {
                 for (before, after) in text_replacements {
                     *text = text.replace(before, &after);
@@ -1167,9 +1167,9 @@ pub enum AnimationStatus {
 
 impl AnimationStatus {
     pub fn start(
-        animation_type: &AnimationType,
-        sprites: &Vec<Sprite>,
-        speed: &Speed,
+        animation_type: AnimationType,
+        sprites: &[Sprite],
+        speed: Speed,
     ) -> AnimationStatus {
         let should_loop = match animation_type {
             AnimationType::Loop => true,
@@ -1177,9 +1177,9 @@ impl AnimationStatus {
         };
         AnimationStatus::Animating(Animation {
             should_loop,
-            sprites: sprites.clone(),
+            sprites: sprites.to_vec(),
             index: 0,
-            speed: *speed,
+            speed,
             time_to_next_change: speed.to_animation_time(),
         })
     }
@@ -2416,7 +2416,7 @@ impl<'a, 'b, 'c> Game<'a, 'b, 'c> {
                 speed,
             } => {
                 self.objects[name].animation =
-                    AnimationStatus::start(animation_type, sprites, speed);
+                    AnimationStatus::start(*animation_type, sprites, *speed);
 
                 if let Some(sprite) = sprites.get(0).cloned() {
                     self.objects[name].sprite = sprite;

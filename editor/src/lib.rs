@@ -1676,7 +1676,7 @@ fn edit_action<'a>(
                     should_loop:
                 })*/
 
-                animation_editor.preview = AnimationStatus::start(animation_type, sprites, speed);
+                animation_editor.preview = AnimationStatus::start(*animation_type, sprites, *speed);
                 if let Some(sprite) = sprites.get(0).cloned() {
                     animation_editor.displayed_sprite = Some(sprite);
                 }
@@ -1833,6 +1833,7 @@ fn edit_objects_list(
                             .resize_buffer(true)
                             .enter_returns_true(true)
                             .build()
+                            || ui.is_item_deactivated()
                         {
                             object_operation = ObjectOperation::Rename {
                                 index: rename_details.index,
@@ -1841,14 +1842,6 @@ fn edit_objects_list(
                             };
 
                             // TODO: try selected_object instead
-                            object_state.rename_object = None;
-                        } else if ui.is_item_deactivated() {
-                            object_operation = ObjectOperation::Rename {
-                                index: rename_details.index,
-                                from: rename_details.name.clone(),
-                                to: rename_details.buffer.to_string(),
-                            };
-
                             object_state.rename_object = None;
                         }
                     }
@@ -4446,11 +4439,11 @@ fn choose_target(target: &mut Target, ui: &imgui::Ui, object_names: &Vec<&str>) 
 
 impl Choose for TargetType {
     fn choose(&mut self, ui: &imgui::Ui) -> bool {
-        let mut modified = false;
+        let mut modified =
         if ui.radio_button_bool(im_str!("Follow"), *self == TargetType::Follow) {
             *self = TargetType::Follow;
-            modified = true;
-        }
+            true
+        } else { false };
         if ui.radio_button_bool(
             im_str!("Stop When Reached"),
             *self == TargetType::StopWhenReached,
