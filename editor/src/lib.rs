@@ -4,7 +4,6 @@
 // TODO: Flip is confusing
 // TODO: Fix issues caused by short-circuiting on ||
 // TODO: Error in find_object when doesn't exist
-// TODO: If check sprite 99500 and check switch all cherries -> set sprite 99600
 // TODO: Sort sprite keys alphabetically in combo?
 // TODO: Set if music is looped
 
@@ -37,6 +36,53 @@ pub const SMALL_BUTTON: [f32; 2] = [100.0, 50.0];
 pub const NORMAL_BUTTON: [f32; 2] = [200.0, 50.0];
 const WINDOW_SIZE: [f32; 2] = [500.0, 600.0];
 
+struct Editor {
+    filename: Option<String>,
+    object_state: ObjectState,
+    instruction_state: InstructionState,
+    animation_editor: AnimationEditor,
+    draw_tasks: Vec<DrawTask>,
+}
+
+impl Editor {
+    fn reset(&mut self) {
+        self.object_state.index = None;
+        self.instruction_state = InstructionState::default();
+    }
+}
+
+impl Default for Editor {
+    fn default() -> Editor {
+        let filename: Option<String> = None;
+
+        let instruction_state = InstructionState {
+            mode: InstructionMode::View,
+            index: None,
+            focus: InstructionFocus::None,
+        };
+        let object_state = ObjectState {
+            index: None,
+            rename_object: None,
+            new_object: SerialiseObject::default(),
+            new_name_buffer: ImString::from("".to_string()),
+        };
+        let animation_editor = AnimationEditor {
+            new_sprite: Sprite::Colour(Colour::black()),
+            index: 0,
+            preview: AnimationStatus::None,
+            displayed_sprite: None,
+        };
+
+        Editor {
+            filename,
+            object_state,
+            instruction_state,
+            animation_editor,
+            draw_tasks: Vec::new(),
+        }
+    }
+}
+
 pub fn run<'a, 'b>(
     renderer: &mut Renderer,
     events: &mut EventState,
@@ -46,7 +92,6 @@ pub fn run<'a, 'b>(
 ) -> WeeResult<()> {
     let mut game = GameData::default();
     let mut assets = Assets::default();
-    let mut filename: Option<String> = None;
 
     let mut windows = Windows {
         main: true,
@@ -58,28 +103,11 @@ pub fn run<'a, 'b>(
         demo: false,
     };
 
-    let mut instruction_state = InstructionState {
-        mode: InstructionMode::View,
-        index: None,
-        focus: InstructionFocus::None,
-    };
     let mut preview = Preview {
         playback_rate: 1.0,
         difficulty_level: 1,
         last_win_status: None,
         settings,
-    };
-    let mut object_state = ObjectState {
-        index: None,
-        rename_object: None,
-        new_object: SerialiseObject::default(),
-        new_name_buffer: ImString::from("".to_string()),
-    };
-    let mut animation_editor = AnimationEditor {
-        new_sprite: Sprite::Colour(Colour::black()),
-        index: 0,
-        preview: AnimationStatus::None,
-        displayed_sprite: None,
     };
 
     let mut last_frame = Instant::now();
@@ -94,6 +122,8 @@ pub fn run<'a, 'b>(
     let mut playing_sounds = Vec::new();
     let mut new_fonts = Vec::new();
     let mut font_state = 128;
+
+    let mut editor = Editor::default();
 
     'editor_running: loop {
         let mut file_task = FileTask::None;
@@ -133,15 +163,7 @@ pub fn run<'a, 'b>(
 
         {
             let task = main_menu_bar_show(
-                /*&mut game,
-                &mut assets,
-                &mut filename,
-                &mut object_state.index,
-                &mut instruction_state,*/
                 ui,
-                /*event_pump,
-                &font_system.ttf_context,
-                &mut editor_status,*/
                 &mut show_collision_areas,
                 &mut show_origins,
                 &mut windows,
@@ -151,151 +173,17 @@ pub fn run<'a, 'b>(
             }
         }
 
-        let has_unsaved_changes = |game: &GameData, filename: &Option<String>| {
-            if let Some(game_filename) = filename {
-                match GameData::load(game_filename) {
-                    Ok(old_game) => *game != old_game,
-                    Err(_) => true,
-                }
-            } else {
-                *game != GameData::default()
-            }
-        };
+        file_task.do_task(
+            ui,
+            &mut game,
+            &mut editor,
+            &mut assets,
+            events,
+            font_system.ttf_context,
+        )?;
 
-        match file_task {
-            FileTask::New => {
-                if has_unsaved_changes(&game, &filename) {
-                    ui.open_popup(im_str!("New: Unsaved Changes"));
-                }
-            }
-            FileTask::Open => {
-                if has_unsaved_changes(&game, &filename) {
-                    ui.open_popup(im_str!("Open: Unsaved Changes"));
-                }
-            }
-            FileTask::ReturnToMenu => {
-                if has_unsaved_changes(&game, &filename) {
-                    ui.open_popup(im_str!("Return to Menu: Unsaved Changes"));
-                }
-            }
-            FileTask::Exit => {
-                if has_unsaved_changes(&game, &filename) {
-                    ui.open_popup(im_str!("Exit: Unsaved Changes"));
-                }
-            }
-            _ => {}
-        }
-
-        ui.popup_modal(im_str!("New: Unsaved Changes")).build(|| {
-            file_task = FileTask::None;
-            ui.text("Warning: If you make a new game you will lose your current work.");
-            if ui.button(im_str!("OK"), NORMAL_BUTTON) {
-                file_task = FileTask::New;
-                ui.close_current_popup();
-            }
-            ui.same_line(0.0);
-            if ui.button(im_str!("Cancel"), NORMAL_BUTTON) {
-                ui.close_current_popup();
-            }
-        });
-
-        ui.popup_modal(im_str!("Open: Unsaved Changes")).build(|| {
-            file_task = FileTask::None;
-            ui.text("Warning: If you open a new game you will lose your current work.");
-            if ui.button(im_str!("OK"), NORMAL_BUTTON) {
-                file_task = FileTask::Open;
-                ui.close_current_popup();
-            }
-            ui.same_line(0.0);
-            if ui.button(im_str!("Cancel"), NORMAL_BUTTON) {
-                ui.close_current_popup();
-            }
-        });
-
-        ui.popup_modal(im_str!("Return to Menu: Unsaved Changes"))
-            .build(|| {
-                file_task = FileTask::None;
-                ui.text("Warning: If you return to the menu you will lose your current work.");
-                if ui.button(im_str!("OK"), NORMAL_BUTTON) {
-                    file_task = FileTask::ReturnToMenu;
-                    ui.close_current_popup();
-                }
-                ui.same_line(0.0);
-                if ui.button(im_str!("Cancel"), NORMAL_BUTTON) {
-                    ui.close_current_popup();
-                }
-            });
-
-        ui.popup_modal(im_str!("Exit: Unsaved Changes")).build(|| {
-            file_task = FileTask::None;
-            ui.text("Warning: If you exit you will lose your current work.");
-            if ui.button(im_str!("OK"), NORMAL_BUTTON) {
-                file_task = FileTask::Exit;
-                ui.close_current_popup();
-            }
-            ui.same_line(0.0);
-            if ui.button(im_str!("Cancel"), NORMAL_BUTTON) {
-                ui.close_current_popup();
-            }
-        });
-
-        match file_task {
-            FileTask::New => {
-                game = GameData::default();
-                assets = Assets::default();
-                filename = None;
-                object_state.index = None;
-                instruction_state = InstructionState::default();
-            }
-            FileTask::Open => {
-                let response = nfd::open_file_dialog(None, Path::new("games").to_str());
-                if let Ok(Response::Okay(file_path)) = response {
-                    for _ in events.pump.poll_iter() {}
-                    log::info!("File path = {:?}", file_path);
-                    let new_data = GameData::load(&file_path);
-                    match new_data {
-                        Ok(new_data) => {
-                            game = new_data;
-                            assets = Assets::load(
-                                &game.asset_files,
-                                &file_path,
-                                font_system.ttf_context,
-                            )?;
-                            filename = Some(file_path);
-                            object_state.index = None;
-                            instruction_state = InstructionState::default();
-                        }
-                        Err(error) => {
-                            // TODO: More than just logging here. Show error
-                            log::error!("Couldn't open file {}", file_path);
-                            log::error!("{}", error);
-                        }
-                    }
-                } else {
-                    log::error!("Error opening file dialog");
-                }
-            }
-            FileTask::Save => match &filename {
-                Some(filename) => {
-                    let s = serde_json::to_string_pretty(&game);
-                    match s {
-                        Ok(s) => {
-                            std::fs::write(&filename, s).unwrap_or_else(|e| log::error!("{}", e));
-                            println!("SAVED! {}", filename);
-                        }
-                        Err(error) => {
-                            log::error!("{}", error);
-                        }
-                    }
-                }
-                None => save_game_file_as(&game, &mut filename),
-            },
-            FileTask::SaveAs => {
-                save_game_file_as(&game, &mut filename);
-            }
-            FileTask::ReturnToMenu => break 'editor_running,
-            FileTask::Exit => process::exit(0),
-            FileTask::None => {}
+        if let FileTask::ReturnToMenu = file_task {
+            break 'editor_running;
         }
 
         let play_game = main_window_show(ui, &mut windows.main, &mut game, &mut preview);
@@ -329,13 +217,9 @@ pub fn run<'a, 'b>(
         objects_window_show(
             ui,
             &mut windows.objects,
+            &mut editor,
             &mut game,
             &mut assets,
-            &filename,
-            &mut object_state,
-            &mut instruction_state,
-            &mut animation_editor,
-            &mut draw_tasks,
             &font_system.ttf_context,
         );
 
@@ -377,7 +261,7 @@ pub fn run<'a, 'b>(
                         Ok(())
                     }
                     if ui.button(im_str!("Set Music"), NORMAL_BUTTON) {
-                        load_music_file_dialog(&mut game, &mut assets.music, &filename)
+                        load_music_file_dialog(&mut game, &mut assets.music, &editor.filename)
                             .unwrap_or_else(|error| log::error!("{}", error));
                     }
 
@@ -404,7 +288,7 @@ pub fn run<'a, 'b>(
                 .opened(&mut windows.sounds)
                 .build(ui, || {
                     if ui.button(im_str!("Add sounds"), NORMAL_BUTTON) {
-                        let path = assets_path(&filename, "sounds");
+                        let path = assets_path(&editor.filename, "sounds");
                         choose_sound_from_files(
                             &mut game.asset_files.audio,
                             &mut assets.sounds,
@@ -422,7 +306,7 @@ pub fn run<'a, 'b>(
 
         play_sounds(
             &mut playing_sounds,
-            &mut new_sounds,
+            &new_sounds,
             &assets.sounds,
             1.0,
             settings.volume,
@@ -460,15 +344,10 @@ pub fn run<'a, 'b>(
                                 ui,
                                 &mut game.asset_files.images,
                                 &mut assets.images,
-                                &filename,
+                                &editor.filename,
                             );
 
-                            let input_float =
-                                |label, value: &mut f32| ui.input_float(label, value).build();
-                            input_float(im_str!("Min X"), &mut game.background[i].area.min.x);
-                            input_float(im_str!("Min Y"), &mut game.background[i].area.min.y);
-                            input_float(im_str!("Max X"), &mut game.background[i].area.max.x);
-                            input_float(im_str!("Max Y"), &mut game.background[i].area.max.y);
+                            game.background[i].area.choose(ui);
                         }
 
                         stack.pop(ui);
@@ -483,7 +362,7 @@ pub fn run<'a, 'b>(
                             ui,
                             &mut game.asset_files.images,
                             &mut assets.images,
-                            &filename,
+                            &editor.filename,
                         );
                         if ui.button(im_str!("Ok"), NORMAL_BUTTON) {
                             game.background.push(BackgroundPart {
@@ -508,7 +387,7 @@ pub fn run<'a, 'b>(
                 .opened(&mut windows.fonts)
                 .build(ui, || {
                     if ui.button(im_str!("Add fonts"), NORMAL_BUTTON) {
-                        let path = assets_path(&filename, "fonts");
+                        let path = assets_path(&editor.filename, "fonts");
                         let font_filenames = open_fonts_dialog(path);
                         new_fonts.extend(font_filenames);
                         /*choose_font_from_files(
@@ -561,7 +440,7 @@ pub fn run<'a, 'b>(
                     for (name, font) in game.asset_files.fonts.iter_mut() {
                         ui.text(name);
                         // TODO: Errors if filename not saved!
-                        let base_path = assets_path(&filename, "fonts");
+                        let base_path = assets_path(&editor.filename, "fonts");
                         let path = base_path.join(&font.filename);
                         // TODO: Min Max this
                         if ui.input_float(im_str!("Size"), &mut font.size).build() {
@@ -658,7 +537,7 @@ trait RenderEditor {
 
     fn draw_editor_objects(
         &self,
-        objects: &Vec<SerialiseObject>,
+        objects: &[SerialiseObject],
         images: &Images,
         location: SceneLocation,
         show_collision_areas: bool,
@@ -710,7 +589,7 @@ impl RenderEditor for Renderer {
 
     fn draw_editor_objects(
         &self,
-        objects: &Vec<SerialiseObject>,
+        objects: &[SerialiseObject],
         images: &Images,
         location: SceneLocation,
         show_collision_areas: bool,
@@ -756,7 +635,7 @@ impl RenderEditor for Renderer {
 
                     if show_collision_areas {
                         // TODO: Tidy up
-                        let game_object = object.clone().to_object();
+                        let game_object = object.clone().into_object();
                         let poly = game_object.poly();
 
                         for i in 0..poly.count() {
@@ -788,7 +667,7 @@ impl RenderEditor for Renderer {
                     }
                     if show_origins {
                         // TODO: Don't clone and use game_object
-                        let game_object = object.clone().to_object();
+                        let game_object = object.clone().into_object();
 
                         let origin = game_object.origin_in_world();
 
@@ -891,21 +770,18 @@ fn main_window_show(
                     }
                 };
 
-                match &mut game.length {
-                    Length::Seconds(seconds) => {
-                        let max_length = if let GameType::BossGame = game.game_type {
-                            60.0
-                        } else {
-                            8.0
-                        };
-                        imgui::Slider::new(
-                            im_str!("Game Length"),
-                            std::ops::RangeInclusive::new(2.0, max_length),
-                        )
-                        .display_format(im_str!("%.1f"))
-                        .build(ui, seconds);
-                    }
-                    _ => {}
+                if let Length::Seconds(seconds) = &mut game.length {
+                    let max_length = if let GameType::BossGame = game.game_type {
+                        60.0
+                    } else {
+                        8.0
+                    };
+                    imgui::Slider::new(
+                        im_str!("Game Length"),
+                        std::ops::RangeInclusive::new(2.0, max_length),
+                    )
+                    .display_format(im_str!("%.1f"))
+                    .build(ui, seconds);
                 }
 
                 let mut intro_text = match game.intro_text.to_owned() {
@@ -937,9 +813,13 @@ fn main_window_show(
                 }
 
                 let mut attr = ImString::from(game.attribution.to_owned());
-                ui.input_text_multiline(im_str!("Attribution"), &mut attr, [300.0, 300.0])
-                    .resize_buffer(true)
-                    .build();
+                ui.input_text_multiline(
+                    im_str!("Attribution"),
+                    &mut attr,
+                    [ui.window_content_region_width() - 100.0, 300.0],
+                )
+                .resize_buffer(true)
+                .build();
                 game.attribution = attr.to_str().to_owned();
             });
     }
@@ -954,16 +834,18 @@ fn assets_path(filename: &Option<String>, assets_directory: &str) -> PathBuf {
     }
 }
 
+struct GameNotes<'a> {
+    object_names: Vec<&'a str>,
+    sprites: HashMap<&'a str, &'a Sprite>,
+    length: Length,
+}
+
 fn objects_window_show<'a>(
     ui: &imgui::Ui,
     show_window: &mut bool,
+    editor: &mut Editor,
     game: &mut GameData,
     assets: &mut Assets<'a, '_>,
-    filename: &Option<String>,
-    object_state: &mut ObjectState,
-    instruction_state: &mut InstructionState,
-    animation_editor: &mut AnimationEditor,
-    draw_tasks: &mut Vec<DrawTask>,
     ttf_context: &'a TtfContext,
 ) {
     if *show_window {
@@ -978,33 +860,34 @@ fn objects_window_show<'a>(
                 edit_objects_list(
                     ui,
                     &mut game.objects,
-                    object_state,
-                    instruction_state,
+                    &mut editor.object_state,
+                    &mut editor.instruction_state,
                     &mut assets.images,
                     &mut game.asset_files.images,
-                    filename,
+                    &editor.filename,
                 );
 
                 ui.same_line(0.0);
 
-                if let Some(index) = object_state.index {
+                if let Some(index) = editor.object_state.index {
                     let mut object = game.objects[index].clone();
                     let object_names: Vec<&str> =
                         game.objects.iter().map(|o| o.name.as_ref()).collect();
                     let sprites = game.objects.sprites();
 
+                    let game_notes = GameNotes {
+                        object_names,
+                        sprites,
+                        length: game.length,
+                    };
+
                     edit_object(
                         ui,
                         &mut object,
+                        editor,
                         assets,
                         &mut game.asset_files,
-                        filename,
-                        instruction_state,
-                        &sprites,
-                        &object_names,
-                        game.length,
-                        animation_editor,
-                        draw_tasks,
+                        &game_notes,
                         ttf_context,
                     );
 
@@ -1017,29 +900,21 @@ fn objects_window_show<'a>(
 fn choose_collision_area(area: &mut AABB, ui: &imgui::Ui) -> bool {
     ui.input_float(im_str!("Collision Min X"), &mut area.min.x)
         .build()
-        || ui
-            .input_float(im_str!("Collision Min Y"), &mut area.min.y)
+        | ui.input_float(im_str!("Collision Min Y"), &mut area.min.y)
             .build()
-        || ui
-            .input_float(im_str!("Collision Max X"), &mut area.max.x)
+        | ui.input_float(im_str!("Collision Max X"), &mut area.max.x)
             .build()
-        || ui
-            .input_float(im_str!("Collision Max Y"), &mut area.max.y)
+        | ui.input_float(im_str!("Collision Max Y"), &mut area.max.y)
             .build()
 }
 
 fn edit_object<'a>(
     ui: &imgui::Ui,
     object: &mut SerialiseObject,
+    editor: &mut Editor,
     assets: &mut Assets<'a, '_>,
     asset_files: &mut AssetFiles,
-    filename: &Option<String>,
-    instruction_state: &mut InstructionState,
-    sprites: &HashMap<&str, &Sprite>,
-    object_names: &Vec<&str>,
-    game_length: Length,
-    animation_editor: &mut AnimationEditor,
-    draw_tasks: &mut Vec<DrawTask>,
+    game_notes: &GameNotes,
     ttf_context: &'a TtfContext,
 ) {
     imgui::ChildWindow::new(im_str!("Right"))
@@ -1069,21 +944,22 @@ fn edit_object<'a>(
             }
             tab_bar(im_str!("Tab Bar"), || {
                 tab_item(im_str!("Properties"), || {
-                    edit_object_properties(ui, object, asset_files, &mut assets.images, filename);
+                    edit_object_properties(
+                        ui,
+                        object,
+                        asset_files,
+                        &mut assets.images,
+                        &editor.filename,
+                    );
                 });
                 tab_item(im_str!("Instructions"), || {
                     edit_instruction_list(
                         ui,
                         &mut object.instructions,
-                        instruction_state,
+                        editor,
                         assets,
                         asset_files,
-                        sprites,
-                        object_names,
-                        game_length,
-                        filename,
-                        animation_editor,
-                        draw_tasks,
+                        game_notes,
                         ttf_context,
                     );
                 });
@@ -1121,7 +997,7 @@ fn edit_object_properties(
 
     let choose_origin = |origin: &mut Vec2| {
         ui.input_float(im_str!("Origin X"), &mut origin.x).build()
-            || ui.input_float(im_str!("Origin Y"), &mut origin.y).build()
+            | ui.input_float(im_str!("Origin Y"), &mut origin.y).build()
     };
 
     object.origin = match object.origin {
@@ -1213,15 +1089,12 @@ fn edit_instruction(
         {
             *focus = InstructionFocus::Action { index: i };
         }
-        match action {
-            Action::Random { random_actions } => {
-                for action in random_actions.iter() {
-                    imgui::Selectable::new(&ImString::new(format!("\t{}", action)))
-                        .selected(selected)
-                        .build(ui);
-                }
+        if let Action::Random { random_actions } = action {
+            for action in random_actions.iter() {
+                imgui::Selectable::new(&ImString::new(format!("\t{}", action)))
+                    .selected(selected)
+                    .build(ui);
             }
-            _ => {}
         }
     }
     if ui.button(im_str!("Add Action"), SMALL_BUTTON) {
@@ -1292,15 +1165,10 @@ fn edit_instruction(
 fn edit_instruction_list<'a>(
     ui: &imgui::Ui,
     instructions: &mut Vec<Instruction>,
-    instruction_state: &mut InstructionState,
+    editor: &mut Editor,
     assets: &mut Assets<'a, '_>,
     asset_files: &mut AssetFiles,
-    sprites: &HashMap<&str, &Sprite>,
-    object_names: &Vec<&str>,
-    game_length: Length,
-    filename: &Option<String>,
-    animation_editor: &mut AnimationEditor,
-    draw_tasks: &mut Vec<DrawTask>,
+    game_notes: &GameNotes,
     ttf_context: &'a TtfContext,
 ) {
     fn instruction_mut(
@@ -1310,7 +1178,7 @@ fn edit_instruction_list<'a>(
         let selected_index = index.unwrap_or(0);
         instructions.get_mut(selected_index).unwrap()
     }
-    match instruction_state.mode {
+    match editor.instruction_state.mode {
         InstructionMode::View => {
             imgui::ChildWindow::new(im_str!("Test"))
                 .size([0.0, -ui.frame_height_with_spacing()])
@@ -1321,16 +1189,16 @@ fn edit_instruction_list<'a>(
                             .flags(imgui::ImGuiTreeNodeFlags::SpanAvailWidth)
                             .bullet(true)
                             .leaf(true)
-                            .selected(instruction_state.index == Some(i))
+                            .selected(editor.instruction_state.index == Some(i))
                             .build(|| {
                                 if ui.is_item_clicked(imgui::MouseButton::Left) {
-                                    instruction_state.index = Some(i);
+                                    editor.instruction_state.index = Some(i);
                                 }
                                 if instruction.triggers.is_empty() {
                                     ui.text("\tEvery frame")
                                 } else {
                                     for trigger in instruction.triggers.iter() {
-                                        trigger.display(ui, sprites, &assets.images);
+                                        trigger.display(ui, &game_notes.sprites, &assets.images);
                                     }
                                 }
 
@@ -1340,7 +1208,7 @@ fn edit_instruction_list<'a>(
                                     ui.text("\tDo nothing")
                                 } else {
                                     for action in instruction.actions.iter() {
-                                        action.display(ui, 0, sprites, &assets.images);
+                                        action.display(ui, 0, &game_notes.sprites, &assets.images);
                                     }
                                 }
                             });
@@ -1353,13 +1221,13 @@ fn edit_instruction_list<'a>(
                     triggers: Vec::new(),
                     actions: Vec::new(),
                 });
-                instruction_state.index = Some(instructions.len() - 1);
-                instruction_state.mode = InstructionMode::Edit;
+                editor.instruction_state.index = Some(instructions.len() - 1);
+                editor.instruction_state.mode = InstructionMode::Edit;
             }
             ui.same_line(0.0);
-            if let Some(selected_index) = &mut instruction_state.index {
+            if let Some(selected_index) = &mut editor.instruction_state.index {
                 if ui.small_button(im_str!("Edit")) {
-                    instruction_state.mode = InstructionMode::Edit;
+                    editor.instruction_state.mode = InstructionMode::Edit;
                 }
                 ui.same_line(0.0);
                 if ui.small_button(im_str!("Delete")) && !instructions.is_empty() {
@@ -1381,63 +1249,57 @@ fn edit_instruction_list<'a>(
             }
         }
         InstructionMode::Edit => edit_instruction(
-            &mut instruction_mut(instructions, instruction_state.index),
+            &mut instruction_mut(instructions, editor.instruction_state.index),
             ui,
-            &mut instruction_state.mode,
-            &mut instruction_state.focus,
-            animation_editor,
+            &mut editor.instruction_state.mode,
+            &mut editor.instruction_state.focus,
+            &mut editor.animation_editor,
         ),
         InstructionMode::AddTrigger => {
-            let instruction = instruction_mut(instructions, instruction_state.index);
+            let instruction = instruction_mut(instructions, editor.instruction_state.index);
             instruction.triggers.push(Trigger::Time(When::Start));
-            instruction_state.focus = InstructionFocus::Trigger {
+            editor.instruction_state.focus = InstructionFocus::Trigger {
                 index: instruction.triggers.len() - 1,
             };
-            instruction_state.mode = InstructionMode::EditTrigger;
+            editor.instruction_state.mode = InstructionMode::EditTrigger;
         }
         InstructionMode::AddAction => {
-            let instruction = instruction_mut(instructions, instruction_state.index);
+            let instruction = instruction_mut(instructions, editor.instruction_state.index);
             instruction.actions.push(Action::Win);
-            instruction_state.focus = InstructionFocus::Action {
+            editor.instruction_state.focus = InstructionFocus::Action {
                 index: instruction.actions.len() - 1,
             };
-            instruction_state.mode = InstructionMode::EditAction;
+            editor.instruction_state.mode = InstructionMode::EditAction;
         }
         InstructionMode::EditTrigger => {
-            let instruction = instruction_mut(instructions, instruction_state.index);
-            let trigger_index = match instruction_state.focus {
+            let instruction = instruction_mut(instructions, editor.instruction_state.index);
+            let trigger_index = match editor.instruction_state.focus {
                 InstructionFocus::Trigger { index } => index,
                 _ => unreachable!(),
             };
             edit_trigger(
                 ui,
                 &mut instruction.triggers[trigger_index],
-                object_names,
-                game_length,
+                editor,
+                game_notes,
                 &mut assets.images,
                 &mut asset_files.images,
-                filename,
-                &mut instruction_state.mode,
-                draw_tasks,
             );
         }
         InstructionMode::EditAction => {
-            let instruction = instruction_mut(instructions, instruction_state.index);
-            let action_index = match instruction_state.focus {
+            let instruction = instruction_mut(instructions, editor.instruction_state.index);
+            let action_index = match editor.instruction_state.focus {
                 InstructionFocus::Action { index } => index,
                 _ => unreachable!(),
             };
             edit_action(
                 ui,
                 &mut instruction.actions[action_index],
+                editor,
                 assets,
                 asset_files,
-                filename,
-                animation_editor,
-                object_names,
-                draw_tasks,
+                &game_notes.object_names,
                 ttf_context,
-                &mut instruction_state.mode,
             );
         }
     }
@@ -1446,15 +1308,12 @@ fn edit_instruction_list<'a>(
 fn edit_trigger(
     ui: &imgui::Ui,
     trigger: &mut Trigger,
-    object_names: &Vec<&str>,
-    game_length: Length,
+    editor: &mut Editor,
+    game_notes: &GameNotes,
     images: &mut Images,
     image_files: &mut HashMap<String, String>,
-    filename: &Option<String>,
-    instruction_mode: &mut InstructionMode,
-    draw_tasks: &mut Vec<DrawTask>,
 ) {
-    let first_name = || object_names[0].to_string();
+    let first_name = || game_notes.object_names[0].to_string();
     let mut current_trigger_position = match trigger {
         Trigger::Time(_) => 0,
         Trigger::Collision(_) => 1,
@@ -1527,13 +1386,13 @@ fn edit_trigger(
     }
     match trigger {
         Trigger::Time(when) => {
-            choose_when(when, ui, game_length);
+            choose_when(when, ui, game_notes.length);
         }
         Trigger::Collision(with) => {
-            choose_collision_with(with, ui, object_names, draw_tasks);
+            choose_collision_with(with, ui, &game_notes.object_names, &mut editor.draw_tasks);
         }
         Trigger::Input(Input::Mouse { over, interaction }) => {
-            choose_mouse_over(over, ui, object_names);
+            choose_mouse_over(over, ui, &game_notes.object_names);
             interaction.choose(ui);
         }
         Trigger::WinStatus(status) => {
@@ -1543,29 +1402,26 @@ fn edit_trigger(
             choose_percent(chance, ui);
         }
         Trigger::CheckProperty { name, check } => {
-            choose_object(name, ui, object_names);
-            choose_property_check(check, ui, images, image_files, filename);
+            choose_object(name, ui, &game_notes.object_names);
+            choose_property_check(check, ui, images, image_files, &editor.filename);
         }
         Trigger::DifficultyLevel { level } => {
             choose_difficulty_level(level, ui);
         }
     }
     if ui.small_button(im_str!("Back")) {
-        *instruction_mode = InstructionMode::Edit;
+        editor.instruction_state.mode = InstructionMode::Edit;
     }
 }
 
 fn edit_action<'a>(
     ui: &imgui::Ui,
     action: &mut Action,
+    editor: &mut Editor,
     assets: &mut Assets<'a, '_>,
     asset_files: &mut AssetFiles,
-    filename: &Option<String>,
-    animation_editor: &mut AnimationEditor,
-    object_names: &Vec<&str>,
-    draw_tasks: &mut Vec<DrawTask>,
+    object_names: &[&str],
     ttf_context: &'a TtfContext,
-    instruction_mode: &mut InstructionMode,
 ) {
     let mut current_action_position = match action {
         Action::Win => 0,
@@ -1633,7 +1489,7 @@ fn edit_action<'a>(
 
     match action {
         Action::Motion(motion) => {
-            choose_motion(motion, ui, object_names, draw_tasks);
+            choose_motion(motion, ui, object_names, &mut editor.draw_tasks);
         }
         Action::PlaySound { name } => {
             choose_sound(
@@ -1641,7 +1497,7 @@ fn edit_action<'a>(
                 ui,
                 &mut asset_files.audio,
                 &mut assets.sounds,
-                filename,
+                &editor.filename,
             );
         }
         Action::SetProperty(setter) => {
@@ -1651,7 +1507,7 @@ fn edit_action<'a>(
                 object_names,
                 &mut assets.images,
                 asset_files,
-                filename,
+                &editor.filename,
             );
         }
         Action::Animate {
@@ -1660,31 +1516,31 @@ fn edit_action<'a>(
             speed,
         } => {
             let mut modified = animation_type.choose(ui);
-            modified = modified
-                || choose_animation(
-                    sprites,
-                    ui,
-                    animation_editor,
-                    asset_files,
-                    &mut assets.images,
-                    filename,
-                );
-            modified = modified || speed.choose(ui);
-            modified = modified || ui.button(im_str!("Play Animation"), NORMAL_BUTTON);
+            modified |= choose_animation(
+                sprites,
+                ui,
+                &mut editor.animation_editor,
+                asset_files,
+                &mut assets.images,
+                &editor.filename,
+            );
+            modified |= speed.choose(ui);
+            modified |= ui.button(im_str!("Play Animation"), NORMAL_BUTTON);
             if modified {
                 /*animation_editor.preview = AnimationStatus::Animating(Animation {
                     should_loop:
                 })*/
 
-                animation_editor.preview = AnimationStatus::start(*animation_type, sprites, *speed);
+                editor.animation_editor.preview =
+                    AnimationStatus::start(*animation_type, sprites, *speed);
                 if let Some(sprite) = sprites.get(0).cloned() {
-                    animation_editor.displayed_sprite = Some(sprite);
+                    editor.animation_editor.displayed_sprite = Some(sprite);
                 }
             }
-            if let Some(sprite) = animation_editor.preview.update() {
-                animation_editor.displayed_sprite = Some(sprite);
+            if let Some(sprite) = editor.animation_editor.preview.update() {
+                editor.animation_editor.displayed_sprite = Some(sprite);
             }
-            if let Some(sprite) = &animation_editor.displayed_sprite {
+            if let Some(sprite) = &editor.animation_editor.displayed_sprite {
                 match sprite {
                     Sprite::Image { name } => {
                         // TODO: Must have problem when two buttons have the same id
@@ -1723,7 +1579,7 @@ fn edit_action<'a>(
                 &mut asset_files.fonts,
                 &mut assets.fonts,
                 ttf_context,
-                filename,
+                &editor.filename,
             );
             colour.choose(ui);
             resize.choose(ui);
@@ -1745,14 +1601,11 @@ fn edit_action<'a>(
                     edit_action(
                         ui,
                         action,
+                        editor,
                         assets,
                         asset_files,
-                        filename,
-                        animation_editor,
                         object_names,
-                        draw_tasks,
                         ttf_context,
-                        instruction_mode,
                     );
                 }
                 stack.pop(ui);
@@ -1766,7 +1619,7 @@ fn edit_action<'a>(
     }
 
     if ui.small_button(im_str!("Back")) {
-        *instruction_mode = InstructionMode::Edit;
+        editor.instruction_state.mode = InstructionMode::Edit;
     }
 }
 
@@ -1822,7 +1675,7 @@ fn edit_objects_list(
                 if let Some(rename_details) = rename_object {
                     return rename_details.index == index;
                 }
-                return false;
+                false
             };
 
             for i in 0..objects.len() {
@@ -1995,7 +1848,7 @@ fn edit_objects_list(
 
                 object_state.new_object.size.choose(ui);
 
-                if entered || ui.button(im_str!("OK"), NORMAL_BUTTON) {
+                if entered | ui.button(im_str!("OK"), NORMAL_BUTTON) {
                     let new_name = object_state.new_name_buffer.to_str().to_string();
                     let duplicate = objects.iter().any(|o| o.name == new_name);
                     if duplicate {
@@ -2036,7 +1889,7 @@ fn edit_objects_list(
                     .enter_returns_true(true)
                     .build();
 
-                if entered || ui.button(im_str!("OK"), NORMAL_BUTTON) {
+                if entered | ui.button(im_str!("OK"), NORMAL_BUTTON) {
                     let new_name = object_state.new_name_buffer.to_str().to_string();
                     let duplicate = objects.iter().any(|o| o.name == new_name);
                     if duplicate {
@@ -2077,7 +1930,7 @@ fn edit_objects_list(
         });
 }
 
-fn file_show<'a, 'b>(
+fn file_show(
     ui: &imgui::Ui,
     /*game: &mut GameData,
     assets: &mut Assets<'a, 'b>,
@@ -2149,7 +2002,7 @@ fn toggle_menu_item(ui: &imgui::Ui, label: &ImStr, opened: &mut bool) {
     }
 }
 
-fn main_menu_bar_show<'a, 'b>(
+fn main_menu_bar_show(
     /*game: &mut GameData,
     assets: &mut Assets<'a, 'b>,
     filename: &mut Option<String>,
@@ -2205,6 +2058,163 @@ enum FileTask {
     ReturnToMenu,
     Exit,
     None,
+}
+
+impl FileTask {
+    fn do_task<'a>(
+        &mut self,
+        ui: &imgui::Ui,
+        game: &mut GameData,
+        editor: &mut Editor,
+        assets: &mut Assets<'a, '_>,
+        events: &mut EventState,
+        ttf_context: &'a TtfContext,
+    ) -> WeeResult<()> {
+        let has_unsaved_changes = |game: &GameData, filename: &Option<String>| {
+            if let Some(game_filename) = filename {
+                match GameData::load(game_filename) {
+                    Ok(old_game) => *game != old_game,
+                    Err(_) => true,
+                }
+            } else {
+                *game != GameData::default()
+            }
+        };
+
+        match self {
+            FileTask::New => {
+                if has_unsaved_changes(game, &editor.filename) {
+                    ui.open_popup(im_str!("New: Unsaved Changes"));
+                }
+            }
+            FileTask::Open => {
+                if has_unsaved_changes(game, &editor.filename) {
+                    ui.open_popup(im_str!("Open: Unsaved Changes"));
+                }
+            }
+            FileTask::ReturnToMenu => {
+                if has_unsaved_changes(game, &editor.filename) {
+                    ui.open_popup(im_str!("Return to Menu: Unsaved Changes"));
+                }
+            }
+            FileTask::Exit => {
+                if has_unsaved_changes(game, &editor.filename) {
+                    ui.open_popup(im_str!("Exit: Unsaved Changes"));
+                }
+            }
+            _ => {}
+        }
+
+        ui.popup_modal(im_str!("New: Unsaved Changes")).build(|| {
+            *self = FileTask::None;
+            ui.text("Warning: If you make a new game you will lose your current work.");
+            if ui.button(im_str!("OK"), NORMAL_BUTTON) {
+                *self = FileTask::New;
+                ui.close_current_popup();
+            }
+            ui.same_line(0.0);
+            if ui.button(im_str!("Cancel"), NORMAL_BUTTON) {
+                ui.close_current_popup();
+            }
+        });
+
+        ui.popup_modal(im_str!("Open: Unsaved Changes")).build(|| {
+            *self = FileTask::None;
+            ui.text("Warning: If you open a new game you will lose your current work.");
+            if ui.button(im_str!("OK"), NORMAL_BUTTON) {
+                *self = FileTask::Open;
+                ui.close_current_popup();
+            }
+            ui.same_line(0.0);
+            if ui.button(im_str!("Cancel"), NORMAL_BUTTON) {
+                ui.close_current_popup();
+            }
+        });
+
+        ui.popup_modal(im_str!("Return to Menu: Unsaved Changes"))
+            .build(|| {
+                *self = FileTask::None;
+                ui.text("Warning: If you return to the menu you will lose your current work.");
+                if ui.button(im_str!("OK"), NORMAL_BUTTON) {
+                    *self = FileTask::ReturnToMenu;
+                    ui.close_current_popup();
+                }
+                ui.same_line(0.0);
+                if ui.button(im_str!("Cancel"), NORMAL_BUTTON) {
+                    ui.close_current_popup();
+                }
+            });
+
+        ui.popup_modal(im_str!("Exit: Unsaved Changes")).build(|| {
+            *self = FileTask::None;
+            ui.text("Warning: If you exit you will lose your current work.");
+            if ui.button(im_str!("OK"), NORMAL_BUTTON) {
+                *self = FileTask::Exit;
+                ui.close_current_popup();
+            }
+            ui.same_line(0.0);
+            if ui.button(im_str!("Cancel"), NORMAL_BUTTON) {
+                ui.close_current_popup();
+            }
+        });
+
+        match *self {
+            FileTask::New => {
+                *editor = Editor::default();
+                *assets = Assets::default();
+                /*game = GameData::default();
+                filename = None;
+                object_state.index = None;
+                instruction_state = InstructionState::default();*/
+            }
+            FileTask::Open => {
+                let response = nfd::open_file_dialog(None, Path::new("games").to_str());
+                if let Ok(Response::Okay(file_path)) = response {
+                    for _ in events.pump.poll_iter() {}
+                    log::info!("File path = {:?}", file_path);
+                    let new_data = GameData::load(&file_path);
+                    match new_data {
+                        Ok(new_data) => {
+                            *assets = Assets::load(&new_data.asset_files, &file_path, ttf_context)?;
+                            editor.reset();
+                            *game = new_data;
+                            editor.filename = Some(file_path);
+                        }
+                        Err(error) => {
+                            // TODO: More than just logging here. Show error
+                            log::error!("Couldn't open file {}", file_path);
+                            log::error!("{}", error);
+                        }
+                    }
+                } else {
+                    log::error!("Error opening file dialog");
+                }
+            }
+            FileTask::Save => match &editor.filename {
+                Some(filename) => {
+                    let s = serde_json::to_string_pretty(&game);
+                    match s {
+                        Ok(s) => {
+                            std::fs::write(&filename, s).unwrap_or_else(|e| log::error!("{}", e));
+                            println!("SAVED! {}", filename);
+                        }
+                        Err(error) => {
+                            log::error!("{}", error);
+                        }
+                    }
+                }
+                None => save_game_file_as(&game, &mut editor.filename),
+            },
+            FileTask::SaveAs => {
+                save_game_file_as(&game, &mut editor.filename);
+            }
+            FileTask::ReturnToMenu => {}
+            FileTask::Exit => process::exit(0),
+            FileTask::None => {}
+        }
+
+        Ok(())
+    }
 }
 
 /*fn file_new(
@@ -2954,7 +2964,7 @@ trait Choose {
 impl Choose for Vec2 {
     fn choose(&mut self, ui: &imgui::Ui) -> bool {
         ui.input_float(im_str!("X"), &mut self.x).build()
-            || ui.input_float(im_str!("Y"), &mut self.y).build()
+            | ui.input_float(im_str!("Y"), &mut self.y).build()
     }
 }
 
@@ -3031,7 +3041,7 @@ fn choose_when(when: &mut When, ui: &imgui::Ui, game_length: Length) {
     }
 }
 
-fn find_object(object_names: &Vec<&str>, name: &str) -> usize {
+fn find_object(object_names: &[&str], name: &str) -> usize {
     // TODO: Should this return 0 if no found?
     object_names
         .iter()
@@ -3039,21 +3049,21 @@ fn find_object(object_names: &Vec<&str>, name: &str) -> usize {
         .unwrap_or(0)
 }
 
-fn object_keys(object_names: &Vec<&str>) -> Vec<ImString> {
+fn object_keys(object_names: &[&str]) -> Vec<ImString> {
     object_names
         .iter()
-        .map(|name| ImString::from(name.to_string()))
+        .map(|name| ImString::from((*name).to_string()))
         .collect()
 }
 
-fn combo_keys<'a>(keys: &Vec<ImString>) -> Vec<&ImString> {
+fn combo_keys(keys: &[ImString]) -> Vec<&ImString> {
     keys.iter().collect()
 }
 
 fn choose_collision_with(
     with: &mut CollisionWith,
     ui: &imgui::Ui,
-    object_names: &Vec<&str>,
+    object_names: &[&str],
     draw_tasks: &mut Vec<DrawTask>,
 ) {
     const OBJECT: i32 = 0;
@@ -3095,7 +3105,7 @@ fn choose_collision_with(
     }
 }
 
-fn choose_mouse_over(over: &mut MouseOver, ui: &imgui::Ui, object_names: &Vec<&str>) {
+fn choose_mouse_over(over: &mut MouseOver, ui: &imgui::Ui, object_names: &[&str]) {
     let mut input_type = match over {
         MouseOver::Object { .. } => 0,
         MouseOver::Area(_) => 1,
@@ -3225,7 +3235,7 @@ fn choose_percent(percent: &mut f32, ui: &imgui::Ui) {
     *percent = chance_percent / 100.0;
 }
 
-fn choose_object(object: &mut String, ui: &imgui::Ui, object_names: &Vec<&str>) {
+fn choose_object(object: &mut String, ui: &imgui::Ui, object_names: &[&str]) {
     let mut current_object = find_object(object_names, object);
     let keys = object_keys(object_names);
     if imgui::ComboBox::new(im_str!("Object")).build_simple_string(
@@ -3286,7 +3296,7 @@ fn select_sprite_type(
         match sorted_keys.iter().next() {
             Some(name) => {
                 *sprite = Sprite::Image {
-                    name: name.to_string(),
+                    name: (*name).to_string(),
                 }
             }
             None => {
@@ -3316,7 +3326,7 @@ fn choose_new_image<P: AsRef<Path>>(
     let first_key = choose_image_from_files(image_files, images, path);
     match first_key {
         Some(key) => {
-            *image = Sprite::Image { name: key.clone() };
+            *image = Sprite::Image { name: key };
             true
         }
         None => {
@@ -3341,7 +3351,7 @@ fn choose_font<'a, 'b>(
             let first_key = choose_font_from_files(font_files, fonts, path, ttf_context);
             match first_key {
                 Some(key) => {
-                    *font_name = key.clone();
+                    *font_name = key;
                 }
                 None => {
                     // TODO: What if user clicks cancel
@@ -3370,7 +3380,7 @@ fn choose_font<'a, 'b>(
                 let first_key = choose_font_from_files(font_files, fonts, path, ttf_context);
                 match first_key {
                     Some(key) => {
-                        *font_name = key.clone();
+                        *font_name = key;
                     }
                     None => {
                         log::error!("None of the new fonts loaded correctly");
@@ -3402,7 +3412,7 @@ fn choose_sound(
             let first_key = choose_sound_from_files(audio_filenames, sounds, path);
             match first_key {
                 Some(key) => {
-                    *sound_name = key.clone();
+                    *sound_name = key;
                 }
                 None => {
                     log::error!("None of the new sounds loaded correctly");
@@ -3431,7 +3441,7 @@ fn choose_sound(
                 let first_key = choose_sound_from_files(audio_filenames, sounds, path);
                 match first_key {
                     Some(key) => {
-                        *sound_name = key.clone();
+                        *sound_name = key;
                     }
                     None => {
                         log::error!("None of the new sounds loaded correctly");
@@ -3576,7 +3586,7 @@ fn choose_animation(
             ui.close_current_popup();
         }
     });
-    return modified;
+    modified
 }
 
 fn choose_sprite(
@@ -3607,7 +3617,7 @@ fn choose_sprite(
                 let keys = {
                     let mut keys: Vec<ImString> = sorted_keys
                         .iter()
-                        .map(|k| ImString::from(k.to_string()))
+                        .map(|k| ImString::from((*k).to_string()))
                         .collect();
 
                     keys.push(ImString::new("Add a New Image"));
@@ -3625,10 +3635,10 @@ fn choose_sprite(
                     if current_image == image_names.len() - 1 {
                         modified |= choose_new_image(sprite, image_files, images, path);
                     } else {
-                        modified |= match sorted_keys.iter().nth(current_image) {
+                        modified |= match sorted_keys.get(current_image) {
                             Some(image) => {
                                 *sprite = Sprite::Image {
-                                    name: image.to_string(),
+                                    name: (*image).to_string(),
                                 };
                                 true
                             }
@@ -3743,7 +3753,7 @@ impl Choose for AnimationType {
 fn choose_property_setter(
     property: &mut PropertySetter,
     ui: &imgui::Ui,
-    object_names: &Vec<&str>,
+    object_names: &[&str],
     images: &mut Images,
     asset_files: &mut AssetFiles,
     filename: &Option<String>,
@@ -3867,36 +3877,30 @@ impl Choose for SizeSetter {
         let modified = self.combo(ui);
         modified
             || match self {
-                SizeSetter::Value(size) => {
-                    ui.input_float(im_str!("Width"), &mut size.width).build()
-                        || ui.input_float(im_str!("Height"), &mut size.height).build()
-                }
+                SizeSetter::Value(size) => size.choose(ui),
                 SizeSetter::Grow(size_difference) | SizeSetter::Shrink(size_difference) => {
                     let modified = size_difference.radio(ui);
 
                     modified
-                        || match size_difference {
+                        | match size_difference {
                             SizeDifference::Value(size) | SizeDifference::Percent(size) => {
-                                ui.input_float(im_str!("Width"), &mut size.width).build()
-                                    || ui.input_float(im_str!("Height"), &mut size.height).build()
+                                size.choose(ui)
                             }
                         }
                 }
                 SizeSetter::Clamp { min, max } => {
                     ui.input_float(im_str!("Min Width"), &mut min.width).build()
-                        || ui
-                            .input_float(im_str!("Min Height"), &mut min.height)
+                        | ui.input_float(im_str!("Min Height"), &mut min.height)
                             .build()
-                        || ui.input_float(im_str!("Max Width"), &mut max.width).build()
-                        || ui
-                            .input_float(im_str!("Max Height"), &mut max.height)
+                        | ui.input_float(im_str!("Max Width"), &mut max.width).build()
+                        | ui.input_float(im_str!("Max Height"), &mut max.height)
                             .build()
                 }
             }
     }
 }
 
-fn choose_angle_setter(setter: &mut AngleSetter, ui: &imgui::Ui, object_names: &Vec<&str>) {
+fn choose_angle_setter(setter: &mut AngleSetter, ui: &imgui::Ui, object_names: &[&str]) {
     let angle_types = [
         im_str!("Value"),
         im_str!("Increase"),
@@ -4011,7 +4015,7 @@ impl Choose for JustifyText {
 fn choose_motion(
     motion: &mut Motion,
     ui: &imgui::Ui,
-    object_names: &Vec<&str>,
+    object_names: &[&str],
     draw_tasks: &mut Vec<DrawTask>,
 ) {
     let mut current_motion_position = match motion {
@@ -4149,11 +4153,11 @@ impl Choose for MovementDirection {
             modified = true;
         }
         modified
-            || match self {
+            | match self {
                 MovementDirection::Angle(Angle::Degrees(angle)) => choose_angle(angle, ui),
                 MovementDirection::Angle(Angle::Random { min, max }) => {
                     ui.input_float(im_str!("Min Angle"), min).build()
-                        || ui.input_float(im_str!("Max Angle"), max).build()
+                        | ui.input_float(im_str!("Max Angle"), max).build()
                 }
                 MovementDirection::Direction {
                     possible_directions,
@@ -4176,7 +4180,7 @@ fn choose_angle(angle: &mut f32, ui: &imgui::Ui) -> bool {
     }
 
     ui.popup(im_str!("Set specific angle"), || {
-        modified = modified || ui.input_float(im_str!("Angle"), angle).build();
+        modified |= ui.input_float(im_str!("Angle"), angle).build();
     });
     modified
 }
@@ -4185,7 +4189,7 @@ impl Choose for Speed {
     fn choose(&mut self, ui: &imgui::Ui) -> bool {
         let mut modified = self.combo(ui);
         if let Speed::Value(value) = self {
-            modified = modified || ui.input_float(im_str!("Speed"), value).build();
+            modified |= ui.input_float(im_str!("Speed"), value).build();
         }
         modified
     }
@@ -4234,7 +4238,7 @@ impl Choose for HashSet<CompassDirection> {
 fn choose_jump_location(
     jump: &mut JumpLocation,
     ui: &imgui::Ui,
-    object_names: &Vec<&str>,
+    object_names: &[&str],
     draw_tasks: &mut Vec<DrawTask>,
 ) {
     let jump_types = [
@@ -4378,7 +4382,7 @@ impl Choose for MovementType {
                     modified = true;
                 }
 
-                modified = modified || initial_direction.choose(ui);
+                modified |= initial_direction.choose(ui);
             }
             MovementType::Bounce { initial_direction } => {
                 if ui.radio_button_bool(
@@ -4411,19 +4415,16 @@ impl Choose for AABB {
     fn choose(&mut self, ui: &imgui::Ui) -> bool {
         ui.input_float(im_str!("Area Min X"), &mut self.min.x)
             .build()
-            || ui
-                .input_float(im_str!("Area Min Y"), &mut self.min.y)
+            | ui.input_float(im_str!("Area Min Y"), &mut self.min.y)
                 .build()
-            || ui
-                .input_float(im_str!("Area Max X"), &mut self.max.x)
+            | ui.input_float(im_str!("Area Max X"), &mut self.max.x)
                 .build()
-            || ui
-                .input_float(im_str!("Area Max Y"), &mut self.max.y)
+            | ui.input_float(im_str!("Area Max Y"), &mut self.max.y)
                 .build()
     }
 }
 
-fn choose_target(target: &mut Target, ui: &imgui::Ui, object_names: &Vec<&str>) {
+fn choose_target(target: &mut Target, ui: &imgui::Ui, object_names: &[&str]) {
     if ui.radio_button_bool(im_str!("Target Object"), *target != Target::Mouse) {
         *target = Target::Object {
             name: object_names[0].to_string(),
@@ -4439,19 +4440,18 @@ fn choose_target(target: &mut Target, ui: &imgui::Ui, object_names: &Vec<&str>) 
 
 impl Choose for TargetType {
     fn choose(&mut self, ui: &imgui::Ui) -> bool {
-        let mut modified =
-        if ui.radio_button_bool(im_str!("Follow"), *self == TargetType::Follow) {
-            *self = TargetType::Follow;
-            true
-        } else { false };
-        if ui.radio_button_bool(
+        let follow = ui.radio_button_bool(im_str!("Follow"), *self == TargetType::Follow);
+        let stop = ui.radio_button_bool(
             im_str!("Stop When Reached"),
             *self == TargetType::StopWhenReached,
-        ) {
-            *self = TargetType::StopWhenReached;
-            modified = true;
+        );
+        if follow {
+            *self = TargetType::Follow;
         }
-        modified
+        if stop {
+            *self = TargetType::StopWhenReached;
+        }
+        follow || stop
     }
 }
 
@@ -4782,7 +4782,7 @@ fn get_filename<P: AsRef<Path>>(path: P) -> WeeResult<String> {
         .map(|s| s.to_str())
         .flatten()
         .map(|s| s.to_string())
-        .ok_or(format!("Couldn't get the filename from {:?}", path.as_ref()).into())
+        .ok_or_else(|| format!("Couldn't get the filename from {:?}", path.as_ref()).into())
 }
 
 fn get_separate_file_parts(file_path: String) -> (WeeResult<String>, String) {

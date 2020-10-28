@@ -85,7 +85,7 @@ impl SerialiseObject {
         }
     }
 
-    pub fn to_object(self) -> Object {
+    pub fn into_object(self) -> Object {
         let switch = match self.switch {
             Switch::On => SwitchState::On,
             Switch::Off => SwitchState::Off,
@@ -218,7 +218,7 @@ pub struct GameData {
 impl Default for GameData {
     fn default() -> GameData {
         GameData {
-            format_version: "0.1".to_string(),
+            format_version: "0.2".to_string(),
             published: false,
             game_type: GameType::Minigame,
             objects: Vec::new(),
@@ -1555,7 +1555,7 @@ impl ObjectList for Objects {
         let mut new_objects = Objects::new();
 
         for object in objects {
-            new_objects.insert(object.name.clone(), object.to_object());
+            new_objects.insert(object.name.clone(), object.into_object());
         }
 
         new_objects
