@@ -19,6 +19,8 @@ use sdlglue::Renderer;
 use wee::*;
 use wee_common::{Colour, WeeResult};
 
+const BOSS_GAME_INTERVAL: i32 = 15;
+
 fn init_logger() {
     if let Err(error) = simple_logger::init() {
         eprintln!("Could not initialise logger");
@@ -148,7 +150,7 @@ impl Progress {
 struct GamesList {
     games: Vec<String>,
     bosses: Vec<String>,
-    is_boss_game: bool,
+    next_boss_game: i32,
     next: Vec<String>,
     directory: String,
 }
@@ -195,7 +197,7 @@ impl GamesList {
             Ok(GamesList {
                 games: games_list,
                 bosses: boss_list,
-                is_boss_game: false,
+                next_boss_game: BOSS_GAME_INTERVAL,
                 next: Vec::new(),
                 directory: if directory == "games" {
                     "games/system/".to_string()
@@ -296,7 +298,7 @@ fn run_main_loop<'a, 'b>(
     };
     match game_mode {
         GameMode::Menu => {
-            let mut game = game_with_defaults("games/system/main-menu.json")?;
+            let mut game = game_with_defaults("games/system/main-menu-with-editor.json")?;
 
             'menu_running: loop {
                 renderer.adjust_fullscreen(&events.pump, &events.mouse.utils)?;
@@ -380,7 +382,7 @@ fn run_main_loop<'a, 'b>(
             mut games_list,
             progress,
         } => {
-            let filename = if games_list.is_boss_game {
+            let filename = if games_list.next_boss_game == progress.score {
                 games_list.choose_boss()
             } else {
                 Some(games_list.choose())
@@ -419,7 +421,7 @@ fn run_main_loop<'a, 'b>(
                     set_switch("2", progress.lives >= 2);
                     set_switch("3", progress.lives >= 3);
                     set_switch("4", progress.lives >= 4);
-                    set_switch("Boss", games_list.is_boss_game);
+                    set_switch("Boss", games_list.next_boss_game == progress.score);
 
                     object.replace_text(&text_replacements);
                 }
@@ -445,8 +447,8 @@ fn run_main_loop<'a, 'b>(
                     GameMode::Menu
                 };
             } else {
-                game_mode = if games_list.is_boss_game {
-                    games_list.is_boss_game = false;
+                game_mode = if games_list.next_boss_game == progress.score {
+                    games_list.next_boss_game += BOSS_GAME_INTERVAL;
                     GameMode::Interlude {
                         won,
                         games_list,
@@ -537,13 +539,14 @@ fn run_main_loop<'a, 'b>(
                 Ok(completed_game) => {
                     game_mode = if let Completion::Finished = completed_game.completion {
                         let has_won = completed_game.has_been_won;
+                        let was_boss_game = games_list.next_boss_game == progress.score;
 
                         progress.update(
                             has_won,
                             config.playback_rate.increase,
                             config.playback_rate.max,
                         );
-                        if has_won && games_list.is_boss_game {
+                        if has_won && was_boss_game {
                             progress.lives = (progress.lives + 1).min(MAX_LIVES);
                         }
                         log::info!("Playback Rate: {}", progress.playback_rate);
@@ -554,9 +557,9 @@ fn run_main_loop<'a, 'b>(
                                 directory: games_list.directory,
                             }
                         } else {
-                            games_list.is_boss_game = progress.score > 0
-                                && progress.score % 15 == 0
-                                && !games_list.is_boss_game;
+                            if was_boss_game {
+                                games_list.next_boss_game += BOSS_GAME_INTERVAL;
+                            }
 
                             GameMode::Interlude {
                                 won: has_won,
