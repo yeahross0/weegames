@@ -350,7 +350,7 @@ fn run_main_loop<'a, 'b>(
         GameMode::Prelude { directory } => {
             let (tx, rx) = std::sync::mpsc::channel();
 
-            let directory = directory.unwrap_or("games".to_string());
+            let directory = directory.unwrap_or_else(|| "games".to_string());
             let prelude_game = mode_game(&directory, "prelude.json")?;
 
             std::thread::spawn(move || -> WeeResult<()> {

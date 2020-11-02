@@ -1663,10 +1663,22 @@ impl LoadMusic for Music {
 }
 
 pub trait MusicPlayer {
+    fn play(&mut self, playback_rate: f32, volume: f32);
+
     fn stop(&mut self);
 }
 
 impl MusicPlayer for Option<Music> {
+    fn play(&mut self, playback_rate: f32, volume: f32) {
+        if let Some(music) = self {
+            music.data.set_playing_offset(SfmlTime::seconds(0.0));
+            music.data.set_pitch(playback_rate);
+            music.data.set_volume(volume);
+            music.data.set_looping(music.looped);
+            music.data.play();
+        }
+    }
+
     fn stop(&mut self) {
         if let Some(music) = self {
             music.data.stop();
@@ -1714,14 +1726,7 @@ impl<'a, 'b> Assets<'a, 'b> {
     }
 
     pub fn start_music(&mut self, playback_rate: f32, volume: f32) {
-        // audio_player.play_music(playback_rate);
-        if let Some(music) = &mut self.music {
-            music.data.set_playing_offset(SfmlTime::seconds(0.0));
-            music.data.set_pitch(playback_rate);
-            music.data.set_volume(volume);
-            music.data.set_looping(music.looped);
-            music.data.play();
-        }
+        self.music.play(playback_rate, volume);
     }
 }
 

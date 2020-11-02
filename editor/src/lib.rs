@@ -44,6 +44,10 @@ struct Editor {
 }
 
 impl Editor {
+    fn begin(&mut self) {
+        self.draw_tasks = Vec::new();
+    }
+
     fn reset(&mut self) {
         self.object_state.index = None;
         self.instruction_state = InstructionState::default();
@@ -92,26 +96,14 @@ pub fn run<'a, 'b>(
     let mut game = GameData::default();
     let mut assets = Assets::default();
 
-    let mut windows = Windows {
-        main: true,
-        objects: true,
-        background: false,
-        fonts: false,
-        music: false,
-        sounds: false,
-        demo: false,
-    };
+    let mut windows = Windows::default();
 
-    let mut preview = Preview {
-        playback_rate: 1.0,
-        difficulty_level: 1,
-        last_win_status: None,
-        settings,
-    };
+    let mut preview = Preview::new(settings);
 
     let mut last_frame = Instant::now();
-    let mut game_position = Vec2::new(172.0, 106.0);
-    let mut scale: f32 = 0.8;
+
+    let mut scene = SceneLocation::default();
+
     let mut minus_button = ButtonState::Up;
     let mut plus_button = ButtonState::Up;
     let mut show_collision_areas = false;
@@ -119,14 +111,13 @@ pub fn run<'a, 'b>(
     let mut new_background = Sprite::Colour(Colour::black());
     let mut show_error = None;
     let mut playing_sounds = Vec::new();
-    let mut new_fonts = Vec::new();
-    let mut font_state = 128;
+    let mut font_state = FontState::default();
 
     let mut editor = Editor::default();
 
     'editor_running: loop {
         let mut file_task = FileTask::None;
-        editor.draw_tasks = Vec::new();
+        editor.begin();
 
         for event in events.pump.poll_iter() {
             imgui.sdl.handle_event(&mut imgui.context, &event);
@@ -220,85 +211,22 @@ pub fn run<'a, 'b>(
             &font_system.ttf_context,
         );
 
-        if windows.music {
-            imgui::Window::new(im_str!("Music"))
-                .size(WINDOW_SIZE, imgui::Condition::FirstUseEver)
-                .opened(&mut windows.music)
-                .menu_bar(true)
-                .resizable(false)
-                .build(ui, || {
-                    fn load_music_file_dialog(
-                        game: &mut GameData,
-                        music: &mut Option<Music>,
-                        filename: &Option<String>,
-                    ) -> WeeResult<()> {
-                        let audio_path = assets_path(filename, "audio");
-                        let response = nfd::open_file_dialog(None, audio_path.to_str())?;
+        music_window_show(
+            ui,
+            &mut windows.music,
+            &mut game,
+            &mut assets.music,
+            &editor.filename,
+            settings.volume,
+        );
 
-                        if let Response::Okay(file) = response {
-                            let path = Path::new(&file);
-                            let file_name = path.file_name().unwrap().to_str().unwrap().to_string();
-
-                            let music_load_info = SerialiseMusic {
-                                filename: file_name,
-                                looped: false,
-                            };
-
-                            *music = Music::load(
-                                &Some(music_load_info.clone()),
-                                path.parent().unwrap().parent().unwrap(), // TODO: Sort this out
-                            )?;
-                            if music.is_none() {
-                                log::error!("Couldn't load {:?}", path);
-                            }
-                            game.asset_files.music = Some(music_load_info);
-                        }
-
-                        Ok(())
-                    }
-                    if ui.button(im_str!("Set Music"), NORMAL_BUTTON) {
-                        load_music_file_dialog(&mut game, &mut assets.music, &editor.filename)
-                            .unwrap_or_else(|error| log::error!("{}", error));
-                    }
-
-                    if let Some(music) = &mut game.asset_files.music {
-                        if ui.radio_button_bool(im_str!("Looped?"), music.looped) {
-                            music.looped = !music.looped;
-                        }
-                    }
-
-                    if let Some(music) = &game.asset_files.music {
-                        if ui.button(&ImString::from(music.filename.clone()), NORMAL_BUTTON) {
-                            assets.start_music(DEFAULT_PLAYBACK_RATE, settings.volume);
-                        }
-                    }
-                });
-        }
-
-        let mut new_sounds = Vec::new();
-        if windows.sounds {
-            imgui::Window::new(im_str!("Sounds"))
-                .size(WINDOW_SIZE, imgui::Condition::FirstUseEver)
-                .menu_bar(true)
-                .resizable(true)
-                .opened(&mut windows.sounds)
-                .build(ui, || {
-                    if ui.button(im_str!("Add sounds"), NORMAL_BUTTON) {
-                        let path = assets_path(&editor.filename, "sounds");
-                        choose_sound_from_files(
-                            &mut game.asset_files.audio,
-                            &mut assets.sounds,
-                            path,
-                        );
-                    }
-
-                    for name in game.asset_files.audio.keys() {
-                        if ui.button(&ImString::from(name.clone()), SMALL_BUTTON) {
-                            new_sounds.push(name.clone());
-                        }
-                    }
-                });
-        }
+        let new_sounds = sounds_window_show(
+            ui,
+            &mut windows.sounds,
+            &mut game,
+            &mut assets.sounds,
+            &editor.filename,
+        );
 
         play_sounds(
             &mut playing_sounds,
@@ -308,193 +236,43 @@ pub fn run<'a, 'b>(
             settings.volume,
         )?;
 
-        if windows.background {
-            // TODO: Fix up
-            imgui::Window::new(im_str!("Background"))
-                .size(WINDOW_SIZE, imgui::Condition::FirstUseEver)
-                .opened(&mut windows.background)
-                .build(ui, || {
-                    for i in 0..game.background.len() {
-                        let stack = ui.push_id(i as i32);
-                        ui.text(im_str!("Layer {}", i));
-                        if i != 0 {
-                            ui.same_line(0.0);
-                            if ui.small_button(im_str!("Move Up")) {
-                                game.background.swap(i, i - 1);
-                            }
-                        }
-                        if i != game.background.len() - 1 {
-                            ui.same_line(0.0);
-                            if ui.small_button(im_str!("Move Down")) {
-                                game.background.swap(i, i + 1);
-                            }
-                        }
-                        if ui.small_button(im_str!("Delete")) {
-                            ui.same_line(0.0);
-                            game.background.remove(i);
-                            stack.pop(ui);
-                            break;
-                        } else {
-                            choose_sprite(
-                                &mut game.background[i].sprite,
-                                ui,
-                                &mut game.asset_files.images,
-                                &mut assets.images,
-                                &editor.filename,
-                            );
+        background_window_show(
+            ui,
+            &mut windows.background,
+            &mut game,
+            &mut assets.images,
+            &editor.filename,
+            &mut new_background,
+        );
 
-                            game.background[i].area.choose(ui);
-                        }
+        fonts_window_show(
+            ui,
+            &mut windows.fonts,
+            &mut game,
+            &mut assets.fonts,
+            &editor.filename,
+            font_system.ttf_context,
+            &mut font_state,
+        );
 
-                        stack.pop(ui);
-                    }
-                    if ui.button(im_str!("New Background"), NORMAL_BUTTON) {
-                        new_background = Sprite::Colour(Colour::black());
-                        ui.open_popup(im_str!("Add a Background"));
-                    };
-                    ui.popup_modal(im_str!("Add a Background")).build(|| {
-                        choose_sprite(
-                            &mut new_background,
-                            ui,
-                            &mut game.asset_files.images,
-                            &mut assets.images,
-                            &editor.filename,
-                        );
-                        if ui.button(im_str!("Ok"), NORMAL_BUTTON) {
-                            game.background.push(BackgroundPart {
-                                sprite: new_background.clone(),
-                                area: AABB::new(0.0, 0.0, 1600.0, 900.0),
-                            });
-                            ui.close_current_popup();
-                        }
-                        ui.same_line(0.0);
-                        if ui.button(im_str!("Cancel"), NORMAL_BUTTON) {
-                            ui.close_current_popup();
-                        }
-                    });
-                });
-        }
-
-        if windows.fonts {
-            imgui::Window::new(im_str!("Fonts"))
-                .size(WINDOW_SIZE, imgui::Condition::FirstUseEver)
-                .menu_bar(true)
-                .resizable(true)
-                .opened(&mut windows.fonts)
-                .build(ui, || {
-                    if ui.button(im_str!("Add fonts"), NORMAL_BUTTON) {
-                        let path = assets_path(&editor.filename, "fonts");
-                        let font_filenames = open_fonts_dialog(path);
-                        new_fonts.extend(font_filenames);
-                    }
-
-                    if !new_fonts.is_empty() {
-                        ui.open_popup(im_str!("Load Fonts"));
-                    }
-
-                    ui.popup_modal(im_str!("Load Fonts")).build(|| {
-                        if new_fonts.is_empty() {
-                            ui.close_current_popup();
-                        } else {
-                            let (key, _) = new_fonts.get_mut(0).unwrap();
-                            match key {
-                                Ok(key) => {
-                                    choose_string(key, ui, im_str!("Name"));
-                                    choose_u16(&mut font_state, ui, im_str!("Font Size"));
-                                    if ui.button(im_str!("OK"), NORMAL_BUTTON) {
-                                        let (key, path) = new_fonts.remove(0);
-                                        if let Err(error) = load_font(
-                                            &mut game.asset_files.fonts,
-                                            &mut assets.fonts,
-                                            (key, path),
-                                            font_system.ttf_context,
-                                            font_state,
-                                        ) {
-                                            log::error!("{}", error);
-                                        }
-                                    }
-                                    if ui.button(im_str!("Cancel"), NORMAL_BUTTON) {
-                                        new_fonts.remove(0).0.ok();
-                                    }
-                                }
-                                Err(error) => {
-                                    ui.text(format!("Error loading file: {}", error));
-                                    if ui.button(im_str!("OK"), NORMAL_BUTTON) {
-                                        new_fonts.remove(0).0.ok();
-                                    }
-                                }
-                            }
-                        }
-                    });
-
-                    for (name, font) in game.asset_files.fonts.iter_mut() {
-                        ui.text(name);
-                        // TODO: Errors if filename not saved!
-                        let base_path = assets_path(&editor.filename, "fonts");
-                        let path = base_path.join(&font.filename);
-                        // TODO: Min Max this
-                        if ui.input_float(im_str!("Size"), &mut font.size).build() {
-                            *assets.fonts.get_mut(name).unwrap() = font_system
-                                .ttf_context
-                                .load_font(&path, font.size as u16)
-                                .unwrap();
-                        }
-                    }
-                });
-        }
-
-        let key_down = |event_pump: &EventPump, scancode: Scancode| {
-            event_pump.keyboard_state().is_scancode_pressed(scancode)
-        };
-
-        minus_button.update(key_down(&events.pump, Scancode::Minus));
-        plus_button.update(key_down(&events.pump, Scancode::Equals));
-
-        if !ui.io().want_capture_keyboard {
-            if minus_button == ButtonState::Press {
-                scale = (scale - 0.1).max(0.1);
-            }
-            if plus_button == ButtonState::Press {
-                scale = (scale + 0.1).min(4.0);
-            }
-
-            let is_pressed = |scancode| events.pump.keyboard_state().is_scancode_pressed(scancode);
-
-            if is_pressed(Scancode::W) {
-                game_position.y += 2.0;
-            }
-            if is_pressed(Scancode::S) {
-                game_position.y -= 2.0;
-            }
-            if is_pressed(Scancode::A) {
-                game_position.x += 2.0;
-            }
-            if is_pressed(Scancode::D) {
-                game_position.x -= 2.0;
-            }
-        }
+        scene.update(ui, events, &mut plus_button, &mut minus_button);
 
         sdlglue::clear_screen(Colour::dull_grey());
 
-        let scene_location = SceneLocation {
-            position: game_position,
-            scale,
-        };
-
         renderer.update_viewport();
-        renderer.clear_editor_screen(scene_location);
+        renderer.clear_editor_screen(scene);
 
-        renderer.draw_editor_background(&game.background, &assets.images, scene_location)?;
+        renderer.draw_editor_background(&game.background, &assets.images, scene)?;
 
         renderer.draw_editor_objects(
             &game.objects,
             &assets.images,
-            scene_location,
+            scene,
             show_collision_areas,
             show_origins,
         )?;
 
-        renderer.draw_tasks(&mut editor.draw_tasks, scene_location);
+        renderer.draw_tasks(&mut editor.draw_tasks, scene);
 
         imgui_frame.render(&renderer.window);
         renderer.present();
@@ -510,6 +288,57 @@ struct SceneLocation {
     position: Vec2,
     scale: f32,
 }
+
+impl Default for SceneLocation {
+    fn default() -> Self {
+        let position = Vec2::new(172.0, 106.0);
+        let scale = 0.8;
+
+        SceneLocation { position, scale }
+    }
+}
+
+impl SceneLocation {
+    fn update(
+        &mut self,
+        ui: &imgui::Ui,
+        events: &mut EventState,
+        plus_button: &mut ButtonState,
+        minus_button: &mut ButtonState,
+    ) {
+        let key_down = |event_pump: &EventPump, scancode: Scancode| {
+            event_pump.keyboard_state().is_scancode_pressed(scancode)
+        };
+
+        minus_button.update(key_down(&events.pump, Scancode::Minus));
+        plus_button.update(key_down(&events.pump, Scancode::Equals));
+
+        if !ui.io().want_capture_keyboard {
+            if *minus_button == ButtonState::Press {
+                self.scale = (self.scale - 0.1).max(0.1);
+            }
+            if *plus_button == ButtonState::Press {
+                self.scale = (self.scale + 0.1).min(4.0);
+            }
+
+            let is_pressed = |scancode| events.pump.keyboard_state().is_scancode_pressed(scancode);
+
+            if is_pressed(Scancode::W) {
+                self.position.y += 2.0;
+            }
+            if is_pressed(Scancode::S) {
+                self.position.y -= 2.0;
+            }
+            if is_pressed(Scancode::A) {
+                self.position.x += 2.0;
+            }
+            if is_pressed(Scancode::D) {
+                self.position.x -= 2.0;
+            }
+        }
+    }
+}
+
 trait RenderEditor {
     fn clear_editor_screen(&self, location: SceneLocation);
 
@@ -877,6 +706,254 @@ fn objects_window_show<'a>(
                     );
 
                     game.objects[index] = object;
+                }
+            });
+    }
+}
+
+fn music_window_show(
+    ui: &imgui::Ui,
+    opened: &mut bool,
+    game: &mut GameData,
+    music: &mut Option<Music>,
+    filename: &Option<String>,
+    volume: f32,
+) {
+    if *opened {
+        imgui::Window::new(im_str!("Music"))
+            .size(WINDOW_SIZE, imgui::Condition::FirstUseEver)
+            .opened(opened)
+            .menu_bar(true)
+            .resizable(false)
+            .build(ui, || {
+                fn load_music_file_dialog(
+                    game: &mut GameData,
+                    music: &mut Option<Music>,
+                    filename: &Option<String>,
+                ) -> WeeResult<()> {
+                    let audio_path = assets_path(filename, "audio");
+                    let response = nfd::open_file_dialog(None, audio_path.to_str())?;
+
+                    if let Response::Okay(file) = response {
+                        let path = Path::new(&file);
+                        let file_name = path.file_name().unwrap().to_str().unwrap().to_string();
+
+                        let music_load_info = SerialiseMusic {
+                            filename: file_name,
+                            looped: false,
+                        };
+
+                        *music = Music::load(
+                            &Some(music_load_info.clone()),
+                            path.parent().unwrap().parent().unwrap(), // TODO: Sort this out
+                        )?;
+                        if music.is_none() {
+                            log::error!("Couldn't load {:?}", path);
+                        }
+                        game.asset_files.music = Some(music_load_info);
+                    }
+
+                    Ok(())
+                }
+                if ui.button(im_str!("Set Music"), NORMAL_BUTTON) {
+                    load_music_file_dialog(game, music, filename)
+                        .unwrap_or_else(|error| log::error!("{}", error));
+                }
+
+                if let Some(music) = &mut game.asset_files.music {
+                    if ui.radio_button_bool(im_str!("Looped?"), music.looped) {
+                        music.looped = !music.looped;
+                    }
+                }
+
+                if let Some(music_info) = &game.asset_files.music {
+                    if ui.button(&ImString::from(music_info.filename.clone()), NORMAL_BUTTON) {
+                        music.play(DEFAULT_PLAYBACK_RATE, volume);
+                    }
+                }
+            });
+    }
+}
+
+fn sounds_window_show(
+    ui: &imgui::Ui,
+    opened: &mut bool,
+    game: &mut GameData,
+    sounds: &mut Sounds,
+    filename: &Option<String>,
+) -> Vec<String> {
+    let mut new_sounds = Vec::new();
+
+    if *opened {
+        imgui::Window::new(im_str!("Sounds"))
+            .size(WINDOW_SIZE, imgui::Condition::FirstUseEver)
+            .menu_bar(true)
+            .resizable(true)
+            .opened(opened)
+            .build(ui, || {
+                if ui.button(im_str!("Add sounds"), NORMAL_BUTTON) {
+                    let path = assets_path(filename, "sounds");
+                    choose_sound_from_files(&mut game.asset_files.audio, sounds, path);
+                }
+
+                for name in game.asset_files.audio.keys() {
+                    if ui.button(&ImString::from(name.clone()), SMALL_BUTTON) {
+                        new_sounds.push(name.clone());
+                    }
+                }
+            });
+    }
+
+    new_sounds
+}
+
+fn background_window_show(
+    ui: &imgui::Ui,
+    opened: &mut bool,
+    game: &mut GameData,
+    images: &mut Images,
+    filename: &Option<String>,
+    new_background: &mut Sprite,
+) {
+    if *opened {
+        // TODO: Fix up
+        imgui::Window::new(im_str!("Background"))
+            .size(WINDOW_SIZE, imgui::Condition::FirstUseEver)
+            .opened(opened)
+            .build(ui, || {
+                for i in 0..game.background.len() {
+                    let stack = ui.push_id(i as i32);
+                    ui.text(im_str!("Layer {}", i));
+                    if i != 0 {
+                        ui.same_line(0.0);
+                        if ui.small_button(im_str!("Move Up")) {
+                            game.background.swap(i, i - 1);
+                        }
+                    }
+                    if i != game.background.len() - 1 {
+                        ui.same_line(0.0);
+                        if ui.small_button(im_str!("Move Down")) {
+                            game.background.swap(i, i + 1);
+                        }
+                    }
+                    if ui.small_button(im_str!("Delete")) {
+                        ui.same_line(0.0);
+                        game.background.remove(i);
+                        stack.pop(ui);
+                        break;
+                    } else {
+                        choose_sprite(
+                            &mut game.background[i].sprite,
+                            ui,
+                            &mut game.asset_files.images,
+                            images,
+                            &filename,
+                        );
+
+                        game.background[i].area.choose(ui);
+                    }
+
+                    stack.pop(ui);
+                }
+                if ui.button(im_str!("New Background"), NORMAL_BUTTON) {
+                    *new_background = Sprite::Colour(Colour::black());
+                    ui.open_popup(im_str!("Add a Background"));
+                };
+                ui.popup_modal(im_str!("Add a Background")).build(|| {
+                    choose_sprite(
+                        new_background,
+                        ui,
+                        &mut game.asset_files.images,
+                        images,
+                        filename,
+                    );
+                    if ui.button(im_str!("Ok"), NORMAL_BUTTON) {
+                        game.background.push(BackgroundPart {
+                            sprite: new_background.clone(),
+                            area: AABB::new(0.0, 0.0, 1600.0, 900.0),
+                        });
+                        ui.close_current_popup();
+                    }
+                    ui.same_line(0.0);
+                    if ui.button(im_str!("Cancel"), NORMAL_BUTTON) {
+                        ui.close_current_popup();
+                    }
+                });
+            });
+    }
+}
+
+fn fonts_window_show<'a>(
+    ui: &imgui::Ui,
+    opened: &mut bool,
+    game: &mut GameData,
+    fonts: &mut Fonts<'a, '_>,
+    filename: &Option<String>,
+    ttf_context: &'a TtfContext,
+    font_state: &mut FontState,
+) {
+    if *opened {
+        imgui::Window::new(im_str!("Fonts"))
+            .size(WINDOW_SIZE, imgui::Condition::FirstUseEver)
+            .menu_bar(true)
+            .resizable(true)
+            .opened(opened)
+            .build(ui, || {
+                if ui.button(im_str!("Add fonts"), NORMAL_BUTTON) {
+                    let path = assets_path(filename, "fonts");
+                    let font_filenames = open_fonts_dialog(path);
+                    font_state.new_fonts.extend(font_filenames);
+                }
+
+                if !font_state.new_fonts.is_empty() {
+                    ui.open_popup(im_str!("Load Fonts"));
+                }
+
+                ui.popup_modal(im_str!("Load Fonts")).build(|| {
+                    if font_state.new_fonts.is_empty() {
+                        ui.close_current_popup();
+                    } else {
+                        let (key, _) = font_state.new_fonts.get_mut(0).unwrap();
+                        match key {
+                            Ok(key) => {
+                                choose_string(key, ui, im_str!("Name"));
+                                choose_u16(&mut font_state.size, ui, im_str!("Font Size"));
+                                if ui.button(im_str!("OK"), NORMAL_BUTTON) {
+                                    let (key, path) = font_state.new_fonts.remove(0);
+                                    if let Err(error) = load_font(
+                                        &mut game.asset_files.fonts,
+                                        fonts,
+                                        (key, path),
+                                        ttf_context,
+                                        font_state.size,
+                                    ) {
+                                        log::error!("{}", error);
+                                    }
+                                }
+                                if ui.button(im_str!("Cancel"), NORMAL_BUTTON) {
+                                    font_state.new_fonts.remove(0).0.ok();
+                                }
+                            }
+                            Err(error) => {
+                                ui.text(format!("Error loading file: {}", error));
+                                if ui.button(im_str!("OK"), NORMAL_BUTTON) {
+                                    font_state.new_fonts.remove(0).0.ok();
+                                }
+                            }
+                        }
+                    }
+                });
+
+                for (name, font) in game.asset_files.fonts.iter_mut() {
+                    ui.text(name);
+                    // TODO: Errors if filename not saved!
+                    let base_path = assets_path(&filename, "fonts");
+                    let path = base_path.join(&font.filename);
+                    // TODO: Min Max this
+                    if ui.input_float(im_str!("Size"), &mut font.size).build() {
+                        *fonts.get_mut(name).unwrap() =
+                            ttf_context.load_font(&path, font.size as u16).unwrap();
+                    }
                 }
             });
     }
@@ -2263,12 +2340,51 @@ struct Windows {
     demo: bool,
 }
 
+impl Default for Windows {
+    fn default() -> Windows {
+        Windows {
+            main: true,
+            objects: true,
+            background: false,
+            fonts: false,
+            music: false,
+            sounds: false,
+            demo: false,
+        }
+    }
+}
+
 #[derive(Copy, Clone, Debug)]
 struct Preview {
     playback_rate: f32,
     difficulty_level: u32,
     last_win_status: Option<bool>,
     settings: GameSettings,
+}
+
+impl Preview {
+    fn new(settings: GameSettings) -> Preview {
+        Preview {
+            playback_rate: 1.0,
+            difficulty_level: 1,
+            last_win_status: None,
+            settings,
+        }
+    }
+}
+
+struct FontState {
+    new_fonts: Vec<(WeeResult<String>, String)>,
+    size: u16,
+}
+
+impl Default for FontState {
+    fn default() -> FontState {
+        FontState {
+            new_fonts: Vec::new(),
+            size: 128,
+        }
+    }
 }
 
 struct ObjectState {
