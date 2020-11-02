@@ -156,10 +156,9 @@ struct GamesList {
 }
 
 impl GamesList {
-    fn from_directory(directory: Option<&str>) -> WeeResult<GamesList> {
+    fn from_directory(directory: &str) -> WeeResult<GamesList> {
         let mut games_list = Vec::new();
         let mut boss_list = Vec::new();
-        let directory = directory.unwrap_or("games");
         for entry in WalkDir::new(directory).into_iter().filter_map(|e| e.ok()) {
             let metadata = entry.metadata()?;
             let right_extension = match entry.path().extension() {
@@ -298,7 +297,7 @@ fn run_main_loop<'a, 'b>(
     };
     match game_mode {
         GameMode::Menu => {
-            let mut game = game_with_defaults("games/system/main-menu-with-editor.json")?;
+            let mut game = game_with_defaults("games/system/main-menu-full.json")?;
 
             'menu_running: loop {
                 renderer.adjust_fullscreen(&events.pump, &events.mouse.utils)?;
@@ -349,17 +348,28 @@ fn run_main_loop<'a, 'b>(
             }
         }
         GameMode::Prelude { directory } => {
-            let mut games_list = GamesList::from_directory(directory.as_deref())?;
+            let (tx, rx) = std::sync::mpsc::channel();
+
+            let directory = directory.unwrap_or("games".to_string());
+            let prelude_game = mode_game(&directory, "prelude.json")?;
+
+            std::thread::spawn(move || -> WeeResult<()> {
+                let games_list = GamesList::from_directory(&directory)?;
+
+                tx.send(games_list)?;
+
+                Ok(())
+            });
+
+            let completed_game = prelude_game
+                .start(DEFAULT_GAME_SPEED, DEFAULT_DIFFICULTY, config.settings())
+                .play(renderer, events)?;
+
+            let mut games_list: GamesList = rx.recv()?;
 
             let filename = games_list.choose();
 
             let game_data = GameData::load(&filename)?;
-
-            let loaded_game = mode_game(&games_list.directory, "prelude.json")?;
-
-            let completed_game = loaded_game
-                .start(DEFAULT_GAME_SPEED, DEFAULT_DIFFICULTY, config.settings())
-                .play(renderer, events)?;
 
             let game = LoadedGame::load_from_game_data(game_data, &filename, &intro_font)?;
 
@@ -382,82 +392,71 @@ fn run_main_loop<'a, 'b>(
             mut games_list,
             progress,
         } => {
-            let filename = if games_list.next_boss_game == progress.score {
-                games_list.choose_boss()
+            let is_boss_game =
+                !games_list.bosses.is_empty() && games_list.next_boss_game == progress.score;
+            let filename = if is_boss_game {
+                games_list.choose_boss().unwrap()
             } else {
-                Some(games_list.choose())
+                games_list.choose()
             };
 
-            if let Some(filename) = filename {
-                let game_data = GameData::load(&filename.clone())?;
+            let game_data = GameData::load(&filename.clone())?;
 
-                let mut loaded_game = mode_game(&games_list.directory, "interlude.json")?;
+            let mut loaded_game = mode_game(&games_list.directory, "interlude.json")?;
 
-                let text_replacements = vec![
-                    ("{Score}", progress.score.to_string()),
-                    ("{Lives}", progress.lives.to_string()),
-                    (
-                        "{Game}",
-                        Path::new(&filename)
-                            .file_stem()
-                            .unwrap()
-                            .to_str()
-                            .unwrap()
-                            .to_string(),
-                    ),
-                    (
-                        "{IntroText}",
-                        game_data.intro_text.as_deref().unwrap_or("").to_string(),
-                    ),
-                ];
-                for object in loaded_game.objects.iter_mut() {
-                    let mut set_switch = |name, pred| {
-                        if object.name == name {
-                            object.switch = if pred { Switch::On } else { Switch::Off };
-                        }
-                    };
-                    set_switch("Won", won);
-                    set_switch("1", progress.lives >= 1);
-                    set_switch("2", progress.lives >= 2);
-                    set_switch("3", progress.lives >= 3);
-                    set_switch("4", progress.lives >= 4);
-                    set_switch("Boss", games_list.next_boss_game == progress.score);
-
-                    object.replace_text(&text_replacements);
-                }
-
-                let completed_game = loaded_game
-                    .start(
-                        progress.playback_rate,
-                        DEFAULT_DIFFICULTY,
-                        config.settings(),
-                    )
-                    .play(renderer, events)?;
-
-                let game = LoadedGame::load_from_game_data(game_data, &filename, &intro_font)?;
-
-                log::info!("Playing game: {}", filename);
-                game_mode = if let Completion::Finished = completed_game.completion {
-                    GameMode::Play {
-                        game,
-                        games_list,
-                        progress,
+            let text_replacements = vec![
+                ("{Score}", progress.score.to_string()),
+                ("{Lives}", progress.lives.to_string()),
+                (
+                    "{Game}",
+                    Path::new(&filename)
+                        .file_stem()
+                        .unwrap()
+                        .to_str()
+                        .unwrap()
+                        .to_string(),
+                ),
+                (
+                    "{IntroText}",
+                    game_data.intro_text.as_deref().unwrap_or("").to_string(),
+                ),
+            ];
+            for object in loaded_game.objects.iter_mut() {
+                let mut set_switch = |name, pred| {
+                    if object.name == name {
+                        object.switch = if pred { Switch::On } else { Switch::Off };
                     }
-                } else {
-                    GameMode::Menu
                 };
-            } else {
-                game_mode = if games_list.next_boss_game == progress.score {
-                    games_list.next_boss_game += BOSS_GAME_INTERVAL;
-                    GameMode::Interlude {
-                        won,
-                        games_list,
-                        progress,
-                    }
-                } else {
-                    GameMode::Menu
-                }
+                set_switch("Won", won);
+                set_switch("1", progress.lives >= 1);
+                set_switch("2", progress.lives >= 2);
+                set_switch("3", progress.lives >= 3);
+                set_switch("4", progress.lives >= 4);
+                set_switch("Boss", games_list.next_boss_game == progress.score);
+
+                object.replace_text(&text_replacements);
             }
+
+            let completed_game = loaded_game
+                .start(
+                    progress.playback_rate,
+                    DEFAULT_DIFFICULTY,
+                    config.settings(),
+                )
+                .play(renderer, events)?;
+
+            let game = LoadedGame::load_from_game_data(game_data, &filename, &intro_font)?;
+
+            log::info!("Playing game: {}", filename);
+            game_mode = if let Completion::Finished = completed_game.completion {
+                GameMode::Play {
+                    game,
+                    games_list,
+                    progress,
+                }
+            } else {
+                GameMode::Menu
+            };
         }
         GameMode::GameOver {
             progress,
@@ -539,7 +538,8 @@ fn run_main_loop<'a, 'b>(
                 Ok(completed_game) => {
                     game_mode = if let Completion::Finished = completed_game.completion {
                         let has_won = completed_game.has_been_won;
-                        let was_boss_game = games_list.next_boss_game == progress.score;
+                        let was_boss_game = !games_list.bosses.is_empty()
+                            && games_list.next_boss_game == progress.score;
 
                         progress.update(
                             has_won,

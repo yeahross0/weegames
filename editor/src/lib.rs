@@ -2,10 +2,8 @@
 // TODO: Add ability to delete images, music, sounds, fonts
 // TODO: Make timer be seconds and time to end in end early
 // TODO: Flip is confusing
-// TODO: Fix issues caused by short-circuiting on ||
 // TODO: Error in find_object when doesn't exist
-// TODO: Sort sprite keys alphabetically in combo?
-// TODO: Set if music is looped
+// TODO: Animation preview shows old animation when click on new object
 
 #[macro_use]
 extern crate imgui;
@@ -127,6 +125,7 @@ pub fn run<'a, 'b>(
 
     'editor_running: loop {
         let mut file_task = FileTask::None;
+        editor.draw_tasks = Vec::new();
 
         for event in events.pump.poll_iter() {
             imgui.sdl.handle_event(&mut imgui.context, &event);
@@ -138,8 +137,6 @@ pub fn run<'a, 'b>(
                 file_task = FileTask::Exit;
             }
         }
-
-        let mut draw_tasks = Vec::new();
 
         let imgui_frame = imgui.prepare_frame(
             &renderer.window,
@@ -504,17 +501,12 @@ pub fn run<'a, 'b>(
             show_origins,
         )?;
 
-        renderer.draw_tasks(&mut draw_tasks, scene_location);
+        renderer.draw_tasks(&mut editor.draw_tasks, scene_location);
 
         imgui_frame.render(&renderer.window);
-        // Shoudn't need to be done here renderer.update_mouse(event_pump);
         renderer.present();
 
         thread::sleep(Duration::from_millis(10));
-
-        /*if let FileTask::ReturnToMenu = file_task {
-            break 'editor_running;
-        }*/
     }
 
     Ok(())
@@ -1237,6 +1229,11 @@ fn edit_instruction_list<'a>(
                     }
                 }
                 ui.same_line(0.0);
+                if ui.small_button(im_str!("Clone")) && !instructions.is_empty() {
+                    let ins = instructions[*selected_index].clone();
+                    instructions.push(ins);
+                }
+                ui.same_line(0.0);
                 if ui.small_button(im_str!("Up")) && *selected_index > 0 {
                     instructions.swap(*selected_index, *selected_index - 1);
                     *selected_index -= 1;
@@ -1423,6 +1420,53 @@ fn edit_action<'a>(
     object_names: &[&str],
     ttf_context: &'a TtfContext,
 ) {
+    choose_action_type(ui, action, assets);
+
+    if let Action::Random { random_actions } = action {
+        let mut delete_index = None;
+        ui.text("Actions:");
+        for (i, action) in random_actions.iter_mut().enumerate() {
+            let stack = ui.push_id(i as i32);
+            edit_random_action(
+                ui,
+                action,
+                editor,
+                assets,
+                asset_files,
+                object_names,
+                ttf_context,
+            );
+            if ui.small_button(im_str!("Delete")) {
+                delete_index = Some(i);
+            }
+            ui.separator();
+            stack.pop(ui);
+        }
+        if let Some(index) = delete_index {
+            random_actions.remove(index);
+        }
+
+        if ui.button(im_str!("Add Action"), SMALL_BUTTON) {
+            random_actions.push(Action::Win);
+        }
+    } else {
+        edit_individual_action(
+            ui,
+            action,
+            editor,
+            assets,
+            asset_files,
+            object_names,
+            ttf_context,
+        );
+    }
+
+    if ui.small_button(im_str!("Back")) {
+        editor.instruction_state.mode = InstructionMode::Edit;
+    }
+}
+
+fn choose_action_type(ui: &imgui::Ui, action: &mut Action, assets: &mut Assets) {
     let mut current_action_position = match action {
         Action::Win => 0,
         Action::Lose => 1,
@@ -1486,7 +1530,39 @@ fn edit_action<'a>(
             _ => unreachable!(),
         }
     }
+}
 
+fn edit_random_action<'a>(
+    ui: &imgui::Ui,
+    action: &mut Action,
+    editor: &mut Editor,
+    assets: &mut Assets<'a, '_>,
+    asset_files: &mut AssetFiles,
+    object_names: &[&str],
+    ttf_context: &'a TtfContext,
+) {
+    choose_action_type(ui, action, assets);
+
+    edit_individual_action(
+        ui,
+        action,
+        editor,
+        assets,
+        asset_files,
+        object_names,
+        ttf_context,
+    );
+}
+
+fn edit_individual_action<'a>(
+    ui: &imgui::Ui,
+    action: &mut Action,
+    editor: &mut Editor,
+    assets: &mut Assets<'a, '_>,
+    asset_files: &mut AssetFiles,
+    object_names: &[&str],
+    ttf_context: &'a TtfContext,
+) {
     match action {
         Action::Motion(motion) => {
             choose_motion(motion, ui, object_names, &mut editor.draw_tasks);
@@ -1585,41 +1661,8 @@ fn edit_action<'a>(
             resize.choose(ui);
             justify.choose(ui);
         }
-        Action::Random { random_actions } => {
-            // TODO: Finish this
-            ui.text("Actions:");
-            fn list_actions(ui: &imgui::Ui, actions: &[Action]) {
-                for action in actions.iter() {
-                    ui.text(action.to_string());
-                }
-            }
-            list_actions(ui, &random_actions);
-            for (i, action) in random_actions.iter_mut().enumerate() {
-                let stack = ui.push_id(i as i32);
-                if let Action::Random { .. } = action {
-                } else {
-                    edit_action(
-                        ui,
-                        action,
-                        editor,
-                        assets,
-                        asset_files,
-                        object_names,
-                        ttf_context,
-                    );
-                }
-                stack.pop(ui);
-            }
-
-            if ui.button(im_str!("Add Action"), SMALL_BUTTON) {
-                random_actions.push(Action::Win);
-            }
-        }
+        Action::Random { .. } => {}
         _ => {}
-    }
-
-    if ui.small_button(im_str!("Back")) {
-        editor.instruction_state.mode = InstructionMode::Edit;
     }
 }
 
@@ -1930,17 +1973,7 @@ fn edit_objects_list(
         });
 }
 
-fn file_show(
-    ui: &imgui::Ui,
-    /*game: &mut GameData,
-    assets: &mut Assets<'a, 'b>,
-    event_pump: &mut EventPump,
-    ttf_context: &'a TtfContext,
-    filename: &mut Option<String>,
-    selected_index: &mut Option<usize>,
-    instruction_state: &mut InstructionState,
-    editor_status: &mut EditorStatus,*/
-) -> FileTask {
+fn file_show(ui: &imgui::Ui) -> FileTask {
     let menu = ui.begin_menu(im_str!("File"), true);
     let mut file_task = FileTask::None;
     if let Some(menu) = menu {
@@ -1956,38 +1989,14 @@ fn file_show(
         if imgui::MenuItem::new(im_str!("Save As")).build(ui) {
             file_task = FileTask::SaveAs;
         }
+        ui.separator();
+        if imgui::MenuItem::new(im_str!("Reload Assets")).build(ui) {
+            file_task = FileTask::ReloadAssets;
+        }
+        ui.separator();
         if imgui::MenuItem::new(im_str!("Return to Menu")).build(ui) {
             file_task = FileTask::ReturnToMenu;
         }
-
-        /*file_new(
-            ui,
-            game,
-            assets,
-            filename,
-            selected_index,
-            instruction_state,
-        );
-
-        if let Err(error) = file_open(
-            ui,
-            game,
-            assets,
-            event_pump,
-            ttf_context,
-            filename,
-            selected_index,
-            instruction_state,
-        ) {
-            menu.end(ui);
-            return Err(error);
-        }
-
-        file_save(ui, game, filename);
-
-        file_save_as(ui, game, filename);
-
-        *editor_status = file_return_to_menu(ui);*/
 
         menu.end(ui);
     }
@@ -2055,6 +2064,7 @@ enum FileTask {
     Open,
     Save,
     SaveAs,
+    ReloadAssets,
     ReturnToMenu,
     Exit,
     None,
@@ -2162,8 +2172,8 @@ impl FileTask {
             FileTask::New => {
                 *editor = Editor::default();
                 *assets = Assets::default();
-                /*game = GameData::default();
-                filename = None;
+                *game = GameData::default();
+                /*filename = None;
                 object_state.index = None;
                 instruction_state = InstructionState::default();*/
             }
@@ -2186,8 +2196,6 @@ impl FileTask {
                             log::error!("{}", error);
                         }
                     }
-                } else {
-                    log::error!("Error opening file dialog");
                 }
             }
             FileTask::Save => match &editor.filename {
@@ -2207,6 +2215,13 @@ impl FileTask {
             },
             FileTask::SaveAs => {
                 save_game_file_as(&game, &mut editor.filename);
+            }
+            FileTask::ReloadAssets => {
+                if let Some(filename) = &editor.filename {
+                    *assets = Assets::load(&game.asset_files, &filename, ttf_context)?;
+                } else {
+                    log::error!("Can't reload assets when the game is not saved")
+                }
             }
             FileTask::ReturnToMenu => {}
             FileTask::Exit => process::exit(0),
@@ -3504,7 +3519,7 @@ fn choose_animation(
             Sprite::Colour(colour) => {
                 // TODO: Does this work with all the buttons having the same id?
                 if imgui::ColorButton::new(
-                    im_str!("##Colour"),
+                    &ImString::from(format!("##Colour: {}", index)),
                     [colour.r, colour.g, colour.b, colour.a],
                 )
                 .size([108.0, 108.0])

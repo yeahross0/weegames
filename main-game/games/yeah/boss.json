@@ -72,11 +72,31 @@
             }
           ],
           "actions": [
-            "Lose"
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "SetProperty": {
+                "Timer": {
+                  "time": 120
+                }
+              }
+            }
           ]
         },
         {
-          "triggers": [],
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Wasp",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
           "actions": [
             {
               "SetProperty": {
@@ -88,7 +108,12 @@
         {
           "triggers": [
             {
-              "WinStatus": "HasBeenLost"
+              "CheckProperty": {
+                "name": "Wasp",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
             }
           ],
           "actions": [
@@ -123,6 +148,38 @@
           ],
           "actions": [
             "Win"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Wasp",
+                "check": "Timer"
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            },
+            {
+              "Motion": {
+                "Target": {
+                  "target": "Mouse",
+                  "target_type": "Follow",
+                  "offset": {
+                    "x": 0.0,
+                    "y": 0.0
+                  },
+                  "speed": {
+                    "Value": 1.5
+                  }
+                }
+              }
+            }
           ]
         }
       ]
@@ -215,7 +272,12 @@
         {
           "triggers": [
             {
-              "WinStatus": "HasBeenLost"
+              "CheckProperty": {
+                "name": "Wasp",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
             }
           ],
           "actions": [
@@ -227,9 +289,6 @@
                   }
                 }
               }
-            },
-            {
-              "Effect": "Freeze"
             },
             {
               "PlaySound": {
@@ -258,6 +317,29 @@
                 "Sprite": {
                   "Image": {
                     "name": "stock-stung"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Wasp",
+                "check": {
+                  "Switch": "SwitchedOff"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "stock-not-looking"
                   }
                 }
               }
@@ -503,6 +585,30 @@
               }
             }
           ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Wasp",
+                "check": "Timer"
+              }
+            }
+          ],
+          "actions": [
+            {
+              "PlaySound": {
+                "name": "humming-2"
+              }
+            },
+            {
+              "SetProperty": {
+                "Timer": {
+                  "time": 120
+                }
+              }
+            }
+          ]
         }
       ]
     },
@@ -574,6 +680,30 @@
               "CheckProperty": {
                 "name": "Man",
                 "check": "FinishedAnimation"
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": -800.0,
+                    "y": -800.0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Wasp",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
               }
             }
           ],
@@ -800,25 +930,25 @@
   "background": [],
   "asset_files": {
     "images": {
-      "watch-5": "watch-5.webp",
-      "watch-2": "watch-2.webp",
-      "stock-not-looking": "stock-not-looking.jpg",
-      "watch-4": "watch-4.webp",
-      "stock-stung": "stock-stung.jpg",
       "watch-0": "watch-0.webp",
-      "stock-looking-2": "stock-looking-2.jpg",
+      "stock-not-looking": "stock-not-looking.jpg",
+      "watch-5": "watch-5.webp",
+      "stock-stung": "stock-stung.jpg",
+      "watch-3": "watch-3.webp",
       "watch-1": "watch-1.webp",
+      "watch-4": "watch-4.webp",
       "stock-pointing": "stock-pointing.jpg",
       "wasp-crop-small": "wasp-crop-small.png",
       "stock-looking": "stock-looking.jpg",
-      "watch-3": "watch-3.webp"
+      "stock-looking-2": "stock-looking-2.jpg",
+      "watch-2": "watch-2.webp"
     },
     "audio": {
-      "scream-crop": "scream-crop.ogg",
-      "humming-3": "humming-3.ogg",
-      "humming-1": "humming-1.ogg",
       "humming-2": "humming-2.ogg",
-      "ha-crop": "ha-crop.ogg"
+      "humming-3": "humming-3.ogg",
+      "ha-crop": "ha-crop.ogg",
+      "scream-crop": "scream-crop.ogg",
+      "humming-1": "humming-1.ogg"
     },
     "music": null,
     "fonts": {}

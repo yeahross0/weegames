@@ -377,12 +377,12 @@
                 "JumpTo": {
                   "Area": {
                     "min": {
-                      "x": 200.0,
+                      "x": 210.0,
                       "y": 100.0
                     },
                     "max": {
-                      "x": 1450.0,
-                      "y": 650.0
+                      "x": 1440.0,
+                      "y": 640.0
                     }
                   }
                 }
@@ -483,12 +483,12 @@
                 "JumpTo": {
                   "Area": {
                     "min": {
-                      "x": 200.0,
+                      "x": 210.0,
                       "y": 100.0
                     },
                     "max": {
-                      "x": 1450.0,
-                      "y": 650.0
+                      "x": 1440.0,
+                      "y": 640.0
                     }
                   }
                 }
@@ -1001,12 +1001,12 @@
                 "JumpTo": {
                   "Area": {
                     "min": {
-                      "x": 200.0,
+                      "x": 210.0,
                       "y": 100.0
                     },
                     "max": {
-                      "x": 1450.0,
-                      "y": 650.0
+                      "x": 1440.0,
+                      "y": 640.0
                     }
                   }
                 }
@@ -1107,12 +1107,12 @@
                 "JumpTo": {
                   "Area": {
                     "min": {
-                      "x": 200.0,
+                      "x": 210.0,
                       "y": 100.0
                     },
                     "max": {
-                      "x": 1450.0,
-                      "y": 650.0
+                      "x": 1440.0,
+                      "y": 640.0
                     }
                   }
                 }
@@ -1283,12 +1283,12 @@
                 "JumpTo": {
                   "Area": {
                     "min": {
-                      "x": 200.0,
+                      "x": 210.0,
                       "y": 100.0
                     },
                     "max": {
-                      "x": 1450.0,
-                      "y": 650.0
+                      "x": 1440.0,
+                      "y": 640.0
                     }
                   }
                 }
@@ -1402,12 +1402,12 @@
                 "JumpTo": {
                   "Area": {
                     "min": {
-                      "x": 200.0,
+                      "x": 210.0,
                       "y": 100.0
                     },
                     "max": {
-                      "x": 1450.0,
-                      "y": 650.0
+                      "x": 1440.0,
+                      "y": 640.0
                     }
                   }
                 }
@@ -1518,12 +1518,12 @@
                 "JumpTo": {
                   "Area": {
                     "min": {
-                      "x": 200.0,
+                      "x": 210.0,
                       "y": 100.0
                     },
                     "max": {
-                      "x": 1450.0,
-                      "y": 650.0
+                      "x": 1440.0,
+                      "y": 640.0
                     }
                   }
                 }
@@ -1634,12 +1634,12 @@
                 "JumpTo": {
                   "Area": {
                     "min": {
-                      "x": 200.0,
+                      "x": 210.0,
                       "y": 100.0
                     },
                     "max": {
-                      "x": 1450.0,
-                      "y": 650.0
+                      "x": 1440.0,
+                      "y": 640.0
                     }
                   }
                 }
@@ -1747,30 +1747,30 @@
   ],
   "asset_files": {
     "images": {
+      "knight iso char_slice left_0": "knight iso char_slice left_0.png",
+      "knight iso char_slice right_1": "knight iso char_slice right_1.png",
       "knight iso char_slice down_0": "knight iso char_slice down_0.png",
-      "knight iso char_slice right_0": "knight iso char_slice right_0.png",
+      "shadows": "shadows.png",
+      "knight iso char_slice up_2": "knight iso char_slice up_2.png",
+      "knight iso char_slice up_1": "knight iso char_slice up_1.png",
       "knight iso char_slice down_1": "knight iso char_slice down_1.png",
       "pot-2": "pot-2.png",
       "grass": "grass.png",
-      "knight iso char_slice right_1": "knight iso char_slice right_1.png",
-      "pot-1": "pot-1.png",
-      "knight iso char_slice up_2": "knight iso char_slice up_2.png",
-      "shadows": "shadows.png",
-      "knight iso char_slice left_1": "knight iso char_slice left_1.png",
-      "knight iso char_slice left_2": "knight iso char_slice left_2.png",
       "pot-3": "pot-3.png",
-      "knight iso char_slice down_2": "knight iso char_slice down_2.png",
       "knight iso char_slice right_2": "knight iso char_slice right_2.png",
-      "trees": "trees.png",
-      "pot-4": "pot-4.png",
+      "knight iso char_slice right_0": "knight iso char_slice right_0.png",
+      "knight iso char_slice left_1": "knight iso char_slice left_1.png",
+      "pot-1": "pot-1.png",
+      "knight iso char_slice left_2": "knight iso char_slice left_2.png",
+      "knight iso char_slice down_2": "knight iso char_slice down_2.png",
       "knight iso char_slice up_0": "knight iso char_slice up_0.png",
-      "knight iso char_slice up_1": "knight iso char_slice up_1.png",
       "veget": "veget.png",
-      "knight iso char_slice left_0": "knight iso char_slice left_0.png"
+      "pot-4": "pot-4.png",
+      "trees": "trees.png"
     },
     "audio": {
-      "attack": "attack.ogg",
-      "weird-impact": "weird-impact.ogg"
+      "weird-impact": "weird-impact.ogg",
+      "attack": "attack.ogg"
     },
     "music": {
       "filename": "fields-of-ice.ogg",

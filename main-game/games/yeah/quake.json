@@ -193,6 +193,13 @@
               "SetProperty": {
                 "Switch": "On"
               }
+            },
+            {
+              "SetProperty": {
+                "Layer": {
+                  "Value": 2
+                }
+              }
             }
           ]
         },
@@ -252,21 +259,21 @@
   "background": [],
   "asset_files": {
     "images": {
+      "back": "back.webp",
       "earthquake": "earthquake.webp",
-      "butterfly-itself": "butterfly-itself.png",
       "earthquake-middle": "earthquake-middle.webp",
-      "back": "back.webp"
+      "butterfly-itself": "butterfly-itself.png"
     },
     "audio": {
       "slap-crop": "slap-crop.ogg",
-      "oi": "oi.ogg",
-      "oh-no-4-crop": "oh-no-4-crop.ogg"
+      "oh-no-4-crop": "oh-no-4-crop.ogg",
+      "oi": "oi.ogg"
     },
-    "fonts": {},
     "music": {
       "filename": "dramatic-increase-crop.ogg",
       "looped": false
-    }
+    },
+    "fonts": {}
   },
   "length": {
     "Seconds": 4.0

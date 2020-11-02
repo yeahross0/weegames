@@ -424,7 +424,7 @@ impl fmt::Display for Trigger {
                 PropertyCheck::FinishedAnimation => {
                     write!(f, "When {}'s animation is finished", name)
                 }
-                PropertyCheck::Timer => write!(f, "When this object's timer hits zero"),
+                PropertyCheck::Timer => write!(f, "When {}'s timer hits zero", name),
             },
             Trigger::Random { chance } => write!(f, "With a {}% chance", chance * 100.0),
             Trigger::DifficultyLevel { level } => write!(f, "If the difficulty is {}", level),

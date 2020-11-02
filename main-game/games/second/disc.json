@@ -1,0 +1,2208 @@
+{
+  "format_version": "0.2",
+  "published": true,
+  "game_type": "Minigame",
+  "objects": [
+    {
+      "name": "Player",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 1.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 400.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 0.0,
+          "y": 10.0
+        },
+        "max": {
+          "x": 100.0,
+          "y": 90.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "Target": {
+                  "target": "Mouse",
+                  "target_type": "Follow",
+                  "offset": {
+                    "x": 0.0,
+                    "y": 0.0
+                  },
+                  "speed": "Normal"
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "ClampPosition": {
+                    "area": {
+                      "min": {
+                        "x": 200.0,
+                        "y": 200.0
+                      },
+                      "max": {
+                        "x": 600.0,
+                        "y": 700.0
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Disc"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Player",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Foe",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Player",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Disc",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": "Stop"
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Player",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "PlayOnce",
+                "sprites": [
+                  {
+                    "Colour": {
+                      "r": 0.0,
+                      "g": 0.0,
+                      "b": 1.0,
+                      "a": 0.0
+                    }
+                  },
+                  {
+                    "Colour": {
+                      "r": 0.0,
+                      "g": 0.43529412,
+                      "b": 1.0,
+                      "a": 0.0
+                    }
+                  },
+                  {
+                    "Colour": {
+                      "r": 0.0,
+                      "g": 1.0,
+                      "b": 0.7058824,
+                      "a": 0.0
+                    }
+                  }
+                ],
+                "speed": "Normal"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Foe",
+      "sprite": {
+        "Colour": {
+          "r": 1.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 1200.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 0.0,
+          "y": 10.0
+        },
+        "max": {
+          "x": 100.0,
+          "y": 90.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Disc"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Foe",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Player",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "Target": {
+                  "target": {
+                    "Object": {
+                      "name": "Disc"
+                    }
+                  },
+                  "target_type": "Follow",
+                  "offset": {
+                    "x": 0.0,
+                    "y": 0.0
+                  },
+                  "speed": "Normal"
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "ClampPosition": {
+                    "area": {
+                      "min": {
+                        "x": 900.0,
+                        "y": 200.0
+                      },
+                      "max": {
+                        "x": 1400.0,
+                        "y": 700.0
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Foe",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Disc",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": "Stop"
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Foe",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "PlayOnce",
+                "sprites": [
+                  {
+                    "Colour": {
+                      "r": 1.0,
+                      "g": 0.0,
+                      "b": 0.0,
+                      "a": 0.0
+                    }
+                  },
+                  {
+                    "Colour": {
+                      "r": 1.0,
+                      "g": 0.5882353,
+                      "b": 0.0,
+                      "a": 0.0
+                    }
+                  },
+                  {
+                    "Colour": {
+                      "r": 1.0,
+                      "g": 1.0,
+                      "b": 0.0,
+                      "a": 0.0
+                    }
+                  }
+                ],
+                "speed": "Normal"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Disc",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 160.0,
+        "height": 160.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 30.0,
+          "y": 30.0
+        },
+        "max": {
+          "x": 124.0,
+          "y": 124.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Right",
+                        "Left"
+                      ]
+                    }
+                  },
+                  "speed": "Slow"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Player",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Foe",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Disc",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": "Stop"
+            },
+            {
+              "SetProperty": {
+                "Angle": "RotateToMouse"
+              }
+            },
+            {
+              "SetProperty": {
+                "Angle": {
+                  "Clamp": {
+                    "min": 20.0,
+                    "max": 160.0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Player Throw",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Player",
+                "check": {
+                  "Sprite": {
+                    "Colour": {
+                      "r": 0.0,
+                      "g": 0.0,
+                      "b": 1.0,
+                      "a": 0.0
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "Roam": {
+                  "movement_type": {
+                    "Reflect": {
+                      "initial_direction": {
+                        "Angle": "Current"
+                      },
+                      "movement_handling": "Anywhere"
+                    }
+                  },
+                  "area": {
+                    "min": {
+                      "x": 0.0,
+                      "y": 100.0
+                    },
+                    "max": {
+                      "x": 1600.0,
+                      "y": 800.0
+                    }
+                  },
+                  "speed": "VeryFast"
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "laser-bullet-2"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Foe Throw",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Foe",
+                "check": {
+                  "Sprite": {
+                    "Colour": {
+                      "r": 1.0,
+                      "g": 0.0,
+                      "b": 0.0,
+                      "a": 0.0
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            },
+            {
+              "Motion": {
+                "Roam": {
+                  "movement_type": {
+                    "Reflect": {
+                      "initial_direction": {
+                        "Angle": {
+                          "Random": {
+                            "min": 200.0,
+                            "max": 340.0
+                          }
+                        }
+                      },
+                      "movement_handling": "Anywhere"
+                    }
+                  },
+                  "area": {
+                    "min": {
+                      "x": 0.0,
+                      "y": 100.0
+                    },
+                    "max": {
+                      "x": 1600.0,
+                      "y": 800.0
+                    }
+                  },
+                  "speed": "VeryFast"
+                }
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "laser-bullet-2"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Player Throw",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Player",
+                "check": {
+                  "Sprite": {
+                    "Colour": {
+                      "r": 0.0,
+                      "g": 0.43529412,
+                      "b": 1.0,
+                      "a": 0.0
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "Roam": {
+                  "movement_type": {
+                    "Reflect": {
+                      "initial_direction": {
+                        "Angle": "Current"
+                      },
+                      "movement_handling": "Anywhere"
+                    }
+                  },
+                  "area": {
+                    "min": {
+                      "x": 0.0,
+                      "y": 100.0
+                    },
+                    "max": {
+                      "x": 1600.0,
+                      "y": 800.0
+                    }
+                  },
+                  "speed": "Fast"
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "laser-bullet-1"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Player Throw",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Player",
+                "check": {
+                  "Sprite": {
+                    "Colour": {
+                      "r": 0.0,
+                      "g": 1.0,
+                      "b": 0.7058824,
+                      "a": 0.0
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "Roam": {
+                  "movement_type": {
+                    "Reflect": {
+                      "initial_direction": {
+                        "Angle": "Current"
+                      },
+                      "movement_handling": "Anywhere"
+                    }
+                  },
+                  "area": {
+                    "min": {
+                      "x": 0.0,
+                      "y": 100.0
+                    },
+                    "max": {
+                      "x": 1600.0,
+                      "y": 800.0
+                    }
+                  },
+                  "speed": "Normal"
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "bullet"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Foe Throw",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Foe",
+                "check": {
+                  "Sprite": {
+                    "Colour": {
+                      "r": 1.0,
+                      "g": 0.5882353,
+                      "b": 0.0,
+                      "a": 0.0
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            },
+            {
+              "Motion": {
+                "Roam": {
+                  "movement_type": {
+                    "Reflect": {
+                      "initial_direction": {
+                        "Angle": {
+                          "Random": {
+                            "min": 200.0,
+                            "max": 340.0
+                          }
+                        }
+                      },
+                      "movement_handling": "Anywhere"
+                    }
+                  },
+                  "area": {
+                    "min": {
+                      "x": 0.0,
+                      "y": 100.0
+                    },
+                    "max": {
+                      "x": 1600.0,
+                      "y": 800.0
+                    }
+                  },
+                  "speed": "Fast"
+                }
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "laser-bullet-1"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Foe Throw",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Foe",
+                "check": {
+                  "Sprite": {
+                    "Colour": {
+                      "r": 1.0,
+                      "g": 1.0,
+                      "b": 0.0,
+                      "a": 0.0
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            },
+            {
+              "Motion": {
+                "Roam": {
+                  "movement_type": {
+                    "Reflect": {
+                      "initial_direction": {
+                        "Angle": {
+                          "Random": {
+                            "min": 200.0,
+                            "max": 340.0
+                          }
+                        }
+                      },
+                      "movement_handling": "Anywhere"
+                    }
+                  },
+                  "area": {
+                    "min": {
+                      "x": 0.0,
+                      "y": 100.0
+                    },
+                    "max": {
+                      "x": 1600.0,
+                      "y": 800.0
+                    }
+                  },
+                  "speed": "Normal"
+                }
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "bullet"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Area": {
+                  "min": {
+                    "x": 0.0,
+                    "y": 0.0
+                  },
+                  "max": {
+                    "x": 50.0,
+                    "y": 900.0
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 800.0,
+                    "y": 450.0
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Left"
+                      ]
+                    }
+                  },
+                  "speed": "Slow"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Player Point",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 800.0,
+                    "y": 450.0
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Right"
+                      ]
+                    }
+                  },
+                  "speed": "Slow"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Player Throw",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Player",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Disc",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Player",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Disc",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Player",
+                "check": "FinishedAnimation"
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Foe Mouse",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Foe",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Random": {
+                "random_actions": [
+                  {
+                    "SetProperty": {
+                      "Timer": {
+                        "time": 1
+                      }
+                    }
+                  },
+                  {
+                    "SetProperty": {
+                      "Timer": {
+                        "time": 9
+                      }
+                    }
+                  },
+                  {
+                    "SetProperty": {
+                      "Timer": {
+                        "time": 17
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Foe Throw",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Foe",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Disc",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Foe Mouse",
+                "check": "Timer"
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Player Score",
+      "sprite": {
+        "Image": {
+          "name": "yellow-1"
+        }
+      },
+      "position": {
+        "x": 662.0,
+        "y": 80.0
+      },
+      "size": {
+        "width": 50.0,
+        "height": 76.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Player Point",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Player Score",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "yellow-1"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "yellow-2"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Player Point",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Player Score",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "yellow-2"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "yellow-3"
+                  }
+                }
+              }
+            },
+            "Win",
+            {
+              "Effect": "Freeze"
+            },
+            {
+              "PlaySound": {
+                "name": "rising"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Player Point",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 1600.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 900.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Disc"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "woosh"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Foe Score",
+      "sprite": {
+        "Image": {
+          "name": "yellow-0"
+        }
+      },
+      "position": {
+        "x": 936.0,
+        "y": 80.0
+      },
+      "size": {
+        "width": 50.0,
+        "height": 76.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Foe Point",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Foe Score",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "yellow-0"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "yellow-1"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Foe Point",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Foe Score",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "yellow-1"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "yellow-2"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Foe Point",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Foe Score",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "yellow-2"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "yellow-3"
+                  }
+                }
+              }
+            },
+            "Lose",
+            {
+              "Effect": "Freeze"
+            },
+            {
+              "PlaySound": {
+                "name": "rising"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Foe Point",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 0.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 900.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Disc"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "woosh"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Decider",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "End"
+            },
+            {
+              "CheckProperty": {
+                "name": "Foe Score",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "yellow-2"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "End"
+            },
+            {
+              "CheckProperty": {
+                "name": "Foe Score",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "yellow-1"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Player Score",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "yellow-1"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "End"
+            }
+          ],
+          "actions": [
+            "Win"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Player Sprite",
+      "sprite": {
+        "Image": {
+          "name": "blue-slime-1"
+        }
+      },
+      "position": {
+        "x": 400.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 256.0,
+        "height": 256.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Player"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "Loop",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "blue-slime-1"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "blue-slime-2"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "blue-slime-3"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "blue-slime-4"
+                    }
+                  }
+                ],
+                "speed": "Normal"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Foe Sprite",
+      "sprite": {
+        "Image": {
+          "name": "red-slime-1"
+        }
+      },
+      "position": {
+        "x": 1200.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 256.0,
+        "height": 256.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Foe"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "Loop",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "red-slime-1"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "red-slime-2"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "red-slime-3"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "red-slime-4"
+                    }
+                  }
+                ],
+                "speed": "Normal"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Disc Sprite",
+      "sprite": {
+        "Image": {
+          "name": "FB500-1"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 160.0,
+        "height": 160.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 30.0,
+          "y": 30.0
+        },
+        "max": {
+          "x": 124.0,
+          "y": 124.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "Loop",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "FB500-1"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "FB500-2"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "FB500-3"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "FB500-4"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "FB500-5"
+                    }
+                  }
+                ],
+                "speed": "VeryFast"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Disc"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Player",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "FlipHorizontal": {
+                  "SetFlip": false
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Foe",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "FlipHorizontal": {
+                  "SetFlip": true
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Net",
+      "sprite": {
+        "Image": {
+          "name": "net1"
+        }
+      },
+      "position": {
+        "x": 805.0,
+        "y": 411.0
+      },
+      "size": {
+        "width": 77.34431,
+        "height": 871.4068
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 2,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "Time",
+      "sprite": {
+        "Image": {
+          "name": "time-7"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 82.0
+      },
+      "size": {
+        "width": 91.0,
+        "height": 77.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 3,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "PlayOnce",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "time-7"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "time-6"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "time-5"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "time-4"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "time-3"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "time-2"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "time-1"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "time-0"
+                    }
+                  }
+                ],
+                "speed": {
+                  "Value": 60.0
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "background": [
+    {
+      "sprite": {
+        "Image": {
+          "name": "volley-terrain7"
+        }
+      },
+      "area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 1600.0,
+          "y": 900.0
+        }
+      }
+    }
+  ],
+  "asset_files": {
+    "images": {
+      "time-4": "time-4.png",
+      "FB500-2": "FB500-2.png",
+      "blue-slime-2": "blue-slime-2.png",
+      "volley-terrain5": "volley-terrain5.png",
+      "time-5": "time-5.png",
+      "red-slime-4": "red-slime-4.png",
+      "FB500-5": "FB500-5.png",
+      "time-2": "time-2.png",
+      "time-1": "time-1.png",
+      "yellow-0": "yellow-0.png",
+      "volley-terrain8": "volley-terrain8.png",
+      "volley-terrain2": "volley-terrain2.png",
+      "FB500-4": "FB500-4.png",
+      "yellow-1": "yellow-1.png",
+      "volley-terrain3": "volley-terrain3.png",
+      "volley-terrain4": "volley-terrain4.png",
+      "volley-terrain8-test": "volley-terrain8-test.png",
+      "time-0": "time-0.png",
+      "FB500-1": "FB500-1.png",
+      "volley-terrain7": "volley-terrain7.png",
+      "net1": "net1.png",
+      "yellow-3": "yellow-3.png",
+      "blue-slime-3": "blue-slime-3.png",
+      "FB500-3": "FB500-3.png",
+      "yellow-2": "yellow-2.png",
+      "blue-slime-4": "blue-slime-4.png",
+      "red-slime-1": "red-slime-1.png",
+      "time-3": "time-3.png",
+      "red-slime-2": "red-slime-2.png",
+      "volley-terrain": "volley-terrain.png",
+      "time-6": "time-6.png",
+      "time-7": "time-7.png",
+      "red-slime-3": "red-slime-3.png",
+      "blue-slime-1": "blue-slime-1.png"
+    },
+    "audio": {
+      "woosh": "woosh.ogg",
+      "rising": "rising.ogg",
+      "laser-bullet-2": "laser-bullet-2.ogg",
+      "laser-bullet-1": "laser-bullet-1.wav",
+      "bullet": "bullet.wav"
+    },
+    "music": {
+      "filename": "anime-beat.ogg",
+      "looped": false
+    },
+    "fonts": {}
+  },
+  "length": {
+    "Seconds": 8.0
+  },
+  "intro_text": "Volley!",
+  "attribution": ""
+}
