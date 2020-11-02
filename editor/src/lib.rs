@@ -33,6 +33,7 @@ use wee_common::{
 pub const SMALL_BUTTON: [f32; 2] = [100.0, 50.0];
 pub const NORMAL_BUTTON: [f32; 2] = [200.0, 50.0];
 const WINDOW_SIZE: [f32; 2] = [500.0, 600.0];
+const DEFAULT_PLAYBACK_RATE: f32 = 1.0;
 
 struct Editor {
     filename: Option<String>,
@@ -133,7 +134,6 @@ pub fn run<'a, 'b>(
                 continue;
             }
             if let Event::Quit { .. } = event {
-                //process::exit(0);
                 file_task = FileTask::Exit;
             }
         }
@@ -221,7 +221,6 @@ pub fn run<'a, 'b>(
         );
 
         if windows.music {
-            //standard_window(im_str!("Music"), &mut windows.music).build(ui, ||);
             imgui::Window::new(im_str!("Music"))
                 .size(WINDOW_SIZE, imgui::Condition::FirstUseEver)
                 .opened(&mut windows.music)
@@ -270,7 +269,7 @@ pub fn run<'a, 'b>(
 
                     if let Some(music) = &game.asset_files.music {
                         if ui.button(&ImString::from(music.filename.clone()), NORMAL_BUTTON) {
-                            assets.start_music(1.0, 20.0); // TODO: Volume
+                            assets.start_music(DEFAULT_PLAYBACK_RATE, settings.volume);
                         }
                     }
                 });
@@ -387,12 +386,6 @@ pub fn run<'a, 'b>(
                         let path = assets_path(&editor.filename, "fonts");
                         let font_filenames = open_fonts_dialog(path);
                         new_fonts.extend(font_filenames);
-                        /*choose_font_from_files(
-                            &mut game.asset_files.fonts,
-                            &mut assets.fonts,
-                            path,
-                            font_system.ttf_context,
-                        );*/
                     }
 
                     if !new_fonts.is_empty() {
@@ -1603,10 +1596,6 @@ fn edit_individual_action<'a>(
             modified |= speed.choose(ui);
             modified |= ui.button(im_str!("Play Animation"), NORMAL_BUTTON);
             if modified {
-                /*animation_editor.preview = AnimationStatus::Animating(Animation {
-                    should_loop:
-                })*/
-
                 editor.animation_editor.preview =
                     AnimationStatus::start(*animation_type, sprites, *speed);
                 if let Some(sprite) = sprites.get(0).cloned() {
@@ -1625,8 +1614,6 @@ fn edit_individual_action<'a>(
                             imgui::TextureId::from(image_id as usize),
                             [100.0, 100.0],
                         )
-                        //.tint_col([0.9, 0.0, 0.0, 1.0])
-                        //.background_col([1.0, 0.0, 0.0, 0.5])
                         .build(ui);
                     }
                     Sprite::Colour(colour) => {
@@ -1737,7 +1724,6 @@ fn edit_objects_list(
                                 to: rename_details.buffer.to_string(),
                             };
 
-                            // TODO: try selected_object instead
                             object_state.rename_object = None;
                         }
                     }
@@ -2012,15 +1998,7 @@ fn toggle_menu_item(ui: &imgui::Ui, label: &ImStr, opened: &mut bool) {
 }
 
 fn main_menu_bar_show(
-    /*game: &mut GameData,
-    assets: &mut Assets<'a, 'b>,
-    filename: &mut Option<String>,
-    selected_index: &mut Option<usize>,
-    instruction_state: &mut InstructionState,*/
     ui: &imgui::Ui,
-    /*event_pump: &mut EventPump,
-    ttf_context: &'a TtfContext,
-    editor_status: &mut EditorStatus,*/
     show_collision_areas: &mut bool,
     show_origins: &mut bool,
     windows: &mut Windows,
@@ -2028,20 +2006,6 @@ fn main_menu_bar_show(
     let menu_bar = ui.begin_main_menu_bar();
     let mut file_task = FileTask::None;
     if let Some(bar) = menu_bar {
-        /*if let Err(error) = file_show(
-            ui,
-            game,
-            assets,
-            event_pump,
-            ttf_context,
-            filename,
-            selected_index,
-            instruction_state,
-            editor_status,
-        ) {
-            bar.end(ui);
-            return Err(error);
-        }*/
         file_task = file_show(ui);
 
         view_show(ui, windows);
@@ -2173,9 +2137,6 @@ impl FileTask {
                 *editor = Editor::default();
                 *assets = Assets::default();
                 *game = GameData::default();
-                /*filename = None;
-                object_state.index = None;
-                instruction_state = InstructionState::default();*/
             }
             FileTask::Open => {
                 let response = nfd::open_file_dialog(None, Path::new("games").to_str());
@@ -2232,124 +2193,6 @@ impl FileTask {
     }
 }
 
-/*fn file_new(
-    ui: &imgui::Ui,
-    game: &mut GameData,
-    assets: &mut Assets,
-    filename: &mut Option<String>,
-    selected_object_index: &mut Option<usize>,
-    instruction_state: &mut InstructionState,
-) {
-    // TODO: Struct FileTask { New, Open, Save, SaveAs, None }
-    // TODO: fix this. popup won't be accessed because file bar isn't open
-    //let mut should_save = false;
-    if imgui::MenuItem::new(im_str!("New")).build(ui) {
-        /*let mut unsaved_changes = false;
-        if let Some(filename) = filename {
-            match GameData::load(filename) {
-                Ok(old_game) => {
-                    if *game != old_game {
-                        ui.open_popup(im_str!("Unsaved Changes"));
-                        unsaved_changes = true;
-                        log::debug!("1");
-                    }
-                }
-                Err(_) => {
-                    ui.open_popup(im_str!("Unsaved Changes"));
-                    unsaved_changes = true;
-                    log::debug!("2");
-                }
-            }
-        } else {
-            if *game != GameData::default() {
-                ui.open_popup(im_str!("Unsaved Changes"));
-                unsaved_changes = true;
-                log::debug!("3");
-            }
-        }
-
-        if !unsaved_changes {
-            should_save = true;
-        }*/
-    }
-    /*ui.popup_modal(im_str!("Unsaved Changes")).build(|| {
-        ui.text("Warning: You have unsaved changes.");
-        if ui.button(im_str!("OK"), NORMAL_BUTTON) {
-            should_save = true;
-            ui.close_current_popup();
-        }
-        if ui.button(im_str!("Cancel"), NORMAL_BUTTON) {
-            ui.close_current_popup();
-        }
-    });
-    if should_save {
-        *game = GameData::default();
-        *assets = Assets::default();
-        *filename = None;
-        *selected_object_index = None;
-        *instruction_state = InstructionState::default();
-    }*/
-}
-
-fn file_open<'a, 'b>(
-    ui: &imgui::Ui,
-    game: &mut GameData,
-    assets: &mut Assets<'a, 'b>,
-    event_pump: &mut EventPump,
-    ttf_context: &'a TtfContext,
-    filename: &mut Option<String>,
-    selected_index: &mut Option<usize>,
-    instruction_state: &mut InstructionState,
-) -> WeeResult<()> {
-    if imgui::MenuItem::new(im_str!("Open")).build(ui) {
-        let response = nfd::open_file_dialog(None, Path::new("games").to_str());
-        if let Ok(Response::Okay(file_path)) = response {
-            for _ in event_pump.poll_iter() {}
-            log::info!("File path = {:?}", file_path);
-            let new_data = GameData::load(&file_path);
-            match new_data {
-                Ok(new_data) => {
-                    *game = new_data;
-                    *assets = Assets::load(&game.asset_files, &file_path, ttf_context)?;
-                    *filename = Some(file_path);
-                    *selected_index = None;
-                    *instruction_state = InstructionState::default();
-                }
-                Err(error) => {
-                    // TODO: More than just logging here. Show error
-                    log::error!("Couldn't open file {}", file_path);
-                    log::error!("{}", error);
-                }
-            }
-        } else {
-            log::error!("Error opening file dialog");
-            //ui.open_popup(im_str!("Error Opening File"));
-        }
-    }
-
-    Ok(())
-}
-
-pub fn file_save(ui: &imgui::Ui, game: &GameData, filename: &mut Option<String>) {
-    if imgui::MenuItem::new(im_str!("Save")).build(ui) {
-        match filename {
-            Some(filename) => {
-                let s = serde_json::to_string_pretty(game);
-                match s {
-                    Ok(s) => {
-                        std::fs::write(&filename, s).unwrap_or_else(|e| log::error!("{}", e));
-                        println!("SAVED! {}", filename);
-                    }
-                    Err(error) => {
-                        log::error!("{}", error);
-                    }
-                }
-            }
-            None => save_game_file_as(game, filename),
-        }
-    }
-}*/
-
 fn save_game_file_as(game: &GameData, filename: &mut Option<String>) {
     let response = nfd::open_save_dialog(None, Path::new("games").to_str());
     match response {
@@ -2372,12 +2215,6 @@ fn save_game_file_as(game: &GameData, filename: &mut Option<String>) {
         }
     }
 }
-
-/*fn file_save_as(ui: &imgui::Ui, game: &GameData, filename: &mut Option<String>) {
-    if imgui::MenuItem::new(im_str!("Save As")).build(ui) {
-        save_game_file_as(game, filename);
-    }
-}*/
 
 pub fn file_return_to_menu(ui: &imgui::Ui) -> EditorStatus {
     if imgui::MenuItem::new(im_str!("Return to Menu")).build(ui) {
@@ -3057,7 +2894,6 @@ fn choose_when(when: &mut When, ui: &imgui::Ui, game_length: Length) {
 }
 
 fn find_object(object_names: &[&str], name: &str) -> usize {
-    // TODO: Should this return 0 if no found?
     object_names
         .iter()
         .position(|obj_name| *obj_name == name)
@@ -3477,7 +3313,6 @@ fn choose_sound(
 struct AnimationEditor {
     new_sprite: Sprite,
     index: usize,
-    // TODO: Maybe put animation preview state here
     preview: AnimationStatus,
     displayed_sprite: Option<Sprite>,
 }
@@ -3508,8 +3343,6 @@ fn choose_animation(
                     imgui::TextureId::from(image_id as usize),
                     [100.0, 100.0],
                 )
-                //.tint_col([0.9, 0.0, 0.0, 1.0])
-                //.background_col([1.0, 0.0, 0.0, 0.5])
                 .build(ui)
                 {
                     ui.open_popup(im_str!("Edit Animation"));
@@ -3981,27 +3814,6 @@ fn choose_angle_setter(setter: &mut AngleSetter, ui: &imgui::Ui, object_names: &
         _ => {}
     }
 }
-
-/*impl Choose for Effect {
-    fn choose(&mut self, ui: &imgui::Ui) {
-        let mut effect_type = if *self == Effect::None { 0 } else { 1 };
-        let effect_typename = if effect_type == 0 {
-            "None".to_string()
-        } else {
-            "Freeze".to_string()
-        };
-        if imgui::Slider::new(im_str!("Effect"), std::ops::RangeInclusive::new(0, 1))
-            .display_format(&ImString::from(effect_typename))
-            .build(ui, &mut effect_type)
-        {
-            *self = if effect_type == 0 {
-                Effect::None
-            } else {
-                Effect::Freeze
-            };
-        }
-    }
-}*/
 
 impl Choose for JustifyText {
     fn choose(&mut self, ui: &imgui::Ui) -> bool {
@@ -4718,28 +4530,6 @@ fn load_font<'a, 'b>(
         size: font_size as f32,
     };
     font_files.insert(key.clone(), load_info);
-    /*if let Ok(key) = key {
-        if let Ok(font) = ttf_context.load_font(&path, 128) {
-            fonts.insert(key.clone(), font);
-            let filename = get_filename(&path).unwrap();
-            let load_info = FontLoadInfo {
-                filename,
-                size: 128.0,
-            };
-            font_files.insert(key.clone(), load_info);
-        }
-    }*/
-    /*key.map(|key| {
-        ttf_context.load_font(&path, 128).map(|font| {
-            fonts.insert(key.clone(), font);
-            let filename = get_filename(&path).unwrap();
-            let load_info = FontLoadInfo {
-                filename,
-                size: 128.0,
-            };
-            font_files.insert(key.clone(), load_info);
-        })
-    });*/
     Ok(key)
 }
 
@@ -4759,15 +4549,6 @@ fn load_fonts<'a, 'b>(
             }
         }
     }
-    /*for (key, path) in font_filenames {
-        load_font(font_files, fonts, &(key, path), ttf_context)
-            .map(|_| first_key = Some(key.unwrap()))
-            .map_err(|error| {
-                log::error!("Could not add font with filename {}", path);
-                log::error!("{}", error);
-            })
-            .ok();
-    }*/
     first_key
 }
 
