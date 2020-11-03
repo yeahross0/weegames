@@ -1430,14 +1430,14 @@
   "asset_files": {
     "images": {
       "dawn-3": "dawn-3.png",
-      "dawn-8": "dawn-8.png",
-      "dawn-2": "dawn-2.png",
-      "dawn-blue-sun": "dawn-blue-sun.png",
-      "dawn-4": "dawn-4.png",
+      "dawn-8": "dawn-8.webp",
+      "dawn-2": "dawn-2.webp",
+      "dawn-blue-sun": "dawn-blue-sun.webp",
+      "dawn-4": "dawn-4.webp",
       "dawn-7": "dawn-7.png",
       "unstar": "unstar.png",
-      "dawn-5": "dawn-5.png",
-      "dawn-6": "dawn-6.png",
+      "dawn-5": "dawn-5.webp",
+      "dawn-6": "dawn-6.webp",
       "star": "star.png"
     },
     "audio": {
