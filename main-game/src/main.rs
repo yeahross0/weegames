@@ -1,4 +1,4 @@
-//#![windows_subsystem = "windows"]
+#![windows_subsystem = "windows"]
 
 #[macro_use]
 extern crate imgui;
@@ -297,7 +297,7 @@ fn run_main_loop<'a, 'b>(
     };
     match game_mode {
         GameMode::Menu => {
-            let mut game = game_with_defaults("games/system/main-menu-full.json")?;
+            let mut game = game_with_defaults("games/system/main-menu.json")?;
 
             'menu_running: loop {
                 renderer.adjust_fullscreen(&events.pump, &events.mouse.utils)?;
@@ -716,7 +716,7 @@ fn main() -> WeeResult<()> {
         video_subsystem
             .window("Wee", INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT)
             .position_centered()
-            //.fullscreen()
+            .fullscreen()
             .opengl()
             .resizable()
             .build()
