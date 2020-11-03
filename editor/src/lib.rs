@@ -203,6 +203,27 @@ pub fn run<'a, 'b>(
             renderer.exit_fullscreen(&events.mouse.utils)?;
         }
 
+        if windows.help {
+            imgui::Window::new(im_str!("Help"))
+                .size([500.0, 250.0], imgui::Condition::FirstUseEver)
+                .position([60.0, 400.0], imgui::Condition::FirstUseEver)
+                .scroll_bar(true)
+                .scrollable(true)
+                .resizable(true)
+                .opened(&mut windows.help)
+                .build(ui, || {
+                    ui.text_wrapped(im_str!("This editor is still a work-in-progress. \
+                    It is not documented yet and there are no help pages yet. \
+                    Some features you would expect in an editor are not yet implemented, e.g. dragging objects to move them. \
+                    Save often.\n\n\
+                    Open the json game files in the games directory to see how they were made and see the attribution. \
+                    The game is strict with the directory structure: e.g. place images directly under the images directory.\n\n\
+                    Controls:\n\
+                    WASD: Move the scene around\n \
+                    + and - keys: zoom in/out"));
+                });
+        }
+
         if windows.demo {
             ui.show_demo_window(&mut windows.demo);
         }
@@ -2306,6 +2327,7 @@ fn view_show(ui: &imgui::Ui, windows: &mut Windows) {
         toggle(im_str!("Music"), &mut windows.music);
         toggle(im_str!("Sound FX"), &mut windows.sounds);
         toggle(im_str!("Fonts"), &mut windows.fonts);
+        toggle(im_str!("Help"), &mut windows.help);
         toggle(im_str!("Demo Window"), &mut windows.demo);
         menu.end(ui);
     }
@@ -2329,6 +2351,7 @@ struct Windows {
     fonts: bool,
     music: bool,
     sounds: bool,
+    help: bool,
     demo: bool,
 }
 
@@ -2341,6 +2364,7 @@ impl Default for Windows {
             fonts: false,
             music: false,
             sounds: false,
+            help: true,
             demo: false,
         }
     }
