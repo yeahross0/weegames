@@ -30,6 +30,15 @@ pub const SMALL_BUTTON: [f32; 2] = [100.0, 50.0];
 pub const NORMAL_BUTTON: [f32; 2] = [200.0, 50.0];
 const WINDOW_SIZE: [f32; 2] = [500.0, 600.0];
 const DEFAULT_PLAYBACK_RATE: f32 = 1.0;
+const TOOLTIP_IMAGE_SIZE: f32 = 200.0;
+const INITIAL_POSITION: (f32, f32) = (172.0, 106.0);
+const INITIAL_SCALE: f32 = 0.8;
+const MOVEMENT_SPEED: f32 = 2.0;
+const SCALE_SPEED: f32 = 0.1;
+const MIN_SCALE: f32 = 0.1;
+const MAX_SCALE: f32 = 4.0;
+const DEFAULT_FONT_SIZE: u16 = 128;
+const COLOUR_BUTTON_SIZE: f32 = 108.0;
 
 struct Editor {
     filename: Option<String>,
@@ -287,10 +296,10 @@ struct SceneLocation {
 
 impl Default for SceneLocation {
     fn default() -> Self {
-        let position = Vec2::new(172.0, 106.0);
-        let scale = 0.8;
-
-        SceneLocation { position, scale }
+        SceneLocation {
+            position: Vec2::new(INITIAL_POSITION.0, INITIAL_POSITION.1),
+            scale: INITIAL_SCALE,
+        }
     }
 }
 
@@ -311,25 +320,25 @@ impl SceneLocation {
 
         if !ui.io().want_capture_keyboard {
             if *minus_button == ButtonState::Press {
-                self.scale = (self.scale - 0.1).max(0.1);
+                self.scale = (self.scale - SCALE_SPEED).max(MIN_SCALE);
             }
             if *plus_button == ButtonState::Press {
-                self.scale = (self.scale + 0.1).min(4.0);
+                self.scale = (self.scale + SCALE_SPEED).min(MAX_SCALE);
             }
 
             let is_pressed = |scancode| events.pump.keyboard_state().is_scancode_pressed(scancode);
 
             if is_pressed(Scancode::W) {
-                self.position.y += 2.0;
+                self.position.y += MOVEMENT_SPEED;
             }
             if is_pressed(Scancode::S) {
-                self.position.y -= 2.0;
+                self.position.y -= MOVEMENT_SPEED;
             }
             if is_pressed(Scancode::A) {
-                self.position.x += 2.0;
+                self.position.x += MOVEMENT_SPEED;
             }
             if is_pressed(Scancode::D) {
-                self.position.x -= 2.0;
+                self.position.x -= MOVEMENT_SPEED;
             }
         }
     }
@@ -534,7 +543,7 @@ fn main_window_show(
 
     if *show_window {
         imgui::Window::new(im_str!("Main Window"))
-            .size([500.0, 200.0], imgui::Condition::FirstUseEver)
+            .size(WINDOW_SIZE, imgui::Condition::FirstUseEver)
             .scroll_bar(true)
             .scrollable(true)
             .resizable(true)
@@ -608,7 +617,7 @@ fn main_window_show(
 
                 imgui::Slider::new(
                     im_str!("Playback rate"),
-                    std::ops::RangeInclusive::new(0.1, 4.0),
+                    std::ops::RangeInclusive::new(0.5, 2.0),
                 )
                 .display_format(im_str!("%.01f"))
                 .build(ui, &mut preview.playback_rate);
@@ -1692,7 +1701,7 @@ fn edit_individual_action<'a>(
                             im_str!("##Colour"),
                             [colour.r, colour.g, colour.b, colour.a],
                         )
-                        .size([108.0, 108.0])
+                        .size([COLOUR_BUTTON_SIZE, COLOUR_BUTTON_SIZE])
                         .build(ui);
                     }
                 }
@@ -2365,7 +2374,7 @@ impl Default for FontState {
     fn default() -> FontState {
         FontState {
             new_fonts: Vec::new(),
-            size: 128,
+            size: DEFAULT_FONT_SIZE,
         }
     }
 }
@@ -2480,8 +2489,11 @@ fn show_image_tooltip(ui: &imgui::Ui, images: &Images, image_name: &str) {
             // TODO: What if doesn't exist
             let texture_id = images[image_name].id;
             // TODO: Restrict size to ratio?
-            imgui::Image::new(imgui::TextureId::from(texture_id as usize), [200.0, 200.0])
-                .build(ui);
+            imgui::Image::new(
+                imgui::TextureId::from(texture_id as usize),
+                [TOOLTIP_IMAGE_SIZE, TOOLTIP_IMAGE_SIZE],
+            )
+            .build(ui);
         });
     }
 }
@@ -2498,10 +2510,9 @@ fn show_object_tooltip(
                 if let Some(texture) = &images.get(image_name) {
                     let size = texture.size();
                     let max_side = size.width.max(size.height);
-                    // TODO: Remove magic numbers
                     let size = Size::new(
-                        size.width / max_side * 200.0,
-                        size.height / max_side * 200.0,
+                        size.width / max_side * TOOLTIP_IMAGE_SIZE,
+                        size.height / max_side * TOOLTIP_IMAGE_SIZE,
                     );
                     imgui::Image::new(
                         imgui::TextureId::from(texture.id as usize),
@@ -3412,7 +3423,7 @@ fn choose_animation(
                     &ImString::from(format!("##Colour: {}", index)),
                     [colour.r, colour.g, colour.b, colour.a],
                 )
-                .size([108.0, 108.0])
+                .size([COLOUR_BUTTON_SIZE, COLOUR_BUTTON_SIZE])
                 .build(ui)
                 {
                     ui.open_popup(im_str!("Edit Animation"));
@@ -4592,7 +4603,13 @@ fn load_fonts<'a, 'b>(
 ) -> Option<String> {
     let mut first_key = None;
     for (key, path) in font_filenames {
-        match load_font(font_files, fonts, (key, path.clone()), ttf_context, 128) {
+        match load_font(
+            font_files,
+            fonts,
+            (key, path.clone()),
+            ttf_context,
+            DEFAULT_FONT_SIZE,
+        ) {
             Ok(key) => first_key = Some(key),
             Err(error) => {
                 log::error!("Could not add font with filename {}", path);
