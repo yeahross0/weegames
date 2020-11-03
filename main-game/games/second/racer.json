@@ -475,7 +475,7 @@
       "Finish": "Finish.png",
       "Start": "Start.png",
       "track": "track.webp",
-      "car": "car.png"
+      "car": "car.webp"
     },
     "audio": {
       "small-explosion": "small-explosion.ogg",
