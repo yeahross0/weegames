@@ -543,7 +543,7 @@ fn main_window_show(
 
     if *show_window {
         imgui::Window::new(im_str!("Main Window"))
-            .size(WINDOW_SIZE, imgui::Condition::FirstUseEver)
+            .size([500.0, 320.0], imgui::Condition::FirstUseEver)
             .scroll_bar(true)
             .scrollable(true)
             .resizable(true)

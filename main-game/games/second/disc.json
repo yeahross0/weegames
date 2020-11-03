@@ -439,8 +439,8 @@
                   "direction": {
                     "Direction": {
                       "possible_directions": [
-                        "Right",
-                        "Left"
+                        "Left",
+                        "Right"
                       ]
                     }
                   },
@@ -2152,47 +2152,41 @@
   ],
   "asset_files": {
     "images": {
-      "time-4": "time-4.png",
-      "FB500-2": "FB500-2.png",
-      "blue-slime-2": "blue-slime-2.png",
-      "volley-terrain5": "volley-terrain5.png",
-      "time-5": "time-5.png",
-      "red-slime-4": "red-slime-4.png",
-      "FB500-5": "FB500-5.png",
-      "time-2": "time-2.png",
-      "time-1": "time-1.png",
-      "yellow-0": "yellow-0.png",
-      "volley-terrain8": "volley-terrain8.png",
-      "volley-terrain2": "volley-terrain2.png",
-      "FB500-4": "FB500-4.png",
-      "yellow-1": "yellow-1.png",
-      "volley-terrain3": "volley-terrain3.png",
-      "volley-terrain4": "volley-terrain4.png",
-      "volley-terrain8-test": "volley-terrain8-test.png",
       "time-0": "time-0.png",
-      "FB500-1": "FB500-1.png",
-      "volley-terrain7": "volley-terrain7.png",
-      "net1": "net1.png",
-      "yellow-3": "yellow-3.png",
-      "blue-slime-3": "blue-slime-3.png",
-      "FB500-3": "FB500-3.png",
-      "yellow-2": "yellow-2.png",
-      "blue-slime-4": "blue-slime-4.png",
+      "blue-slime-2": "blue-slime-2.png",
       "red-slime-1": "red-slime-1.png",
+      "FB500-2": "FB500-2.png",
+      "net1": "net1.png",
       "time-3": "time-3.png",
+      "yellow-3": "yellow-3.png",
+      "yellow-2": "yellow-2.png",
       "red-slime-2": "red-slime-2.png",
-      "volley-terrain": "volley-terrain.png",
       "time-6": "time-6.png",
+      "blue-slime-4": "blue-slime-4.png",
+      "time-2": "time-2.png",
+      "FB500-3": "FB500-3.png",
+      "blue-slime-1": "blue-slime-1.png",
+      "volley-terrain7": "volley-terrain7.png",
+      "FB500-1": "FB500-1.png",
       "time-7": "time-7.png",
+      "red-slime-4": "red-slime-4.png",
+      "blue-slime-3": "blue-slime-3.png",
+      "yellow-0": "yellow-0.png",
+      "time-4": "time-4.png",
+      "FB500-4": "FB500-4.png",
+      "volley-terrain": "volley-terrain.png",
+      "time-5": "time-5.png",
       "red-slime-3": "red-slime-3.png",
-      "blue-slime-1": "blue-slime-1.png"
+      "FB500-5": "FB500-5.png",
+      "time-1": "time-1.png",
+      "yellow-1": "yellow-1.png"
     },
     "audio": {
+      "bullet": "bullet.wav",
+      "laser-bullet-1": "laser-bullet-1.wav",
       "woosh": "woosh.ogg",
       "rising": "rising.ogg",
-      "laser-bullet-2": "laser-bullet-2.ogg",
-      "laser-bullet-1": "laser-bullet-1.wav",
-      "bullet": "bullet.wav"
+      "laser-bullet-2": "laser-bullet-2.ogg"
     },
     "music": {
       "filename": "anime-beat.ogg",
@@ -2204,5 +2198,5 @@
     "Seconds": 8.0
   },
   "intro_text": "Volley!",
-  "attribution": ""
+  "attribution": "slimes: https://stealthix.itch.io/animated-slimes\n----\nFireball by NYKNCK is licenced under CC BY 4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://kvsr.itch.io/fireball-animation\n----\nbackground: https://eidern.itch.io/beach-volley-asset\n\n----\nAnime Beat Loop by Tim Beek is licenced under CC BY 4.0\nhttps://creativecommons.org/licenses/by/4.0/\nhttps://timbeek.itch.io/royalty-free-music-pack\n----\nsound effects:\nhttps://cohexbruh.itch.io/fire-woosh-sound-effects-pack-vol1\nhttps://void1gaming.itch.io/halftone-sound-effects-pack-lite\nhttps://soundsbydane.itch.io/8-bit-sound-pack\nhttps://jdwasabi.itch.io/8-bit-16-bit-sound-effects-pack"
 }

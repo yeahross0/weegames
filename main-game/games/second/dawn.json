@@ -1430,15 +1430,15 @@
   "asset_files": {
     "images": {
       "dawn-3": "dawn-3.png",
-      "dawn-blue-sun": "dawn-blue-sun.png",
-      "dawn-6": "dawn-6.png",
       "dawn-8": "dawn-8.png",
-      "star": "star.png",
-      "dawn-4": "dawn-4.png",
-      "dawn-5": "dawn-5.png",
       "dawn-2": "dawn-2.png",
+      "dawn-blue-sun": "dawn-blue-sun.png",
+      "dawn-4": "dawn-4.png",
       "dawn-7": "dawn-7.png",
-      "unstar": "unstar.png"
+      "unstar": "unstar.png",
+      "dawn-5": "dawn-5.png",
+      "dawn-6": "dawn-6.png",
+      "star": "star.png"
     },
     "audio": {
       "woosh": "woosh.ogg"
@@ -1453,5 +1453,5 @@
     "Seconds": 5.0
   },
   "intro_text": null,
-  "attribution": ""
+  "attribution": "images: https://saurabhkgp.itch.io/the-dawn-parallax-background\n\n----\nIndustrial Chasm by Tim Beek is licenced under CC BY 4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://timbeek.itch.io/royalty-free-music-pack\n----\n\nwoosh: https://cohexbruh.itch.io/fire-woosh-sound-effects-pack-vol1"
 }
