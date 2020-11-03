@@ -1,8 +1,4 @@
-// TODO: Multiple fonts with same size?
 // TODO: Add ability to delete images, music, sounds, fonts
-// TODO: Make timer be seconds and time to end in end early
-// TODO: Flip is confusing
-// TODO: Error in find_object when doesn't exist
 // TODO: Animation preview shows old animation when click on new object
 
 #[macro_use]
@@ -476,7 +472,6 @@ impl RenderEditor for Renderer {
                             object.angle,
                             Flip::default(),
                         );
-                        // TODO: model.move().scale()
                         self.fill_rectangle(model, Colour::rgba(1.0, 0.0, 0.0, 0.5));
                     }
                     if show_origins {
@@ -736,20 +731,14 @@ fn music_window_show(
 
                     if let Response::Okay(file) = response {
                         let path = Path::new(&file);
-                        let file_name = path.file_name().unwrap().to_str().unwrap().to_string();
+                        let filename = get_filename(&path)?;
 
                         let music_load_info = SerialiseMusic {
-                            filename: file_name,
+                            filename,
                             looped: false,
                         };
 
-                        *music = Music::load(
-                            &Some(music_load_info.clone()),
-                            path.parent().unwrap().parent().unwrap(), // TODO: Sort this out
-                        )?;
-                        if music.is_none() {
-                            log::error!("Couldn't load {:?}", path);
-                        }
+                        *music = Music::load_directly(path, false)?;
                         game.asset_files.music = Some(music_load_info);
                     }
 
@@ -816,7 +805,6 @@ fn background_window_show(
     new_background: &mut Sprite,
 ) {
     if *opened {
-        // TODO: Fix up
         imgui::Window::new(im_str!("Background"))
             .size(WINDOW_SIZE, imgui::Condition::FirstUseEver)
             .opened(opened)
@@ -930,6 +918,7 @@ fn fonts_window_show<'a>(
                                         log::error!("{}", error);
                                     }
                                 }
+                                ui.same_line(0.0);
                                 if ui.button(im_str!("Cancel"), NORMAL_BUTTON) {
                                     font_state.new_fonts.remove(0).0.ok();
                                 }
@@ -946,13 +935,20 @@ fn fonts_window_show<'a>(
 
                 for (name, font) in game.asset_files.fonts.iter_mut() {
                     ui.text(name);
-                    // TODO: Errors if filename not saved!
-                    let base_path = assets_path(&filename, "fonts");
-                    let path = base_path.join(&font.filename);
-                    // TODO: Min Max this
-                    if ui.input_float(im_str!("Size"), &mut font.size).build() {
-                        *fonts.get_mut(name).unwrap() =
-                            ttf_context.load_font(&path, font.size as u16).unwrap();
+                    if filename.is_some() {
+                        let base_path = assets_path(&filename, "fonts");
+                        let path = base_path.join(&font.filename);
+                        {
+                            let mut changed_size = font.size as u16;
+                            let modified = choose_u16(&mut changed_size, ui, im_str!("Font Size"));
+                            font.size = changed_size as f32;
+                            if modified {
+                                *fonts.get_mut(name).unwrap() =
+                                    ttf_context.load_font(&path, font.size as u16).unwrap();
+                            }
+                        }
+                    } else {
+                        ui.text("Save the game before changing the font size")
                     }
                 }
             });
@@ -1292,16 +1288,16 @@ fn edit_instruction_list<'a>(
                     editor.instruction_state.mode = InstructionMode::Edit;
                 }
                 ui.same_line(0.0);
+                if ui.small_button(im_str!("Clone")) && !instructions.is_empty() {
+                    let ins = instructions[*selected_index].clone();
+                    instructions.push(ins);
+                }
+                ui.same_line(0.0);
                 if ui.small_button(im_str!("Delete")) && !instructions.is_empty() {
                     instructions.remove(*selected_index);
                     if *selected_index > 0 {
                         *selected_index -= 1;
                     }
-                }
-                ui.same_line(0.0);
-                if ui.small_button(im_str!("Clone")) && !instructions.is_empty() {
-                    let ins = instructions[*selected_index].clone();
-                    instructions.push(ins);
                 }
                 ui.same_line(0.0);
                 if ui.small_button(im_str!("Up")) && *selected_index > 0 {
@@ -1432,7 +1428,7 @@ fn edit_trigger(
             3 => Trigger::WinStatus(WinStatus::Won),
             4 => Trigger::Random { chance: 0.5 },
             5 => Trigger::CheckProperty {
-                name: first_name(), // TODO: Use current object's name here
+                name: first_name(),
                 check: PropertyCheck::Switch(SwitchState::On),
             },
             6 => Trigger::CheckProperty {
@@ -1682,10 +1678,10 @@ fn edit_individual_action<'a>(
             if let Some(sprite) = editor.animation_editor.preview.update() {
                 editor.animation_editor.displayed_sprite = Some(sprite);
             }
+            // TODO: Duplicate code?
             if let Some(sprite) = &editor.animation_editor.displayed_sprite {
                 match sprite {
                     Sprite::Image { name } => {
-                        // TODO: Must have problem when two buttons have the same id
                         let image_id = assets.images[name].id;
                         imgui::ImageButton::new(
                             imgui::TextureId::from(image_id as usize),
@@ -1694,7 +1690,6 @@ fn edit_individual_action<'a>(
                         .build(ui);
                     }
                     Sprite::Colour(colour) => {
-                        // TODO: Does this work with all the buttons having the same id?
                         imgui::ColorButton::new(
                             im_str!("##Colour"),
                             [colour.r, colour.g, colour.b, colour.a],
@@ -1777,7 +1772,6 @@ fn edit_objects_list(
 
             let mut object_operation: ObjectOperation = ObjectOperation::None;
 
-            // TODO: Tidy up
             let is_being_renamed = |rename_object: &Option<RenameObject>, index| {
                 if let Some(rename_details) = rename_object {
                     return rename_details.index == index;
@@ -2220,8 +2214,12 @@ impl FileTask {
                 if let Ok(Response::Okay(file_path)) = response {
                     for _ in events.pump.poll_iter() {}
                     log::info!("File path = {:?}", file_path);
-                    let new_data = GameData::load(&file_path);
-                    match new_data {
+                    let new_data = GameData::load(&file_path)?;
+                    *assets = Assets::load(&new_data.asset_files, &file_path, ttf_context)?;
+                    editor.reset();
+                    *game = new_data;
+                    editor.filename = Some(file_path);
+                    /*match new_data {
                         Ok(new_data) => {
                             *assets = Assets::load(&new_data.asset_files, &file_path, ttf_context)?;
                             editor.reset();
@@ -2233,7 +2231,7 @@ impl FileTask {
                             log::error!("Couldn't open file {}", file_path);
                             log::error!("{}", error);
                         }
-                    }
+                    }*/
                 }
             }
             FileTask::Save => match &editor.filename {
@@ -3773,7 +3771,15 @@ fn choose_property_setter(
             switch.choose(ui);
         }
         PropertySetter::Timer { time } => {
-            choose_u32(time, ui, im_str!("Time"));
+            //choose_u32(time, ui, im_str!("Time"));
+            let to_seconds = |frame| frame as f32 / FPS;
+            let to_frames = |seconds| (seconds * FPS) as u32;
+            let mut changed_time = to_seconds(*time);
+            ui.drag_float(im_str!("Seconds"), &mut changed_time)
+                .min(0.0)
+                .speed(1.0 / FPS)
+                .build();
+            *time = to_frames(changed_time.max(0.0));
         }
         PropertySetter::FlipHorizontal(flip_setter) | PropertySetter::FlipVertical(flip_setter) => {
             flip_setter.choose(ui);
@@ -3786,14 +3792,29 @@ fn choose_property_setter(
 
 impl Choose for FlipSetter {
     fn choose(&mut self, ui: &imgui::Ui) -> bool {
-        let mut modified = self.radio(ui);
-
-        if let FlipSetter::SetFlip(flip) = self {
-            if ui.radio_button_bool(im_str!("Flipped?"), *flip) {
-                *flip = !*flip;
-                modified = true;
-            }
+        let mut modified = false;
+        if ui.radio_button_bool(
+            im_str!("Set flip to false"),
+            *self == FlipSetter::SetFlip(false),
+        ) {
+            *self = FlipSetter::SetFlip(false);
+            modified = true;
         }
+        if ui.radio_button_bool(
+            im_str!("Set flip to true"),
+            *self == FlipSetter::SetFlip(true),
+        ) {
+            *self = FlipSetter::SetFlip(true);
+            modified = true;
+        }
+        if ui.radio_button_bool(
+            im_str!("Flip to the opposite side"),
+            *self == FlipSetter::Flip,
+        ) {
+            *self = FlipSetter::Flip;
+            modified = true;
+        }
+
         modified
     }
 }
@@ -3813,16 +3834,11 @@ impl Choose for LayerSetter {
     }
 }
 
-fn choose_u32(value: &mut u32, ui: &imgui::Ui, label: &ImStr) {
+fn choose_u16(value: &mut u16, ui: &imgui::Ui, label: &ImStr) -> bool {
     let mut changed_value = *value as i32;
-    ui.input_int(label, &mut changed_value).build();
-    *value = changed_value as u32;
-}
-
-fn choose_u16(value: &mut u16, ui: &imgui::Ui, label: &ImStr) {
-    let mut changed_value = *value as i32;
-    ui.input_int(label, &mut changed_value).build();
+    let modified = ui.input_int(label, &mut changed_value).build();
     *value = changed_value as u16;
+    modified
 }
 
 impl Choose for Switch {
@@ -4492,29 +4508,6 @@ impl EnumSetters for SizeDifference {
         let setter_types = [im_str!("Value"), im_str!("Percent")];
 
         f(self, im_str!("Size Difference"), &setter_types)
-    }
-}
-
-impl EnumSetters for FlipSetter {
-    fn to_value(&self) -> usize {
-        match self {
-            FlipSetter::Flip => 0,
-            FlipSetter::SetFlip(_) => 1,
-        }
-    }
-
-    fn from_value(value: usize) -> Self {
-        match value {
-            0 => FlipSetter::Flip,
-            1 => FlipSetter::SetFlip(true),
-            _ => unreachable!(),
-        }
-    }
-
-    fn component<F: Fn(&mut Self, &ImStr, &[&ImStr]) -> bool>(&mut self, f: F) -> bool {
-        let setter_types = [im_str!("Flip"), im_str!("Set Flip")];
-
-        f(self, im_str!("Flip Setter"), &setter_types)
     }
 }
 

@@ -1637,6 +1637,8 @@ pub trait LoadMusic {
         music_name: &Option<SerialiseMusic>,
         base_path: P,
     ) -> WeeResult<Option<Music>>;
+
+    fn load_directly<P: AsRef<Path>>(path: P, looped: bool) -> WeeResult<Option<Music>>;
 }
 
 impl LoadMusic for Music {
@@ -1649,16 +1651,20 @@ impl LoadMusic for Music {
         match music_name {
             Some(music_info) => {
                 let path = base_path.join(&music_info.filename);
-                let music = SfmlMusic::from_file(path.to_str().unwrap())
-                    .ok_or(format!("Couldn't load {}", music_info.filename))?;
-                let music = Music {
-                    data: music,
-                    looped: music_info.looped,
-                };
-                Ok(Some(music))
+                Self::load_directly(path, music_info.looped)
             }
             None => Ok(None),
         }
+    }
+
+    fn load_directly<P: AsRef<Path>>(path: P, looped: bool) -> WeeResult<Option<Music>> {
+        let path = path.as_ref().to_str().ok_or("Couldn't convert path")?;
+        let music = SfmlMusic::from_file(&path).ok_or_else(|| format!("Couldn't load {}", path))?;
+        let music = Music {
+            data: music,
+            looped,
+        };
+        Ok(Some(music))
     }
 }
 
