@@ -444,7 +444,6 @@ impl RenderEditor for Renderer {
                     }
 
                     if show_collision_areas {
-                        // TODO: Tidy up
                         let game_object = object.clone().into_object();
                         let poly = game_object.poly();
 
@@ -1678,7 +1677,6 @@ fn edit_individual_action<'a>(
             if let Some(sprite) = editor.animation_editor.preview.update() {
                 editor.animation_editor.displayed_sprite = Some(sprite);
             }
-            // TODO: Duplicate code?
             if let Some(sprite) = &editor.animation_editor.displayed_sprite {
                 match sprite {
                     Sprite::Image { name } => {
@@ -2214,24 +2212,11 @@ impl FileTask {
                 if let Ok(Response::Okay(file_path)) = response {
                     for _ in events.pump.poll_iter() {}
                     log::info!("File path = {:?}", file_path);
-                    let new_data = GameData::load(&file_path)?;
-                    *assets = Assets::load(&new_data.asset_files, &file_path, ttf_context)?;
+                    // TODO: Don't leave editor if get error here
+                    *game = GameData::load(&file_path)?;
+                    *assets = Assets::load(&game.asset_files, &file_path, ttf_context)?;
                     editor.reset();
-                    *game = new_data;
                     editor.filename = Some(file_path);
-                    /*match new_data {
-                        Ok(new_data) => {
-                            *assets = Assets::load(&new_data.asset_files, &file_path, ttf_context)?;
-                            editor.reset();
-                            *game = new_data;
-                            editor.filename = Some(file_path);
-                        }
-                        Err(error) => {
-                            // TODO: More than just logging here. Show error
-                            log::error!("Couldn't open file {}", file_path);
-                            log::error!("{}", error);
-                        }
-                    }*/
                 }
             }
             FileTask::Save => match &editor.filename {
@@ -2489,66 +2474,75 @@ impl<'a> ImguiFrame<'a> {
     }
 }
 
+fn show_image_tooltip(ui: &imgui::Ui, images: &Images, image_name: &str) {
+    if ui.is_item_hovered() {
+        ui.tooltip(|| {
+            // TODO: What if doesn't exist
+            let texture_id = images[image_name].id;
+            // TODO: Restrict size to ratio?
+            imgui::Image::new(imgui::TextureId::from(texture_id as usize), [200.0, 200.0])
+                .build(ui);
+        });
+    }
+}
+
+fn show_object_tooltip(
+    ui: &imgui::Ui,
+    object_name: &str,
+    images: &Images,
+    sprites: &HashMap<&str, &Sprite>,
+) {
+    if ui.is_item_hovered() {
+        ui.tooltip(|| match sprites.get(object_name) {
+            Some(Sprite::Image { name: image_name }) => {
+                if let Some(texture) = &images.get(image_name) {
+                    let size = texture.size();
+                    let max_side = size.width.max(size.height);
+                    // TODO: Remove magic numbers
+                    let size = Size::new(
+                        size.width / max_side * 200.0,
+                        size.height / max_side * 200.0,
+                    );
+                    imgui::Image::new(
+                        imgui::TextureId::from(texture.id as usize),
+                        [size.width, size.height],
+                    )
+                    .build(ui);
+                } else {
+                    ui.text_colored(
+                        [1.0, 0.0, 0.0, 1.0],
+                        format!("Warning: Image `{}` not found", image_name),
+                    );
+                }
+            }
+            Some(Sprite::Colour(colour)) => {
+                imgui::ColorButton::new(
+                    im_str!("##Colour"),
+                    [colour.r, colour.g, colour.b, colour.a],
+                )
+                .size([80.0, 80.0])
+                .build(ui);
+            }
+            None => {
+                ui.text_colored(
+                    [1.0, 0.0, 0.0, 1.0],
+                    format!("Warning: Object `{}` not found", object_name),
+                );
+            }
+        });
+    }
+}
+
 trait ImguiDisplayTrigger {
     fn display(&self, ui: &imgui::Ui, sprites: &HashMap<&str, &Sprite>, images: &Images);
 }
 
 impl ImguiDisplayTrigger for Trigger {
     fn display(&self, ui: &imgui::Ui, sprites: &HashMap<&str, &Sprite>, images: &Images) {
-        let image_tooltip = |image_name: &str| {
-            if ui.is_item_hovered() {
-                ui.tooltip(|| {
-                    // TODO: What if doesn't exist
-                    let texture_id = images[image_name].id;
-                    // TODO: Restrict size to ratio?
-                    imgui::Image::new(imgui::TextureId::from(texture_id as usize), [200.0, 200.0])
-                        .build(ui);
-                });
-            }
-        };
+        let image_tooltip = |image_name: &str| show_image_tooltip(ui, images, image_name);
 
-        // TODO: Sort through these closures
-        let object_tooltip = |object_name: &str| {
-            if ui.is_item_hovered() {
-                ui.tooltip(|| match sprites.get(object_name) {
-                    Some(Sprite::Image { name: image_name }) => {
-                        if let Some(texture) = &images.get(image_name) {
-                            let size = texture.size();
-                            let max_side = size.width.max(size.height);
-                            // TODO: Remove magic numbers
-                            let size = Size::new(
-                                size.width / max_side * 200.0,
-                                size.height / max_side * 200.0,
-                            );
-                            imgui::Image::new(
-                                imgui::TextureId::from(texture.id as usize),
-                                [size.width, size.height],
-                            )
-                            .build(ui);
-                        } else {
-                            ui.text_colored(
-                                [1.0, 0.0, 0.0, 1.0],
-                                format!("Warning: Image `{}` not found", image_name),
-                            );
-                        }
-                    }
-                    Some(Sprite::Colour(colour)) => {
-                        imgui::ColorButton::new(
-                            im_str!("##Colour"),
-                            [colour.r, colour.g, colour.b, colour.a],
-                        )
-                        .size([80.0, 80.0])
-                        .build(ui);
-                    }
-                    None => {
-                        ui.text_colored(
-                            [1.0, 0.0, 0.0, 1.0],
-                            format!("Warning: Object `{}` not found", object_name),
-                        );
-                    }
-                });
-            }
-        };
+        let object_tooltip =
+            |object_name: &str| show_object_tooltip(ui, object_name, images, sprites);
 
         let object_button_with_label = |label: &ImStr, object_name: &str| {
             if sprites.keys().any(|name| *name == object_name) {
@@ -2735,61 +2729,10 @@ impl ImguiDisplayAction for Action {
         ui.text("\t".repeat(indent));
         ui.same_line_with_spacing(0.0, 0.0);
 
-        // TODO: Duplicate code
-        let image_tooltip = |image_name: &str| {
-            if ui.is_item_hovered() {
-                ui.tooltip(|| {
-                    // TODO: What if doesn't exist
-                    let texture_id = images[image_name].id;
-                    // TODO: Restrict size to ratio?
-                    imgui::Image::new(imgui::TextureId::from(texture_id as usize), [200.0, 200.0])
-                        .build(ui);
-                });
-            }
-        };
+        let image_tooltip = |image_name: &str| show_image_tooltip(ui, images, image_name);
 
-        // TODO: Sort through these closures
-        let object_tooltip = |object_name: &str| {
-            if ui.is_item_hovered() {
-                ui.tooltip(|| match sprites.get(object_name) {
-                    Some(Sprite::Image { name: image_name }) => {
-                        if let Some(texture) = &images.get(image_name) {
-                            let size = texture.size();
-                            let max_side = size.width.max(size.height);
-                            // TODO: Remove magic numbers
-                            let size = Size::new(
-                                size.width / max_side * 200.0,
-                                size.height / max_side * 200.0,
-                            );
-                            imgui::Image::new(
-                                imgui::TextureId::from(texture.id as usize),
-                                [size.width, size.height],
-                            )
-                            .build(ui);
-                        } else {
-                            ui.text_colored(
-                                [1.0, 0.0, 0.0, 1.0],
-                                format!("Warning: Image `{}` not found", image_name),
-                            );
-                        }
-                    }
-                    Some(Sprite::Colour(colour)) => {
-                        imgui::ColorButton::new(
-                            im_str!("##Colour"),
-                            [colour.r, colour.g, colour.b, colour.a],
-                        )
-                        .size([80.0, 80.0])
-                        .build(ui);
-                    }
-                    None => {
-                        ui.text_colored(
-                            [1.0, 0.0, 0.0, 1.0],
-                            format!("Warning: Object `{}` not found", object_name),
-                        );
-                    }
-                });
-            }
-        };
+        let object_tooltip =
+            |object_name: &str| show_object_tooltip(ui, object_name, images, sprites);
 
         let object_button_with_label = |label: &ImStr, object_name: &str| {
             if sprites.keys().any(|name| *name == object_name) {
@@ -3562,7 +3505,6 @@ fn choose_sprite(
 
     match sprite {
         Sprite::Image { name: image_name } => {
-            // TODO: Tidy up
             let path = assets_path(&filename, "images");
 
             if images.is_empty() {
