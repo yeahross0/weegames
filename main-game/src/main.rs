@@ -384,7 +384,7 @@ fn run_main_loop<'a, 'b>(
                     progress,
                 }
             } else {
-                GameMode::Menu
+                GameMode::ChooseMode
             };
         }
         GameMode::Interlude {
@@ -455,7 +455,7 @@ fn run_main_loop<'a, 'b>(
                     progress,
                 }
             } else {
-                GameMode::Menu
+                GameMode::ChooseMode
             };
         }
         GameMode::GameOver {
@@ -519,7 +519,7 @@ fn run_main_loop<'a, 'b>(
                 .start(DEFAULT_GAME_SPEED, DEFAULT_DIFFICULTY, config.settings())
                 .play(renderer, events)?;
 
-            game_mode = GameMode::Menu;
+            game_mode = GameMode::ChooseMode;
         }
         GameMode::Play {
             game: loaded_game,
@@ -568,7 +568,7 @@ fn run_main_loop<'a, 'b>(
                             }
                         }
                     } else {
-                        GameMode::Menu
+                        GameMode::ChooseMode
                     }
                 }
                 Err(error) => {
