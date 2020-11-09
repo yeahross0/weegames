@@ -7,7 +7,7 @@ Weegames is a collection of minigames written in Rust with SDL2 (and SFML for au
 
 # Video
 
-https://www.youtube.com/watch?v=A_GqhZ_7EIw
+https://www.youtube.com/watch?v=sstqGppo7L4
 
 # Installation
 ## MSVC
