@@ -1,5 +1,5 @@
 # Weegames
-Weegames is a collection of minigames written in Rust with SDL2 (and SFML for audio). Download the windows version from [itch.io](https://yeahross.itch.io/weegames).
+Weegames is a collection of minigames written in Rust with SDL2 (and SFML for audio). Download the windows version from [itch.io](https://yeahross.itch.io/weegames). There is a separate repository for the [demo](https://github.com/yeahross0/Weegames-Demo).
 
 # Screenshots
 ![baby](https://img.itch.zone/aW1hZ2UvNjYyNjQ3LzM1Njg1NjkuanBn/original/EjnlNA.jpg)
