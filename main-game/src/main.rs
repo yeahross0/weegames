@@ -1,4 +1,4 @@
-// TODO: Set switch code is repeated
+#![windows_subsystem = "windows"]
 
 use macroquad::logging as log;
 use macroquad::prelude::*;
@@ -743,11 +743,6 @@ impl GamesList {
         for (filename, game) in all_games {
             // TODO: Wiser way of doing this
             // TODO: Unpublished games are included in list games to play
-
-            println!("filename: {}", filename);
-            println!("~~~~~~~~");
-            println!("{}", game.attribution);
-            println!("~~~~~~~~\n");
             if Path::new(&filename).starts_with(&directory) && game.published {
                 if game.game_type == GameType::Minigame {
                     games.push(filename.clone());
@@ -994,7 +989,7 @@ impl MainGame<LoadingScreen> {
         #[cfg(not(target_arch = "wasm32"))]
         let played_games: HashSet<String> = {
             let path = Path::new("played-games.json");
-            log::info!("path: {:?}", path);
+            log::debug!("path: {:?}", path);
             let json = std::fs::read_to_string(&path);
             if let Ok(json) = json {
                 json_from_str(&json)?
@@ -1143,6 +1138,7 @@ impl MainGame<Menu> {
 
                 #[cfg(target_arch = "wasm32")]
                 {
+                    // TODO: Set switch code is repeated
                     let mut set_switch = |name, pred| {
                         if object.name == name {
                             object.switch = if pred { Switch::On } else { Switch::Off };
@@ -1756,7 +1752,7 @@ impl MainGame<GameOver> {
         #[cfg(not(target_arch = "wasm32"))]
         let mut high_scores: (i32, i32, i32) = {
             let path = Path::new(&self.state.directory).join("high-scores.json");
-            log::info!("path: {:?}", path);
+            log::debug!("path: {:?}", path);
             let json = std::fs::read_to_string(&path);
             if let Ok(json) = json {
                 json_from_str(&json)?

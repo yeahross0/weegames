@@ -1,13 +1,11 @@
 [package]
 name = "main-game"
-version = "0.1.0"
+version = "0.2.1"
 authors = ["Ross <yeahross@protonmail.com>"]
 edition = "2018"
 
 [dependencies]
 macroquad = { git = "https://github.com/yeahross0/macroquad", rev = "8f679d2" }
-# Note: This commit has some parts left unimplemented
-# Use instead if you don't need wasm:
 c2 = "0.2.0"
 serde = { version = "1.0.111", features = ["derive"] }
 serde_json = "1.0.53"

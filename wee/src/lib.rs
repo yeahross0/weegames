@@ -1316,8 +1316,8 @@ fn move_object(game: &mut Game, name: &str, mouse: Mouse, rng: &mut impl WeeRng)
             }
             Motion::Swap { name: other_name } => {
                 game.objects.get_obj(&other_name)?;
-                let temp = game.objects[other_name].position;
-                game.objects[other_name].position = game.objects[name].position;
+                let temp = game.objects[&*other_name].position;
+                game.objects[&*other_name].position = game.objects[name].position;
                 game.objects[name].position = temp;
                 ActiveMotion::Stop
             }

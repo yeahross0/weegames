@@ -8,6 +8,7 @@ Cargo.lock
 
 high-scores.json
 played-games.json
+all-games.json
 
 *.wasm
 webgames.zip
