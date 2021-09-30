@@ -451,9 +451,9 @@
   ],
   "asset_files": {
     "images": {
-      "clear-sky-dandy-done": "clear-sky-dandy-done.webp",
-      "clear-sky-dandy": "clear-sky-dandy.webp",
-      "sky": "sky.webp"
+      "clear-sky-dandy-done": "clear-sky-dandy-done.png",
+      "clear-sky-dandy": "clear-sky-dandy.png",
+      "sky": "sky.jpeg"
     },
     "audio": {
       "pills-crop": "pills-crop.ogg",

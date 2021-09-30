@@ -600,8 +600,8 @@
                       "initial_direction": {
                         "Direction": {
                           "possible_directions": [
-                            "Right",
-                            "Left"
+                            "Left",
+                            "Right"
                           ]
                         }
                       },
@@ -885,22 +885,22 @@
   ],
   "asset_files": {
     "images": {
-      "warp-idle-4": "warp-idle-4.png",
-      "warp-platform": "warp-platform.png",
       "warp-idle-2": "warp-idle-2.png",
-      "warp-jump": "warp-jump.png",
-      "warp-ground": "warp-ground.png",
-      "warp-idle-1": "warp-idle-1.png",
-      "warp-jump-land": "warp-jump-land.png",
-      "warp-lean-back": "warp-lean-back.png",
-      "warp-idle-3": "warp-idle-3.png",
       "warp-sky-2": "warp-sky-2.png",
+      "warp-ground": "warp-ground.png",
+      "warp-platform": "warp-platform.png",
+      "warp-jump-land": "warp-jump-land.png",
       "warp-platform-smaller": "warp-platform-smaller.png",
-      "warp-platform-design": "warp-platform-design.png"
+      "warp-idle-4": "warp-idle-4.png",
+      "warp-idle-3": "warp-idle-3.png",
+      "warp-platform-design": "warp-platform-design.png",
+      "warp-jump": "warp-jump.png",
+      "warp-idle-1": "warp-idle-1.png",
+      "warp-lean-back": "warp-lean-back.png"
     },
     "audio": {
-      "woo": "woo.ogg",
-      "gasp": "gasp.ogg"
+      "gasp": "gasp.ogg",
+      "woo": "woo.ogg"
     },
     "music": {
       "filename": "race-to-mars-crop.ogg",
@@ -912,5 +912,5 @@
     "Seconds": 8.0
   },
   "intro_text": "Reverse Gravity!",
-  "attribution": "warp graphics: https://ansimuz.itch.io/warped-city\n\n------------------\nSound effects by BCKR licenced under CC BY 4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://bckr.itch.io/sdap\n------------------\n\n------------------\nRace To Mars music by DOS88 licenced under under CC BY 4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://dos88.itch.io/dos-88-music-library\n------------------"
+  "attribution": "warp graphics: https://ansimuz.itch.io/warped-city\n\n------------------\nSound effects by BCKR licensed under CC BY 4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://bckr.itch.io/sdap\n------------------\n\n------------------\nRace To Mars music by DOS88 licensed under under CC BY 4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://dos88.itch.io/dos-88-music-library\n------------------"
 }

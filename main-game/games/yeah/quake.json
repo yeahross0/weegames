@@ -259,14 +259,14 @@
   "background": [],
   "asset_files": {
     "images": {
-      "back": "back.webp",
-      "earthquake": "earthquake.webp",
-      "earthquake-middle": "earthquake-middle.webp",
+      "back": "back.jpg",
+      "earthquake-middle": "earthquake-middle.png",
+      "earthquake": "earthquake.jpg",
       "butterfly-itself": "butterfly-itself.png"
     },
     "audio": {
-      "slap-crop": "slap-crop.ogg",
       "oh-no-4-crop": "oh-no-4-crop.ogg",
+      "slap-crop": "slap-crop.ogg",
       "oi": "oi.ogg"
     },
     "music": {

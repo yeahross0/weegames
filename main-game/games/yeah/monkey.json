@@ -113,19 +113,41 @@
           ],
           "actions": [
             {
-              "Motion": {
-                "JumpTo": {
-                  "Area": {
-                    "min": {
-                      "x": 33.0,
-                      "y": -134.0
-                    },
-                    "max": {
-                      "x": 809.0,
-                      "y": -130.0
+              "Random": {
+                "random_actions": [
+                  {
+                    "Motion": {
+                      "JumpTo": {
+                        "Area": {
+                          "min": {
+                            "x": 33.0,
+                            "y": -134.0
+                          },
+                          "max": {
+                            "x": 400.0,
+                            "y": -130.0
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "Motion": {
+                      "JumpTo": {
+                        "Area": {
+                          "min": {
+                            "x": 700.0,
+                            "y": -134.0
+                          },
+                          "max": {
+                            "x": 900.0,
+                            "y": -130.0
+                          }
+                        }
+                      }
                     }
                   }
-                }
+                ]
               }
             },
             {
@@ -411,19 +433,41 @@
           ],
           "actions": [
             {
-              "Motion": {
-                "JumpTo": {
-                  "Area": {
-                    "min": {
-                      "x": 789.0,
-                      "y": -134.0
-                    },
-                    "max": {
-                      "x": 1506.0,
-                      "y": -130.0
+              "Random": {
+                "random_actions": [
+                  {
+                    "Motion": {
+                      "JumpTo": {
+                        "Area": {
+                          "min": {
+                            "x": 1200.0,
+                            "y": -134.0
+                          },
+                          "max": {
+                            "x": 1506.0,
+                            "y": -130.0
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "Motion": {
+                      "JumpTo": {
+                        "Area": {
+                          "min": {
+                            "x": 700.0,
+                            "y": -134.0
+                          },
+                          "max": {
+                            "x": 900.0,
+                            "y": -130.0
+                          }
+                        }
+                      }
                     }
                   }
-                }
+                ]
               }
             },
             {
@@ -677,17 +721,17 @@
     "images": {
       "banana-peel": "banana-peel.png",
       "banana": "banana.png",
-      "monkeys": "monkeys.webp"
+      "monkeys": "monkeys.jpeg"
     },
     "audio": {
-      "monkey-crop": "monkey-crop.ogg",
-      "crunching": "crunching.ogg"
+      "crunching": "crunching.ogg",
+      "monkey-crop": "monkey-crop.ogg"
     },
-    "fonts": {},
     "music": {
       "filename": "techno-beat.ogg",
       "looped": false
-    }
+    },
+    "fonts": {}
   },
   "length": {
     "Seconds": 4.0

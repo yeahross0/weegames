@@ -474,8 +474,8 @@
     "images": {
       "Finish": "Finish.png",
       "Start": "Start.png",
-      "track": "track.webp",
-      "car": "car.webp"
+      "track": "track.jpg",
+      "car": "car.png"
     },
     "audio": {
       "small-explosion": "small-explosion.ogg",
@@ -494,5 +494,5 @@
     "Seconds": 6.0
   },
   "intro_text": "Do a lap",
-  "attribution": "car: https://looneybits.itch.io/2d-race-cars\ntrack: https://free-game-assets.itch.io/free-race-track-tile-set\n\nsound effects:\nhttps://jdwasabi.itch.io/8-bit-16-bit-sound-effects-pack\nhttps://cohexbruh.itch.io/fire-woosh-sound-effects-pack-vol1\nhttps://harvey656.itch.io/8-bit-game-sound-effects-collection\nhttps://void1gaming.itch.io/halftone-sound-effects-pack-lite\nhttps://soundsbydane.itch.io/8-bit-sound-pack\n\nSound effects by BCKR licenced under CC BY 4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://bckr.itch.io/sdap"
+  "attribution": "car: https://looneybits.itch.io/2d-race-cars\ntrack: https://free-game-assets.itch.io/free-race-track-tile-set\n\nsound effects:\nhttps://jdwasabi.itch.io/8-bit-16-bit-sound-effects-pack\nhttps://cohexbruh.itch.io/fire-woosh-sound-effects-pack-vol1\nhttps://harvey656.itch.io/8-bit-game-sound-effects-collection\nhttps://void1gaming.itch.io/halftone-sound-effects-pack-lite\nhttps://soundsbydane.itch.io/8-bit-sound-pack\n\nSound effects by BCKR licensed under CC BY 4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://bckr.itch.io/sdap"
 }

@@ -1,5 +1,5 @@
-# Weegames
-Weegames is a collection of minigames written in Rust with SDL2 (and SFML for audio). Download the windows version from [itch.io](https://yeahross.itch.io/weegames). There is a separate repository for the [WASM game](https://github.com/yeahross0/Weegames-Demo).
+# Weegames Demo
+Weegames is a collection of minigames written in Rust with macroquad. You can play the game on [itch.io](https://yeahross.itch.io/weegames).
 
 # Screenshots
 ![baby](https://img.itch.zone/aW1hZ2UvNjYyNjQ3LzM1Njg1NjkuanBn/original/EjnlNA.jpg)
@@ -9,13 +9,19 @@ Weegames is a collection of minigames written in Rust with SDL2 (and SFML for au
 
 https://www.youtube.com/watch?v=sstqGppo7L4
 
-# Installation
-## MSVC
-Go into the main-game/msvc/lib/ directory. Then go into either the 32-bit or 64-bit directory depending on what you are using. From there, copy csfml-audio.lib and csfml-system.lib to C:\Users\[USERNAME]\.rustup\toolchains\[RUST_TOOLCHAIN]\lib\rustlib\[MSVC_TOOLCHAIN]\lib.
-## Other - Mingw or Linux
-Install SDL https://github.com/Rust-SDL2/rust-sdl2.
-
-Install SFML using their guide https://github.com/jeremyletang/rust-sfml/wiki
-
 # Running
-Change directory into main-game/ and run ``cargo run``
+
+```cd main-game```
+
+To run the executable version run ``cargo run``
+
+To run the web version run
+
+```
+cargo build --target wasm32-unknown-unknown
+cp ../target/wasm32-unknown-unknown/debug/main-game.wasm weegames.wasm
+cargo install basic-http-server # If not already installed
+basic-http-server .
+```
+
+Then open localhost:4000

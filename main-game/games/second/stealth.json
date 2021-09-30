@@ -178,6 +178,92 @@
         {
           "triggers": [
             {
+              "CheckProperty": {
+                "name": "B",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "C",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Width Bar",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "C"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "B",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "C",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "D",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Height Bar",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "D"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
               "Input": {
                 "Mouse": {
                   "over": {
@@ -201,12 +287,7 @@
         {
           "triggers": [
             {
-              "CheckProperty": {
-                "name": "A",
-                "check": {
-                  "Switch": "SwitchedOn"
-                }
-              }
+              "Time": "Start"
             }
           ],
           "actions": [
@@ -489,6 +570,496 @@
       ]
     },
     {
+      "name": "C",
+      "sprite": {
+        "Colour": {
+          "r": 0.7294118,
+          "g": 0.8901961,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 30.0,
+        "height": 38.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "A"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "ClampPosition": {
+                    "area": {
+                      "min": {
+                        "x": 0.0,
+                        "y": 375.0
+                      },
+                      "max": {
+                        "x": 1600.0,
+                        "y": 900.0
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Left",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 4.0,
+                      "y": 0.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Left",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": -4.0,
+                      "y": 0.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "B",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Cover 1"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Cover 2"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Cover 3"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Cover 4"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Left",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Left",
+                "check": {
+                  "Switch": "SwitchedOff"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "D",
+      "sprite": {
+        "Colour": {
+          "r": 0.42352942,
+          "g": 0.50980395,
+          "b": 1.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 14.0,
+        "height": 54.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "A"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "ClampPosition": {
+                    "area": {
+                      "min": {
+                        "x": 0.0,
+                        "y": 375.0
+                      },
+                      "max": {
+                        "x": 1600.0,
+                        "y": 900.0
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Up",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 0.0,
+                      "y": 4.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Up",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 0.0,
+                      "y": -4.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "B",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Cover 1"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Cover 2"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Cover 3"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Cover 4"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Up",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Up",
+                "check": {
+                  "Switch": "SwitchedOff"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "Left",
       "sprite": {
         "Colour": {
@@ -556,6 +1127,91 @@
                   "over": {
                     "Object": {
                       "name": "Left"
+                    }
+                  },
+                  "interaction": "Hover"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Up",
+      "sprite": {
+        "Colour": {
+          "r": 0.827451,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 1600.0,
+        "height": 900.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "A"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 0.0,
+                      "y": -450.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "Up"
                     }
                   },
                   "interaction": "Hover"
@@ -1203,6 +1859,150 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Width Bar",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.2627451,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 8.0,
+        "height": 1800.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "A"
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "Width Bar"
+                    }
+                  },
+                  "interaction": "Hover"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Height Bar",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.2627451,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 3200.0,
+        "height": 8.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "A"
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "Height Bar"
+                    }
+                  },
+                  "interaction": "Hover"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
     }
   ],
   "background": [
@@ -1226,23 +2026,23 @@
   ],
   "asset_files": {
     "images": {
-      "man-right-2": "man-right-2.png",
-      "other-down": "other-down.png",
       "man-right-3": "man-right-3.png",
+      "other-down": "other-down.png",
+      "man-right-2": "man-right-2.png",
       "man-right-1": "man-right-1.png",
       "other-up": "other-up.png",
       "other-left": "other-left.png",
       "scifi": "scifi.png",
-      "points": "points.png",
       "robot": "robot.png",
+      "robot-2": "robot-2.png",
+      "other-right": "other-right.png",
       "man-still": "man-still.png",
       "man-right-4": "man-right-4.png",
-      "other-right": "other-right.png",
-      "robot-2": "robot-2.png"
+      "points": "points.png"
     },
     "audio": {
-      "gasp": "gasp.ogg",
-      "woo": "woo.ogg"
+      "woo": "woo.ogg",
+      "gasp": "gasp.ogg"
     },
     "music": {
       "filename": "take-cover-2.ogg",
@@ -1254,5 +2054,5 @@
     "Seconds": 6.0
   },
   "intro_text": "Sneak over!",
-  "attribution": "https://penusbmic.itch.io/sci-fi-planetone\n\nhttps://mome-g.itch.io/8dir-char\n\nSound effects by BCKR licenced under CC BY 4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://bckr.itch.io/sdap\n\nTake Cover by Tim Beek is licenced under CC-BY-4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://timbeek.itch.io/royalty-free-music-pack"
+  "attribution": "https://penusbmic.itch.io/sci-fi-planetone\n\nhttps://mome-g.itch.io/8dir-char\n\nSound effects by BCKR licensed under CC BY 4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://bckr.itch.io/sdap\n\nTake Cover by Tim Beek is licensed under CC-BY-4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://timbeek.itch.io/royalty-free-music-pack"
 }

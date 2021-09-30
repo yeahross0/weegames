@@ -439,8 +439,8 @@
                   "direction": {
                     "Direction": {
                       "possible_directions": [
-                        "Left",
-                        "Right"
+                        "Right",
+                        "Left"
                       ]
                     }
                   },
@@ -505,7 +505,11 @@
             },
             {
               "SetProperty": {
-                "Angle": "RotateToMouse"
+                "Angle": {
+                  "Match": {
+                    "name": "Angle"
+                  }
+                }
               }
             },
             {
@@ -2129,6 +2133,68 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Angle",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Player"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": -50.0,
+                      "y": 0.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Angle": "RotateToMouse"
+              }
+            }
+          ]
+        }
+      ]
     }
   ],
   "background": [
@@ -2152,40 +2218,40 @@
   ],
   "asset_files": {
     "images": {
-      "time-0": "time-0.png",
-      "blue-slime-2": "blue-slime-2.png",
+      "red-slime-2": "red-slime-2.png",
+      "time-6": "time-6.png",
+      "time-2": "time-2.png",
+      "time-3": "time-3.png",
+      "blue-slime-1": "blue-slime-1.png",
+      "time-5": "time-5.png",
+      "yellow-3": "yellow-3.png",
+      "yellow-2": "yellow-2.png",
+      "volley-terrain7": "volley-terrain7.jpg",
+      "blue-slime-3": "blue-slime-3.png",
+      "FB500-3": "FB500-3.png",
       "red-slime-1": "red-slime-1.png",
       "FB500-2": "FB500-2.png",
       "net1": "net1.png",
-      "time-3": "time-3.png",
-      "yellow-3": "yellow-3.png",
-      "yellow-2": "yellow-2.png",
-      "red-slime-2": "red-slime-2.png",
-      "time-6": "time-6.png",
-      "blue-slime-4": "blue-slime-4.png",
-      "time-2": "time-2.png",
-      "FB500-3": "FB500-3.png",
-      "blue-slime-1": "blue-slime-1.png",
-      "volley-terrain7": "volley-terrain7.webp",
+      "time-0": "time-0.png",
       "FB500-1": "FB500-1.png",
-      "time-7": "time-7.png",
-      "red-slime-4": "red-slime-4.png",
-      "blue-slime-3": "blue-slime-3.png",
-      "yellow-0": "yellow-0.png",
       "time-4": "time-4.png",
-      "FB500-4": "FB500-4.png",
-      "time-5": "time-5.png",
-      "red-slime-3": "red-slime-3.png",
       "FB500-5": "FB500-5.png",
+      "red-slime-3": "red-slime-3.png",
       "time-1": "time-1.png",
-      "yellow-1": "yellow-1.png"
+      "blue-slime-4": "blue-slime-4.png",
+      "yellow-1": "yellow-1.png",
+      "red-slime-4": "red-slime-4.png",
+      "time-7": "time-7.png",
+      "FB500-4": "FB500-4.png",
+      "yellow-0": "yellow-0.png",
+      "blue-slime-2": "blue-slime-2.png"
     },
     "audio": {
-      "bullet": "bullet.wav",
-      "laser-bullet-1": "laser-bullet-1.wav",
-      "woosh": "woosh.ogg",
       "rising": "rising.ogg",
-      "laser-bullet-2": "laser-bullet-2.ogg"
+      "bullet": "bullet.ogg",
+      "laser-bullet-2": "laser-bullet-2.ogg",
+      "woosh": "woosh.ogg",
+      "laser-bullet-1": "laser-bullet-1.ogg"
     },
     "music": {
       "filename": "anime-beat.ogg",
@@ -2197,5 +2263,5 @@
     "Seconds": 8.0
   },
   "intro_text": "Volley!",
-  "attribution": "slimes: https://stealthix.itch.io/animated-slimes\n----\nFireball by NYKNCK is licenced under CC BY 4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://kvsr.itch.io/fireball-animation\n----\nbackground: https://eidern.itch.io/beach-volley-asset\n\n----\nAnime Beat Loop by Tim Beek is licenced under CC BY 4.0\nhttps://creativecommons.org/licenses/by/4.0/\nhttps://timbeek.itch.io/royalty-free-music-pack\n----\nsound effects:\nhttps://cohexbruh.itch.io/fire-woosh-sound-effects-pack-vol1\nhttps://void1gaming.itch.io/halftone-sound-effects-pack-lite\nhttps://soundsbydane.itch.io/8-bit-sound-pack\nhttps://jdwasabi.itch.io/8-bit-16-bit-sound-effects-pack"
+  "attribution": "slimes: https://stealthix.itch.io/animated-slimes\n----\nFireball by NYKNCK is licensed under CC BY 4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://kvsr.itch.io/fireball-animation\n----\nbackground: https://eidern.itch.io/beach-volley-asset\n\n----\nAnime Beat Loop by Tim Beek is licensed under CC BY 4.0\nhttps://creativecommons.org/licenses/by/4.0/\nhttps://timbeek.itch.io/royalty-free-music-pack\n----\nsound effects:\nhttps://cohexbruh.itch.io/fire-woosh-sound-effects-pack-vol1\nhttps://void1gaming.itch.io/halftone-sound-effects-pack-lite\nhttps://soundsbydane.itch.io/8-bit-sound-pack\nhttps://jdwasabi.itch.io/8-bit-16-bit-sound-effects-pack"
 }

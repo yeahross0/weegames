@@ -336,10 +336,10 @@
   "background": [],
   "asset_files": {
     "images": {
-      "abyss-feet": "abyss-feet.webp",
-      "guitar-man": "guitar-man.webp",
-      "abyss-ground": "abyss-ground.webp",
-      "splat-transparent": "splat-transparent.webp",
+      "abyss-feet": "abyss-feet.png",
+      "guitar-man": "guitar-man.png",
+      "abyss-ground": "abyss-ground.jpg",
+      "splat-transparent": "splat-transparent.png",
       "orange": "orange.png"
     },
     "audio": {

@@ -242,23 +242,7 @@
             },
             {
               "CheckProperty": {
-                "name": "Pot 6",
-                "check": {
-                  "Switch": "On"
-                }
-              }
-            },
-            {
-              "CheckProperty": {
                 "name": "Pot 7",
-                "check": {
-                  "Switch": "On"
-                }
-              }
-            },
-            {
-              "CheckProperty": {
-                "name": "Pot 8",
                 "check": {
                   "Switch": "On"
                 }
@@ -1358,125 +1342,6 @@
       ]
     },
     {
-      "name": "Pot 6",
-      "sprite": {
-        "Image": {
-          "name": "pot-1"
-        }
-      },
-      "position": {
-        "x": -100.0,
-        "y": 450.0
-      },
-      "size": {
-        "width": 96.0,
-        "height": 96.0
-      },
-      "angle": 0.0,
-      "origin": null,
-      "collision_area": null,
-      "flip": {
-        "horizontal": false,
-        "vertical": false
-      },
-      "layer": 1,
-      "switch": "On",
-      "instructions": [
-        {
-          "triggers": [
-            {
-              "Time": "Start"
-            },
-            {
-              "CheckProperty": {
-                "name": "Difficulty 2",
-                "check": {
-                  "Switch": "SwitchedOn"
-                }
-              }
-            }
-          ],
-          "actions": [
-            {
-              "Motion": {
-                "JumpTo": {
-                  "Area": {
-                    "min": {
-                      "x": 210.0,
-                      "y": 100.0
-                    },
-                    "max": {
-                      "x": 1440.0,
-                      "y": 640.0
-                    }
-                  }
-                }
-              }
-            },
-            {
-              "SetProperty": {
-                "Switch": "Off"
-              }
-            }
-          ]
-        },
-        {
-          "triggers": [
-            {
-              "Collision": {
-                "Object": {
-                  "name": "Sword"
-                }
-              }
-            },
-            {
-              "CheckProperty": {
-                "name": "Pot 6",
-                "check": {
-                  "Switch": "Off"
-                }
-              }
-            }
-          ],
-          "actions": [
-            {
-              "Animate": {
-                "animation_type": "PlayOnce",
-                "sprites": [
-                  {
-                    "Image": {
-                      "name": "pot-2"
-                    }
-                  },
-                  {
-                    "Image": {
-                      "name": "pot-3"
-                    }
-                  },
-                  {
-                    "Image": {
-                      "name": "pot-4"
-                    }
-                  }
-                ],
-                "speed": "Normal"
-              }
-            },
-            {
-              "SetProperty": {
-                "Switch": "On"
-              }
-            },
-            {
-              "PlaySound": {
-                "name": "weird-impact"
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
       "name": "Pot 7",
       "sprite": {
         "Image": {
@@ -1548,122 +1413,6 @@
             {
               "CheckProperty": {
                 "name": "Pot 7",
-                "check": {
-                  "Switch": "Off"
-                }
-              }
-            }
-          ],
-          "actions": [
-            {
-              "Animate": {
-                "animation_type": "PlayOnce",
-                "sprites": [
-                  {
-                    "Image": {
-                      "name": "pot-2"
-                    }
-                  },
-                  {
-                    "Image": {
-                      "name": "pot-3"
-                    }
-                  },
-                  {
-                    "Image": {
-                      "name": "pot-4"
-                    }
-                  }
-                ],
-                "speed": "Normal"
-              }
-            },
-            {
-              "SetProperty": {
-                "Switch": "On"
-              }
-            },
-            {
-              "PlaySound": {
-                "name": "weird-impact"
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "Pot 8",
-      "sprite": {
-        "Image": {
-          "name": "pot-1"
-        }
-      },
-      "position": {
-        "x": -100.0,
-        "y": 450.0
-      },
-      "size": {
-        "width": 96.0,
-        "height": 96.0
-      },
-      "angle": 0.0,
-      "origin": null,
-      "collision_area": null,
-      "flip": {
-        "horizontal": false,
-        "vertical": false
-      },
-      "layer": 1,
-      "switch": "On",
-      "instructions": [
-        {
-          "triggers": [
-            {
-              "Time": "Start"
-            },
-            {
-              "DifficultyLevel": {
-                "level": 3
-              }
-            }
-          ],
-          "actions": [
-            {
-              "Motion": {
-                "JumpTo": {
-                  "Area": {
-                    "min": {
-                      "x": 210.0,
-                      "y": 100.0
-                    },
-                    "max": {
-                      "x": 1440.0,
-                      "y": 640.0
-                    }
-                  }
-                }
-              }
-            },
-            {
-              "SetProperty": {
-                "Switch": "Off"
-              }
-            }
-          ]
-        },
-        {
-          "triggers": [
-            {
-              "Collision": {
-                "Object": {
-                  "name": "Sword"
-                }
-              }
-            },
-            {
-              "CheckProperty": {
-                "name": "Pot 8",
                 "check": {
                   "Switch": "Off"
                 }
@@ -1782,5 +1531,5 @@
     "Seconds": 5.0
   },
   "intro_text": "Break the Pots!",
-  "attribution": "https://lionheart963.itch.io/4-directional-character\nhttps://seliel-the-shaper.itch.io/breakable-pots\nhttps://ansimuz.itch.io/trees-bushes-sprites\n\nhttps://harvey656.itch.io/8-bit-game-sound-effects-collection\n\nAttack by BCKR licenced under CC BY 4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://bckr.itch.io/sdap\nhttps://jonathan-so.itch.io/creatorpack"
+  "attribution": "https://lionheart963.itch.io/4-directional-character\nhttps://seliel-the-shaper.itch.io/breakable-pots\nhttps://ansimuz.itch.io/trees-bushes-sprites\n\nhttps://harvey656.itch.io/8-bit-game-sound-effects-collection\n\nAttack by BCKR licensed under CC BY 4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://bckr.itch.io/sdap\nhttps://jonathan-so.itch.io/creatorpack"
 }

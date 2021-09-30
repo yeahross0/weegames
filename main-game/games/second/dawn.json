@@ -298,7 +298,7 @@
       },
       "size": {
         "width": 30.0,
-        "height": 200.0
+        "height": 220.0
       },
       "angle": 90.0,
       "origin": null,
@@ -1429,16 +1429,16 @@
   "background": [],
   "asset_files": {
     "images": {
-      "dawn-3": "dawn-3.png",
-      "dawn-8": "dawn-8.webp",
-      "dawn-2": "dawn-2.webp",
-      "dawn-blue-sun": "dawn-blue-sun.webp",
-      "dawn-4": "dawn-4.webp",
+      "dawn-2": "dawn-2.png",
       "dawn-7": "dawn-7.png",
+      "star": "star.png",
+      "dawn-5": "dawn-5.png",
       "unstar": "unstar.png",
-      "dawn-5": "dawn-5.webp",
-      "dawn-6": "dawn-6.webp",
-      "star": "star.png"
+      "dawn-blue-sun": "dawn-blue-sun.png",
+      "dawn-4": "dawn-4.png",
+      "dawn-3": "dawn-3.png",
+      "dawn-8": "dawn-8.png",
+      "dawn-6": "dawn-6.png"
     },
     "audio": {
       "woosh": "woosh.ogg"
@@ -1453,5 +1453,5 @@
     "Seconds": 5.0
   },
   "intro_text": null,
-  "attribution": "images: https://saurabhkgp.itch.io/the-dawn-parallax-background\n\n----\nIndustrial Chasm by Tim Beek is licenced under CC BY 4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://timbeek.itch.io/royalty-free-music-pack\n----\n\nwoosh: https://cohexbruh.itch.io/fire-woosh-sound-effects-pack-vol1"
+  "attribution": "images: https://saurabhkgp.itch.io/the-dawn-parallax-background\n\n----\nIndustrial Chasm by Tim Beek is licensed under CC BY 4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://timbeek.itch.io/royalty-free-music-pack\n----\n\nwoosh: https://cohexbruh.itch.io/fire-woosh-sound-effects-pack-vol1"
 }

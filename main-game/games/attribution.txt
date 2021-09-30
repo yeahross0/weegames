@@ -1,0 +1,785 @@
+filename: games/yeah/mask.json
+~~~~~~~~
+woman-mask: https://www.pexels.com/photo/woman-wearing-face-mask-3902882/
+woman-no-mask: https://www.pexels.com/photo/woman-wearing-face-mask-3902884/
+spider: https://publicdomainvectors.org/en/free-clipart/Spider-silhouette/66523.html
+----
+ship
+Cruise ship in holiday destination by alegri is licensed under CC-BY
+https://www.4freephotos.com/Cruise-ship-in-holiday-destination-7041.html
+----
+
+ahh-eww: https://freesound.org/people/isabellaquintero97/sounds/363786/
+
+----
+tamba lambda
+https://freesound.org/people/zagi2/sounds/457744/
+'Tamba Lamba' by zagi2 is licensed under CC BY-NC 3.0
+https://creativecommons.org/licenses/by-nc/3.0/legalcode
+I have trimmed the audio.
+----
+~~~~~~~~
+
+filename: games/yeah/balloon.json
+~~~~~~~~
+
+balloon: https://openclipart.org/detail/300887/red-balloon-person
+roof: https://pixabay.com/photos/roof-scandinavia-red-building-598208/
+crunch: https://openclipart.org/detail/309876/sounds-onomatopoeias-sonidos-onomatopeyas
+jar: https://www.si.edu/object/jar:nmafa_89-13-27
+
+shatter: https://freesound.org/people/letssfx/sounds/147867/
+pop: https://freesound.org/people/unfa/sounds/245646/
+----
+sparse
+https://freesound.org/people/starpause/sounds/12696/
+'burzGuit2.wav' by starpause is is licensed under CC BY 3.0
+https://creativecommons.org/licenses/by/3.0/
+I trimmed the audio.
+----
+~~~~~~~~
+
+filename: games/yeah/shake.json
+~~~~~~~~
+dandelion:
+https://pixabay.com/photos/dandelion-sky-spring-blue-sky-745972/
+sky: https://pixabay.com/photos/sky-clouds-outdoors-scenic-49520/pills:
+https://freesound.org/people/gneube/sounds/315836/----
+wolf-whistle
+https://freesound.org/people/InspectorJ/sounds/411497/
+'Wolf Whistle, Fast, A (H1).wav' by InspectorJ is licensed under CC BY 3.0
+https://creativecommons.org/licenses/by/3.0/legalcode
+----
+~~~~~~~~
+
+filename: games/yeah/bird.json
+~~~~~~~~
+bird: https://avopix.com/photo/18046-bird-animal-white-background
+birds: https://www.flickr.com/photos/mathiasappel/26665123862/in/photolist-GCiJjS-2b7gvKb-Mma6Pb-NfEEzJ-2bHrof5-VAEZeD-JvMr6M-HzEdHY-SmxoWJ-27YaXgq-2bqFMM9-nKtHWQ-2bqFMTG-26snjDM-28Uzayc-29zYAgs-NK2kt8-2bdFtcL-QbUuAY-2cjLj6H-295xLtL-js38AF-js5wcm-2bdEmAm-2cffV1s-N5LEoR-Fc9Wc-QoVbZ1-a6ZJoL-LBxZ2-26EgPQ1-Ya1AyT-2bdFctG-2bdwQH9-2aVVmxP-8qftQq-a6WRW2-Rt9feS-2b8Atk2-29A2RsV-NMw1Nx-TPHq9U-KG6hLu-2bQS1Ft-25G7sTU-2eVk98F-Zqxzu5-Jb82Qk-Nyydc8-HCy4P1
+
+putrid heartbeat: https://freesound.org/people/Asteroiderer/sounds/439410/
+----
+eerie:
+https://freesound.org/people/tigersound/sounds/9078/
+'close encounters' by tigersound is licensed under CC BY-NC 3.0
+https://creativecommons.org/licenses/by-nc/3.0/legalcode
+I have trimmed the audio.
+----
+~~~~~~~~
+
+filename: games/yeah/shed.json
+~~~~~~~~
+sliding: https://commons.wikimedia.org/wiki/File:Stamp_Germany_2003_MiNr2350_Vater-und-Sohn_II.jpg
+shed: https://www.4freephotos.com/Wooden-shed-mountains-6443.html
+
+----
+you won robot:
+https://freesound.org/people/Ionicsmusic/sounds/196870/
+'Race Robot - you won' by Ionicsmusic is released under CC BY-NC 3.0
+https://creativecommons.org/licenses/by-nc/3.0/legalcode
+----
+----
+bye bye:
+https://freesound.org/people/shadoWisp/sounds/279015/
+'female robotic voice' by shadoWisp is licensed under CC BY 3.0
+https://creativecommons.org/licenses/by/3.0/legalcode
+----
+
+----
+lullaby:
+https://freesound.org/people/InspectorJ/sounds/412224/
+'Creepy Lullaby, A' by InspectorJ is licensed under CC BY 3.0
+https://creativecommons.org/licenses/by/3.0/legalcode
+I have trimmed the audio.
+----
+~~~~~~~~
+
+filename: games/second/break.json
+~~~~~~~~
+https://lionheart963.itch.io/4-directional-character
+https://seliel-the-shaper.itch.io/breakable-pots
+https://ansimuz.itch.io/trees-bushes-sprites
+
+https://harvey656.itch.io/8-bit-game-sound-effects-collection
+
+Attack by BCKR licensed under CC BY 4.0
+https://creativecommons.org/licenses/by/4.0/legalcode
+https://bckr.itch.io/sdap
+https://jonathan-so.itch.io/creatorpack
+~~~~~~~~
+
+filename: games/second/knock.json
+~~~~~~~~
+https://s4m-ur4i.itch.io/free-sprites-elements-8x8-retro-pixelart-platformer-brawler
+
+https://jdwasabi.itch.io/8-bit-16-bit-sound-effects-pack
+https://void1gaming.itch.io/halftone-sound-effects-pack-lite
+
+8-Bit DNA by Tim Beek is licensed under CC-BY-4.0
+https://creativecommons.org/licenses/by/4.0/legalcode
+https://timbeek.itch.io/royalty-free-music-pack
+~~~~~~~~
+
+filename: games/yeah/orange.json
+~~~~~~~~
+splat: https://pixabay.com/vectors/splat-green-mess-splashing-style-42890/
+guitar-man:
+https://www.pexels.com/photo/man-playing-red-and-white-electric-guitar-2299499/
+abyss: https://pixabay.com/illustrations/abyss-window-sill-dangerous-2036211/
+orange: http://www.clker.com/clipart-3993.html
+
+eureka: https://freesound.org/people/cognito%20perceptu/sounds/151604/
+----
+groan
+https://freesound.org/people/FritzSounds/sounds/366297/
+'A Few Groans Of Disappointment' by FritzSounds is licensed under CC BY-NC 3.0
+https://creativecommons.org/licenses/by-nc/3.0/legalcode
+I have trimmed the audio.
+----
+----
+whales
+https://freesound.org/people/daveincamas/sounds/45563/
+'DeepCheering' by daveincamas is licensed under CC BY 3.0
+https://creativecommons.org/licenses/by/3.0/legalcode
+I have trimmed the audio.
+----
+~~~~~~~~
+
+filename: games/yeah/piano.json
+~~~~~~~~
+piano: http://www.picdrome.com/sports-and-recreation/black-and-white-keys-on-piano-keyboard.png.php
+lady and hen: https://www.si.edu/object/chndm_1917-4-149-b
+sheep: https://www.si.edu/object/chndm_1912-12-53
+cow: https://www.si.edu/object/chndm_1921-22-388
+
+----
+moo:
+https://freesound.org/people/javapimp/sounds/439168/
+'Kara - Moo' by javapimp is licensed under CC BY 3.0
+https://creativecommons.org/licenses/by/3.0/legalcode
+----
+baa: https://freesound.org/people/esperar/sounds/171149/
+cluck: https://freesound.org/people/esperar/sounds/170808/
+wie gehts: https://freesound.org/people/Roses1401/sounds/424223/
+----
+groan:
+https://freesound.org/people/FritzSounds/sounds/366297/
+'A Few Groans Of Disappointment' by FritzSounds is licensed under CC BY-NC 3.0
+https://creativecommons.org/licenses/by-nc/3.0/legalcode
+I have trimmed the audio.
+----
+cheers: https://freesound.org/people/payattention/sounds/82800/
+~~~~~~~~
+
+filename: games/yeah/boss.json
+~~~~~~~~
+watch: https://commons.wikimedia.org/wiki/File:Relojcasioheavy.JPG
+----
+wasp:
+https://commons.wikimedia.org/w/index.php?curid=1999886
+'File:2 wasp 2007-04-25.jpg' by Trounce is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode
+----
+----
+man:
+https://www.pexels.com/photo/man-in-blue-long-sleeve-talking-to-someone-3781887/
+https://www.pexels.com/photo/man-in-blue-sweater-holding-white-tablet-computer-3783249/
+https://www.pexels.com/photo/man-in-blue-sweater-holding-white-tablet-computer-3783250/
+https://www.pexels.com/photo/man-in-blue-sweater-reading-a-newspaper-3781935/
+----
+
+scream: https://freesound.org/people/samueleunimancer/sounds/386893/
+humming: https://freesound.org/people/Topschool/sounds/361077/
+ha: https://freesound.org/people/ellenmentor/sounds/419161/
+~~~~~~~~
+
+filename: games/second/interlude.json
+~~~~~~~~
+
+~~~~~~~~
+
+filename: games/yeah/planes.json
+~~~~~~~~
+plane: http://www.picdrome.com/sports-and-recreation/supersonic-fighter-aircraft.jpg.php
+planes: http://www.picdrome.com/sports-and-recreation/training-aircrafts-in-formation.jpg.php
+clear sky: https://pixabay.com/photos/dandelion-sky-spring-blue-sky-745972/
+
+----
+car crash:
+https://freesound.org/people/nsstudios/sounds/351513/
+'car crash' by nsstudios is licensed under CC BY-NC 3.0
+https://creativecommons.org/licenses/by-nc/3.0/
+I have trimmed the audio.
+----
+----
+f1 car:
+https://freesound.org/people/stormlord/sounds/38567/
+'Rennwagen1' by stormlord is licensed under  Sampling Plus 1.0
+https://creativecommons.org/licenses/sampling+/1.0/legalcode
+----
+~~~~~~~~
+
+filename: games/yeah/pumpkin.json
+~~~~~~~~
+pumpkin: https://www.4freephotos.com/Halloween-lantern-legs-6539.html
+candle: https://pixabay.com/photos/candle-torch-flame-fire-light-1115769/
+
+boo: https://freesound.org/people/unfa/sounds/187104/
+nexus: https://freesound.org/people/Greek555/sounds/414270/
+~~~~~~~~
+
+filename: games/yeah/parachute.json
+~~~~~~~~
+parachute: http://www.picdrome.com/sports-and-recreation/sports-parachutist-skydiving.jpg.php
+sky: https://pixabay.com/photos/sky-clouds-outdoors-scenic-49520/
+helicopter: http://www.picdrome.com/sports-and-recreation/military-helicopter-in-flight.jpg.php
+
+oh no: https://freesound.org/people/ecfike/sounds/131407/
+pop: https://freesound.org/people/unfa/sounds/245646/
+yippee: https://freesound.org/people/Topschool/sounds/443493/
+
+----
+dreamy:
+https://freesound.org/people/Timbre/sounds/462631/
+'dreamy loopable remix of mareproduction's Freesound #426354' by Timbre is licensed under CC BY-NC 3.0
+https://creativecommons.org/licenses/by-nc/3.0/legalcode
+I have trimmed the audio.
+----
+~~~~~~~~
+
+filename: games/yeah/wasp.json
+~~~~~~~~
+swat: https://pixabay.com/vectors/fly-swatter-pest-control-swat-29407/
+----
+wasp:
+https://commons.wikimedia.org/w/index.php?curid=1999886
+'File:2 wasp 2007-04-25.jpg' by Trounce is licensed under CC BY 3.0
+https://creativecommons.org/licenses/by/3.0/legalcode
+I cropped the image and fuzzed it.
+----
+bikes: http://www.picdrome.com/sports-and-recreation/gym-upright-cycles.jpg.php
+
+yippee: https://freesound.org/people/Topschool/sounds/443493/
+oh-no-2: https://freesound.org/people/ecfike/sounds/131407/
+swat: https://freesound.org/people/poorenglishjuggler/sounds/131461/
+----
+squash:
+https://freesound.org/people/zimbot/sounds/244486/
+'CrushAndGrind' by zimbot is licensed under CC BY 3.0
+https://creativecommons.org/licenses/by/3.0/legalcode
+I trimmed the audio.
+----
+
+----
+dramatic beat
+https://freesound.org/people/tyops/sounds/462955/
+'Dramatic beat' by tyops is licensed under CC BY 3.0
+https://creativecommons.org/licenses/by/3.0/legalcode
+I trimmed the audio.
+~~~~~~~~
+
+filename: games/second/disc.json
+~~~~~~~~
+slimes: https://stealthix.itch.io/animated-slimes
+----
+Fireball by NYKNCK is licensed under CC BY 4.0
+https://creativecommons.org/licenses/by/4.0/legalcode
+https://kvsr.itch.io/fireball-animation
+----
+background: https://eidern.itch.io/beach-volley-asset
+
+----
+Anime Beat Loop by Tim Beek is licensed under CC BY 4.0
+https://creativecommons.org/licenses/by/4.0/
+https://timbeek.itch.io/royalty-free-music-pack
+----
+sound effects:
+https://cohexbruh.itch.io/fire-woosh-sound-effects-pack-vol1
+https://void1gaming.itch.io/halftone-sound-effects-pack-lite
+https://soundsbydane.itch.io/8-bit-sound-pack
+https://jdwasabi.itch.io/8-bit-16-bit-sound-effects-pack
+~~~~~~~~
+
+filename: games/yeah/baby.json
+~~~~~~~~
+man + baby: https://www.pexels.com/photo/photo-of-man-in-raising-baby-under-blue-sky-1166990/
+trifle: https://en.wikipedia.org/wiki/File:Trifle-(cream-layer)-profile.jpg
+venice: https://pixabay.com/photos/venice-italy-history-sea-656232/
+
+oh no: https://freesound.org/people/ecfike/sounds/131407/
+yippee: https://freesound.org/people/Topschool/sounds/443493/
+
+peaceful: https://freesound.org/people/DishonoredBlood/sounds/342650/
+
+~~~~~~~~
+
+filename: games/system/choose-mode.json
+~~~~~~~~
+https://pixabay.com/photos/television-developing-countries-899265/
+~~~~~~~~
+
+filename: games/second/dawn.json
+~~~~~~~~
+images: https://saurabhkgp.itch.io/the-dawn-parallax-background
+
+----
+Industrial Chasm by Tim Beek is licensed under CC BY 4.0
+https://creativecommons.org/licenses/by/4.0/legalcode
+https://timbeek.itch.io/royalty-free-music-pack
+----
+
+woosh: https://cohexbruh.itch.io/fire-woosh-sound-effects-pack-vol1
+~~~~~~~~
+
+filename: games/second/tanks.json
+~~~~~~~~
+https://vnitti.itch.io/glacial-mountains-parallax-background
+https://ansimuz.itch.io/explosion-animations-pack
+
+https://void1gaming.itch.io/halftone-sound-effects-pack-lite
+https://soundsbydane.itch.io/8-bit-sound-pack
+~~~~~~~~
+
+filename: games/second/prelude.json
+~~~~~~~~
+
+~~~~~~~~
+
+filename: games/yeah/cannon.json
+~~~~~~~~
+standing-dog: https://www.pexels.com/photo/black-and-white-dog-on-grass-field-3590443/
+tennis-ball: https://pixabay.com/photos/tennis-ball-sidewalk-soil-game-501480/
+tennis-court: https://pixabay.com/photos/tennis-tennis-court-sports-play-1605799/
+beagle-ball: https://www.4freephotos.com/Beagle-carrying-a-ball-6347.html
+
+crunching: https://freesound.org/people/lolamadeus/sounds/144172/
+----
+funky
+https://freesound.org/people/Timbre/sounds/462939/
+'Extra-70s remix of excerpt of Greek555's freesound#462856.flac' by Timbre is licensed under CC BY-NC 3.0
+https://creativecommons.org/licenses/by-nc/3.0/legalcode
+I have trimmed the audio.
+----
+----
+bark
+https://freesound.org/people/crazymonke9/sounds/418106/
+'single dog bark 2' by crazymonke9 is licensed under CC BY 3.0
+https://creativecommons.org/licenses/by/3.0/legalcode
+I have trimmed the audio.
+----
+bark-2: https://freesound.org/people/ken788/sounds/386766/
+~~~~~~~~
+
+filename: games/second/time.json
+~~~~~~~~
+Skeletons: https://jesse-m.itch.io/skeleton-pack
+Ground: https://bakudas.itch.io/generic-platformer-pack
+Clock: https://corymcd.itch.io/100-tick-clock
+
+Sound effects by BCKR licensed under CC BY 4.0
+https://creativecommons.org/licenses/by/4.0/legalcode
+https://bckr.itch.io/sdap
+
+'Chipper' #2 Over World Loop by Smoothie Games is licensed under CC BY-ND 4.0
+https://creativecommons.org/licenses/by-nd/4.0/legalcode
+https://smoothie-games.itch.io/chipper-over-world-loop
+~~~~~~~~
+
+filename: games/yeah/disgrace.json
+~~~~~~~~
+----
+notebook:
+https://www.4freephotos.com/Notebook-with-open-pages-and-leaves-6810.html
+'Notebook with open pages and leaves' by alegri
+----
+david:
+https://en.wikipedia.org/wiki/File:%27David%27_by_Michelangelo_Fir_JBU002.jpg
+'File:'David' by Michelangelo Fir JBU002.jpg' by Jörg Bittner Unna is licensed under CC BY 3.0
+https://creativecommons.org/licenses/by/3.0/legalcode
+The image has been adapted into the notebook image.
+----
+robot:
+https://commons.wikimedia.org/wiki/File:Angry_eyebrows_robot_(5231002371).jpg
+'Angry eyebrows robot' by Quinn Dombrowski is licensed under CC BY-SA 2.0
+https://creativecommons.org/licenses/by-sa/2.0/legalcode
+The image has been adapted into the notebook image.
+I release my changes under CC BY-SA 2.0
+----
+
+hey: https://freesound.org/people/esperar/sounds/170786/
+~~~~~~~~
+
+filename: games/yeah/hiding.json
+~~~~~~~~
+hiding: https://pixabay.com/photos/cat-hiding-place-autumn-rust-1040815/
+city: https://pixabay.com/photos/city-evening-nature-sun-sunset-345609/
+hand: https://www.pexels.com/photo/persons-left-hand-on-window-3723686/
+
+meow: https://freesound.org/people/deleted_user_7146007/sounds/383427/
+----
+whistling
+https://freesound.org/people/dersuperanton/sounds/433651/
+'Whistling' by dersuperanton is licensed under CC BY 3.0
+https://creativecommons.org/licenses/by/3.0/legalcode
+----
+~~~~~~~~
+
+filename: games/mine/bong.json
+~~~~~~~~
+beep: https://freesound.org/people/Davidsraba/sounds/347167/
+arcade: https://freesound.org/people/maxstcroix/sounds/343151/
+~~~~~~~~
+
+filename: games/second/mine.json
+~~~~~~~~
+tiles and trees: https://mikemac2d.itch.io/adventure-tile-pack
+diamonds: https://pixelfrog-store.itch.io/kings-and-pigs
+
+https://harvey656.itch.io/8-bit-game-sound-effects-collection
+
+Ludum Dare 28 Track 2 by Abstraction's licencing information is located here http://abstractionmusic.com/#secLicensing
+http://abstractionmusic.bandcamp.com/
+~~~~~~~~
+
+filename: games/second/stealth.json
+~~~~~~~~
+https://penusbmic.itch.io/sci-fi-planetone
+
+https://mome-g.itch.io/8dir-char
+
+Sound effects by BCKR licensed under CC BY 4.0
+https://creativecommons.org/licenses/by/4.0/legalcode
+https://bckr.itch.io/sdap
+
+Take Cover by Tim Beek is licensed under CC-BY-4.0
+https://creativecommons.org/licenses/by/4.0/legalcode
+https://timbeek.itch.io/royalty-free-music-pack
+~~~~~~~~
+
+filename: games/yeah/quake.json
+~~~~~~~~
+butterfly: https://pixabay.com/photos/man-move-tattoo-butterfly-distant-538730/
+earthquake: https://pixabay.com/photos/earthquake-rubble-collapse-disaster-1665885/
+back: https://commons.wikimedia.org/wiki/File:Edgar_Germain_Hilaire_Degas_029.jpg
+
+slap: https://freesound.org/people/MootMcnoodles/sounds/444407/
+----
+oh no:
+https://freesound.org/people/AmeAngelofSin/sounds/168682/
+'evil/sarcastic: Oh no, you don't' by AmeAngelofSin is licensed under CC BY 3.0
+https://creativecommons.org/licenses/by/3.0/legalcode
+I have trimmed the audio
+----
+oi: https://freesound.org/people/rhink/sounds/245866/
+
+----
+dramatic increase
+https://freesound.org/people/tyops/sounds/415123/
+'Dramatic Increasing' by tyops is licensed under CC BY 3.0
+https://creativecommons.org/licenses/by/3.0/legalcode
+I have trimmed the audio.
+----
+~~~~~~~~
+
+filename: games/second/gravity.json
+~~~~~~~~
+warp graphics: https://ansimuz.itch.io/warped-city
+
+------------------
+Sound effects by BCKR licensed under CC BY 4.0
+https://creativecommons.org/licenses/by/4.0/legalcode
+https://bckr.itch.io/sdap
+------------------
+
+------------------
+Race To Mars music by DOS88 licensed under under CC BY 4.0
+https://creativecommons.org/licenses/by/4.0/legalcode
+https://dos88.itch.io/dos-88-music-library
+------------------
+~~~~~~~~
+
+filename: games/second/explosion.json
+~~~~~~~~
+images: https://pixelfrog-store.itch.io/kings-and-pigs
+
+explosion: https://harvey656.itch.io/8-bit-game-sound-effects-collection
+coin: https://void1gaming.itch.io/halftone-sound-effects-pack-lite
+
+Friday Afternoon by Tim Beek is licensed under CC-BY-4.0
+https://creativecommons.org/licenses/by/4.0/legalcode
+https://timbeek.itch.io/royalty-free-music-pack
+
+
+
+~~~~~~~~
+
+filename: games/second/racer.json
+~~~~~~~~
+car: https://looneybits.itch.io/2d-race-cars
+track: https://free-game-assets.itch.io/free-race-track-tile-set
+
+sound effects:
+https://jdwasabi.itch.io/8-bit-16-bit-sound-effects-pack
+https://cohexbruh.itch.io/fire-woosh-sound-effects-pack-vol1
+https://harvey656.itch.io/8-bit-game-sound-effects-collection
+https://void1gaming.itch.io/halftone-sound-effects-pack-lite
+https://soundsbydane.itch.io/8-bit-sound-pack
+
+Sound effects by BCKR licensed under CC BY 4.0
+https://creativecommons.org/licenses/by/4.0/legalcode
+https://bckr.itch.io/sdap
+~~~~~~~~
+
+filename: games/yeah/rhinos.json
+~~~~~~~~
+man and ball: https://pixabay.com/illustrations/sport-football-movement-ball-1019776/
+rhinos: https://pixabay.com/photos/africa-white-rhinos-rhino-86621/
+woman:
+https://pixabay.com/illustrations/woman-haematoma-fight-black-eye-2226178/
+
+kick: https://freesound.org/people/DWSD/sounds/171104/
+pop: https://freesound.org/people/unfa/sounds/245646/
+~~~~~~~~
+
+filename: games/bops/cloud.json
+~~~~~~~~
+bird: https://www.pexels.com/photo/brown-ostrich-752035/
+keyboard: https://www.pexels.com/photo/blue-close-up-computer-computer-keyboard-265631/
+cloud: https://www.pexels.com/photo/blue-sky-and-white-clouds-231009/
+jeans: https://www.pexels.com/photo/two-hanged-blue-stonewash-and-blue-jeans-1082528/
+ball: https://www.pexels.com/photo/floating-tennis-ball-226584/
+
+----
+'A Clear Head' by morgantj is licensed under CC BY-NC 3.0
+http://dig.ccmixter.org/files/morgantj/29467
+https://creativecommons.org/licenses/by-nc/3.0/legalcode
+----
+----
+'Collapsing Building Interior (Small) (Mixed)' by EFlexMusic is licensed under CC BY-NC 3.0
+https://freesound.org/people/EFlexMusic/sounds/388526/
+https://creativecommons.org/licenses/by-nc/3.0/legalcode
+----
+----
+'PAINED OUCH MY LEG.wav' by HumanSolarian is licensed under CC BY 3.0
+https://freesound.org/people/HumanSolarian/sounds/457176/
+https://creativecommons.org/licenses/by/3.0/legalcode
+----
+~~~~~~~~
+
+filename: games/system/interlude.json
+~~~~~~~~
+----
+wasp:
+https://commons.wikimedia.org/w/index.php?curid=1999886
+'File:2 wasp 2007-04-25.jpg' by Trounce is licensed under CC BY 3.0
+https://creativecommons.org/licenses/by/3.0/legalcode
+I changed the colour of the image.
+----
+bloody-hands: https://www.pexels.com/photo/person-s-hands-covered-with-blood-673862/
+
+swat: https://freesound.org/people/poorenglishjuggler/sounds/131461/
+----
+squash:
+https://freesound.org/people/zimbot/sounds/244486/
+'CrushAndGrind' by zimbot is licensed under CC BY 3.0
+https://creativecommons.org/licenses/by/3.0/legalcode
+I cropped the audio.
+----
+
+~~~~~~~~
+
+filename: games/yeah/puzzle.json
+~~~~~~~~
+dreamer: https://www.pdclipart.org/
+fox: https://wallpapers.io/photo/9370-fox-red-wallpaper
+depression: https://pixabay.com/photos/depression-disease-fatigue-burnout-2826711/
+
+yippee: https://freesound.org/people/Topschool/sounds/443493/
+
+beat: https://freesound.org/people/jerado/sounds/44193/
+
+~~~~~~~~
+
+filename: games/system/game-over.json
+~~~~~~~~
+bloody-hands: https://www.pexels.com/photo/person-s-hands-covered-with-blood-673862/
+----
+wasp:
+https://commons.wikimedia.org/w/index.php?curid=1999886
+'File:2 wasp 2007-04-25.jpg' by Trounce is licensed under CC BY 3.0
+https://creativecommons.org/licenses/by/3.0/legalcode
+I changed the colour of the image.
+----
+
+swat: https://freesound.org/people/poorenglishjuggler/sounds/131461/
+----
+squash:
+https://freesound.org/people/zimbot/sounds/244486/
+'CrushAndGrind' by zimbot is licensed under CC BY 3.0
+https://creativecommons.org/licenses/by/3.0/legalcode
+I cropped the audio.
+----
+~~~~~~~~
+
+filename: games/second/slide.json
+~~~~~~~~
+adventurer: https://rvros.itch.io/animated-pixel-hero
+monster: https://luizmelo.itch.io/monsters-creatures-fantasy
+dungeon: https://bakudas.itch.io/generic-dungeon-pack
+
+Sound effects by BCKR licensed under CC BY 4.0
+https://creativecommons.org/licenses/by/4.0/legalcode
+https://bckr.itch.io/sdap
+
+music: https://timbeek.itch.io/dystopian
+~~~~~~~~
+
+filename: games/second/jump.json
+~~~~~~~~
+https://ansimuz.itch.io/sunny-land-pixel-game-art
+
+https://jdwasabi.itch.io/8-bit-16-bit-sound-effects-pack
+
+Sun Shine Loop by Tim Beek is licensed under CC-BY-4.0
+https://creativecommons.org/licenses/by/4.0/legalcode
+https://timbeek.itch.io/royalty-free-music-pack
+~~~~~~~~
+
+filename: games/second/bike.json
+~~~~~~~~
+bike: https://overcrafted.itch.io/free-paid-vehicle-car-sprites-
+background: https://raventale.itch.io/parallax-background
+orange: https://ravenmore.itch.io/2d-pickups-pack
+
+Damage sound effect by BCKR licensed under CC BY 4.0
+https://creativecommons.org/licenses/by/4.0/legalcode
+https://bckr.itch.io/sdap
+
+power up sound effect: https://void1gaming.itch.io/halftone-sound-effects-pack-lite
+~~~~~~~~
+
+filename: games/second/swim.json
+~~~~~~~~
+https://chasersgaming.itch.io/platformer-asset-tile-set-underwater-lands-nes
+https://chasersgaming.itch.io/rpg-masset-character-zombie-nes
+
+https://void1gaming.itch.io/halftone-sound-effects-pack-lite
+https://harvey656.itch.io/8-bit-game-sound-effects-collection
+https://soundsbydane.itch.io/8-bit-sound-pack
+
+https://bonpos3r.itch.io/chiptune-8bit-short-pack
+~~~~~~~~
+
+filename: games/yeah/titanic.json
+~~~~~~~~
+titanic: https://openclipart.org/detail/87637/elegant-steam-liner
+lighthouse: https://www.pexels.com/photo/photo-of-lighthouse-on-seaside-during-daytime-3099153/
+candle: https://pixabay.com/photos/candle-torch-flame-fire-light-1115769/
+
+go-away: https://freesound.org/people/pyro13djt/sounds/331908/
+----
+car crash:
+https://freesound.org/people/nsstudios/sounds/351513/
+'car crash' by nsstudios is licensed under CC BY-NC 3.0
+https://creativecommons.org/licenses/by-nc/3.0/
+I have trimmed the audio.
+----
+----
+sonata
+https://freesound.org/people/ShadyDave/sounds/326553/
+The sonata (Piano loop) by ShadyDave is licensed under CC BY-NC 3.0
+https://creativecommons.org/licenses/by-nc/3.0/legalcode
+I trimmed the audio.
+----
+~~~~~~~~
+
+filename: games/yeah/boxer.json
+~~~~~~~~
+amusement: https://libreshot.com/fairgroung-amusements/
+background: https://avopix.com/photo/32078-silhouette-of-mountain-with-galactic-background
+boxer: https://pixabay.com/photos/boxer-fight-sport-boxing-fitness-54512/
+
+please don't do that: https://freesound.org/people/girlhurl/sounds/339161/
+ouch: https://freesound.org/people/girlhurl/sounds/339162/
+
+space: https://freesound.org/people/MrPork/sounds/271866/
+
+~~~~~~~~
+
+filename: games/yeah/monkey.json
+~~~~~~~~
+monkeys: https://www.4freephotos.com/Monkeys-on-tourist-van-Gibraltar-7190.html
+banana: https://pixabay.com/vectors/banana-yellow-fruit-isolated-food-25239/
+banana-peel: https://pixabay.com/vectors/banana-yellow-peel-slip-fruit-30055/
+
+monkey: https://freesound.org/people/saraonsins/sounds/219816/
+crunching: https://freesound.org/people/lolamadeus/sounds/144172/
+
+techno beat: https://freesound.org/people/davidou/sounds/88485/
+~~~~~~~~
+
+filename: games/yeah/cat.json
+~~~~~~~~
+cat: https://pixabay.com/photos/cat-pet-animals-cute-cats-animal-641530/
+----
+car:
+https://commons.wikimedia.org/wiki/File:Ford_Fiesta_Rally_car.JPG
+'Ford Fiesta Rally car'  by 100yen is licensed under CC BY-SA 3.0
+https://creativecommons.org/licenses/by-sa/3.0/legalcode
+I have removed the background. I release my changes under CC BY-SA 3.0.
+----
+trophy: https://pixabay.com/illustrations/trophy-winner-cup-champion-gold-4145177/
+yippee: https://freesound.org/people/Topschool/sounds/443493/
+----
+oh no: https://freesound.org/people/ecfike/sounds/131407/
+Not used
+----
+----
+lawnmower:
+https://freesound.org/people/gadzooks/sounds/20737/
+'lawnmower' by gadzooks is licensed under CC BY 3.0
+https://creativecommons.org/licenses/by/3.0/legalcode
+I have trimmed the audio.
+----
+~~~~~~~~
+
+filename: games/system/prelude.json
+~~~~~~~~
+swat: https://pixabay.com/vectors/fly-swatter-pest-control-swat-29407/
+----
+wasp:
+https://commons.wikimedia.org/w/index.php?curid=1999886
+'File:2 wasp 2007-04-25.jpg' by Trounce is licensed under CC BY 3.0
+https://creativecommons.org/licenses/by/3.0/legalcode
+I cropped the image.
+----
+cactus: https://www.pexels.com/photo/close-up-photo-of-three-green-cactus-plants-923548/
+
+swat: https://freesound.org/people/poorenglishjuggler/sounds/131461/
+~~~~~~~~
+
+filename: games/second/boss.json
+~~~~~~~~
+Images: https://pixelfrog-store.itch.io/pixel-adventure-1
+
+----
+Music
+https://timbeek.itch.io/royalty-free-music-pack
+'8 Bit Platformer Loop' by Tim Beek is licensed under CC BY 4.0
+https://creativecommons.org/licenses/by/4.0/legalcode
+----
+
+Hit: https://jdwasabi.itch.io/8-bit-16-bit-sound-effects-pack
+Found Something: https://soundsbydane.itch.io/8-bit-sound-pack
+Power up: https://void1gaming.itch.io/halftone-sound-effects-pack-lite
+Rising: https://jdwasabi.itch.io/8-bit-16-bit-sound-effects-pack
+Jump: https://void1gaming.itch.io/halftone-sound-effects-pack-lite
+Charge: https://soundsbydane.itch.io/8-bit-sound-pack
+Gong: https://jdwasabi.itch.io/8-bit-16-bit-sound-effects-pack
+Alarm: https://harvey656.itch.io/8-bit-game-sound-effects-collection
+Coin: https://void1gaming.itch.io/halftone-sound-effects-pack-lite
+~~~~~~~~
+
+filename: games/second/game-over.json
+~~~~~~~~
+
+~~~~~~~~

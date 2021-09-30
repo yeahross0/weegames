@@ -4,68 +4,6 @@
   "game_type": "Minigame",
   "objects": [
     {
-      "name": "plane1",
-      "sprite": {
-        "Image": {
-          "name": "planes-plane"
-        }
-      },
-      "position": {
-        "x": 176.0,
-        "y": 550.0
-      },
-      "size": {
-        "width": 157.0,
-        "height": 63.0
-      },
-      "angle": 0.0,
-      "origin": null,
-      "collision_area": null,
-      "flip": {
-        "horizontal": false,
-        "vertical": false
-      },
-      "layer": 1,
-      "switch": "Off",
-      "instructions": [
-        {
-          "triggers": [
-            {
-              "Time": "Start"
-            }
-          ],
-          "actions": [
-            {
-              "Motion": {
-                "GoStraight": {
-                  "direction": {
-                    "Angle": {
-                      "Degrees": 60.0
-                    }
-                  },
-                  "speed": "VerySlow"
-                }
-              }
-            }
-          ]
-        },
-        {
-          "triggers": [
-            {
-              "Collision": {
-                "Object": {
-                  "name": "my-plane"
-                }
-              }
-            }
-          ],
-          "actions": [
-            "Lose"
-          ]
-        }
-      ]
-    },
-    {
       "name": "my-plane",
       "sprite": {
         "Image": {
@@ -88,7 +26,7 @@
           "y": 0.0
         },
         "max": {
-          "x": 200.0,
+          "x": 217.0,
           "y": 97.0
         }
       },
@@ -96,7 +34,7 @@
         "horizontal": false,
         "vertical": false
       },
-      "layer": 1,
+      "layer": 2,
       "switch": "Off",
       "instructions": [
         {
@@ -172,15 +110,113 @@
       ]
     },
     {
-      "name": "plane2",
+      "name": "plane hitbox1",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.58431375,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 590.0,
+        "y": 521.0
+      },
+      "size": {
+        "width": 200.0,
+        "height": 30.0
+      },
+      "angle": -9.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "my-plane",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": "Mouse"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "plane hitbox2",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.58431375,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 590.0,
+        "y": 521.0
+      },
+      "size": {
+        "width": 2.0,
+        "height": 80.0
+      },
+      "angle": -9.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "my-plane",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": "Mouse"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "plane1",
       "sprite": {
         "Image": {
           "name": "planes-plane"
         }
       },
       "position": {
-        "x": 394.0,
-        "y": 336.0
+        "x": 176.0,
+        "y": 550.0
       },
       "size": {
         "width": 157.0,
@@ -188,7 +224,16 @@
       },
       "angle": 0.0,
       "origin": null,
-      "collision_area": null,
+      "collision_area": {
+        "min": {
+          "x": 10.0,
+          "y": 10.0
+        },
+        "max": {
+          "x": 147.0,
+          "y": 53.0
+        }
+      },
       "flip": {
         "horizontal": false,
         "vertical": false
@@ -222,7 +267,106 @@
             {
               "Collision": {
                 "Object": {
-                  "name": "my-plane"
+                  "name": "plane hitbox2"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "plane hitbox1"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "plane2",
+      "sprite": {
+        "Image": {
+          "name": "planes-plane"
+        }
+      },
+      "position": {
+        "x": 394.0,
+        "y": 336.0
+      },
+      "size": {
+        "width": 157.0,
+        "height": 63.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 10.0,
+          "y": 10.0
+        },
+        "max": {
+          "x": 147.0,
+          "y": 53.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Angle": {
+                      "Degrees": 60.0
+                    }
+                  },
+                  "speed": "VerySlow"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "plane hitbox1"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "plane hitbox2"
                 }
               }
             }
@@ -250,7 +394,16 @@
       },
       "angle": 0.0,
       "origin": null,
-      "collision_area": null,
+      "collision_area": {
+        "min": {
+          "x": 10.0,
+          "y": 10.0
+        },
+        "max": {
+          "x": 147.0,
+          "y": 53.0
+        }
+      },
       "flip": {
         "horizontal": false,
         "vertical": false
@@ -284,7 +437,21 @@
             {
               "Collision": {
                 "Object": {
-                  "name": "my-plane"
+                  "name": "plane hitbox1"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "plane hitbox2"
                 }
               }
             }
@@ -312,7 +479,16 @@
       },
       "angle": 0.0,
       "origin": null,
-      "collision_area": null,
+      "collision_area": {
+        "min": {
+          "x": 10.0,
+          "y": 10.0
+        },
+        "max": {
+          "x": 147.0,
+          "y": 53.0
+        }
+      },
       "flip": {
         "horizontal": false,
         "vertical": false
@@ -346,7 +522,21 @@
             {
               "Collision": {
                 "Object": {
-                  "name": "my-plane"
+                  "name": "plane hitbox1"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "plane hitbox2"
                 }
               }
             }
@@ -374,7 +564,16 @@
       },
       "angle": 0.0,
       "origin": null,
-      "collision_area": null,
+      "collision_area": {
+        "min": {
+          "x": 10.0,
+          "y": 10.0
+        },
+        "max": {
+          "x": 147.0,
+          "y": 53.0
+        }
+      },
       "flip": {
         "horizontal": false,
         "vertical": false
@@ -408,7 +607,21 @@
             {
               "Collision": {
                 "Object": {
-                  "name": "my-plane"
+                  "name": "plane hitbox1"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "plane hitbox2"
                 }
               }
             }
@@ -436,7 +649,16 @@
       },
       "angle": 0.0,
       "origin": null,
-      "collision_area": null,
+      "collision_area": {
+        "min": {
+          "x": 10.0,
+          "y": 10.0
+        },
+        "max": {
+          "x": 147.0,
+          "y": 53.0
+        }
+      },
       "flip": {
         "horizontal": false,
         "vertical": false
@@ -470,7 +692,21 @@
             {
               "Collision": {
                 "Object": {
-                  "name": "my-plane"
+                  "name": "plane hitbox1"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "plane hitbox2"
                 }
               }
             }
@@ -504,7 +740,7 @@
   "asset_files": {
     "images": {
       "plane-crop": "plane-crop.png",
-      "clear-sky": "clear-sky.webp",
+      "clear-sky": "clear-sky.jpg",
       "planes-plane": "planes-plane.png"
     },
     "audio": {

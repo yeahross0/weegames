@@ -2,8 +2,16 @@ target/
 
 Cargo.lock
 
-/main-game/*.dll
+*.dll
 
 .vscode
 
-high-scores.yaml
+high-scores.json
+played-games.json
+
+*.wasm
+webgames.zip
+
+about.hbs
+about.toml
+licence.html

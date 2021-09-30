@@ -342,11 +342,11 @@
   ],
   "asset_files": {
     "images": {
-      "tennis-court": "tennis-court.webp",
-      "standing-dog-crop-rotated": "standing-dog-crop-rotated.webp",
-      "beagle-ball-crop-without-ball": "beagle-ball-crop-without-ball.webp",
-      "beagle-ball-crop": "beagle-ball-crop.webp",
-      "tennis-ball-crop": "tennis-ball-crop.webp"
+      "tennis-court": "tennis-court.jpg",
+      "standing-dog-crop-rotated": "standing-dog-crop-rotated.png",
+      "beagle-ball-crop-without-ball": "beagle-ball-crop-without-ball.png",
+      "beagle-ball-crop": "beagle-ball-crop.png",
+      "tennis-ball-crop": "tennis-ball-crop.png"
     },
     "audio": {
       "bark-2-crop": "bark-2-crop.ogg",

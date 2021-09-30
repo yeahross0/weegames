@@ -1,0 +1,101 @@
+{
+  "format_version": "0.2",
+  "published": false,
+  "game_type": "Other",
+  "objects": [
+    {
+      "name": "Loading",
+      "sprite": {
+        "Image": {
+          "name": "loading-1"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 600.0
+      },
+      "size": {
+        "width": 1200.0,
+        "height": 600.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "Loop",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "loading-1"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "loading-2"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "loading-3"
+                    }
+                  }
+                ],
+                "speed": "Slow"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "background": [
+    {
+      "sprite": {
+        "Image": {
+          "name": "cactus"
+        }
+      },
+      "area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 1600.0,
+          "y": 900.0
+        }
+      }
+    }
+  ],
+  "asset_files": {
+    "images": {
+      "loading-2": "loading-2.png",
+      "cactus": "intro.jpg",
+      "loading-3": "loading-3.png",
+      "loading-1": "loading-1.png"
+    },
+    "audio": {},
+    "music": null,
+    "fonts": {}
+  },
+  "length": {
+    "Seconds": 2.0
+  },
+  "intro_text": null,
+  "attribution": ""
+}

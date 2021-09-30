@@ -306,10 +306,10 @@
   ],
   "asset_files": {
     "images": {
-      "fly-swat": "fly-swat.webp",
-      "wasp-quit": "wasp-white-quit.webp",
-      "fly-swat-up": "fly-swat-up.webp",
-      "wasp-continue": "wasp-continue.webp"
+      "fly-swat": "fly-swat.png",
+      "wasp-quit": "wasp-white-quit.png",
+      "fly-swat-up": "fly-swat-up.png",
+      "wasp-continue": "wasp-continue.png"
     },
     "audio": {
       "swat-crop": "swat-crop.ogg",

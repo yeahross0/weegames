@@ -595,110 +595,6 @@
       ]
     },
     {
-      "name": "Back",
-      "sprite": {
-        "Image": {
-          "name": "remote-dull"
-        }
-      },
-      "position": {
-        "x": 100.0,
-        "y": 750.0
-      },
-      "size": {
-        "width": 803.0,
-        "height": 392.0
-      },
-      "angle": 0.0,
-      "origin": null,
-      "collision_area": {
-        "min": {
-          "x": 0.0,
-          "y": 20.0
-        },
-        "max": {
-          "x": 700.0,
-          "y": 392.0
-        }
-      },
-      "flip": {
-        "horizontal": false,
-        "vertical": false
-      },
-      "layer": 0,
-      "switch": "Off",
-      "instructions": [
-        {
-          "triggers": [],
-          "actions": [
-            {
-              "SetProperty": {
-                "Sprite": {
-                  "Image": {
-                    "name": "remote-dull"
-                  }
-                }
-              }
-            }
-          ]
-        },
-        {
-          "triggers": [
-            {
-              "Input": {
-                "Mouse": {
-                  "over": {
-                    "Object": {
-                      "name": "Back"
-                    }
-                  },
-                  "interaction": "Hover"
-                }
-              }
-            }
-          ],
-          "actions": [
-            {
-              "SetProperty": {
-                "Sprite": {
-                  "Image": {
-                    "name": "remote"
-                  }
-                }
-              }
-            }
-          ]
-        },
-        {
-          "triggers": [
-            {
-              "Input": {
-                "Mouse": {
-                  "over": {
-                    "Object": {
-                      "name": "Back"
-                    }
-                  },
-                  "interaction": {
-                    "Button": {
-                      "state": "Press"
-                    }
-                  }
-                }
-              }
-            }
-          ],
-          "actions": [
-            {
-              "SetProperty": {
-                "Switch": "On"
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
       "name": "Rash Hovered",
       "sprite": {
         "Colour": {
@@ -946,52 +842,293 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Completed",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.24705882,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 75.0,
+        "y": 60.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Web",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 75.0,
+                    "y": 850.0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 1
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "DrawText": {
+                "text": "{GamesCount} games played",
+                "font": "Fonty",
+                "colour": {
+                  "r": 0.59607846,
+                  "g": 0.0,
+                  "b": 0.0,
+                  "a": 1.0
+                },
+                "resize": "MatchText",
+                "justify": "Left"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Back",
+      "sprite": {
+        "Image": {
+          "name": "remote-dull"
+        }
+      },
+      "position": {
+        "x": 100.0,
+        "y": 750.0
+      },
+      "size": {
+        "width": 803.0,
+        "height": 392.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 0.0,
+          "y": 20.0
+        },
+        "max": {
+          "x": 700.0,
+          "y": 392.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "remote-dull"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "Back"
+                    }
+                  },
+                  "interaction": "Hover"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "remote"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "Back"
+                    }
+                  },
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Web",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 2000.0,
+                    "y": 2000.0
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Web",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
     }
   ],
   "background": [],
   "asset_files": {
     "images": {
-      "shuffle-test-2": "shuffle-test-2.webp",
-      "shuffle-test-3": "shuffle-test-3.webp",
-      "wasp-grey": "wasp-grey.webp",
-      "rash": "rash.png",
-      "screen2": "screen2.jpg",
-      "screen4": "screen4.jpg",
-      "static-1": "static-1.jpg",
-      "rash2-grey": "rash2-grey.png",
-      "shuffle-test-4": "shuffle-test-4.webp",
-      "screen1": "screen1.jpg",
-      "screen-rash-2": "screen-rash-2.png",
       "static-3": "static-3.jpg",
-      "static-2": "static-2.jpg",
-      "remote-dull": "remote-dull.webp",
-      "screen3": "screen3.jpg",
-      "screen-rash-4": "screen-rash-4.png",
-      "wasp-orange": "wasp-orange.webp",
-      "shuffle-2": "shuffle-2.png",
-      "static-4": "static-4.jpg",
-      "screen-rash-1": "screen-rash-1.png",
-      "remote": "remote.webp",
-      "television": "television.webp",
       "shuffle": "shuffle.png",
-      "blender": "blender.webp",
-      "blender-grey": "blender-grey.webp",
-      "rash2": "rash2.png",
+      "television": "television.png",
+      "screen-rash-1": "screen-rash-1.png",
+      "screen-rash-4": "screen-rash-4.png",
+      "rash2-grey": "rash2-grey.png",
+      "static-2": "static-2.jpg",
+      "shuffle-test-4": "shuffle-test-4.jpg",
+      "remote": "remote.png",
+      "wasp-orange": "wasp-orange.png",
+      "remote-dull": "remote-dull.png",
+      "static-4": "static-4.jpg",
+      "screen2": "screen2.jpg",
+      "blender-grey": "blender-grey.png",
+      "rash": "rash.png",
+      "shuffle-test-2": "shuffle-test-2.jpg",
+      "screen-rash-2": "screen-rash-2.png",
       "screen-rash-3": "screen-rash-3.png",
-      "shuffle-test-1": "shuffle-test-1.webp"
+      "shuffle-2": "shuffle-2.png",
+      "screen3": "screen3.jpg",
+      "static-1": "static-1.jpg",
+      "screen4": "screen4.jpg",
+      "rash2": "rash2.png",
+      "screen1": "screen1.jpg",
+      "shuffle-test-3": "shuffle-test-3.jpg",
+      "shuffle-test-1": "shuffle-test-1.jpg",
+      "blender": "blender.png",
+      "wasp-grey": "wasp-grey.png"
     },
     "audio": {},
     "music": null,
     "fonts": {
-      "LiberationMono-Regular": {
-        "filename": "LiberationMono-Regular.ttf",
-        "size": 128.0
+      "Fonty": {
+        "filename": "Lato-Bold.ttf",
+        "size": 48.0
       }
     }
   },
   "length": {
     "Seconds": 8.0
   },
-  "intro_text": "",
+  "intro_text": null,
   "attribution": "https://pixabay.com/photos/television-developing-countries-899265/"
 }

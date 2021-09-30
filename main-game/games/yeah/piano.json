@@ -1233,13 +1233,13 @@
   "background": [],
   "asset_files": {
     "images": {
-      "piano-faces-lady": "piano-faces-lady.webp",
-      "piano-faces-inverted": "piano-faces-inverted.webp",
-      "piano-faces-cow": "piano-faces-cow.webp",
-      "piano-faces-hen": "piano-faces-hen.webp",
-      "piano-faces": "piano-faces.webp",
-      "piano-faces-sheep": "piano-faces-sheep.webp",
-      "piano-faces-all": "piano-faces-all.webp"
+      "piano-faces-lady": "piano-faces-lady.jpg",
+      "piano-faces-inverted": "piano-faces-inverted.jpg",
+      "piano-faces-cow": "piano-faces-cow.jpg",
+      "piano-faces-hen": "piano-faces-hen.jpg",
+      "piano-faces": "piano-faces.jpg",
+      "piano-faces-sheep": "piano-faces-sheep.jpg",
+      "piano-faces-all": "piano-faces-all.jpg"
     },
     "audio": {
       "groans-crop": "groans-crop.ogg",
@@ -1256,5 +1256,5 @@
     "Seconds": 6.019293
   },
   "intro_text": "Répétez-vous",
-  "attribution": "piano: http://www.picdrome.com/sports-and-recreation/black-and-white-keys-on-piano-keyboard.webp.php\nlady and hen: https://www.si.edu/object/chndm_1917-4-149-b\nsheep: https://www.si.edu/object/chndm_1912-12-53\ncow: https://www.si.edu/object/chndm_1921-22-388\n\n----\nmoo:\nhttps://freesound.org/people/javapimp/sounds/439168/\n'Kara - Moo' by javapimp is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\n----\nbaa: https://freesound.org/people/esperar/sounds/171149/\ncluck: https://freesound.org/people/esperar/sounds/170808/\nwie gehts: https://freesound.org/people/Roses1401/sounds/424223/\n----\ngroan:\nhttps://freesound.org/people/FritzSounds/sounds/366297/\n'A Few Groans Of Disappointment' by FritzSounds is licensed under CC BY-NC 3.0\nhttps://creativecommons.org/licenses/by-nc/3.0/legalcode\nI have trimmed the audio.\n----\ncheers: https://freesound.org/people/payattention/sounds/82800/"
+  "attribution": "piano: http://www.picdrome.com/sports-and-recreation/black-and-white-keys-on-piano-keyboard.png.php\nlady and hen: https://www.si.edu/object/chndm_1917-4-149-b\nsheep: https://www.si.edu/object/chndm_1912-12-53\ncow: https://www.si.edu/object/chndm_1921-22-388\n\n----\nmoo:\nhttps://freesound.org/people/javapimp/sounds/439168/\n'Kara - Moo' by javapimp is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\n----\nbaa: https://freesound.org/people/esperar/sounds/171149/\ncluck: https://freesound.org/people/esperar/sounds/170808/\nwie gehts: https://freesound.org/people/Roses1401/sounds/424223/\n----\ngroan:\nhttps://freesound.org/people/FritzSounds/sounds/366297/\n'A Few Groans Of Disappointment' by FritzSounds is licensed under CC BY-NC 3.0\nhttps://creativecommons.org/licenses/by-nc/3.0/legalcode\nI have trimmed the audio.\n----\ncheers: https://freesound.org/people/payattention/sounds/82800/"
 }

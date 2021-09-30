@@ -298,6 +298,40 @@
               }
             }
           ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 180
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "Loop",
+                "sprites": [
+                  {
+                    "Colour": {
+                      "r": 0.0,
+                      "g": 0.0,
+                      "b": 0.0,
+                      "a": 0.0
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "diamond"
+                    }
+                  }
+                ],
+                "speed": "Normal"
+              }
+            }
+          ]
         }
       ]
     },
@@ -378,23 +412,23 @@
   ],
   "asset_files": {
     "images": {
+      "cannon-3": "cannon-3.png",
+      "bg2": "bg2.png",
       "cannon-1": "cannon-1.png",
       "Idle": "Idle.png",
-      "king-hit-2": "king-hit-2.png",
-      "diamond": "diamond.png",
-      "bg2": "bg2.png",
-      "cannon-2": "cannon-2.png",
-      "bg": "bg.png",
-      "bg3": "bg3.png",
       "bg4": "bg4.png",
-      "pig": "pig.png",
       "king-jump": "king-jump.png",
+      "pig": "pig.png",
       "king-hit-1": "king-hit-1.png",
-      "cannon-3": "cannon-3.png"
+      "bg": "bg.png",
+      "cannon-2": "cannon-2.png",
+      "diamond": "diamond.png",
+      "bg3": "bg3.png",
+      "king-hit-2": "king-hit-2.png"
     },
     "audio": {
-      "coin": "coin.ogg",
-      "small-explosion": "small-explosion.ogg"
+      "small-explosion": "small-explosion.ogg",
+      "coin": "coin.ogg"
     },
     "music": {
       "filename": "friday-afternoon.ogg",
@@ -406,5 +440,5 @@
     "Seconds": 4.0
   },
   "intro_text": "Blast!",
-  "attribution": "images: https://pixelfrog-store.itch.io/kings-and-pigs\n\nexplosion: https://harvey656.itch.io/8-bit-game-sound-effects-collection\ncoin: https://void1gaming.itch.io/halftone-sound-effects-pack-lite\n\nFriday Afternoon by Tim Beek is licenced under CC-BY-4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://timbeek.itch.io/royalty-free-music-pack\n\n\n"
+  "attribution": "images: https://pixelfrog-store.itch.io/kings-and-pigs\n\nexplosion: https://harvey656.itch.io/8-bit-game-sound-effects-collection\ncoin: https://void1gaming.itch.io/halftone-sound-effects-pack-lite\n\nFriday Afternoon by Tim Beek is licensed under CC-BY-4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://timbeek.itch.io/royalty-free-music-pack\n\n\n"
 }

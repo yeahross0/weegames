@@ -1,0 +1,1413 @@
+{
+  "format_version": "0.2",
+  "published": true,
+  "game_type": "Minigame",
+  "objects": [
+    {
+      "name": "Bird",
+      "sprite": {
+        "Image": {
+          "name": "bird"
+        }
+      },
+      "position": {
+        "x": 825.0,
+        "y": 525.0
+      },
+      "size": {
+        "width": 570.0,
+        "height": 1027.0
+      },
+      "angle": 0.0,
+      "origin": {
+        "x": 200.0,
+        "y": 1027.0
+      },
+      "collision_area": {
+        "min": {
+          "x": 80.0,
+          "y": 140.0
+        },
+        "max": {
+          "x": 500.0,
+          "y": 1027.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "Bird"
+                    }
+                  },
+                  "interaction": "Hover"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Bird",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "WinStatus": "NotYetLost"
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Angle": "RotateToMouse"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Light",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Dark",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "WinStatus": "NotYetWon"
+            }
+          ],
+          "actions": [
+            "Win",
+            {
+              "SetProperty": {
+                "Timer": {
+                  "time": 30
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Bird",
+                "check": "Timer"
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "PlayOnce",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "bird1"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "bird2"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "bird3"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "bird4"
+                    }
+                  }
+                ],
+                "speed": "Normal"
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "demolition2"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Bird 2"
+                }
+              }
+            },
+            {
+              "WinStatus": "NotYetLost"
+            }
+          ],
+          "actions": [
+            "StopMusic",
+            "Lose",
+            {
+              "PlaySound": {
+                "name": "ow-me-leg"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Bird 3"
+                }
+              }
+            },
+            {
+              "WinStatus": "NotYetLost"
+            }
+          ],
+          "actions": [
+            "StopMusic",
+            "Lose",
+            {
+              "PlaySound": {
+                "name": "ow-me-leg"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Hangers",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 250.0
+      },
+      "size": {
+        "width": 149.75,
+        "height": 48.75
+      },
+      "angle": 0.0,
+      "origin": {
+        "x": 15.0,
+        "y": 813.0
+      },
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Angle": {
+                  "Match": {
+                    "name": "Bird"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Hangers2",
+      "sprite": {
+        "Image": {
+          "name": "hangers"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 250.0
+      },
+      "size": {
+        "width": 149.75,
+        "height": 48.75
+      },
+      "angle": 0.0,
+      "origin": {
+        "x": 74.875,
+        "y": 24.375
+      },
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Angle": {
+                  "Match": {
+                    "name": "Bird"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Origin"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentAngle",
+                    "distance": {
+                      "x": 60.0,
+                      "y": -790.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Bird",
+                "check": "Timer"
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Colour": {
+                    "r": 0.0,
+                    "g": 0.0,
+                    "b": 0.0,
+                    "a": 0.0
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Left Point",
+      "sprite": {
+        "Colour": {
+          "r": 1.0,
+          "g": 0.44313726,
+          "b": 0.14901961,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 250.0
+      },
+      "size": {
+        "width": 36.0,
+        "height": 10.0
+      },
+      "angle": 0.0,
+      "origin": {
+        "x": 18.0,
+        "y": 5.0
+      },
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Angle": {
+                  "Match": {
+                    "name": "Bird"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Origin"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentAngle",
+                    "distance": {
+                      "x": 16.0,
+                      "y": -770.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 0.0,
+                      "y": 40.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Right Point",
+      "sprite": {
+        "Colour": {
+          "r": 1.0,
+          "g": 0.44313726,
+          "b": 0.14901961,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 250.0
+      },
+      "size": {
+        "width": 36.0,
+        "height": 10.0
+      },
+      "angle": 0.0,
+      "origin": {
+        "x": 18.0,
+        "y": 5.0
+      },
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Angle": {
+                  "Match": {
+                    "name": "Bird"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Origin"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentAngle",
+                    "distance": {
+                      "x": 100.0,
+                      "y": -770.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 0.0,
+                      "y": 40.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Light",
+      "sprite": {
+        "Image": {
+          "name": "light-blue-jean"
+        }
+      },
+      "position": {
+        "x": 758.0,
+        "y": 310.0
+      },
+      "size": {
+        "width": 36.0,
+        "height": 84.75
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Light",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Left Point"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Trig 1"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Light",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "DownLeft"
+                      ]
+                    }
+                  },
+                  "speed": "VerySlow"
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Accelerate": {
+                  "Continuous": {
+                    "direction": {
+                      "Direction": {
+                        "possible_directions": [
+                          "Down"
+                        ]
+                      }
+                    },
+                    "speed": "Normal"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Trig 2"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Light",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "DownRight"
+                      ]
+                    }
+                  },
+                  "speed": "VerySlow"
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Accelerate": {
+                  "Continuous": {
+                    "direction": {
+                      "Direction": {
+                        "possible_directions": [
+                          "Down"
+                        ]
+                      }
+                    },
+                    "speed": "Normal"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Dark",
+      "sprite": {
+        "Image": {
+          "name": "dark-blue-jean"
+        }
+      },
+      "position": {
+        "x": 840.0,
+        "y": 315.0
+      },
+      "size": {
+        "width": 35.25,
+        "height": 83.75
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Dark",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Right Point"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Trig 1"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Dark",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "DownLeft"
+                      ]
+                    }
+                  },
+                  "speed": "VerySlow"
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Accelerate": {
+                  "Continuous": {
+                    "direction": {
+                      "Direction": {
+                        "possible_directions": [
+                          "Down"
+                        ]
+                      }
+                    },
+                    "speed": "Normal"
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Trig 2"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Dark",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "DownRight"
+                      ]
+                    }
+                  },
+                  "speed": "VerySlow"
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Accelerate": {
+                  "Continuous": {
+                    "direction": {
+                      "Direction": {
+                        "possible_directions": [
+                          "Down"
+                        ]
+                      }
+                    },
+                    "speed": "Normal"
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Origin",
+      "sprite": {
+        "Colour": {
+          "r": 0.54901963,
+          "g": 0.0,
+          "b": 0.16862746,
+          "a": 0.43137255
+        }
+      },
+      "position": {
+        "x": 740.0,
+        "y": 1040.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "Trig 1",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.65882355,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 100.0,
+        "y": 800.0
+      },
+      "size": {
+        "width": 400.0,
+        "height": 400.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "Trig 2",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.65882355,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 1500.0,
+        "y": 800.0
+      },
+      "size": {
+        "width": 400.0,
+        "height": 400.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "Bird 2",
+      "sprite": {
+        "Image": {
+          "name": "bird4"
+        }
+      },
+      "position": {
+        "x": 2000.0,
+        "y": 2700.0
+      },
+      "size": {
+        "width": 570.0,
+        "height": 1027.0
+      },
+      "angle": 0.0,
+      "origin": {
+        "x": 200.0,
+        "y": 1027.0
+      },
+      "collision_area": {
+        "min": {
+          "x": 80.0,
+          "y": 280.0
+        },
+        "max": {
+          "x": 500.0,
+          "y": 1027.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            },
+            {
+              "DifficultyLevel": {
+                "level": 2
+              }
+            },
+            {
+              "Random": {
+                "chance": 0.5
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 1
+                }
+              }
+            },
+            {
+              "DifficultyLevel": {
+                "level": 2
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 1600.0,
+                    "y": 600.0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Bird 2",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            },
+            {
+              "DifficultyLevel": {
+                "level": 2
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 0.0,
+                    "y": 600.0
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "FlipHorizontal": {
+                  "SetFlip": true
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "DifficultyLevel": {
+                "level": 3
+              }
+            },
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 0.0,
+                    "y": 600.0
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "FlipHorizontal": {
+                  "SetFlip": true
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "DifficultyLevel": {
+                "level": 3
+              }
+            },
+            {
+              "Time": {
+                "Exact": {
+                  "time": 30
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Bird 3",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Down"
+                      ]
+                    }
+                  },
+                  "speed": "Normal"
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Accelerate": {
+                  "Continuous": {
+                    "direction": {
+                      "Direction": {
+                        "possible_directions": [
+                          "Down"
+                        ]
+                      }
+                    },
+                    "speed": "Normal"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Ball 1",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 825.0,
+        "y": 115.0
+      },
+      "size": {
+        "width": 570.0,
+        "height": 205.0
+      },
+      "angle": 0.0,
+      "origin": {
+        "x": 200.0,
+        "y": 1028.0
+      },
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Angle": {
+                  "Match": {
+                    "name": "Bird"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "WinStatus": "HasBeenLost"
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "PlayOnce",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "ball-4"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "ball-3"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "ball-2"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "ball-1"
+                    }
+                  }
+                ],
+                "speed": "Normal"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Bird 3",
+      "sprite": {
+        "Image": {
+          "name": "bird4"
+        }
+      },
+      "position": {
+        "x": 2000.0,
+        "y": 2700.0
+      },
+      "size": {
+        "width": 570.0,
+        "height": 1027.0
+      },
+      "angle": 0.0,
+      "origin": {
+        "x": 200.0,
+        "y": 1027.0
+      },
+      "collision_area": {
+        "min": {
+          "x": 80.0,
+          "y": 280.0
+        },
+        "max": {
+          "x": 500.0,
+          "y": 1027.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            },
+            {
+              "DifficultyLevel": {
+                "level": 3
+              }
+            },
+            {
+              "Random": {
+                "chance": 0.5
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "DifficultyLevel": {
+                "level": 3
+              }
+            },
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 1600.0,
+                    "y": 600.0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 60
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Bird 3",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Down"
+                      ]
+                    }
+                  },
+                  "speed": "Normal"
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Accelerate": {
+                  "Continuous": {
+                    "direction": {
+                      "Direction": {
+                        "possible_directions": [
+                          "Down"
+                        ]
+                      }
+                    },
+                    "speed": "Normal"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "background": [
+    {
+      "sprite": {
+        "Image": {
+          "name": "keyboard"
+        }
+      },
+      "area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 1600.0,
+          "y": 900.0
+        }
+      }
+    }
+  ],
+  "asset_files": {
+    "images": {
+      "hangers": "hangers.png",
+      "ball-4": "ball-4.png",
+      "ball-1": "ball-1.png",
+      "bird4": "bird4.png",
+      "dark-blue-jean": "dark-blue-jean.png",
+      "bird3": "bird3.png",
+      "bird2": "bird2.png",
+      "ball-3": "ball-3.png",
+      "keyboard": "keyboard.jpg",
+      "light-blue-jean": "light-blue-jean.png",
+      "bird1": "bird1.png",
+      "bird": "bird.png",
+      "ball-2": "ball-2.png"
+    },
+    "audio": {
+      "ow-me-leg": "ow-me-leg.ogg",
+      "demolition2": "demolition2.ogg"
+    },
+    "music": {
+      "filename": "clear-head-2.ogg",
+      "looped": false
+    },
+    "fonts": {}
+  },
+  "length": {
+    "Seconds": 4.0
+  },
+  "intro_text": "Clear your head",
+  "attribution": "bird: https://www.pexels.com/photo/brown-ostrich-752035/\nkeyboard: https://www.pexels.com/photo/blue-close-up-computer-computer-keyboard-265631/\ncloud: https://www.pexels.com/photo/blue-sky-and-white-clouds-231009/\njeans: https://www.pexels.com/photo/two-hanged-blue-stonewash-and-blue-jeans-1082528/\nball: https://www.pexels.com/photo/floating-tennis-ball-226584/\n\n----\n'A Clear Head' by morgantj is licensed under CC BY-NC 3.0\nhttp://dig.ccmixter.org/files/morgantj/29467\nhttps://creativecommons.org/licenses/by-nc/3.0/legalcode\n----\n----\n'Collapsing Building Interior (Small) (Mixed)' by EFlexMusic is licensed under CC BY-NC 3.0\nhttps://freesound.org/people/EFlexMusic/sounds/388526/\nhttps://creativecommons.org/licenses/by-nc/3.0/legalcode\n----\n----\n'PAINED OUCH MY LEG.wav' by HumanSolarian is licensed under CC BY 3.0\nhttps://freesound.org/people/HumanSolarian/sounds/457176/\nhttps://creativecommons.org/licenses/by/3.0/legalcode\n----"
+}

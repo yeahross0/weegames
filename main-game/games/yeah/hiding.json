@@ -273,10 +273,10 @@
   ],
   "asset_files": {
     "images": {
-      "hiding-crop-head": "hiding-crop-head.webp",
-      "hiding-crop-no-head": "hiding-crop-no-head.webp",
-      "city": "city.webp",
-      "hand-bad-crop": "hand-bad-crop.webp"
+      "hiding-crop-head": "hiding-crop-head.png",
+      "hiding-crop-no-head": "hiding-crop-no-head.png",
+      "city": "city.jpg",
+      "hand-bad-crop": "hand-bad-crop.png"
     },
     "audio": {
       "meow-crop": "meow-crop.ogg"

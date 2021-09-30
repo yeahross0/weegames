@@ -268,7 +268,7 @@
       "name": "pumpkin",
       "sprite": {
         "Image": {
-          "name": "pumpkin-face"
+          "name": "pumpkin-face-transparent"
         }
       },
       "position": {
@@ -296,15 +296,6 @@
             }
           ],
           "actions": [
-            {
-              "SetProperty": {
-                "Sprite": {
-                  "Image": {
-                    "name": "pumpkin-face-lit"
-                  }
-                }
-              }
-            },
             {
               "PlaySound": {
                 "name": "boo-crop"
@@ -387,6 +378,52 @@
           ]
         }
       ]
+    },
+    {
+      "name": "face",
+      "sprite": {
+        "Image": {
+          "name": "face-behind-pumpkin"
+        }
+      },
+      "position": {
+        "x": 3730.0,
+        "y": 410.0
+      },
+      "size": {
+        "width": 645.0,
+        "height": 535.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 2,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "WinStatus": "Won"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 373.0,
+                    "y": 410.0
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
     }
   ],
   "background": [
@@ -410,24 +447,24 @@
   ],
   "asset_files": {
     "images": {
-      "pumpkin-face": "pumpkin-face.webp",
-      "pumpkin-no-head": "pumpkin-no-head.webp",
-      "pumpkin-head": "pumpkin-head.webp",
-      "candle-crop": "candle-crop.webp",
-      "pumpkin-face-lit": "pumpkin-face-lit.webp"
+      "pumpkin-head": "pumpkin-head.png",
+      "face-behind-pumpkin": "face-behind-pumpkin.png",
+      "pumpkin-face-transparent": "pumpkin-face-transparent.png",
+      "pumpkin-no-head": "pumpkin-no-head.jpg",
+      "candle-crop": "candle-crop.png"
     },
     "audio": {
       "boo-crop": "boo-crop.ogg"
     },
-    "fonts": {},
     "music": {
       "filename": "nexus-crop.ogg",
       "looped": false
-    }
+    },
+    "fonts": {}
   },
   "length": {
     "Seconds": 7.0
   },
   "intro_text": "Light up",
-  "attribution": "pumpkin: https://www.4freephotos.com/Halloween-lantern-legs-6539.html\ncandle: https://pixabay.com/photos/candle-torch-flame-fire-light-1115769/\n\nboo: https://freesound.org/people/unfa/sounds/187104/\nnexus: https://freesound.org/people/Greek555/sounds/414270/"
+  "attribution": "pumpkin: https://www.4freephotos.com/Halloween-lantern-legs-6539.html\ncandle: https://pixabay.com/photos/candle-torch-flame-fire-light-1115769/\nface: https://www.pexels.com/photo/person-behind-white-cover-626164/\n\nboo: https://freesound.org/people/unfa/sounds/187104/\nnexus: https://freesound.org/people/Greek555/sounds/414270/"
 }

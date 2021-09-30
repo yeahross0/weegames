@@ -1,0 +1,1110 @@
+{
+  "format_version": "0.2",
+  "published": true,
+  "game_type": "Minigame",
+  "objects": [
+    {
+      "name": "Berry 1",
+      "sprite": {
+        "Image": {
+          "name": "berry1"
+        }
+      },
+      "position": {
+        "x": 763.0,
+        "y": 180.0
+      },
+      "size": {
+        "width": 156.0,
+        "height": 134.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "Berry 1"
+                    }
+                  },
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Berry 1",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Colour": {
+                    "r": 0.0,
+                    "g": 0.0,
+                    "b": 0.0,
+                    "a": 0.0
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "munch2"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Hand",
+      "sprite": {
+        "Image": {
+          "name": "raspberry-hand"
+        }
+      },
+      "position": {
+        "x": 2000.0,
+        "y": 2000.0
+      },
+      "size": {
+        "width": 822.5,
+        "height": 586.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Berry 1",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Berry 1"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 200.0,
+                      "y": -100.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Animate": {
+                "animation_type": "PlayOnce",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "raspberry-hand"
+                    }
+                  },
+                  {
+                    "Colour": {
+                      "r": 0.0,
+                      "g": 0.0,
+                      "b": 0.0,
+                      "a": 0.0
+                    }
+                  }
+                ],
+                "speed": "VerySlow"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Berry 2",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Berry 2"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 200.0,
+                      "y": -100.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Animate": {
+                "animation_type": "PlayOnce",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "raspberry-hand"
+                    }
+                  },
+                  {
+                    "Colour": {
+                      "r": 0.0,
+                      "g": 0.0,
+                      "b": 0.0,
+                      "a": 0.0
+                    }
+                  }
+                ],
+                "speed": "VerySlow"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Berry 3",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Berry 3"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 200.0,
+                      "y": -100.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Animate": {
+                "animation_type": "PlayOnce",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "raspberry-hand"
+                    }
+                  },
+                  {
+                    "Colour": {
+                      "r": 0.0,
+                      "g": 0.0,
+                      "b": 0.0,
+                      "a": 0.0
+                    }
+                  }
+                ],
+                "speed": "VerySlow"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Berry 4",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Berry 4"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 200.0,
+                      "y": -100.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Animate": {
+                "animation_type": "PlayOnce",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "raspberry-hand"
+                    }
+                  },
+                  {
+                    "Colour": {
+                      "r": 0.0,
+                      "g": 0.0,
+                      "b": 0.0,
+                      "a": 0.0
+                    }
+                  }
+                ],
+                "speed": "VerySlow"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Berry 5",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Berry 5"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 200.0,
+                      "y": -100.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Animate": {
+                "animation_type": "PlayOnce",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "raspberry-hand"
+                    }
+                  },
+                  {
+                    "Colour": {
+                      "r": 0.0,
+                      "g": 0.0,
+                      "b": 0.0,
+                      "a": 0.0
+                    }
+                  }
+                ],
+                "speed": "VerySlow"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Berry 1",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Berry 2",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Berry 3",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Berry 4",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Berry 5",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "WinStatus": "NotYetWon"
+            }
+          ],
+          "actions": [
+            "Win",
+            {
+              "PlaySound": {
+                "name": "mhm"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Berry 2",
+      "sprite": {
+        "Image": {
+          "name": "berry2"
+        }
+      },
+      "position": {
+        "x": 1055.0,
+        "y": 424.0
+      },
+      "size": {
+        "width": 184.0,
+        "height": 156.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "Berry 2"
+                    }
+                  },
+                  "interaction": {
+                    "Button": {
+                      "state": "Release"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Berry 2",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Colour": {
+                    "r": 0.0,
+                    "g": 0.0,
+                    "b": 0.0,
+                    "a": 0.0
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "munch2"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Berry 3",
+      "sprite": {
+        "Image": {
+          "name": "berry1"
+        }
+      },
+      "position": {
+        "x": 2000.0,
+        "y": 2000.0
+      },
+      "size": {
+        "width": 156.0,
+        "height": 134.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "Berry 3"
+                    }
+                  },
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Berry 3",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Colour": {
+                    "r": 0.0,
+                    "g": 0.0,
+                    "b": 0.0,
+                    "a": 0.0
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "berry-heart"
+                  }
+                }
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "munch"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "DifficultyLevel": {
+                "level": 2
+              }
+            },
+            {
+              "Time": "Start"
+            },
+            {
+              "Random": {
+                "chance": 0.5
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 600.0,
+                    "y": 260.0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "DifficultyLevel": {
+                "level": 3
+              }
+            },
+            {
+              "Time": "Start"
+            },
+            {
+              "Random": {
+                "chance": 0.9
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 600.0,
+                    "y": 260.0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 3
+                }
+              }
+            },
+            {
+              "Collision": {
+                "Area": {
+                  "min": {
+                    "x": 1990.0,
+                    "y": 1990.0
+                  },
+                  "max": {
+                    "x": 2010.0,
+                    "y": 2010.0
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Berry 4",
+      "sprite": {
+        "Image": {
+          "name": "berry1"
+        }
+      },
+      "position": {
+        "x": 2000.0,
+        "y": 2000.0
+      },
+      "size": {
+        "width": 156.0,
+        "height": 134.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "Berry 4"
+                    }
+                  },
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Berry 4",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Colour": {
+                    "r": 0.0,
+                    "g": 0.0,
+                    "b": 0.0,
+                    "a": 0.0
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "berry-heart"
+                  }
+                }
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "munch"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "DifficultyLevel": {
+                "level": 2
+              }
+            },
+            {
+              "Time": "Start"
+            },
+            {
+              "Random": {
+                "chance": 0.5
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 1000.0,
+                    "y": 280.0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "DifficultyLevel": {
+                "level": 3
+              }
+            },
+            {
+              "Time": "Start"
+            },
+            {
+              "Random": {
+                "chance": 0.9
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 1000.0,
+                    "y": 280.0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 3
+                }
+              }
+            },
+            {
+              "Collision": {
+                "Area": {
+                  "min": {
+                    "x": 1990.0,
+                    "y": 1990.0
+                  },
+                  "max": {
+                    "x": 2010.0,
+                    "y": 2010.0
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Berry 5",
+      "sprite": {
+        "Image": {
+          "name": "berry1"
+        }
+      },
+      "position": {
+        "x": 2000.0,
+        "y": 2000.0
+      },
+      "size": {
+        "width": 156.0,
+        "height": 134.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "Berry 5"
+                    }
+                  },
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Berry 5",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Colour": {
+                    "r": 0.0,
+                    "g": 0.0,
+                    "b": 0.0,
+                    "a": 0.0
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "berry-heart"
+                  }
+                }
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "munch"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            },
+            {
+              "DifficultyLevel": {
+                "level": 2
+              }
+            },
+            {
+              "Random": {
+                "chance": 0.5
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 820.0,
+                    "y": 330.0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            },
+            {
+              "DifficultyLevel": {
+                "level": 3
+              }
+            },
+            {
+              "Random": {
+                "chance": 0.9
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 820.0,
+                    "y": 330.0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 3
+                }
+              }
+            },
+            {
+              "Collision": {
+                "Area": {
+                  "min": {
+                    "x": 1990.0,
+                    "y": 1990.0
+                  },
+                  "max": {
+                    "x": 2010.0,
+                    "y": 2010.0
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "background": [
+    {
+      "sprite": {
+        "Image": {
+          "name": "glass"
+        }
+      },
+      "area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 1600.0,
+          "y": 900.0
+        }
+      }
+    }
+  ],
+  "asset_files": {
+    "images": {
+      "berry1": "berry1.png",
+      "glass": "glass.jpg",
+      "berry2": "berry2.png",
+      "berry-heart": "berry-heart.png",
+      "raspberry-hand": "raspberry-hand.png"
+    },
+    "audio": {
+      "gulp": "gulp.ogg",
+      "munch": "munch.ogg",
+      "munch2": "munch2.ogg",
+      "mhm": "mhm.ogg"
+    },
+    "music": {
+      "filename": "trash.ogg",
+      "looped": false
+    },
+    "fonts": {}
+  },
+  "length": {
+    "Seconds": 4.0
+  },
+  "intro_text": "Eat the berries",
+  "attribution": "glass: https://www.pexels.com/photo/clear-wine-glass-with-red-liquid-8084633/\nraspberry-hand: https://www.pexels.com/photo/photo-of-person-holding-raspberry-4109996/\npink background: https://www.pexels.com/photo/paper-heart-on-light-pink-background-4197491/\n\nmhm: https://freesound.org/people/gnimpl/sounds/339838/\nmunch: https://freesound.org/people/PapercutterJohn/sounds/318608/\nmunch2: https://freesound.org/people/Lukeo135/sounds/518155/\n----\nTime to Take Out the Trash (bill berry mix) by William Berry is licensed under CC-BY\nhttp://dig.ccmixter.org/files/williamberry/6855\nhttps://creativecommons.org/licenses/by/3.0/legalcode\n----"
+}

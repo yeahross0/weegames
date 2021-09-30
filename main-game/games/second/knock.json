@@ -375,6 +375,35 @@
             },
             "Win"
           ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Near End",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "WinStatus": "NotYetWon"
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Size": {
+                  "Shrink": {
+                    "Value": {
+                      "width": 2.0,
+                      "height": 2.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
         }
       ]
     },
@@ -485,6 +514,54 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Near End",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 300
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
     }
   ],
   "background": [
@@ -508,20 +585,16 @@
   ],
   "asset_files": {
     "images": {
-      "8": "8.png",
-      "thing-done": "thing-done.png",
-      "fire-1": "fire-1.png",
-      "thing-1": "thing-1.png",
-      "thing-2": "thing-2.png",
-      "fire-2": "fire-2.png",
-      "p2": "p2.png",
-      "brawler-player": "brawler-player.png",
-      "brawler-enemy": "brawler-enemy.png",
-      "fire-4": "fire-4.png",
-      "thing-3": "thing-3.png",
       "thing-4": "thing-4.png",
+      "thing-2": "thing-2.png",
+      "p2": "p2.png",
+      "thing-done": "thing-done.png",
       "p1": "p1.png",
-      "fire-3": "fire-3.png"
+      "thing-1": "thing-1.png",
+      "brawler-enemy": "brawler-enemy.png",
+      "brawler-player": "brawler-player.png",
+      "8": "8.png",
+      "thing-3": "thing-3.png"
     },
     "audio": {
       "power-up": "power-up.ogg",
@@ -538,5 +611,5 @@
     "Seconds": 6.0
   },
   "intro_text": "Click that thing",
-  "attribution": "https://s4m-ur4i.itch.io/free-sprites-elements-8x8-retro-pixelart-platformer-brawler\n\nhttps://jdwasabi.itch.io/8-bit-16-bit-sound-effects-pack\nhttps://void1gaming.itch.io/halftone-sound-effects-pack-lite\n\n8-Bit DNA by Tim Beek is licenced under CC-BY-4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://timbeek.itch.io/royalty-free-music-pack"
+  "attribution": "https://s4m-ur4i.itch.io/free-sprites-elements-8x8-retro-pixelart-platformer-brawler\n\nhttps://jdwasabi.itch.io/8-bit-16-bit-sound-effects-pack\nhttps://void1gaming.itch.io/halftone-sound-effects-pack-lite\n\n8-Bit DNA by Tim Beek is licensed under CC-BY-4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://timbeek.itch.io/royalty-free-music-pack"
 }

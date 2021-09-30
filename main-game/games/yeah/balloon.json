@@ -468,9 +468,9 @@
     {
       "sprite": {
         "Colour": {
-          "r": 1.0,
-          "g": 1.0,
-          "b": 1.0,
+          "r": 0.9411765,
+          "g": 0.9411765,
+          "b": 0.9411765,
           "a": 1.0
         }
       },
@@ -489,9 +489,9 @@
   "asset_files": {
     "images": {
       "balloon-crop": "balloon-crop.png",
-      "roof-crop": "roof-crop.webp",
-      "crunch": "crunch.webp",
-      "jar-crop": "jar-crop.webp"
+      "roof-crop": "roof-crop.png",
+      "crunch": "crunch.png",
+      "jar-crop": "jar-crop.png"
     },
     "audio": {
       "shatter": "shatter.ogg",

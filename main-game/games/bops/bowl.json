@@ -1,0 +1,1334 @@
+{
+  "format_version": "0.2",
+  "published": true,
+  "game_type": "Minigame",
+  "objects": [
+    {
+      "name": "Hand",
+      "sprite": {
+        "Image": {
+          "name": "handyhand"
+        }
+      },
+      "position": {
+        "x": 1400.0,
+        "y": 600.0
+      },
+      "size": {
+        "width": 405.0,
+        "height": 441.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            },
+            {
+              "DifficultyLevel": {
+                "level": 2
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Area": {
+                    "min": {
+                      "x": 1400.0,
+                      "y": 400.0
+                    },
+                    "max": {
+                      "x": 1410.0,
+                      "y": 840.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            },
+            {
+              "DifficultyLevel": {
+                "level": 3
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "Roam": {
+                  "movement_type": {
+                    "Reflect": {
+                      "initial_direction": {
+                        "Direction": {
+                          "possible_directions": [
+                            "Down",
+                            "Up"
+                          ]
+                        }
+                      },
+                      "movement_handling": "Anywhere"
+                    }
+                  },
+                  "area": {
+                    "min": {
+                      "x": 1500.0,
+                      "y": 400.0
+                    },
+                    "max": {
+                      "x": 1600.0,
+                      "y": 840.0
+                    }
+                  },
+                  "speed": "VerySlow"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Hog",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": "Stop"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Hog",
+      "sprite": {
+        "Image": {
+          "name": "hog-resize-none"
+        }
+      },
+      "position": {
+        "x": 1346.0,
+        "y": 530.0
+      },
+      "size": {
+        "width": 285.0,
+        "height": 291.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 20.0,
+          "y": 20.0
+        },
+        "max": {
+          "x": 265.0,
+          "y": 271.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Hog",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Hand"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": -56.0,
+                      "y": -70.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "Hog"
+                    }
+                  },
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Hog",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Angle": {
+                  "Decrease": 3.0
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Size": {
+                  "Shrink": {
+                    "Value": {
+                      "width": 1.0,
+                      "height": 1.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Size": {
+                  "Clamp": {
+                    "min": {
+                      "width": 1.0,
+                      "height": 1.0
+                    },
+                    "max": {
+                      "width": 2000.0,
+                      "height": 2000.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Position"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Dancer",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Dancer 2",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Win"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Dancer",
+      "sprite": {
+        "Image": {
+          "name": "dancer"
+        }
+      },
+      "position": {
+        "x": 200.0,
+        "y": 200.0
+      },
+      "size": {
+        "width": 136.05,
+        "height": 141.1
+      },
+      "angle": -46.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 20.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 116.0,
+          "y": 141.1
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Hog"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "SetProperty": {
+                "Angle": {
+                  "Value": 180.0
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Placement",
+                "check": {
+                  "Sprite": {
+                    "Colour": {
+                      "r": 1.0,
+                      "g": 0.0,
+                      "b": 0.0,
+                      "a": 0.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Time": {
+                "Exact": {
+                  "time": 1
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 100.0,
+                      "y": -100.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Placement",
+                "check": {
+                  "Sprite": {
+                    "Colour": {
+                      "r": 0.0,
+                      "g": 1.0,
+                      "b": 0.0,
+                      "a": 0.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Time": {
+                "Exact": {
+                  "time": 1
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": -100.0,
+                      "y": 100.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Dancer",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "PlaySound": {
+                "name": "glass-smash"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "BG",
+      "sprite": {
+        "Image": {
+          "name": "alley6"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 1600.0,
+        "height": 900.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 2,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "Dancer 2",
+      "sprite": {
+        "Image": {
+          "name": "dancer"
+        }
+      },
+      "position": {
+        "x": 150.0,
+        "y": 250.0
+      },
+      "size": {
+        "width": 136.05,
+        "height": 141.1
+      },
+      "angle": -46.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 20.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 116.0,
+          "y": 141.1
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Hog"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "SetProperty": {
+                "Angle": {
+                  "Value": 180.0
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Dancer 2",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "PlaySound": {
+                "name": "glass-smash"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Dancer Reflection",
+      "sprite": {
+        "Image": {
+          "name": "dancer-blurred-smudged"
+        }
+      },
+      "position": {
+        "x": 294.0,
+        "y": 295.0
+      },
+      "size": {
+        "width": 136.0,
+        "height": 141.0
+      },
+      "angle": -46.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": true
+      },
+      "layer": 2,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Dancer",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Angle": {
+                  "Value": 90.0
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Dancer"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 94.0,
+                      "y": 95.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Dancer 2 Reflection",
+      "sprite": {
+        "Image": {
+          "name": "dancer-blurred-smudged"
+        }
+      },
+      "position": {
+        "x": 244.0,
+        "y": 345.0
+      },
+      "size": {
+        "width": 136.0,
+        "height": 141.0
+      },
+      "angle": -46.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": true
+      },
+      "layer": 2,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Dancer 2",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Angle": {
+                  "Value": 90.0
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Dancer 2"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 94.0,
+                      "y": 95.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Placement",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Random": {
+                "random_actions": [
+                  {
+                    "SetProperty": {
+                      "Sprite": {
+                        "Colour": {
+                          "r": 1.0,
+                          "g": 0.0,
+                          "b": 0.0,
+                          "a": 0.0
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "SetProperty": {
+                      "Sprite": {
+                        "Colour": {
+                          "r": 0.0,
+                          "g": 1.0,
+                          "b": 0.0,
+                          "a": 0.0
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "SetProperty": {
+                      "Sprite": {
+                        "Colour": {
+                          "r": 0.0,
+                          "g": 0.0,
+                          "b": 1.0,
+                          "a": 0.0
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Arrow",
+      "sprite": {
+        "Image": {
+          "name": "arrow"
+        }
+      },
+      "position": {
+        "x": 200.0,
+        "y": 2000.0
+      },
+      "size": {
+        "width": 138.0,
+        "height": 174.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Hog",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Angle": {
+                  "Match": {
+                    "name": "Start"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Start"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentAngle",
+                    "distance": {
+                      "x": 0.0,
+                      "y": -250.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Start",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 2000.0,
+                    "y": 2000.0
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Position",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.32156864,
+          "b": 0.40784314,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 1346.0,
+        "y": 530.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Start",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Angle": {
+                  "Match": {
+                    "name": "Start"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Angle": "Current"
+                  },
+                  "speed": "Normal"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Hog",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Hand"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": -56.0,
+                      "y": -70.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Start",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Hog",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": "Mouse"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "End",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Angle": {
+                  "RotateToObject": {
+                    "name": "End"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "End",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.64705884,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Hog",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": "Mouse"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Hog",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Release"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Outline",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 285.0,
+        "height": 291.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Hog"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "Loop",
+                "sprites": [
+                  {
+                    "Colour": {
+                      "r": 0.0,
+                      "g": 0.0,
+                      "b": 0.0,
+                      "a": 0.0
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "hog-outline"
+                    }
+                  }
+                ],
+                "speed": "Slow"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Hog",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "Time": {
+                "Exact": {
+                  "time": 210
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "Loop",
+                "sprites": [
+                  {
+                    "Colour": {
+                      "r": 0.0,
+                      "g": 0.0,
+                      "b": 0.0,
+                      "a": 0.003921569
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "hog-outline-red"
+                    }
+                  }
+                ],
+                "speed": "Slow"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Hog",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Colour": {
+                    "r": 0.0,
+                    "g": 0.0,
+                    "b": 0.0,
+                    "a": 0.0
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "background": [],
+  "asset_files": {
+    "images": {
+      "arrow": "arrow.png",
+      "hog-outline-red": "hog-outline-red.png",
+      "handyhand": "handyhand.png",
+      "alley6": "alley6.jpg",
+      "hog-outline": "hog-outline.png",
+      "dancer": "dancer.png",
+      "dancer-blurred-smudged": "dancer-blurred-smudged.png",
+      "hog-resize-none": "hog-resize-none.png"
+    },
+    "audio": {
+      "glass-smash": "glass-smash.ogg"
+    },
+    "music": {
+      "filename": "cactus-love-crop.ogg",
+      "looped": false
+    },
+    "fonts": {}
+  },
+  "length": {
+    "Seconds": 6.5
+  },
+  "intro_text": "Flick the hog",
+  "attribution": "hedgehog + hand: https://unsplash.com/photos/8wkkhqEYN0A\ndancer: https://www.pexels.com/photo/grayscale-photo-of-woman-dancing-2896162/\nalley: https://unsplash.com/photos/UINDyobcGe4\narrow: https://pixabay.com/photos/arrow-hiking-trail-tree-forest-493410/\n\nglass-smash: https://freesound.org/people/mgamabile/sounds/440773/\n\n----\n'Cactus Love (It Hurts Me)' by Songboy3 is licensed under CC BY-NC 3.0\nhttp://dig.ccmixter.org/files/Songboy3/62914\nhttps://creativecommons.org/licenses/by-nc/3.0/legalcode\n----"
+}

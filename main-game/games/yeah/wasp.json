@@ -601,11 +601,11 @@
   ],
   "asset_files": {
     "images": {
-      "cyclists": "bikes.webp",
-      "wasp hit": "wasp-hit.webp",
-      "swat up": "fly-swat-up.webp",
+      "cyclists": "bikes.jpg",
+      "wasp hit": "wasp-hit.png",
+      "swat up": "fly-swat-up.png",
       "wasp": "wasp-crop-small.png",
-      "swat down": "fly-swat.webp"
+      "swat down": "fly-swat.png"
     },
     "audio": {
       "squash": "squash-crop.ogg",

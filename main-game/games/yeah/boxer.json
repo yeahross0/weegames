@@ -4,6 +4,55 @@
   "game_type": "Minigame",
   "objects": [
     {
+      "name": "hand box",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.40784314,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 177.0,
+        "y": 621.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 500.0
+      },
+      "angle": 20.000002,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "hand",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": "Mouse"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "hand",
       "sprite": {
         "Image": {
@@ -59,9 +108,10 @@
         {
           "triggers": [
             {
-              "Collision": {
-                "Object": {
-                  "name": "glove"
+              "CheckProperty": {
+                "name": "glove box",
+                "check": {
+                  "Switch": "On"
                 }
               }
             }
@@ -82,9 +132,10 @@
         {
           "triggers": [
             {
-              "Collision": {
-                "Object": {
-                  "name": "head"
+              "CheckProperty": {
+                "name": "head box",
+                "check": {
+                  "Switch": "SwitchedOn"
                 }
               }
             }
@@ -109,6 +160,73 @@
                     }
                   },
                   "interaction": "Hover"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "head box",
+      "sprite": {
+        "Colour": {
+          "r": 0.1882353,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 1242.0,
+        "y": 294.0
+      },
+      "size": {
+        "width": 300.0,
+        "height": 500.0
+      },
+      "angle": -46.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "head"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "hand box"
                 }
               }
             }
@@ -175,6 +293,73 @@
             },
             {
               "Effect": "Freeze"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "glove box",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.24313726,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 725.0,
+        "y": 474.0
+      },
+      "size": {
+        "width": 360.0,
+        "height": 200.0
+      },
+      "angle": 20.000002,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "glove"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "hand box"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
             }
           ]
         }
@@ -281,11 +466,11 @@
   ],
   "asset_files": {
     "images": {
-      "background2": "background2.webp",
-      "boxer-head-no-eyes": "boxer-head-no-eyes.webp",
-      "boxer-head": "boxer-head.webp",
-      "boxer-hand": "boxer-hand.webp",
-      "amusement-crop": "amusement-crop.webp"
+      "background2": "background2.jpg",
+      "boxer-head-no-eyes": "boxer-head-no-eyes.png",
+      "boxer-head": "boxer-head.png",
+      "boxer-hand": "boxer-hand.png",
+      "amusement-crop": "amusement-crop.png"
     },
     "audio": {
       "please-dont-crop": "please-dont-crop.ogg",

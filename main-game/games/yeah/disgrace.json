@@ -206,9 +206,9 @@
   "background": [],
   "asset_files": {
     "images": {
-      "notebook-uncovered-david-robot": "notebook-uncovered-david-robot.webp",
-      "notebook-uncovered-david": "notebook-uncovered-david3.webp",
-      "notebook-leaf-16-9": "notebook-leaf-16-9.webp"
+      "notebook-uncovered-david-robot": "notebook-uncovered-david-robot.jpg",
+      "notebook-uncovered-david": "notebook-uncovered-david3.jpg",
+      "notebook-leaf-16-9": "notebook-leaf-16-9.png"
     },
     "audio": {
       "hey-crop": "hey-crop.ogg"

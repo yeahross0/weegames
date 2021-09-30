@@ -244,13 +244,13 @@
   ],
   "asset_files": {
     "images": {
-      "helicopter": "helicopter-crop.webp",
-      "no chute": "parachute-no-chute.webp",
-      "parachute": "parachute-crop.webp",
-      "sky": "sky.webp"
+      "helicopter": "helicopter-crop.png",
+      "no chute": "parachute-no-chute.png",
+      "parachute": "parachute-crop.png",
+      "sky": "sky.jpeg"
     },
     "audio": {
-      "pop": "pop.flac"
+      "pop": "pop.ogg"
     },
     "fonts": {},
     "music": {

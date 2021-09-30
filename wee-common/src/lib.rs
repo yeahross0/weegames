@@ -6,19 +6,6 @@ pub const PROJECTION_HEIGHT: f32 = 900.0;
 
 pub type WeeResult<T> = Result<T, Box<dyn Error + Send + Sync>>;
 
-pub trait Warn {
-    fn warn(self) -> Self;
-}
-
-impl<T> Warn for WeeResult<T> {
-    fn warn(self) -> Self {
-        if let Err(error) = &self {
-            log::warn!("{}", error);
-        }
-        self
-    }
-}
-
 #[derive(Copy, Clone, Serialize, Deserialize, Debug, PartialEq)]
 pub struct Vec2 {
     pub x: f32,
@@ -216,6 +203,20 @@ pub struct Size {
 impl Size {
     pub fn new(width: f32, height: f32) -> Size {
         Size { width, height }
+    }
+}
+
+impl std::ops::Mul<f32> for Size {
+    type Output = Size;
+    fn mul(self, rhs: f32) -> Size {
+        Size::new(self.width * rhs, self.height * rhs)
+    }
+}
+
+impl std::ops::Div<f32> for Size {
+    type Output = Size;
+    fn div(self, rhs: f32) -> Size {
+        Size::new(self.width / rhs, self.height / rhs)
     }
 }
 

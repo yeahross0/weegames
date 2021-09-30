@@ -72,7 +72,7 @@
               "SetProperty": {
                 "Sprite": {
                   "Image": {
-                    "name": "install2"
+                    "name": "install"
                   }
                 }
               }
@@ -570,6 +570,77 @@
               }
             }
           ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            },
+            {
+              "CheckProperty": {
+                "name": "2",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "3",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Gained Life",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "PlayOnce",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "heart-black"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "heart-gold"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "heart-black"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "heart-gold"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "heart-black"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "heart"
+                    }
+                  }
+                ],
+                "speed": "Slow"
+              }
+            }
+          ]
         }
       ]
     },
@@ -691,6 +762,77 @@
                   }
                 ],
                 "speed": "Normal"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            },
+            {
+              "CheckProperty": {
+                "name": "3",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "4",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Gained Life",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "PlayOnce",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "heart-black"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "heart-gold"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "heart-black"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "heart-gold"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "heart-black"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "heart"
+                    }
+                  }
+                ],
+                "speed": "Slow"
               }
             }
           ]
@@ -818,6 +960,69 @@
               }
             }
           ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            },
+            {
+              "CheckProperty": {
+                "name": "4",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Gained Life",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "PlayOnce",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "heart-black"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "heart-gold"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "heart-black"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "heart-gold"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "heart-black"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "heart"
+                    }
+                  }
+                ],
+                "speed": "Slow"
+              }
+            }
+          ]
         }
       ]
     },
@@ -849,18 +1054,47 @@
       "layer": 0,
       "switch": "Off",
       "instructions": []
+    },
+    {
+      "name": "Gained Life",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
     }
   ],
   "background": [],
   "asset_files": {
     "images": {
-      "heart-black": "heart-black.png",
-      "heart": "heart.png",
-      "install": "install.png",
       "mouse-grab": "mouse-grab.png",
       "mouse": "mouse.png",
-      "install2": "install2.png",
-      "download": "download.png"
+      "heart-gold": "heart-gold.png",
+      "heart": "heart.png",
+      "install": "install.png",
+      "download": "download.png",
+      "heart-black": "heart-black.png"
     },
     "audio": {
       "switch": "switch.ogg"

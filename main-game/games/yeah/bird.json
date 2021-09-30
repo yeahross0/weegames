@@ -376,10 +376,10 @@
   "background": [],
   "asset_files": {
     "images": {
-      "bird-transparent-body": "bird-transparent-body.webp",
-      "birds": "birds.webp",
-      "bird-transparent-stretched": "bird-transparent-stretched.webp",
-      "bird-transparent-head": "bird-transparent-head.webp"
+      "bird-transparent-body": "bird-transparent-body.png",
+      "birds": "birds.jpg",
+      "bird-transparent-stretched": "bird-transparent-stretched.png",
+      "bird-transparent-head": "bird-transparent-head.png"
     },
     "audio": {
       "putrid-heartbeat-crop": "putrid-heartbeat-crop.ogg",

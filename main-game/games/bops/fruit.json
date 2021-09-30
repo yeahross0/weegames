@@ -1,0 +1,860 @@
+{
+  "format_version": "0.2",
+  "published": true,
+  "game_type": "Minigame",
+  "objects": [
+    {
+      "name": "Scene",
+      "sprite": {
+        "Image": {
+          "name": "man-looking"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 1600.0,
+        "height": 900.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "WinStatus": "NotYetWon"
+            }
+          ],
+          "actions": [
+            {
+              "PlaySound": {
+                "name": "munch2"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Banana",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 620.0,
+        "y": 240.0
+      },
+      "size": {
+        "width": 200.0,
+        "height": 386.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Indicator",
+                "check": {
+                  "Sprite": {
+                    "Colour": {
+                      "r": 0.0,
+                      "g": 1.0,
+                      "b": 0.0,
+                      "a": 1.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Time": {
+                "Exact": {
+                  "time": 1
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "banana-1"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Banana",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "banana-1"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "banana-2"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Banana",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "banana-2"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "banana-3"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Banana",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "banana-3"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "banana-4"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Banana",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "banana-4"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "banana-done"
+                  }
+                }
+              }
+            },
+            "Win",
+            {
+              "PlaySound": {
+                "name": "ow-me-leg"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Pineapple",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 620.0,
+        "y": 220.0
+      },
+      "size": {
+        "width": 245.0,
+        "height": 367.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Indicator",
+                "check": {
+                  "Sprite": {
+                    "Colour": {
+                      "r": 1.0,
+                      "g": 0.0,
+                      "b": 0.0,
+                      "a": 1.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Time": {
+                "Exact": {
+                  "time": 1
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "pineapple-1"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Pineapple",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "pineapple-1"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "pineapple-2"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Pineapple",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "pineapple-2"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "pineapple-3"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Pineapple",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "pineapple-3"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "pineapple-done"
+                  }
+                }
+              }
+            },
+            "Win",
+            {
+              "PlaySound": {
+                "name": "ow-me-leg"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Thing",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 620.0,
+        "y": 220.0
+      },
+      "size": {
+        "width": 178.0,
+        "height": 369.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Indicator",
+                "check": {
+                  "Sprite": {
+                    "Colour": {
+                      "r": 0.0,
+                      "g": 0.0,
+                      "b": 1.0,
+                      "a": 1.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Time": {
+                "Exact": {
+                  "time": 1
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "thing-1"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Thing",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "thing-1"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "thing-2"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Thing",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "thing-2"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "thing-3"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Thing",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "thing-3"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "thing-4"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Thing",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "thing-4"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "thing-5"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Thing",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "thing-5"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "thing-done"
+                  }
+                }
+              }
+            },
+            "Win",
+            {
+              "PlaySound": {
+                "name": "ow-me-leg"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Indicator",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 1.0
+        }
+      },
+      "position": {
+        "x": 1800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Random": {
+                "random_actions": [
+                  {
+                    "SetProperty": {
+                      "Sprite": {
+                        "Colour": {
+                          "r": 1.0,
+                          "g": 0.0,
+                          "b": 0.0,
+                          "a": 1.0
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "SetProperty": {
+                      "Sprite": {
+                        "Colour": {
+                          "r": 0.0,
+                          "g": 1.0,
+                          "b": 0.0,
+                          "a": 1.0
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "SetProperty": {
+                      "Sprite": {
+                        "Colour": {
+                          "r": 0.0,
+                          "g": 0.0,
+                          "b": 1.0,
+                          "a": 1.0
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "background": [],
+  "asset_files": {
+    "images": {
+      "thing-3": "thing-3.jpg",
+      "thing-done": "thing-done.jpg",
+      "pineapple-2": "pineapple-2.jpg",
+      "banana-1": "banana-1.jpg",
+      "thing-5": "thing-5.jpg",
+      "pineapple-done": "pineapple-done.jpg",
+      "banana-2": "banana-2.jpg",
+      "thing-2": "thing-2.jpg",
+      "man-looking": "man-looking.png",
+      "pineapple-1": "pineapple-1.jpg",
+      "pineapple-3": "pineapple-3.jpg",
+      "thing-4": "thing-4.jpg",
+      "banana-done": "banana-done.jpg",
+      "banana-3": "banana-3.jpg",
+      "banana-4": "banana-4.jpg",
+      "thing-1": "thing-1.jpg"
+    },
+    "audio": {
+      "munch2": "munch2.ogg",
+      "ow-me-leg": "ow-me-leg.ogg"
+    },
+    "music": null,
+    "fonts": {}
+  },
+  "length": {
+    "Seconds": 4.0
+  },
+  "intro_text": "Eat the fruit",
+  "attribution": "banana: https://www.pexels.com/photo/crop-unrecognizable-woman-with-half-unpeeled-banana-5217996/\npineapple: https://www.pexels.com/photo/person-holding-pineapple-fruit-2940256/\nmango: https://www.pexels.com/photo/crop-anonymous-person-demonstrating-sweet-mango-5217960/\nman: https://www.pexels.com/photo/man-sitting-on-chair-while-thinking-1129552/\n\nmunch2: https://freesound.org/people/Lukeo135/sounds/518155/\n\n----\n'PAINED OUCH MY LEG.wav' by HumanSolarian is licensed under CC BY 3.0\nhttps://freesound.org/people/HumanSolarian/sounds/457176/\nhttps://creativecommons.org/licenses/by/3.0/legalcode\n----"
+}

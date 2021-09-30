@@ -14,8 +14,8 @@
         }
       },
       "position": {
-        "x": 800.0,
-        "y": 300.0
+        "x": 664.0,
+        "y": 352.0
       },
       "size": {
         "width": 1.0,
@@ -51,15 +51,6 @@
                 "resize": "MatchText",
                 "justify": "Centre"
               }
-            },
-            {
-              "Motion": {
-                "JumpTo": {
-                  "Object": {
-                    "name": "wasp-blue"
-                  }
-                }
-              }
             }
           ]
         },
@@ -83,6 +74,19 @@
                   }
                 }
               }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 0.0,
+                      "y": -40.0
+                    }
+                  }
+                }
+              }
             }
           ]
         },
@@ -92,6 +96,14 @@
               "Time": {
                 "Exact": {
                   "time": 60
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Boss",
+                "check": {
+                  "Switch": "On"
                 }
               }
             }
@@ -107,7 +119,7 @@
                   "b": 0.0,
                   "a": 1.0
                 },
-                "resize": "MatchObject",
+                "resize": "MatchText",
                 "justify": "Centre"
               }
             }
@@ -340,6 +352,72 @@
               "Motion": "Stop"
             }
           ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            },
+            {
+              "CheckProperty": {
+                "name": "2",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "3",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Gained Life",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "PlayOnce",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "wasp-grey-1"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "wasp-grey-2"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "wasp-grey-3"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "wasp-grey-4"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "wasp-green"
+                    }
+                  }
+                ],
+                "speed": "Normal"
+              }
+            }
+          ]
         }
       ]
     },
@@ -423,6 +501,72 @@
               "Motion": "Stop"
             }
           ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            },
+            {
+              "CheckProperty": {
+                "name": "3",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "4",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Gained Life",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "PlayOnce",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "wasp-grey-1"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "wasp-grey-2"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "wasp-grey-3"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "wasp-grey-4"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "wasp-green"
+                    }
+                  }
+                ],
+                "speed": "Normal"
+              }
+            }
+          ]
         }
       ]
     },
@@ -504,6 +648,64 @@
             },
             {
               "Motion": "Stop"
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            },
+            {
+              "CheckProperty": {
+                "name": "4",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Gained Life",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "PlayOnce",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "wasp-grey-1"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "wasp-grey-2"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "wasp-grey-3"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "wasp-grey-4"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "wasp-green"
+                    }
+                  }
+                ],
+                "speed": "Normal"
+              }
             }
           ]
         }
@@ -860,6 +1062,19 @@
                   }
                 }
               }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 0.0,
+                      "y": -40.0
+                    }
+                  }
+                }
+              }
             }
           ]
         },
@@ -869,6 +1084,14 @@
               "Time": {
                 "Exact": {
                   "time": 60
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Boss",
+                "check": {
+                  "Switch": "On"
                 }
               }
             }
@@ -891,6 +1114,35 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Gained Life",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
     }
   ],
   "background": [
@@ -914,11 +1166,15 @@
   ],
   "asset_files": {
     "images": {
-      "wasp-blue": "wasp-blue.webp",
-      "bloody-hands": "bloody-hands.webp",
-      "wasp-green": "wasp-green.webp",
-      "fly-swat": "fly-swat.webp",
-      "wasp-green-hit": "wasp-green-hit.webp"
+      "wasp-grey-3": "wasp-grey-3.png",
+      "bloody-hands": "bloody-hands.jpg",
+      "wasp-blue": "wasp-blue.png",
+      "wasp-grey-2": "wasp-grey-2.png",
+      "fly-swat": "fly-swat.png",
+      "wasp-green-hit": "wasp-green-hit.png",
+      "wasp-green": "wasp-green.png",
+      "wasp-grey-4": "wasp-grey-4.png",
+      "wasp-grey-1": "wasp-grey-1.png"
     },
     "audio": {
       "swat-crop": "swat-crop.ogg",

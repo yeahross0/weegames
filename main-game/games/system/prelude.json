@@ -557,11 +557,11 @@
   ],
   "asset_files": {
     "images": {
-      "cactus-cropped": "cactus-cropped.webp",
-      "wasp-crop": "wasp-crop.webp",
-      "wasp-hit": "wasp-hit.webp",
-      "fly-swat": "fly-swat.webp",
-      "fly-swat-up": "fly-swat-up.webp"
+      "cactus-cropped": "cactus-cropped.jpg",
+      "wasp-crop": "wasp-crop.png",
+      "wasp-hit": "wasp-hit.png",
+      "fly-swat": "fly-swat.png",
+      "fly-swat-up": "fly-swat-up.png"
     },
     "audio": {
       "swat-crop": "swat-crop.ogg"

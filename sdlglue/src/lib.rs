@@ -131,6 +131,12 @@ impl Texture {
 
         let format = surface.pixel_format();
 
+        log::debug!(
+            "format: {:?} :: {}",
+            surface.pixel_format_enum(),
+            surface.width()
+        );
+
         unsafe {
             let raw = format.raw();
             if (*raw).format == PixelFormatEnum::ABGR8888 as u32 {
@@ -139,6 +145,19 @@ impl Texture {
                 texture.format_as(surface, gl::UNSIGNED_INT_8_8_8_8_REV)
             } else if (*raw).format == PixelFormatEnum::RGB24 as u32 {
                 texture.format_as(surface, gl::UNSIGNED_BYTE)
+            } else if (*raw).format == PixelFormatEnum::Index8 as u32 {
+                log::debug!(
+                    "{:?}, {:?}, {:?}, {:?}",
+                    surface.color_key(),
+                    surface.color_mod(),
+                    surface.alpha_mod(),
+                    surface.blend_mode()
+                );
+                surface = surface.convert_format(PixelFormatEnum::RGBA8888)?;
+                texture.image_format = gl::RGBA;
+                texture.internal_format = gl::RGBA;
+                texture.format_as(surface, gl::UNSIGNED_INT_8_8_8_8)
+                //texture.format_as(surface, gl::UNSIGNED_BYTE)
             } else {
                 (*raw).format = PixelFormatEnum::RGBA8888 as u32;
                 surface = surface.convert(&PixelFormat::from_ll(raw))?;
@@ -508,6 +527,71 @@ impl Renderer {
             self.rect_shader.set_mat4(c_str!("model"), &model.0);
             gl::BindVertexArray(vao);
             gl::DrawElements(gl::TRIANGLES, 6, gl::UNSIGNED_INT, std::ptr::null());
+            gl::DeleteVertexArrays(1, &vao);
+            gl::DeleteBuffers(1, &ebo);
+            gl::DeleteBuffers(1, &vbo);
+        }
+    }
+
+    pub fn draw_rectangle_lines(&self, model: Model, colour: Colour) {
+        let vertices: [f32; 12] = [1.0, 1.0, 0.5, 1.0, 0.0, 0.5, 0.0, 0.0, 0.5, 0.0, 1.0, 0.5];
+        let mut vbo: u32 = 0;
+        let mut vao: u32 = 0;
+        let mut ebo: u32 = 0;
+        unsafe {
+            gl::GenVertexArrays(1, &mut vao);
+            gl::GenBuffers(1, &mut vbo);
+            gl::GenBuffers(1, &mut ebo);
+            // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
+            gl::BindVertexArray(vao);
+
+            gl::BindBuffer(gl::ARRAY_BUFFER, vbo);
+            gl::BufferData(
+                gl::ARRAY_BUFFER,
+                (vertices.len() * std::mem::size_of::<GLfloat>()) as isize,
+                &vertices as *const _ as *const c_void,
+                gl::STATIC_DRAW,
+            );
+
+            gl::VertexAttribPointer(
+                0,
+                3,
+                gl::FLOAT,
+                gl::FALSE,
+                (3 * std::mem::size_of::<GLfloat>()) as i32,
+                std::ptr::null(),
+            );
+
+            gl::EnableVertexAttribArray(0);
+
+            // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
+            gl::BindBuffer(gl::ARRAY_BUFFER, 0);
+
+            // remember: do NOT unbind the EBO while a VAO is active as the bound element buffer object IS stored in the VAO; keep the EBO bound.
+            //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+            // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
+            // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
+            gl::BindVertexArray(0);
+
+            //gl::PolygonMode(gl::FRONT_AND_BACK, gl::LINE);
+
+            let line_thickness = 4.0; // 4.0;
+
+            gl::LineWidth(line_thickness);
+
+            self.rect_shader.use_program();
+            self.rect_shader
+                .set_mat4(c_str!("projection"), &self.projection);
+            self.rect_shader
+                .set_vector4(c_str!("rect_colour"), &colour.to_vec4());
+            self.rect_shader.set_mat4(c_str!("model"), &model.0);
+
+            gl::BindVertexArray(vao); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
+                                      //glDrawArrays(GL_TRIANGLES, 0, 6);
+                                      //gl::DrawElements(gl::LINES, 2, gl::UNSIGNED_INT, std::ptr::null());
+            gl::DrawArrays(gl::LINE_LOOP, 0, 4);
+
             gl::DeleteVertexArrays(1, &vao);
             gl::DeleteBuffers(1, &ebo);
             gl::DeleteBuffers(1, &vbo);

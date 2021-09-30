@@ -370,6 +370,370 @@
           ]
         }
       ]
+    },
+    {
+      "name": "PS1",
+      "sprite": {
+        "Colour": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 0.0,
+          "a": 1.0
+        }
+      },
+      "position": {
+        "x": 500.0,
+        "y": 100.0
+      },
+      "size": {
+        "width": 20.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "PS2",
+      "sprite": {
+        "Colour": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 0.0,
+          "a": 1.0
+        }
+      },
+      "position": {
+        "x": 580.0,
+        "y": 100.0
+      },
+      "size": {
+        "width": 80.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "Block1",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 1.0
+        }
+      },
+      "position": {
+        "x": 580.0,
+        "y": 100.0
+      },
+      "size": {
+        "width": 40.0,
+        "height": 60.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "WinStatus": "HasBeenWon"
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Size": {
+                  "Value": {
+                    "width": 100.0,
+                    "height": 100.0
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 30.0,
+                      "y": 0.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "FS1",
+      "sprite": {
+        "Colour": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 0.0,
+          "a": 1.0
+        }
+      },
+      "position": {
+        "x": 1000.0,
+        "y": 100.0
+      },
+      "size": {
+        "width": 20.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "FS2",
+      "sprite": {
+        "Colour": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 0.0,
+          "a": 1.0
+        }
+      },
+      "position": {
+        "x": 1080.0,
+        "y": 100.0
+      },
+      "size": {
+        "width": 80.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "Block2",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 1.0
+        }
+      },
+      "position": {
+        "x": 1080.0,
+        "y": 100.0
+      },
+      "size": {
+        "width": 40.0,
+        "height": 60.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "WinStatus": "HasBeenLost"
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Size": {
+                  "Value": {
+                    "width": 100.0,
+                    "height": 100.0
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 30.0,
+                      "y": 0.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Line",
+      "sprite": {
+        "Colour": {
+          "r": 1.0,
+          "g": 0.99215686,
+          "b": 0.0,
+          "a": 1.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 100.0
+      },
+      "size": {
+        "width": 10.0,
+        "height": 200.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "End",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "WinStatus": "Won"
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "WinStatus": "Lost"
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "End",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Effect": "Freeze"
+            },
+            {
+              "SetProperty": {
+                "Timer": {
+                  "time": 60
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "End",
+                "check": "Timer"
+              }
+            }
+          ],
+          "actions": [
+            "EndEarly"
+          ]
+        }
+      ]
     }
   ],
   "background": [
@@ -399,11 +763,11 @@
     "audio": {
       "beep": "beep.wav"
     },
-    "fonts": {},
     "music": {
       "filename": "arcade-crop.ogg",
       "looped": false
-    }
+    },
+    "fonts": {}
   },
   "length": {
     "Seconds": 8.0

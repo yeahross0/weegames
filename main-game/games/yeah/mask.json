@@ -375,14 +375,14 @@
   ],
   "asset_files": {
     "images": {
-      "woman-no-mask-crop": "woman-no-mask-crop.webp",
-      "woman-mask-crop-red1": "woman-mask-crop-red1.webp",
-      "ship": "ship.webp",
-      "woman-mask-crop-red4": "woman-mask-crop-red4.webp",
+      "woman-no-mask-crop": "woman-no-mask-crop.png",
+      "woman-mask-crop-red1": "woman-mask-crop-red1.png",
+      "ship": "ship.jpg",
+      "woman-mask-crop-red4": "woman-mask-crop-red4.png",
       "spider-crop": "spider-2.png",
-      "woman-mask-crop-red3": "woman-mask-crop-red3.webp",
-      "woman-mask-crop-red-end": "woman-mask-crop-red-end.webp",
-      "woman-mask-crop-red2": "woman-mask-crop-red2.webp"
+      "woman-mask-crop-red3": "woman-mask-crop-red3.png",
+      "woman-mask-crop-red-end": "woman-mask-crop-red-end.png",
+      "woman-mask-crop-red2": "woman-mask-crop-red2.png"
     },
     "audio": {
       "ahh-eww-eww": "ahh-eww-eww.ogg",
@@ -398,5 +398,5 @@
     "Seconds": 4.0
   },
   "intro_text": "Cover Up!",
-  "attribution": "woman-mask: https://www.pexels.com/photo/woman-wearing-face-mask-3902882/\nwoman-no-mask: https://www.pexels.com/photo/woman-wearing-face-mask-3902884/\nspider: https://publicdomainvectors.org/en/free-clipart/Spider-silhouette/66523.html\n----\nship\nCruise ship in holiday destination by alegri is licenced under CC-BY\nhttps://www.4freephotos.com/Cruise-ship-in-holiday-destination-7041.html\n----\n\nahh-eww: https://freesound.org/people/isabellaquintero97/sounds/363786/\n\n----\ntamba lambda\nhttps://freesound.org/people/zagi2/sounds/457744/\n'Tamba Lamba' by zagi2 is licenced under CC BY-NC 3.0\nhttps://creativecommons.org/licenses/by-nc/3.0/legalcode\nI have trimmed the audio.\n----"
+  "attribution": "woman-mask: https://www.pexels.com/photo/woman-wearing-face-mask-3902882/\nwoman-no-mask: https://www.pexels.com/photo/woman-wearing-face-mask-3902884/\nspider: https://publicdomainvectors.org/en/free-clipart/Spider-silhouette/66523.html\n----\nship\nCruise ship in holiday destination by alegri is licensed under CC-BY\nhttps://www.4freephotos.com/Cruise-ship-in-holiday-destination-7041.html\n----\n\nahh-eww: https://freesound.org/people/isabellaquintero97/sounds/363786/\n\n----\ntamba lambda\nhttps://freesound.org/people/zagi2/sounds/457744/\n'Tamba Lamba' by zagi2 is licensed under CC BY-NC 3.0\nhttps://creativecommons.org/licenses/by-nc/3.0/legalcode\nI have trimmed the audio.\n----"
 }

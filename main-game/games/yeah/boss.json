@@ -882,22 +882,6 @@
         {
           "triggers": [
             {
-              "WinStatus": "HasBeenLost"
-            }
-          ],
-          "actions": [
-            {
-              "SetProperty": {
-                "Timer": {
-                  "time": 90
-                }
-              }
-            }
-          ]
-        },
-        {
-          "triggers": [
-            {
               "WinStatus": "HasBeenWon"
             }
           ],
@@ -930,18 +914,18 @@
   "background": [],
   "asset_files": {
     "images": {
-      "watch-0": "watch-0.webp",
+      "watch-0": "watch-0.png",
       "stock-not-looking": "stock-not-looking.jpg",
-      "watch-5": "watch-5.webp",
+      "watch-5": "watch-5.png",
       "stock-stung": "stock-stung.jpg",
-      "watch-3": "watch-3.webp",
-      "watch-1": "watch-1.webp",
-      "watch-4": "watch-4.webp",
+      "watch-3": "watch-3.png",
+      "watch-1": "watch-1.png",
+      "watch-4": "watch-4.png",
       "stock-pointing": "stock-pointing.jpg",
       "wasp-crop-small": "wasp-crop-small.png",
       "stock-looking": "stock-looking.jpg",
       "stock-looking-2": "stock-looking-2.jpg",
-      "watch-2": "watch-2.webp"
+      "watch-2": "watch-2.png"
     },
     "audio": {
       "humming-2": "humming-2.ogg",

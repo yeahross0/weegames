@@ -668,7 +668,7 @@
       "titanic-2-crop": "titanic-2-crop.png",
       "white-pixel-2": "white-pixel-2.png",
       "lighthouse": "lighthouse.jpeg",
-      "candle-crop": "candle-crop.webp"
+      "candle-crop": "candle-crop.png"
     },
     "audio": {
       "go-away-crop-4": "go-away-crop-4.ogg",
@@ -687,5 +687,5 @@
     "Seconds": 4.0
   },
   "intro_text": "Turn Back",
-  "attribution": "titanic: https://openclipart.org/detail/87637/elegant-steam-liner\nlighthouse: https://www.pexels.com/photo/photo-of-lighthouse-on-seaside-during-daytime-3099153/\ncandle: https://pixabay.com/photos/candle-torch-flame-fire-light-1115769/\n\ngo-away: https://freesound.org/people/pyro13djt/sounds/331908/\n----\ncar crash:\nhttps://freesound.org/people/nsstudios/sounds/351513/\n'car crash' by nsstudios is licensed under CC BY-NC 3.0\nhttps://creativecommons.org/licenses/by-nc/3.0/\nI have trimmed the audio.\n----\n----\nsonata\nhttps://freesound.org/people/ShadyDave/sounds/326553/\nThe sonata (Piano loop) by ShadyDave is licenced under CC BY-NC 3.0\nhttps://creativecommons.org/licenses/by-nc/3.0/legalcode\nI trimmed the audio.\n----"
+  "attribution": "titanic: https://openclipart.org/detail/87637/elegant-steam-liner\nlighthouse: https://www.pexels.com/photo/photo-of-lighthouse-on-seaside-during-daytime-3099153/\ncandle: https://pixabay.com/photos/candle-torch-flame-fire-light-1115769/\n\ngo-away: https://freesound.org/people/pyro13djt/sounds/331908/\n----\ncar crash:\nhttps://freesound.org/people/nsstudios/sounds/351513/\n'car crash' by nsstudios is licensed under CC BY-NC 3.0\nhttps://creativecommons.org/licenses/by-nc/3.0/\nI have trimmed the audio.\n----\n----\nsonata\nhttps://freesound.org/people/ShadyDave/sounds/326553/\nThe sonata (Piano loop) by ShadyDave is licensed under CC BY-NC 3.0\nhttps://creativecommons.org/licenses/by-nc/3.0/legalcode\nI trimmed the audio.\n----"
 }

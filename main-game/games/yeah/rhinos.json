@@ -333,6 +333,27 @@
         {
           "triggers": [
             {
+              "DifficultyLevel": {
+                "level": 1
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 9999.0,
+                    "y": 9999.0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
               "Collision": {
                 "Object": {
                   "name": "person"
@@ -470,10 +491,10 @@
   ],
   "asset_files": {
     "images": {
-      "man-and-ball-man-with-woman-features-smaller": "man-and-ball-man-with-woman-features-smaller.webp",
-      "man-and-ball-ball-with-woman-features-burst": "man-and-ball-ball-with-woman-features-burst.webp",
-      "rhinos16x9": "rhinos16x9.webp",
-      "man-and-ball-ball-with-woman-features": "man-and-ball-ball-with-woman-features.webp"
+      "man-and-ball-man-with-woman-features-smaller": "man-and-ball-man-with-woman-features-smaller.png",
+      "man-and-ball-ball-with-woman-features-burst": "man-and-ball-ball-with-woman-features-burst.png",
+      "rhinos16x9": "rhinos16x9.jpg",
+      "man-and-ball-ball-with-woman-features": "man-and-ball-ball-with-woman-features.png"
     },
     "audio": {
       "kick": "kick.ogg",

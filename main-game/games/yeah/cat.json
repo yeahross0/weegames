@@ -202,6 +202,15 @@
                   }
                 }
               }
+            },
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "trophy-cat"
+                  }
+                }
+              }
             }
           ]
         }
@@ -269,18 +278,19 @@
   ],
   "asset_files": {
     "images": {
-      "cat background": "cat-background-smudged.webp",
-      "car": "car-cropped.webp",
+      "car": "car-cropped.png",
       "cat": "cat-transparent.png",
-      "trophy": "trophy-win.png"
+      "cat background": "cat-background-smudged.jpg",
+      "trophy": "trophy-win.png",
+      "trophy-cat": "trophy-cat.png"
     },
     "audio": {
-      "yay": "yippee-yay.ogg",
       "lawnmower": "lawnmower-crop.ogg",
-      "wippee": "yippee-wippee.ogg"
+      "wippee": "yippee-wippee.ogg",
+      "yay": "yippee-yay.ogg"
     },
-    "fonts": {},
-    "music": null
+    "music": null,
+    "fonts": {}
   },
   "length": {
     "Seconds": 5.0

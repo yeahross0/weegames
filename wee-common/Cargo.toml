@@ -8,4 +8,4 @@ edition = "2018"
 
 [dependencies]
 serde = { version = "1.0.111", features = ["derive"] }
-log = "0.4.8"
+#log = "0.4.8"

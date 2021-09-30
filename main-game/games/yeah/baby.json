@@ -499,9 +499,9 @@
   ],
   "asset_files": {
     "images": {
-      "man": "baby-blue-man.webp",
-      "baby": "baby-blue-baby.webp",
-      "trifle": "trifle-crop.webp",
+      "man": "baby-blue-man.png",
+      "baby": "baby-blue-baby.png",
+      "trifle": "trifle-crop.png",
       "venice": "venice.jpg"
     },
     "audio": {

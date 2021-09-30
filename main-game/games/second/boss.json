@@ -2579,7 +2579,6 @@
     },
     "audio": {
       "hit": "hit.ogg",
-      "found-something": "found-something.ogg",
       "power-up": "power-up.ogg",
       "rising": "rising.ogg",
       "jump": "jump.ogg",
@@ -2596,5 +2595,5 @@
   },
   "length": "Infinite",
   "intro_text": "Get 100'000 Points",
-  "attribution": "Images: https://pixelfrog-store.itch.io/pixel-adventure-1\n\n----\nMusic\nhttps://timbeek.itch.io/royalty-free-music-pack\n'8 Bit Platformer Loop' by Tim Beek is licenced under CC BY 4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\n----\n\nHit: https://jdwasabi.itch.io/8-bit-16-bit-sound-effects-pack\nFound Something: https://soundsbydane.itch.io/8-bit-sound-pack\nPower up: https://void1gaming.itch.io/halftone-sound-effects-pack-lite\nRising: https://jdwasabi.itch.io/8-bit-16-bit-sound-effects-pack\nJump: https://void1gaming.itch.io/halftone-sound-effects-pack-lite\nCharge: https://soundsbydane.itch.io/8-bit-sound-pack\nGong: https://jdwasabi.itch.io/8-bit-16-bit-sound-effects-pack\nAlarm: https://harvey656.itch.io/8-bit-game-sound-effects-collection\nCoin: https://void1gaming.itch.io/halftone-sound-effects-pack-lite"
+  "attribution": "Images: https://pixelfrog-store.itch.io/pixel-adventure-1\n\n----\nMusic\nhttps://timbeek.itch.io/royalty-free-music-pack\n'8 Bit Platformer Loop' by Tim Beek is licensed under CC BY 4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\n----\n\nHit: https://jdwasabi.itch.io/8-bit-16-bit-sound-effects-pack\nFound Something: https://soundsbydane.itch.io/8-bit-sound-pack\nPower up: https://void1gaming.itch.io/halftone-sound-effects-pack-lite\nRising: https://jdwasabi.itch.io/8-bit-16-bit-sound-effects-pack\nJump: https://void1gaming.itch.io/halftone-sound-effects-pack-lite\nCharge: https://soundsbydane.itch.io/8-bit-sound-pack\nGong: https://jdwasabi.itch.io/8-bit-16-bit-sound-effects-pack\nAlarm: https://harvey656.itch.io/8-bit-game-sound-effects-collection\nCoin: https://void1gaming.itch.io/halftone-sound-effects-pack-lite"
 }

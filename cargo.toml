@@ -1,5 +1,12 @@
 [workspace]
 
 members = [
-    "main-game", "wee-common", "wee", "sdlglue", "editor"
+    "main-game", "wee", "wee-common", "sdlglue", "editor"
 ]
+
+
+[profile.dev.package."*"]
+opt-level = 3
+
+[profile.release]
+lto = true

@@ -65,11 +65,6 @@
                   "Decrease": 1.0
                 }
               }
-            },
-            {
-              "PlaySound": {
-                "name": "damage"
-              }
             }
           ]
         },
@@ -141,6 +136,11 @@
                   },
                   "speed": "Slow"
                 }
+              }
+            },
+            {
+              "PlaySound": {
+                "name": "damage"
               }
             }
           ]
@@ -468,6 +468,46 @@
               }
             }
           ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 180
+                }
+              }
+            },
+            {
+              "WinStatus": "NotYetWon"
+            },
+            {
+              "WinStatus": "NotYetLost"
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "Loop",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "orange"
+                    }
+                  },
+                  {
+                    "Colour": {
+                      "r": 0.0,
+                      "g": 0.0,
+                      "b": 0.0,
+                      "a": 0.0
+                    }
+                  }
+                ],
+                "speed": "Normal"
+              }
+            }
+          ]
         }
       ]
     }
@@ -493,13 +533,13 @@
   ],
   "asset_files": {
     "images": {
+      "off-road-2": "off-road-2.png",
+      "off-road-3": "off-road-3.png",
+      "off-road-4": "off-road-4.png",
       "off-road-1": "off-road-1.png",
       "off-road-full": "off-road-full.png",
-      "off-road-4": "off-road-4.png",
-      "off-road-2": "off-road-2.png",
-      "background": "background.webp",
-      "off-road-3": "off-road-3.png",
-      "orange": "orange.png"
+      "orange": "orange.png",
+      "background": "background.png"
     },
     "audio": {
       "damage": "damage.ogg",
@@ -512,5 +552,5 @@
     "Seconds": 4.0
   },
   "intro_text": "Get that orange!",
-  "attribution": "bike: https://overcrafted.itch.io/free-paid-vehicle-car-sprites-\nbackground: https://raventale.itch.io/parallax-background\norange: https://ravenmore.itch.io/2d-pickups-pack\n\nDamage sound effect by BCKR licenced under CC BY 4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://bckr.itch.io/sdap\n\npower up sound effect: https://void1gaming.itch.io/halftone-sound-effects-pack-lite"
+  "attribution": "bike: https://overcrafted.itch.io/free-paid-vehicle-car-sprites-\nbackground: https://raventale.itch.io/parallax-background\norange: https://ravenmore.itch.io/2d-pickups-pack\n\nDamage sound effect by BCKR licensed under CC BY 4.0\nhttps://creativecommons.org/licenses/by/4.0/legalcode\nhttps://bckr.itch.io/sdap\n\npower up sound effect: https://void1gaming.itch.io/halftone-sound-effects-pack-lite"
 }
