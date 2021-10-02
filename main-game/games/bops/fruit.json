@@ -7,15 +7,15 @@
       "name": "Scene",
       "sprite": {
         "Image": {
-          "name": "man-looking"
+          "name": "man-looking-right"
         }
       },
       "position": {
-        "x": 800.0,
+        "x": 1200.0,
         "y": 450.0
       },
       "size": {
-        "width": 1600.0,
+        "width": 800.0,
         "height": 900.0
       },
       "angle": 0.0,
@@ -55,6 +55,32 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Scene Left",
+      "sprite": {
+        "Image": {
+          "name": "man-looking-left"
+        }
+      },
+      "position": {
+        "x": 400.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 800.0,
+        "height": 900.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
     },
     {
       "name": "Banana",
@@ -828,22 +854,23 @@
   "background": [],
   "asset_files": {
     "images": {
-      "thing-3": "thing-3.jpg",
-      "thing-done": "thing-done.jpg",
-      "pineapple-2": "pineapple-2.jpg",
-      "banana-1": "banana-1.jpg",
-      "thing-5": "thing-5.jpg",
-      "pineapple-done": "pineapple-done.jpg",
-      "banana-2": "banana-2.jpg",
-      "thing-2": "thing-2.jpg",
-      "man-looking": "man-looking.png",
       "pineapple-1": "pineapple-1.jpg",
-      "pineapple-3": "pineapple-3.jpg",
-      "thing-4": "thing-4.jpg",
-      "banana-done": "banana-done.jpg",
-      "banana-3": "banana-3.jpg",
+      "man-looking-right": "man-looking-right.jpg",
       "banana-4": "banana-4.jpg",
-      "thing-1": "thing-1.jpg"
+      "banana-1": "banana-1.jpg",
+      "thing-done": "thing-done.jpg",
+      "banana-3": "banana-3.jpg",
+      "pineapple-done": "pineapple-done.jpg",
+      "pineapple-2": "pineapple-2.jpg",
+      "thing-3": "thing-3.jpg",
+      "man-looking-left": "man-looking-left.png",
+      "thing-5": "thing-5.jpg",
+      "thing-2": "thing-2.jpg",
+      "pineapple-3": "pineapple-3.jpg",
+      "banana-done": "banana-done.jpg",
+      "thing-4": "thing-4.jpg",
+      "thing-1": "thing-1.jpg",
+      "banana-2": "banana-2.jpg"
     },
     "audio": {
       "munch2": "munch2.ogg",

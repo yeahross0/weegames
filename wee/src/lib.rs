@@ -90,7 +90,6 @@ mod tests {
     fn triggers_time_end_on_last_frame() {
         let mut game = Game::default();
         game.objects.insert("Simple".to_string(), Object::default());
-        //game.skip(DEFAULT_GAME_LENGTH_IN_FRAMES - 1);
         game.frames.ran += DEFAULT_GAME_LENGTH_IN_FRAMES - 1;
         assert!(Trigger::Time(When::End)
             .is_triggered(&game, "Simple", Mouse::default(), &mut TestRng::default())
@@ -848,7 +847,6 @@ impl Action {
                 resize: _resize,
                 justify,
             } => {
-                // TODO:
                 world_actions.push(WorldAction::DrawText {
                     name: name.to_string(),
                     text: DrawnText {
@@ -858,32 +856,6 @@ impl Action {
                         justify: *justify,
                     },
                 });
-                // let size = world.measure_text(text, font); // hmm
-                /*let left_before =
-                    game.objects[name].position.x - game.objects[name].size.width / 2.0;
-                let texture = Texture::text(&game.assets.fonts[font], &text, *colour)?;
-                match texture {
-                    Some(texture) => {
-                        if let TextResize::MatchText = resize {
-                            game.objects[name].size = Size {
-                                width: texture.width as f32,
-                                height: texture.height as f32,
-                            }
-                        }
-                        game.drawn_over_text.insert(name.to_string(), texture);
-                    }
-                    None => {
-                        game.drawn_over_text.remove(name);
-                    }
-                }
-                if let JustifyText::Left = justify {
-                    let left_now =
-                        game.objects[name].position.x - game.objects[name].size.width / 2.0;
-                    let position = game.objects[name].position;
-                    let offset = Vec2::new(left_before - left_now, 0.0);
-                    let motion = Motion::JumpTo(JumpLocation::Point(position + offset));
-                    game.objects[name].queued_motion.push(motion);
-                }*/
             }
             Action::SetProperty(PropertySetter::Angle(angle_setter)) => {
                 game.objects[name].angle = match angle_setter {
@@ -1614,12 +1586,6 @@ fn update_active_motion(
                     if game.objects[name].position.y + velocity.y > area.max.y {
                         velocity.y = -velocity.y.abs();
                     }
-                    /*if area.width() < game.objects[name].size.width {
-                        velocity.x = 0.0;
-                    }
-                    if area.height() < game.objects[name].size.height {
-                        velocity.y = 0.0;
-                    }*/
                     game.objects[name].position += velocity;
 
                     ActiveRoam::Reflect {
@@ -2748,11 +2714,6 @@ impl fmt::Display for Action {
                 resize: _resize,
                 justify,
             } => {
-                /*let change_size = if let TextResize::MatchText = resize {
-                    " changing this object's size to match the text size"
-                } else {
-                    ""
-                };*/
                 let change_size = "";
                 let colour = format!(
                     "red: {}, green: {}, blue: {}, alpha: {}",

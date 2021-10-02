@@ -210,10 +210,6 @@ pub async fn load_game_data(filename: impl AsRef<Path>) -> WeeResult<GameData> {
 struct LoadedGameData {
     data: GameData,
     assets: Assets,
-    /*images: Images,
-    music: Option<Music>,
-    sounds: Sounds,
-    fonts: Fonts,*/
 }
 
 impl LoadedGameData {
@@ -541,7 +537,7 @@ fn draw_game(
                         ),
                         JustifyText::Centre => WeeVec2::new(
                             object.position.x - size.width / 2.0,
-                            object.position.y + size.height / 2.0, // - size.height / 2.0,
+                            object.position.y + size.height / 2.0,
                         ),
                     };
                     let params = macroquad::text::TextParams {
@@ -1212,20 +1208,12 @@ impl MainGame<Prelude> {
     async fn start(mut self) -> WeeResult<MainGame<Interlude>> {
         log::debug!("prelude");
 
-        /*let game_loader = GameLoader {
-            directory: self.state.directory.clone(),
-            preloaded_games: self.games.clone(),
-            preloaded_assets: self.preloaded_assets.clone(),
-        };
-        let loaded_game = game_loader.load_system("prelude.json").await?;*/
-
         let (game, assets) = preloaded_game(
             &self.games,
             &self.preloaded_assets,
             &self.state.directory,
             "prelude.json",
         );
-        //let assets = &loaded_game.assets;
 
         let mut drawn_text = HashMap::new();
 
@@ -1304,15 +1292,6 @@ impl MainGame<Interlude> {
             &self.state.games_list.directory,
             "interlude.json",
         );
-
-        //let assets = Assets::load(&self.preloaded_assets, "interlude.json");
-
-        /*let game_loader = GameLoader {
-            directory: self.state.games_list.directory.clone(),
-            preloaded_games: self.games.clone(),
-            preloaded_assets: self.preloaded_assets.clone(),
-        };*/
-        //let loaded_game = game_loader.load_system("interlude.json");
 
         if self.state.progress.lives == 0 {
             {
@@ -1450,19 +1429,11 @@ impl MainGame<Interlude> {
 
             let mut game = Game::from_data(game_data, &mut self.rng)?;
 
-            //let resources_loading = game_loader.background_load(next_filename);
-
             let resources_loading = start_coroutine(async move {
                 let base_path = Path::new(&nf).parent().unwrap();
                 let resources = Assets::load(&new_game_data.asset_files, base_path).await;
                 dispenser::store(resources);
             });
-
-            /*let resources_loading = start_coroutine(async move {
-                let base_path = Path::new(next_filename).parent().unwrap();
-                let resources = Assets::load(&new_game_data.asset_files, base_path).await;
-                dispenser::store(loaded_game);
-            });*/
 
             let playback_rate = self.state.progress.playback_rate;
 
