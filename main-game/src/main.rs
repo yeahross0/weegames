@@ -979,8 +979,14 @@ impl MainGame<LoadingScreen> {
                 .collect()
         };
 
+        // TODO: Set played_games web storage var
         #[cfg(target_arch = "wasm32")]
-        let played_games = HashSet::new();
+        let played_games = {
+            let storage = &mut quad_storage::STORAGE.lock().unwrap();
+            let played_games = storage.get("played_games").unwrap();
+            played_games
+        };
+        //let played_games = HashSet::new();
 
         #[cfg(not(target_arch = "wasm32"))]
         let played_games: HashSet<String> = {
