@@ -1,5 +1,5 @@
 {
-  "format_version": "0.2",
+  "format_version": "0.3",
   "published": true,
   "game_type": "BossGame",
   "objects": [
@@ -855,7 +855,7 @@
         {
           "triggers": [
             {
-              "WinStatus": "HasBeenLost"
+              "WinStatus": "JustLost"
             }
           ],
           "actions": [
@@ -2479,7 +2479,7 @@
         {
           "triggers": [
             {
-              "WinStatus": "HasBeenWon"
+              "WinStatus": "JustWon"
             }
           ],
           "actions": [
@@ -2498,7 +2498,7 @@
         {
           "triggers": [
             {
-              "WinStatus": "HasBeenLost"
+              "WinStatus": "JustLost"
             }
           ],
           "actions": [

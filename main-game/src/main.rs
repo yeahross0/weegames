@@ -1678,10 +1678,7 @@ impl MainGame<Play> {
 
         self.state.assets.stop_sounds();
 
-        let has_won = matches!(
-            game.status.next_frame,
-            WinStatus::Won | WinStatus::HasBeenWon
-        );
+        let has_won = matches!(game.status.next_frame, WinStatus::Won | WinStatus::JustWon);
         self.state.progress.update(has_won, self.state.is_boss_game);
 
         Ok(QuittableGame::Continue(MainGame {

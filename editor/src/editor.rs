@@ -999,7 +999,7 @@ impl<'a, 'b, 'c> GameContainer<'a, 'b, 'c> {
     fn has_been_won(&self) -> bool {
         matches!(
             self.game.status.next_frame,
-            WinStatus::Won | WinStatus::HasBeenWon
+            WinStatus::Won | WinStatus::JustWon
         )
     }
 }
@@ -4117,8 +4117,8 @@ impl Choose for WinStatus {
             *self = match current_status {
                 0 => WinStatus::Won,
                 1 => WinStatus::Lost,
-                2 => WinStatus::HasBeenWon,
-                3 => WinStatus::HasBeenLost,
+                2 => WinStatus::JustWon,
+                3 => WinStatus::JustLost,
                 4 => WinStatus::NotYetWon,
                 5 => WinStatus::NotYetLost,
                 _ => unreachable!(),
