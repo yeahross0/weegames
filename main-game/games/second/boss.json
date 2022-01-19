@@ -2551,20 +2551,16 @@
   ],
   "asset_files": {
     "images": {
-      "terrain": "terrain.png",
       "099200": "099200.png",
       "Score": "Score.png",
       "terrain-left": "terrain-left.png",
       "099500": "099500.png",
       "terrain-centre": "terrain-centre.png",
-      "bg5": "bg5.png",
       "099400": "099400.png",
       "banana": "banana.png",
       "bg8": "bg8.png",
       "099800": "099800.png",
-      "bg7": "bg7.png",
       "099300": "099300.png",
-      "bg1": "bg1.png",
       "099100": "099100.png",
       "100000": "100000.png",
       "099900": "099900.png",
@@ -2573,7 +2569,6 @@
       "cherry-1": "cherry-1.png",
       "terrain-right": "terrain-right.png",
       "cherry-blue-1": "cherry-blue-1.png",
-      "bg6": "bg6.png",
       "099000": "099000.png",
       "ninja-idle-1": "ninja-idle-1.png"
     },
