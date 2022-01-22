@@ -611,6 +611,28 @@ impl GameOutput {
     }
 }
 
+// TODO: Temporary code to get around 144hz issue
+static mut LAST_MOUSE_STATE: ButtonState = ButtonState::Up;
+
+fn get_button_state() -> ButtonState {
+    unsafe {
+        LAST_MOUSE_STATE = if macroquad::input::is_mouse_button_down(MouseButton::Left) {
+            if LAST_MOUSE_STATE == ButtonState::Up || LAST_MOUSE_STATE == ButtonState::Release {
+                ButtonState::Press
+            } else {
+                ButtonState::Down
+            }
+        } else {
+            if LAST_MOUSE_STATE == ButtonState::Down || LAST_MOUSE_STATE == ButtonState::Press {
+                ButtonState::Release
+            } else {
+                ButtonState::Up
+            }
+        };
+        LAST_MOUSE_STATE
+    }
+}
+
 fn update_frame(
     game: &mut Game,
     assets: &Assets,
@@ -654,15 +676,7 @@ fn update_frame(
 
     let mouse = Mouse {
         position,
-        state: if macroquad::input::is_mouse_button_pressed(MouseButton::Left) {
-            ButtonState::Press
-        } else if macroquad::input::is_mouse_button_released(MouseButton::Left) {
-            ButtonState::Release
-        } else if macroquad::input::is_mouse_button_down(MouseButton::Left) {
-            ButtonState::Down
-        } else {
-            ButtonState::Up
-        },
+        state: get_button_state(),
     };
 
     let world_actions = game.update_frame(mouse, rng)?;
@@ -789,18 +803,40 @@ mod dispenser {
     }
 }
 
-fn frames_to_run(frames: FrameInfo, playback_rate: f32) -> u32 {
-    let mut num_frames = playback_rate.floor();
-    let remainder = playback_rate - num_frames;
-    if remainder != 0.0 {
-        let how_often_extra = 1.0 / remainder;
-        if (frames.steps_taken as f32 % how_often_extra).floor() == 0.0 {
-            num_frames += 1.0;
-        }
+trait FramesToRun {
+    fn to_run(&mut self) -> u32;
+    fn to_run_at_rate(&mut self, playback_rate: f32) -> u32;
+}
+
+impl FramesToRun for FrameInfo {
+    fn to_run(&mut self) -> u32 {
+        self.to_run_at_rate(1.0)
     }
-    match frames.remaining() {
-        FrameCount::Frames(remaining) => (num_frames as u32).min(remaining),
-        FrameCount::Infinite => num_frames as u32,
+    fn to_run_at_rate(&mut self, playback_rate: f32) -> u32 {
+        if self.steps_taken == 0 {
+            self.first_frame_time = macroquad::time::get_time();
+        }
+        let time = macroquad::time::get_time();
+        let total_time_elapsed = (time - self.first_frame_time) * 1000.0;
+        let frame_time = 1000.0 / 60.0;
+        let attempts = (total_time_elapsed / frame_time) as i64 - self.steps_taken as i64 + 1;
+        let mut frames_to_run = 0;
+        for _ in 0..attempts {
+            self.steps_taken += 1;
+            let mut num_frames = playback_rate.floor();
+            let remainder = playback_rate - num_frames;
+            if remainder != 0.0 {
+                let how_often_extra = 1.0 / remainder;
+                if (self.steps_taken as f32 % how_often_extra).floor() == 0.0 {
+                    num_frames += 1.0;
+                }
+            }
+            frames_to_run += num_frames as u32;
+        }
+        match self.remaining() {
+            FrameCount::Frames(remaining) => frames_to_run.min(remaining),
+            FrameCount::Infinite => frames_to_run,
+        }
     }
 }
 
@@ -1155,32 +1191,34 @@ impl MainGame<Menu> {
         let directory;
 
         'choose_mode_running: loop {
-            update_frame(&mut game, &assets, DEFAULT_PLAYBACK_RATE, &mut self.rng)?
-                .add_drawn_text(&mut drawn_text);
+            for _ in 0..game.frames.to_run() {
+                update_frame(&mut game, &assets, DEFAULT_PLAYBACK_RATE, &mut self.rng)?
+                    .add_drawn_text(&mut drawn_text);
 
-            draw_game(
-                &game,
-                &assets.images,
-                &assets.fonts,
-                &self.intro_font,
-                &drawn_text,
-            );
+                draw_game(
+                    &game,
+                    &assets.images,
+                    &assets.fonts,
+                    &self.intro_font,
+                    &drawn_text,
+                );
 
-            next_frame().await;
+                next_frame().await;
 
-            for (key, object) in game.objects.iter() {
-                if object.switch == SwitchState::SwitchedOn {
-                    let pattern = "OpenFolder:";
-                    if let Some(game_directory) = key.strip_prefix(pattern) {
-                        directory = game_directory.to_string();
-                        break 'choose_mode_running;
-                    }
-                    if key == "Shuffle" {
-                        directory = "games".to_string();
-                        break 'choose_mode_running;
-                    }
-                    if key == "Back" {
-                        std::process::exit(0)
+                for (key, object) in game.objects.iter() {
+                    if object.switch == SwitchState::SwitchedOn {
+                        let pattern = "OpenFolder:";
+                        if let Some(game_directory) = key.strip_prefix(pattern) {
+                            directory = game_directory.to_string();
+                            break 'choose_mode_running;
+                        }
+                        if key == "Shuffle" {
+                            directory = "games".to_string();
+                            break 'choose_mode_running;
+                        }
+                        if key == "Back" {
+                            std::process::exit(0)
+                        }
                     }
                 }
             }
@@ -1222,22 +1260,24 @@ impl MainGame<Prelude> {
         assets.music.play(DEFAULT_PLAYBACK_RATE, VOLUME);
 
         while game.frames.remaining() != FrameCount::Frames(0) {
-            if update_frame(&mut game, &assets, DEFAULT_PLAYBACK_RATE, &mut self.rng)?
-                .add_drawn_text(&mut drawn_text)
-                .should_end_early()
-            {
-                break;
+            for _ in 0..game.frames.to_run() {
+                if update_frame(&mut game, &assets, DEFAULT_PLAYBACK_RATE, &mut self.rng)?
+                    .add_drawn_text(&mut drawn_text)
+                    .should_end_early()
+                {
+                    break;
+                }
+
+                draw_game(
+                    &game,
+                    &assets.images,
+                    &assets.fonts,
+                    &self.intro_font,
+                    &drawn_text,
+                );
+
+                next_frame().await;
             }
-
-            draw_game(
-                &game,
-                &assets.images,
-                &assets.fonts,
-                &self.intro_font,
-                &drawn_text,
-            );
-
-            next_frame().await;
         }
 
         assets.stop_sounds();
@@ -1329,10 +1369,7 @@ impl MainGame<Interlude> {
                     break 'final_interlude_loop;
                 }
 
-                game.frames.steps_taken += 1;
-
-                let frames_to_run = frames_to_run(game.frames, playback_rate);
-                for _ in 0..frames_to_run {
+                for _ in 0..game.frames.to_run_at_rate(playback_rate) {
                     if update_frame(&mut game, &assets, playback_rate, &mut self.rng)?
                         .add_drawn_text(&mut drawn_text)
                         .should_end_early()
@@ -1460,10 +1497,7 @@ impl MainGame<Interlude> {
                 }
                 // while (game.frames.remaining() != FrameCount::Frames(0) && !game.end_early)
 
-                game.frames.steps_taken += 1;
-
-                let frames_to_run = frames_to_run(game.frames, playback_rate);
-                for _ in 0..frames_to_run {
+                for _ in 0..game.frames.to_run_at_rate(playback_rate) {
                     if update_frame(&mut game, &assets, playback_rate, &mut self.rng)?
                         .add_drawn_text(&mut drawn_text)
                         .should_end_early()
@@ -1555,26 +1589,28 @@ async fn run_pause_menu(
         let mut drawn_text = HashMap::new();
 
         while !is_pause_pressed() && !is_switched_on(&game.objects, "Continue") {
-            update_frame(&mut game, &pause_menu_assets, DEFAULT_PLAYBACK_RATE, rng)?
-                .add_drawn_text(&mut drawn_text);
+            for _ in 0..game.frames.to_run() {
+                update_frame(&mut game, &pause_menu_assets, DEFAULT_PLAYBACK_RATE, rng)?
+                    .add_drawn_text(&mut drawn_text);
 
-            draw_game(
-                &game,
-                &pause_menu_assets.images,
-                &pause_menu_assets.fonts,
-                intro_font,
-                &drawn_text,
-            );
+                draw_game(
+                    &game,
+                    &pause_menu_assets.images,
+                    &pause_menu_assets.fonts,
+                    intro_font,
+                    &drawn_text,
+                );
 
-            if is_switched_on(&game.objects, "Quit") {
-                pause_menu_assets.stop_sounds();
-                if paused_music {
-                    assets.music.resume();
+                if is_switched_on(&game.objects, "Quit") {
+                    pause_menu_assets.stop_sounds();
+                    if paused_music {
+                        assets.music.resume();
+                    }
+                    return Ok(true);
                 }
-                return Ok(true);
-            }
 
-            next_frame().await;
+                next_frame().await;
+            }
         }
 
         pause_menu_assets.stop_sounds();
@@ -1653,10 +1689,8 @@ impl MainGame<Play> {
                     rng: self.rng,
                 }));
             }
-            game.frames.steps_taken += 1;
 
-            let frames_to_run = frames_to_run(game.frames, playback_rate);
-            for _ in 0..frames_to_run {
+            for _ in 0..game.frames.to_run_at_rate(playback_rate) {
                 if update_frame(&mut game, &self.state.assets, playback_rate, &mut self.rng)?
                     .add_drawn_text(&mut drawn_text)
                     .should_end_early()
@@ -1798,22 +1832,24 @@ impl MainGame<GameOver> {
         assets.music.play(1.0, VOLUME);
 
         while game.frames.remaining() != FrameCount::Frames(0) {
-            if update_frame(&mut game, &assets, DEFAULT_PLAYBACK_RATE, &mut self.rng)?
-                .add_drawn_text(&mut drawn_text)
-                .should_end_early()
-            {
-                break;
+            for _ in 0..game.frames.to_run() {
+                if update_frame(&mut game, &assets, DEFAULT_PLAYBACK_RATE, &mut self.rng)?
+                    .add_drawn_text(&mut drawn_text)
+                    .should_end_early()
+                {
+                    break;
+                }
+
+                draw_game(
+                    &game,
+                    &assets.images,
+                    &assets.fonts,
+                    &self.intro_font,
+                    &drawn_text,
+                );
+
+                next_frame().await;
             }
-
-            draw_game(
-                &game,
-                &assets.images,
-                &assets.fonts,
-                &self.intro_font,
-                &drawn_text,
-            );
-
-            next_frame().await;
         }
 
         assets.stop_sounds();
@@ -1835,7 +1871,7 @@ fn window_conf() -> Conf {
         window_title: "Weegames".to_string(),
         window_width: 800,
         window_height: 450,
-        fullscreen: true,
+        fullscreen: false,
         ..Default::default()
     }
 }
