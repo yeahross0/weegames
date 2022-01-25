@@ -1,0 +1,913 @@
+{
+  "format_version": "0.2",
+  "published": false,
+  "game_type": "Minigame",
+  "objects": [
+    {
+      "name": "Pink",
+      "sprite": {
+        "Image": {
+          "name": "pink-idle"
+        }
+      },
+      "position": {
+        "x": 1250.0,
+        "y": 700.0
+      },
+      "size": {
+        "width": 162.5,
+        "height": 184.25
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "Loop",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "pink4"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "pink3"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "pink2"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "pink1"
+                    }
+                  }
+                ],
+                "speed": "Normal"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Leap",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "pink4"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Left",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Angle": {
+                      "Degrees": -20.000002
+                    }
+                  },
+                  "speed": "Slow"
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Accelerate": {
+                  "Continuous": {
+                    "direction": {
+                      "Direction": {
+                        "possible_directions": [
+                          "Down"
+                        ]
+                      }
+                    },
+                    "speed": "Slow"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Leap",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "pink3"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Left",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Angle": {
+                      "Degrees": -40.000004
+                    }
+                  },
+                  "speed": "Slow"
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Accelerate": {
+                  "Continuous": {
+                    "direction": {
+                      "Direction": {
+                        "possible_directions": [
+                          "Down"
+                        ]
+                      }
+                    },
+                    "speed": "Slow"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Leap",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "pink2"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Left",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Angle": {
+                      "Degrees": -60.000004
+                    }
+                  },
+                  "speed": "Slow"
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Accelerate": {
+                  "Continuous": {
+                    "direction": {
+                      "Direction": {
+                        "possible_directions": [
+                          "Down"
+                        ]
+                      }
+                    },
+                    "speed": "Slow"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Leap",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "pink1"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Left",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Angle": {
+                      "Degrees": -80.00001
+                    }
+                  },
+                  "speed": "Slow"
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Accelerate": {
+                  "Continuous": {
+                    "direction": {
+                      "Direction": {
+                        "possible_directions": [
+                          "Down"
+                        ]
+                      }
+                    },
+                    "speed": "Slow"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Left",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "FlipHorizontal": {
+                  "SetFlip": false
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Left",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "FlipHorizontal": {
+                  "SetFlip": true
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Leap",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "pink4"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Left",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Angle": {
+                      "Degrees": 20.000002
+                    }
+                  },
+                  "speed": "Slow"
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Accelerate": {
+                  "Continuous": {
+                    "direction": {
+                      "Direction": {
+                        "possible_directions": [
+                          "Down"
+                        ]
+                      }
+                    },
+                    "speed": "Slow"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Leap",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "pink3"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Left",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Angle": {
+                      "Degrees": 40.000004
+                    }
+                  },
+                  "speed": "Slow"
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Accelerate": {
+                  "Continuous": {
+                    "direction": {
+                      "Direction": {
+                        "possible_directions": [
+                          "Down"
+                        ]
+                      }
+                    },
+                    "speed": "Slow"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Leap",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "pink2"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Left",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Angle": {
+                      "Degrees": 60.000004
+                    }
+                  },
+                  "speed": "Slow"
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Accelerate": {
+                  "Continuous": {
+                    "direction": {
+                      "Direction": {
+                        "possible_directions": [
+                          "Down"
+                        ]
+                      }
+                    },
+                    "speed": "Slow"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Leap",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "pink1"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Left",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Angle": {
+                      "Degrees": 80.00001
+                    }
+                  },
+                  "speed": "Slow"
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Accelerate": {
+                  "Continuous": {
+                    "direction": {
+                      "Direction": {
+                        "possible_directions": [
+                          "Down"
+                        ]
+                      }
+                    },
+                    "speed": "Slow"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Leap",
+      "sprite": {
+        "Image": {
+          "name": "pink4"
+        }
+      },
+      "position": {
+        "x": 1200.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Leap",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "pink4"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "pink3"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Leap",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "pink3"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "pink2"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Leap",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "pink2"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "pink1"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Left",
+      "sprite": {
+        "Colour": {
+          "r": 0.5294118,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.11372549
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 1600.0,
+        "height": 1800.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Pink"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": -800.0,
+                      "y": 0.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "Left"
+                    }
+                  },
+                  "interaction": "Hover"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "background": [
+    {
+      "sprite": {
+        "Image": {
+          "name": "white-bg"
+        }
+      },
+      "area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 1600.0,
+          "y": 900.0
+        }
+      }
+    }
+  ],
+  "asset_files": {
+    "images": {
+      "pink2": "pink2.png",
+      "pink-idle": "pink-idle.png",
+      "pink3": "pink3.png",
+      "pink4": "pink4.png",
+      "pink1": "pink1.png",
+      "white-bg": "white-bg.png",
+      "pink": "pink.png"
+    },
+    "audio": {},
+    "music": null,
+    "fonts": {}
+  },
+  "length": {
+    "Seconds": 8.0
+  },
+  "intro_text": null,
+  "attribution": ""
+}
