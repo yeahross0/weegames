@@ -67,6 +67,11 @@ impl Editor {
         self.instruction_state = InstructionState::default();
         self.animation_editor.reset();
     }
+
+    fn switch_to_object(&mut self, index: usize) {
+        self.reset();
+        self.object_state.index = Some(index);
+    }
 }
 
 impl Default for Editor {
@@ -346,7 +351,7 @@ pub fn run<'a, 'b>(
                         if clicked {
                             log::info!("{}", object.name);
 
-                            editor.object_state.index = Some(i);
+                            editor.switch_to_object(i);
 
                             break;
                         }
@@ -1503,6 +1508,24 @@ fn main_window_show(
             .build(ui, || {
                 if ui.button(im_str!("Play"), NORMAL_BUTTON) {
                     play_game = true;
+
+                    {
+                        let old_published = game.published;
+                        game.published = false;
+                        let s = serde_json::to_string_pretty(&game);
+                        match s {
+                            Ok(s) => {
+                                std::fs::write("autosave.json", s)
+                                    .unwrap_or_else(|e| log::error!("{}", e));
+                                log::debug!("SAVED! {}", "autosave.json");
+                            }
+                            Err(error) => {
+                                log::error!("{}", error);
+                            }
+                        }
+
+                        game.published = old_published;
+                    }
                 }
 
                 {
@@ -2319,15 +2342,17 @@ fn edit_instruction_list<'a>(
                 InstructionFocus::Action { index } => index,
                 _ => unreachable!(),
             };
-            edit_action(
-                ui,
-                &mut instruction.actions[action_index],
-                editor,
-                assets,
-                asset_files,
-                &game_notes.object_names,
-                ttf_context,
-            );
+            if let Some(action) = instruction.actions.get_mut(action_index) {
+                edit_action(
+                    ui,
+                    action,
+                    editor,
+                    assets,
+                    asset_files,
+                    &game_notes.object_names,
+                    ttf_context,
+                );
+            }
         }
     }
 }
@@ -2876,6 +2901,7 @@ fn edit_objects_list(
                         }
                     }
                     object_state.index = Some(index);
+                    *instruction_state = InstructionState::default();
                 }
                 ObjectOperation::Delete { index } => {
                     objects.remove(index);
@@ -2884,6 +2910,7 @@ fn edit_objects_list(
                     } else {
                         object_state.index = Some(index.max(1) - 1);
                     }
+                    *instruction_state = InstructionState::default();
                 }
                 _ => {}
             }
@@ -3470,7 +3497,7 @@ impl<'a> ImguiFrame<'a> {
 }
 
 fn show_image_tooltip(ui: &imgui::Ui, images: &Images, image_name: &str) {
-    if ui.is_item_hovered() {
+    if ui.is_item_hovered() && images.contains_key(image_name) {
         ui.tooltip(|| {
             // TODO: What if doesn't exist
             let texture_id = images[image_name].id;
