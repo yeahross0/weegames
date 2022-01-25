@@ -790,6 +790,20 @@
           "actions": [
             "Win"
           ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 721
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose"
+          ]
         }
       ]
     },
@@ -808,12 +822,21 @@
         "y": 450.0
       },
       "size": {
-        "width": 50.0,
-        "height": 50.0
+        "width": 100.0,
+        "height": 100.0
       },
       "angle": 0.0,
       "origin": null,
-      "collision_area": null,
+      "collision_area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 100.0,
+          "y": 100.0
+        }
+      },
       "flip": {
         "horizontal": false,
         "vertical": false
@@ -829,6 +852,35 @@
                 "JumpTo": {
                   "Object": {
                     "name": "Bird"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "WinStatus": "HasBeenLost"
+            },
+            {
+              "CheckProperty": {
+                "name": "Art Bird",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Colour": {
+                    "r": 1.0,
+                    "g": 0.0,
+                    "b": 0.0,
+                    "a": 0.5019608
                   }
                 }
               }
@@ -852,12 +904,21 @@
         "y": 450.0
       },
       "size": {
-        "width": 50.0,
-        "height": 50.0
+        "width": 100.0,
+        "height": 100.0
       },
       "angle": 0.0,
       "origin": null,
-      "collision_area": null,
+      "collision_area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 100.0,
+          "y": 100.0
+        }
+      },
       "flip": {
         "horizontal": false,
         "vertical": false
@@ -873,6 +934,35 @@
                 "JumpTo": {
                   "Object": {
                     "name": "Pink"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "WinStatus": "HasBeenLost"
+            },
+            {
+              "CheckProperty": {
+                "name": "Art Pink",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Colour": {
+                    "r": 1.0,
+                    "g": 0.0,
+                    "b": 0.0,
+                    "a": 0.5019608
                   }
                 }
               }
@@ -896,12 +986,21 @@
         "y": 450.0
       },
       "size": {
-        "width": 50.0,
-        "height": 50.0
+        "width": 100.0,
+        "height": 100.0
       },
       "angle": 0.0,
       "origin": null,
-      "collision_area": null,
+      "collision_area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 100.0,
+          "y": 100.0
+        }
+      },
       "flip": {
         "horizontal": false,
         "vertical": false
@@ -917,6 +1016,35 @@
                 "JumpTo": {
                   "Object": {
                     "name": "Leaf"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "WinStatus": "HasBeenLost"
+            },
+            {
+              "CheckProperty": {
+                "name": "Art Leaf",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Colour": {
+                    "r": 1.0,
+                    "g": 0.0,
+                    "b": 0.0,
+                    "a": 0.5019608
                   }
                 }
               }
@@ -947,23 +1075,23 @@
   ],
   "asset_files": {
     "images": {
-      "frame5": "frame5.png",
-      "white-bg": "white-bg.png",
-      "frame7": "frame7.png",
-      "flappy": "flappy.png",
-      "paper-leaf": "paper-leaf.png",
-      "frame-bg": "frame-bg.png",
-      "frame-bg4": "frame-bg4.png",
-      "frame8": "frame8.png",
       "frame": "frame.jpg",
-      "pink": "pink.png",
-      "white-bg2": "white-bg2.jpg",
-      "frame2": "frame2.png",
-      "frame-bg3": "frame-bg3.png",
-      "frame-bg2": "frame-bg2.png",
+      "frame7": "frame7.png",
+      "white-bg": "white-bg.png",
+      "frame-bg4": "frame-bg4.png",
       "frame9": "frame9.png",
+      "pink-idle": "pink-idle.png",
+      "white-bg2": "white-bg2.jpg",
+      "frame8": "frame8.png",
+      "frame-bg3": "frame-bg3.png",
       "frame3": "frame3.png",
-      "pink-idle": "pink-idle.png"
+      "frame-bg2": "frame-bg2.png",
+      "frame-bg": "frame-bg.png",
+      "frame5": "frame5.png",
+      "pink": "pink.png",
+      "frame2": "frame2.png",
+      "paper-leaf": "paper-leaf.png",
+      "flappy": "flappy.png"
     },
     "audio": {},
     "music": null,
