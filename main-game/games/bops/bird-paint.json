@@ -4,361 +4,6 @@
   "game_type": "BossGame",
   "objects": [
     {
-      "name": "Bird",
-      "sprite": {
-        "Image": {
-          "name": "flappy"
-        }
-      },
-      "position": {
-        "x": 800.0,
-        "y": 280.0
-      },
-      "size": {
-        "width": 364.25,
-        "height": 208.0
-      },
-      "angle": 0.0,
-      "origin": null,
-      "collision_area": null,
-      "flip": {
-        "horizontal": false,
-        "vertical": false
-      },
-      "layer": 3,
-      "switch": "Off",
-      "instructions": [
-        {
-          "triggers": [
-            {
-              "Input": {
-                "Mouse": {
-                  "over": {
-                    "Object": {
-                      "name": "Bird"
-                    }
-                  },
-                  "interaction": {
-                    "Button": {
-                      "state": "Press"
-                    }
-                  }
-                }
-              }
-            }
-          ],
-          "actions": [
-            {
-              "SetProperty": {
-                "Switch": "On"
-              }
-            }
-          ]
-        },
-        {
-          "triggers": [
-            {
-              "Input": {
-                "Mouse": {
-                  "over": "Anywhere",
-                  "interaction": {
-                    "Button": {
-                      "state": "Release"
-                    }
-                  }
-                }
-              }
-            }
-          ],
-          "actions": [
-            {
-              "SetProperty": {
-                "Switch": "Off"
-              }
-            }
-          ]
-        },
-        {
-          "triggers": [
-            {
-              "CheckProperty": {
-                "name": "Bird",
-                "check": {
-                  "Switch": "On"
-                }
-              }
-            }
-          ],
-          "actions": [
-            {
-              "Motion": {
-                "JumpTo": "Mouse"
-              }
-            }
-          ]
-        },
-        {
-          "triggers": [],
-          "actions": [
-            {
-              "SetProperty": {
-                "Size": {
-                  "Value": {
-                    "width": 182.0,
-                    "height": 104.0
-                  }
-                }
-              }
-            }
-          ]
-        },
-        {
-          "triggers": [
-            {
-              "Collision": {
-                "Object": {
-                  "name": "Left Frame"
-                }
-              }
-            }
-          ],
-          "actions": [
-            {
-              "SetProperty": {
-                "Size": {
-                  "Value": {
-                    "width": 364.0,
-                    "height": 208.0
-                  }
-                }
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "Left Frame",
-      "sprite": {
-        "Image": {
-          "name": "frame8"
-        }
-      },
-      "position": {
-        "x": 350.0,
-        "y": 450.0
-      },
-      "size": {
-        "width": 572.0,
-        "height": 747.0
-      },
-      "angle": 0.0,
-      "origin": null,
-      "collision_area": {
-        "min": {
-          "x": 0.0,
-          "y": 0.0
-        },
-        "max": {
-          "x": 520.0,
-          "y": 700.0
-        }
-      },
-      "flip": {
-        "horizontal": false,
-        "vertical": false
-      },
-      "layer": 0,
-      "switch": "Off",
-      "instructions": []
-    },
-    {
-      "name": "Right Frame",
-      "sprite": {
-        "Image": {
-          "name": "frame5"
-        }
-      },
-      "position": {
-        "x": 1250.0,
-        "y": 450.0
-      },
-      "size": {
-        "width": 572.0,
-        "height": 747.0
-      },
-      "angle": 0.0,
-      "origin": null,
-      "collision_area": null,
-      "flip": {
-        "horizontal": false,
-        "vertical": false
-      },
-      "layer": 0,
-      "switch": "Off",
-      "instructions": []
-    },
-    {
-      "name": "Frame Bg",
-      "sprite": {
-        "Image": {
-          "name": "frame-bg4"
-        }
-      },
-      "position": {
-        "x": 350.0,
-        "y": 450.0
-      },
-      "size": {
-        "width": 572.0,
-        "height": 747.0
-      },
-      "angle": 0.0,
-      "origin": null,
-      "collision_area": null,
-      "flip": {
-        "horizontal": false,
-        "vertical": false
-      },
-      "layer": 2,
-      "switch": "Off",
-      "instructions": []
-    },
-    {
-      "name": "Pink",
-      "sprite": {
-        "Image": {
-          "name": "pink"
-        }
-      },
-      "position": {
-        "x": 800.0,
-        "y": 550.0
-      },
-      "size": {
-        "width": 131.0,
-        "height": 184.25
-      },
-      "angle": 0.0,
-      "origin": null,
-      "collision_area": null,
-      "flip": {
-        "horizontal": false,
-        "vertical": false
-      },
-      "layer": 3,
-      "switch": "Off",
-      "instructions": [
-        {
-          "triggers": [
-            {
-              "Input": {
-                "Mouse": {
-                  "over": {
-                    "Object": {
-                      "name": "Pink"
-                    }
-                  },
-                  "interaction": {
-                    "Button": {
-                      "state": "Press"
-                    }
-                  }
-                }
-              }
-            }
-          ],
-          "actions": [
-            {
-              "SetProperty": {
-                "Switch": "On"
-              }
-            }
-          ]
-        },
-        {
-          "triggers": [
-            {
-              "Input": {
-                "Mouse": {
-                  "over": "Anywhere",
-                  "interaction": {
-                    "Button": {
-                      "state": "Release"
-                    }
-                  }
-                }
-              }
-            }
-          ],
-          "actions": [
-            {
-              "SetProperty": {
-                "Switch": "Off"
-              }
-            }
-          ]
-        },
-        {
-          "triggers": [
-            {
-              "CheckProperty": {
-                "name": "Pink",
-                "check": {
-                  "Switch": "On"
-                }
-              }
-            }
-          ],
-          "actions": [
-            {
-              "Motion": {
-                "JumpTo": "Mouse"
-              }
-            }
-          ]
-        },
-        {
-          "triggers": [],
-          "actions": [
-            {
-              "SetProperty": {
-                "Size": {
-                  "Value": {
-                    "width": 131.0,
-                    "height": 184.0
-                  }
-                }
-              }
-            }
-          ]
-        },
-        {
-          "triggers": [
-            {
-              "Collision": {
-                "Object": {
-                  "name": "Left Frame"
-                }
-              }
-            }
-          ],
-          "actions": [
-            {
-              "SetProperty": {
-                "Size": {
-                  "Value": {
-                    "width": 262.0,
-                    "height": 368.0
-                  }
-                }
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
       "name": "Leaf",
       "sprite": {
         "Image": {
@@ -464,6 +109,13 @@
                   }
                 }
               }
+            },
+            {
+              "SetProperty": {
+                "Layer": {
+                  "Value": 3
+                }
+              }
             }
           ]
         },
@@ -487,10 +139,504 @@
                   }
                 }
               }
+            },
+            {
+              "SetProperty": {
+                "Layer": {
+                  "Value": 7
+                }
+              }
             }
           ]
         }
       ]
+    },
+    {
+      "name": "Pink",
+      "sprite": {
+        "Image": {
+          "name": "pink"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 550.0
+      },
+      "size": {
+        "width": 131.0,
+        "height": 184.25
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 4,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "Pink"
+                    }
+                  },
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Release"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Pink",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": "Mouse"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Size": {
+                  "Value": {
+                    "width": 131.0,
+                    "height": 184.0
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Layer": {
+                  "Value": 4
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Left Frame"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Size": {
+                  "Value": {
+                    "width": 262.0,
+                    "height": 368.0
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Layer": {
+                  "Value": 8
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Leaf",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Bird",
+      "sprite": {
+        "Image": {
+          "name": "flappy"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 280.0
+      },
+      "size": {
+        "width": 364.25,
+        "height": 208.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 5,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "Bird"
+                    }
+                  },
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Leaf",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Pink",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Release"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Bird",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": "Mouse"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Size": {
+                  "Value": {
+                    "width": 182.0,
+                    "height": 104.0
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Layer": {
+                  "Value": 5
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Left Frame"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Size": {
+                  "Value": {
+                    "width": 364.0,
+                    "height": 208.0
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Layer": {
+                  "Value": 9
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Leaf",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Pink",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Left Frame",
+      "sprite": {
+        "Image": {
+          "name": "frame8"
+        }
+      },
+      "position": {
+        "x": 350.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 572.0,
+        "height": 747.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 30.0,
+          "y": 30.0
+        },
+        "max": {
+          "x": 520.0,
+          "y": 700.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": []
+        }
+      ]
+    },
+    {
+      "name": "Right Frame",
+      "sprite": {
+        "Image": {
+          "name": "frame8"
+        }
+      },
+      "position": {
+        "x": 1250.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 572.0,
+        "height": 747.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "Frame Bg",
+      "sprite": {
+        "Image": {
+          "name": "frame-bg4"
+        }
+      },
+      "position": {
+        "x": 350.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 572.0,
+        "height": 747.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "Frame Bg 2",
+      "sprite": {
+        "Image": {
+          "name": "frame-bg4"
+        }
+      },
+      "position": {
+        "x": 1250.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 572.0,
+        "height": 747.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
     },
     {
       "name": "Art Bird",
@@ -523,15 +669,16 @@
         "horizontal": false,
         "vertical": false
       },
-      "layer": 0,
+      "layer": 6,
       "switch": "Off",
       "instructions": [
         {
           "triggers": [
             {
-              "Time": {
-                "Exact": {
-                  "time": 720
+              "CheckProperty": {
+                "name": "Submit",
+                "check": {
+                  "Switch": "SwitchedOn"
                 }
               }
             }
@@ -569,6 +716,31 @@
               }
             }
           ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Area": {
+                    "min": {
+                      "x": 1100.0,
+                      "y": 200.0
+                    },
+                    "max": {
+                      "x": 1400.0,
+                      "y": 300.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
         }
       ]
     },
@@ -603,15 +775,16 @@
         "horizontal": false,
         "vertical": false
       },
-      "layer": 0,
+      "layer": 6,
       "switch": "Off",
       "instructions": [
         {
           "triggers": [
             {
-              "Time": {
-                "Exact": {
-                  "time": 720
+              "CheckProperty": {
+                "name": "Submit",
+                "check": {
+                  "Switch": "SwitchedOn"
                 }
               }
             }
@@ -649,6 +822,31 @@
               }
             }
           ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Area": {
+                    "min": {
+                      "x": 1150.0,
+                      "y": 500.0
+                    },
+                    "max": {
+                      "x": 1400.0,
+                      "y": 700.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
         }
       ]
     },
@@ -683,15 +881,16 @@
         "horizontal": false,
         "vertical": false
       },
-      "layer": 0,
+      "layer": 6,
       "switch": "Off",
       "instructions": [
         {
           "triggers": [
             {
-              "Time": {
-                "Exact": {
-                  "time": 720
+              "CheckProperty": {
+                "name": "Submit",
+                "check": {
+                  "Switch": "SwitchedOn"
                 }
               }
             }
@@ -726,6 +925,31 @@
             {
               "SetProperty": {
                 "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Area": {
+                    "min": {
+                      "x": 1150.0,
+                      "y": 690.0
+                    },
+                    "max": {
+                      "x": 1350.0,
+                      "y": 710.0
+                    }
+                  }
+                }
               }
             }
           ]
@@ -794,10 +1018,30 @@
         {
           "triggers": [
             {
-              "Time": {
-                "Exact": {
-                  "time": 721
+              "CheckProperty": {
+                "name": "Submit",
+                "check": {
+                  "Switch": "SwitchedOn"
                 }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Timer": {
+                  "time": 1
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Win",
+                "check": "Timer"
               }
             }
           ],
@@ -814,7 +1058,7 @@
           "r": 0.0,
           "g": 0.0,
           "b": 0.0,
-          "a": 0.25882354
+          "a": 0.0
         }
       },
       "position": {
@@ -876,11 +1120,8 @@
             {
               "SetProperty": {
                 "Sprite": {
-                  "Colour": {
-                    "r": 1.0,
-                    "g": 0.0,
-                    "b": 0.0,
-                    "a": 0.5019608
+                  "Image": {
+                    "name": "red"
                   }
                 }
               }
@@ -896,7 +1137,7 @@
           "r": 0.0,
           "g": 0.0,
           "b": 0.0,
-          "a": 0.25882354
+          "a": 0.0
         }
       },
       "position": {
@@ -958,11 +1199,8 @@
             {
               "SetProperty": {
                 "Sprite": {
-                  "Colour": {
-                    "r": 1.0,
-                    "g": 0.0,
-                    "b": 0.0,
-                    "a": 0.5019608
+                  "Image": {
+                    "name": "red"
                   }
                 }
               }
@@ -978,7 +1216,7 @@
           "r": 0.0,
           "g": 0.0,
           "b": 0.0,
-          "a": 0.25882354
+          "a": 0.0
         }
       },
       "position": {
@@ -1040,14 +1278,360 @@
             {
               "SetProperty": {
                 "Sprite": {
-                  "Colour": {
-                    "r": 1.0,
-                    "g": 0.0,
-                    "b": 0.0,
-                    "a": 0.5019608
+                  "Image": {
+                    "name": "red"
                   }
                 }
               }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Submit",
+      "sprite": {
+        "Image": {
+          "name": "submit7"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 51.0
+      },
+      "size": {
+        "width": 477.49997,
+        "height": 130.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "submit7"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "Submit"
+                    }
+                  },
+                  "interaction": "Hover"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "submit5"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "Submit"
+                    }
+                  },
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 720
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Submit",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Timer": {
+                  "time": 240
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Submit",
+                "check": "Timer"
+              }
+            }
+          ],
+          "actions": [
+            "EndEarly"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "White bg",
+      "sprite": {
+        "Image": {
+          "name": "white-bg3"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 1600.0,
+        "height": 900.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 6,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "Time",
+      "sprite": {
+        "Image": {
+          "name": "wheel1"
+        }
+      },
+      "position": {
+        "x": 1520.0,
+        "y": 850.0
+      },
+      "size": {
+        "width": 159.0,
+        "height": 146.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "PlayOnce",
+                "sprites": [
+                  {
+                    "Image": {
+                      "name": "wheel1"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "wheel2"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "wheel3"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "wheel4"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "wheel5"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "wheel6"
+                    }
+                  },
+                  {
+                    "Image": {
+                      "name": "wheel7"
+                    }
+                  }
+                ],
+                "speed": {
+                  "Value": 102.0
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Submit",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "wheel7"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Art",
+      "sprite": {
+        "Image": {
+          "name": "art"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 1300.0
+      },
+      "size": {
+        "width": 1016.0,
+        "height": 709.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "WinStatus": "HasBeenWon"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Up"
+                      ]
+                    }
+                  },
+                  "speed": "Normal"
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Timer": {
+                  "time": 60
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Art",
+                "check": "Timer"
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": "Stop"
             }
           ]
         }
@@ -1075,23 +1659,41 @@
   ],
   "asset_files": {
     "images": {
-      "frame": "frame.jpg",
-      "frame7": "frame7.png",
-      "white-bg": "white-bg.png",
-      "frame-bg4": "frame-bg4.png",
       "frame9": "frame9.png",
+      "submit7": "submit7.png",
       "pink-idle": "pink-idle.png",
-      "white-bg2": "white-bg2.jpg",
-      "frame8": "frame8.png",
-      "frame-bg3": "frame-bg3.png",
+      "frame-bg4": "frame-bg4.png",
+      "wheel2": "wheel2.png",
+      "wheel3": "wheel3.png",
       "frame3": "frame3.png",
-      "frame-bg2": "frame-bg2.png",
+      "submit3": "submit3.png",
+      "red": "red.png",
+      "wheel1": "wheel1.png",
       "frame-bg": "frame-bg.png",
-      "frame5": "frame5.png",
-      "pink": "pink.png",
-      "frame2": "frame2.png",
+      "wheel5": "wheel5.png",
+      "art": "art.png",
+      "white-bg": "white-bg.png",
+      "frame-bg3": "frame-bg3.png",
+      "submit4": "submit4.png",
+      "frame": "frame.jpg",
+      "flappy": "flappy.png",
+      "frame-bg2": "frame-bg2.png",
       "paper-leaf": "paper-leaf.png",
-      "flappy": "flappy.png"
+      "submit": "submit.png",
+      "submit6": "submit6.png",
+      "pink": "pink.png",
+      "frame7": "frame7.png",
+      "frame5": "frame5.png",
+      "wheel7": "wheel7.png",
+      "wheel6": "wheel6.png",
+      "submit5": "submit5.png",
+      "white-bg2": "white-bg2.jpg",
+      "pink-egg": "pink-egg.png",
+      "flappy-transp": "flappy-transp.png",
+      "frame2": "frame2.png",
+      "wheel4": "wheel4.png",
+      "frame8": "frame8.png",
+      "white-bg3": "white-bg3.png"
     },
     "audio": {},
     "music": null,

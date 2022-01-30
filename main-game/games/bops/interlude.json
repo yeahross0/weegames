@@ -1,0 +1,163 @@
+{
+  "format_version": "0.2",
+  "published": false,
+  "game_type": "Other",
+  "objects": [
+    {
+      "name": "Bird",
+      "sprite": {
+        "Image": {
+          "name": "flappy"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 500.0
+      },
+      "size": {
+        "width": 728.5,
+        "height": 416.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": "Mouse"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "1",
+      "sprite": {
+        "Image": {
+          "name": "strawberry"
+        }
+      },
+      "position": {
+        "x": 200.0,
+        "y": 200.0
+      },
+      "size": {
+        "width": 211.0,
+        "height": 280.5
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "2",
+      "sprite": {
+        "Image": {
+          "name": "strawberry"
+        }
+      },
+      "position": {
+        "x": 600.0,
+        "y": 200.0
+      },
+      "size": {
+        "width": 211.0,
+        "height": 280.5
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "3",
+      "sprite": {
+        "Image": {
+          "name": "strawberry"
+        }
+      },
+      "position": {
+        "x": 1000.0,
+        "y": 200.0
+      },
+      "size": {
+        "width": 211.0,
+        "height": 280.5
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "4",
+      "sprite": {
+        "Image": {
+          "name": "strawberry"
+        }
+      },
+      "position": {
+        "x": 1400.0,
+        "y": 200.0
+      },
+      "size": {
+        "width": 211.0,
+        "height": 280.5
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": []
+    }
+  ],
+  "background": [],
+  "asset_files": {
+    "images": {
+      "flappy": "flappy.png",
+      "strawberry": "strawberry.png"
+    },
+    "audio": {},
+    "music": null,
+    "fonts": {}
+  },
+  "length": {
+    "Seconds": 4.0
+  },
+  "intro_text": null,
+  "attribution": ""
+}
