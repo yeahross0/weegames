@@ -806,6 +806,8 @@ mod dispenser {
 trait FramesToRun {
     fn to_run(&mut self) -> u32;
     fn to_run_at_rate(&mut self, playback_rate: f32) -> u32;
+    fn to_run_forever(&mut self) -> u32;
+    fn frames_to_run(&mut self, playback_rate: f32) -> u32;
 }
 
 impl FramesToRun for FrameInfo {
@@ -813,29 +815,38 @@ impl FramesToRun for FrameInfo {
         self.to_run_at_rate(1.0)
     }
     fn to_run_at_rate(&mut self, playback_rate: f32) -> u32 {
-        if self.steps_taken == 0 {
-            self.first_frame_time = macroquad::time::get_time();
-        }
-        let time = macroquad::time::get_time();
-        let total_time_elapsed = (time - self.first_frame_time) * 1000.0;
-        let frame_time = 1000.0 / 60.0;
-        let attempts = (total_time_elapsed / frame_time) as i64 - self.steps_taken as i64 + 1;
-        let mut frames_to_run = 0;
-        for _ in 0..attempts {
-            self.steps_taken += 1;
-            let mut num_frames = playback_rate.floor();
-            let remainder = playback_rate - num_frames;
-            if remainder != 0.0 {
-                let how_often_extra = 1.0 / remainder;
-                if (self.steps_taken as f32 % how_often_extra).floor() == 0.0 {
-                    num_frames += 1.0;
-                }
-            }
-            frames_to_run += num_frames as u32;
-        }
+        let frames_to_run = self.frames_to_run(playback_rate);
+
         match self.remaining() {
             FrameCount::Frames(remaining) => frames_to_run.min(remaining),
             FrameCount::Infinite => frames_to_run,
+        }
+    }
+    fn to_run_forever(&mut self) -> u32 {
+        self.frames_to_run(1.0)
+    }
+
+    fn frames_to_run(&mut self, playback_rate: f32) -> u32 {
+        if self.steps_taken == 0 {
+            self.previous_frame_time = macroquad::time::get_time();
+            self.steps_taken = 1;
+        }
+        let time = macroquad::time::get_time();
+        self.total_time_elapsed += time - self.previous_frame_time;
+        self.previous_frame_time = time;
+        let total_ms_elapsed = self.total_time_elapsed * 1000.0;
+        let frame_time = (1000.0 / 60.0) / playback_rate as f64;
+        let expected_frame_count = (total_ms_elapsed / frame_time) as i64 + 1;
+        let frames_to_run = expected_frame_count - self.ran as i64;
+
+        if frames_to_run == 0 {
+            1
+        } else if frames_to_run >= 2 {
+            frames_to_run as u32 - 1
+        } else if frames_to_run < 0 {
+            0
+        } else {
+            frames_to_run as u32
         }
     }
 }
@@ -1191,34 +1202,33 @@ impl MainGame<Menu> {
         let directory;
 
         'choose_mode_running: loop {
-            for _ in 0..game.frames.to_run() {
+            for _ in 0..game.frames.to_run_forever() {
                 update_frame(&mut game, &assets, DEFAULT_PLAYBACK_RATE, &mut self.rng)?
                     .add_drawn_text(&mut drawn_text);
+            }
+            draw_game(
+                &game,
+                &assets.images,
+                &assets.fonts,
+                &self.intro_font,
+                &drawn_text,
+            );
 
-                draw_game(
-                    &game,
-                    &assets.images,
-                    &assets.fonts,
-                    &self.intro_font,
-                    &drawn_text,
-                );
+            next_frame().await;
 
-                next_frame().await;
-
-                for (key, object) in game.objects.iter() {
-                    if object.switch == SwitchState::SwitchedOn {
-                        let pattern = "OpenFolder:";
-                        if let Some(game_directory) = key.strip_prefix(pattern) {
-                            directory = game_directory.to_string();
-                            break 'choose_mode_running;
-                        }
-                        if key == "Shuffle" {
-                            directory = "games".to_string();
-                            break 'choose_mode_running;
-                        }
-                        if key == "Back" {
-                            std::process::exit(0)
-                        }
+            for (key, object) in game.objects.iter() {
+                if object.switch == SwitchState::SwitchedOn {
+                    let pattern = "OpenFolder:";
+                    if let Some(game_directory) = key.strip_prefix(pattern) {
+                        directory = game_directory.to_string();
+                        break 'choose_mode_running;
+                    }
+                    if key == "Shuffle" {
+                        directory = "games".to_string();
+                        break 'choose_mode_running;
+                    }
+                    if key == "Back" {
+                        std::process::exit(0)
                     }
                 }
             }
@@ -1365,7 +1375,7 @@ impl MainGame<Interlude> {
             let mut drawn_text = HashMap::new();
 
             'final_interlude_loop: while game.frames.remaining() != FrameCount::Frames(0) {
-                if self.should_quit(&assets).await? {
+                if self.should_quit(&assets, &mut game.frames).await? {
                     break 'final_interlude_loop;
                 }
 
@@ -1481,7 +1491,7 @@ impl MainGame<Interlude> {
             'interlude_loop: while (game.frames.remaining() != FrameCount::Frames(0))
                 || !resources_loading.is_done()
             {
-                if self.should_quit(&assets).await? {
+                if self.should_quit(&assets, &mut game.frames).await? {
                     return Ok(NextStep::Finished(MainGame {
                         state: GameOver {
                             progress: self.state.progress,
@@ -1555,6 +1565,7 @@ async fn run_pause_menu(
     rng: &mut MacroRng,
     intro_font: &Font,
     assets: &Assets,
+    frames: &mut FrameInfo,
 ) -> WeeResult<bool> {
     #[cfg(target_arch = "wasm32")]
     let is_pause_pressed = || macroquad::input::is_key_pressed(macroquad::input::KeyCode::P);
@@ -1588,18 +1599,14 @@ async fn run_pause_menu(
 
         let mut drawn_text = HashMap::new();
 
-        while !is_pause_pressed() && !is_switched_on(&game.objects, "Continue") {
-            for _ in 0..game.frames.to_run() {
+        'pause_loop: loop {
+            for _ in 0..game.frames.to_run_forever() {
                 update_frame(&mut game, &pause_menu_assets, DEFAULT_PLAYBACK_RATE, rng)?
                     .add_drawn_text(&mut drawn_text);
 
-                draw_game(
-                    &game,
-                    &pause_menu_assets.images,
-                    &pause_menu_assets.fonts,
-                    intro_font,
-                    &drawn_text,
-                );
+                if is_pause_pressed() || is_switched_on(&game.objects, "Continue") {
+                    break 'pause_loop;
+                }
 
                 if is_switched_on(&game.objects, "Quit") {
                     pause_menu_assets.stop_sounds();
@@ -1608,41 +1615,52 @@ async fn run_pause_menu(
                     }
                     return Ok(true);
                 }
-
-                next_frame().await;
             }
+
+            draw_game(
+                &game,
+                &pause_menu_assets.images,
+                &pause_menu_assets.fonts,
+                intro_font,
+                &drawn_text,
+            );
+
+            next_frame().await;
         }
 
         pause_menu_assets.stop_sounds();
         if paused_music {
             assets.music.resume();
         }
+        frames.previous_frame_time = macroquad::time::get_time();
     }
 
     Ok(false)
 }
 
 impl<T> MainGame<T> {
-    async fn should_quit(&mut self, assets: &Assets) -> WeeResult<bool> {
+    async fn should_quit(&mut self, assets: &Assets, frames: &mut FrameInfo) -> WeeResult<bool> {
         run_pause_menu(
             &self.games,
             &self.preloaded_assets,
             &mut self.rng,
             &self.intro_font,
             assets,
+            frames,
         )
         .await
     }
 }
 
 impl MainGame<Play> {
-    async fn should_quit_play(&mut self) -> WeeResult<bool> {
+    async fn should_quit_play(&mut self, frames: &mut FrameInfo) -> WeeResult<bool> {
         run_pause_menu(
             &self.games,
             &self.preloaded_assets,
             &mut self.rng,
             &self.intro_font,
             &self.state.assets,
+            frames,
         )
         .await
     }
@@ -1675,7 +1693,7 @@ impl MainGame<Play> {
         self.state.assets.music.play(playback_rate, VOLUME);
 
         'play_loop: while game.frames.remaining() != FrameCount::Frames(0) {
-            if self.should_quit_play().await? {
+            if self.should_quit_play(&mut game.frames).await? {
                 return Ok(QuittableGame::Quit(MainGame {
                     state: GameOver {
                         progress: self.state.progress,

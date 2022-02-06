@@ -589,7 +589,8 @@ impl Default for FrameInfo {
             ran: 0,
             steps_taken: 0,
             to_run: 0,
-            first_frame_time: 0.0,
+            total_time_elapsed: 0.0,
+            previous_frame_time: 0.0,
         }
     }
 }
@@ -606,7 +607,8 @@ impl FrameInfo {
             ran: 0,
             steps_taken: 0,
             to_run: 0,
-            first_frame_time: 0.0,
+            total_time_elapsed: 0.0,
+            previous_frame_time: 0.0,
         }
     }
 
@@ -2198,7 +2200,8 @@ pub struct FrameInfo {
     pub ran: u32,
     pub steps_taken: u32,
     pub to_run: u32,
-    pub first_frame_time: f64,
+    pub total_time_elapsed: f64,
+    pub previous_frame_time: f64,
 }
 
 pub struct Game {
