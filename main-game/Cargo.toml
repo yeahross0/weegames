@@ -13,5 +13,5 @@ indexmap = "1.3.2"
 rand = "0.7.3"
 wee = { path = "../wee" }
 wee-common = { path = "../wee-common" }
-futures = "0.3.8"
+futures = "0.3.21"
 walkdir = "2.3.1"

@@ -1,6 +1,6 @@
 {
   "format_version": "0.2",
-  "published": false,
+  "published": true,
   "game_type": "Minigame",
   "objects": [
     {
@@ -25,7 +25,7 @@
         "horizontal": false,
         "vertical": false
       },
-      "layer": 1,
+      "layer": 2,
       "switch": "Off",
       "instructions": [
         {
@@ -70,12 +70,21 @@
       },
       "angle": 0.0,
       "origin": null,
-      "collision_area": null,
+      "collision_area": {
+        "min": {
+          "x": 30.0,
+          "y": 10.0
+        },
+        "max": {
+          "x": 155.0,
+          "y": 300.0
+        }
+      },
       "flip": {
         "horizontal": false,
         "vertical": false
       },
-      "layer": 0,
+      "layer": 1,
       "switch": "Off",
       "instructions": [
         {
@@ -268,6 +277,119 @@
               }
             }
           ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Green Car"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Effect": "Freeze"
+            },
+            "Lose",
+            "StopMusic",
+            {
+              "PlaySound": {
+                "name": "car-crash-crop"
+              }
+            },
+            {
+              "SetProperty": {
+                "Timer": {
+                  "time": 60
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Blue Car"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Effect": "Freeze"
+            },
+            "Lose",
+            "StopMusic",
+            {
+              "PlaySound": {
+                "name": "car-crash-crop"
+              }
+            },
+            {
+              "SetProperty": {
+                "Timer": {
+                  "time": 60
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Yellow Car"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Effect": "Freeze"
+            },
+            "Lose",
+            "StopMusic",
+            {
+              "PlaySound": {
+                "name": "car-crash-crop"
+              }
+            },
+            {
+              "SetProperty": {
+                "Timer": {
+                  "time": 60
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Car",
+                "check": "Timer"
+              }
+            }
+          ],
+          "actions": [
+            "EndEarly"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "End"
+            }
+          ],
+          "actions": [
+            "Win"
+          ]
         }
       ]
     },
@@ -288,12 +410,21 @@
       },
       "angle": 0.0,
       "origin": null,
-      "collision_area": null,
+      "collision_area": {
+        "min": {
+          "x": 25.0,
+          "y": 10.0
+        },
+        "max": {
+          "x": 150.0,
+          "y": 300.0
+        }
+      },
       "flip": {
         "horizontal": false,
         "vertical": false
       },
-      "layer": 1,
+      "layer": 2,
       "switch": "Off",
       "instructions": [
         {
@@ -318,6 +449,32 @@
               }
             }
           ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Car"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 5.0,
+                      "y": 0.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
         }
       ]
     },
@@ -338,7 +495,16 @@
       },
       "angle": 0.0,
       "origin": null,
-      "collision_area": null,
+      "collision_area": {
+        "min": {
+          "x": 30.0,
+          "y": 10.0
+        },
+        "max": {
+          "x": 150.0,
+          "y": 300.0
+        }
+      },
       "flip": {
         "horizontal": false,
         "vertical": false
@@ -370,6 +536,32 @@
               }
             }
           ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Car"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": -7.0,
+                      "y": 7.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
         }
       ]
     },
@@ -390,7 +582,16 @@
       },
       "angle": 0.0,
       "origin": null,
-      "collision_area": null,
+      "collision_area": {
+        "min": {
+          "x": 30.0,
+          "y": 10.0
+        },
+        "max": {
+          "x": 150.0,
+          "y": 300.0
+        }
+      },
       "flip": {
         "horizontal": false,
         "vertical": false
@@ -422,6 +623,32 @@
               }
             }
           ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Car"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 0.0,
+                      "y": 0.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
         }
       ]
     }
@@ -429,17 +656,22 @@
   "background": [],
   "asset_files": {
     "images": {
-      "car": "car.jpg",
-      "green-car": "green-car.png",
-      "yellow-car-blurry": "yellow-car-blurry.png",
-      "car-blurry": "car-blurry.png",
       "car2": "car2.png",
-      "green-car-blurry": "green-car-blurry.png",
+      "yellow-car-blurry": "yellow-car-blurry.png",
+      "car": "car.jpg",
+      "road": "road.jpg",
       "blue-car-blurry": "blue-car-blurry.png",
-      "road": "road.jpg"
+      "green-car-blurry": "green-car-blurry.png",
+      "green-car": "green-car.png",
+      "car-blurry": "car-blurry.png"
     },
-    "audio": {},
-    "music": null,
+    "audio": {
+      "car-crash-crop": "car-crash-crop.ogg"
+    },
+    "music": {
+      "filename": "heart-beats-fast.ogg",
+      "looped": false
+    },
     "fonts": {}
   },
   "length": {

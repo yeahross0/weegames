@@ -123,7 +123,16 @@
         "x": -170.0,
         "y": -2340.0
       },
-      "collision_area": null,
+      "collision_area": {
+        "min": {
+          "x": 10.0,
+          "y": 10.0
+        },
+        "max": {
+          "x": 340.0,
+          "y": 120.0
+        }
+      },
       "flip": {
         "horizontal": false,
         "vertical": false
@@ -153,7 +162,7 @@
                       ]
                     }
                   },
-                  "speed": "VeryFast"
+                  "speed": "Slow"
                 }
               }
             },
@@ -161,7 +170,9 @@
               "Motion": {
                 "Accelerate": {
                   "SlowDown": {
-                    "speed": "Slow"
+                    "speed": {
+                      "Value": 1.25
+                    }
                   }
                 }
               }
@@ -230,42 +241,6 @@
               }
             }
           ]
-        },
-        {
-          "triggers": [
-            {
-              "Time": "Start"
-            }
-          ],
-          "actions": [
-            {
-              "Random": {
-                "random_actions": [
-                  {
-                    "Motion": {
-                      "Swap": {
-                        "name": "top"
-                      }
-                    }
-                  },
-                  {
-                    "Motion": {
-                      "Swap": {
-                        "name": "meat"
-                      }
-                    }
-                  },
-                  {
-                    "Motion": {
-                      "Swap": {
-                        "name": "leaf"
-                      }
-                    }
-                  }
-                ]
-              }
-            }
-          ]
         }
       ]
     },
@@ -289,7 +264,16 @@
         "x": -180.0,
         "y": -2250.0
       },
-      "collision_area": null,
+      "collision_area": {
+        "min": {
+          "x": 10.0,
+          "y": 10.0
+        },
+        "max": {
+          "x": 260.0,
+          "y": 80.0
+        }
+      },
       "flip": {
         "horizontal": false,
         "vertical": false
@@ -319,7 +303,7 @@
                       ]
                     }
                   },
-                  "speed": "VeryFast"
+                  "speed": "Slow"
                 }
               }
             },
@@ -327,30 +311,11 @@
               "Motion": {
                 "Accelerate": {
                   "SlowDown": {
-                    "speed": "Slow"
+                    "speed": {
+                      "Value": 1.25
+                    }
                   }
                 }
-              }
-            }
-          ]
-        },
-        {
-          "triggers": [
-            {
-              "Collision": {
-                "Object": {
-                  "name": "Hand"
-                }
-              }
-            },
-            {
-              "WinStatus": "NotYetWon"
-            }
-          ],
-          "actions": [
-            {
-              "SetProperty": {
-                "Switch": "On"
               }
             }
           ]
@@ -432,35 +397,41 @@
         {
           "triggers": [
             {
-              "Time": "Start"
+              "Collision": {
+                "Object": {
+                  "name": "Hand"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "bottom",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "leaf",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "top",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
             }
           ],
           "actions": [
             {
-              "Random": {
-                "random_actions": [
-                  {
-                    "Motion": {
-                      "Swap": {
-                        "name": "bottom"
-                      }
-                    }
-                  },
-                  {
-                    "Motion": {
-                      "Swap": {
-                        "name": "leaf"
-                      }
-                    }
-                  },
-                  {
-                    "Motion": {
-                      "Swap": {
-                        "name": "top"
-                      }
-                    }
-                  }
-                ]
+              "SetProperty": {
+                "Switch": "On"
               }
             }
           ]
@@ -487,7 +458,16 @@
         "x": -180.0,
         "y": -2200.0
       },
-      "collision_area": null,
+      "collision_area": {
+        "min": {
+          "x": 10.0,
+          "y": 10.0
+        },
+        "max": {
+          "x": 300.0,
+          "y": 95.0
+        }
+      },
       "flip": {
         "horizontal": false,
         "vertical": false
@@ -517,7 +497,7 @@
                       ]
                     }
                   },
-                  "speed": "VeryFast"
+                  "speed": "Slow"
                 }
               }
             },
@@ -525,30 +505,11 @@
               "Motion": {
                 "Accelerate": {
                   "SlowDown": {
-                    "speed": "Slow"
+                    "speed": {
+                      "Value": 1.25
+                    }
                   }
                 }
-              }
-            }
-          ]
-        },
-        {
-          "triggers": [
-            {
-              "Collision": {
-                "Object": {
-                  "name": "Hand"
-                }
-              }
-            },
-            {
-              "WinStatus": "NotYetWon"
-            }
-          ],
-          "actions": [
-            {
-              "SetProperty": {
-                "Switch": "On"
               }
             }
           ]
@@ -659,35 +620,70 @@
         {
           "triggers": [
             {
-              "Time": "Start"
+              "Collision": {
+                "Object": {
+                  "name": "meat"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "meat",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "WinStatus": "NotYetWon"
             }
           ],
           "actions": [
             {
-              "Random": {
-                "random_actions": [
-                  {
-                    "Motion": {
-                      "Swap": {
-                        "name": "bottom"
-                      }
-                    }
-                  },
-                  {
-                    "Motion": {
-                      "Swap": {
-                        "name": "meat"
-                      }
-                    }
-                  },
-                  {
-                    "Motion": {
-                      "Swap": {
-                        "name": "top"
-                      }
-                    }
-                  }
-                ]
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Hand"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "bottom",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "leaf",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "top",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
               }
             }
           ]
@@ -714,7 +710,16 @@
         "x": -190.0,
         "y": -2180.0
       },
-      "collision_area": null,
+      "collision_area": {
+        "min": {
+          "x": 10.0,
+          "y": 10.0
+        },
+        "max": {
+          "x": 300.0,
+          "y": 70.0
+        }
+      },
       "flip": {
         "horizontal": false,
         "vertical": false
@@ -744,7 +749,7 @@
                       ]
                     }
                   },
-                  "speed": "VeryFast"
+                  "speed": "Slow"
                 }
               }
             },
@@ -752,27 +757,11 @@
               "Motion": {
                 "Accelerate": {
                   "SlowDown": {
-                    "speed": "Slow"
+                    "speed": {
+                      "Value": 1.25
+                    }
                   }
                 }
-              }
-            }
-          ]
-        },
-        {
-          "triggers": [
-            {
-              "Collision": {
-                "Object": {
-                  "name": "Hand"
-                }
-              }
-            }
-          ],
-          "actions": [
-            {
-              "SetProperty": {
-                "Switch": "On"
               }
             }
           ]
@@ -888,6 +877,48 @@
                 "name": "leaf",
                 "check": {
                   "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Hand"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "bottom",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "meat",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "leaf",
+                "check": {
+                  "Switch": "Off"
                 }
               }
             }
@@ -1833,22 +1864,22 @@
   ],
   "asset_files": {
     "images": {
-      "sandwich-hand": "sandwich-hand.png",
-      "sandwich-hand2": "sandwich-hand2.png",
       "top-bread": "top-bread.png",
       "meat-thing2": "meat-thing2.png",
+      "meat-thing": "meat-thing.png",
+      "sandwich-hand": "sandwich-hand.png",
+      "bottom2": "bottom2.png",
+      "top2": "top2.png",
       "leaf-thing": "leaf-thing.png",
       "bottom-bread": "bottom-bread.png",
       "leaf-thing2": "leaf-thing2.png",
-      "bottom2": "bottom2.png",
-      "meat-thing": "meat-thing.png",
-      "top2": "top2.png"
+      "sandwich-hand2": "sandwich-hand2.png"
     },
     "audio": {
       "munch": "munch.ogg",
+      "yum": "yum.ogg",
       "munch2": "munch2.ogg",
-      "do-not-want": "do-not-want.ogg",
-      "yum": "yum.ogg"
+      "do-not-want": "do-not-want.ogg"
     },
     "music": {
       "filename": "sandwich.ogg",

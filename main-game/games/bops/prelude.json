@@ -40,7 +40,7 @@
           "actions": [
             {
               "DrawText": {
-                "text": "Score: {Score}",
+                "text": "Score: 0",
                 "font": "SquadaOne-Regular",
                 "colour": {
                   "r": 0.039215688,
@@ -343,7 +343,7 @@
     }
   },
   "length": {
-    "Seconds": 4.0
+    "Seconds": 2.0
   },
   "intro_text": null,
   "attribution": ""

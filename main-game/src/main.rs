@@ -1,4 +1,4 @@
-#![windows_subsystem = "windows"]
+//#![windows_subsystem = "windows"]
 
 use macroquad::logging as log;
 use macroquad::prelude::*;
@@ -66,7 +66,15 @@ async fn load_images<P: AsRef<Path>>(
         loading_images.push(texture::load_texture(path));
     }
 
-    let textures: Vec<_> = join_all(loading_images).await;
+    let textures: Vec<_> = if loading_images.len() < 30 {
+        join_all(loading_images).await
+    } else {
+        let mut textures = Vec::new();
+        for _ in 0..loading_images.len() {
+            textures.push(loading_images.remove(0).await);
+        }
+        textures
+    };
 
     for (key, texture) in image_files.keys().zip(textures) {
         let texture = texture?;
@@ -1244,6 +1252,8 @@ impl MainGame<Prelude> {
 
         let games_list = GamesList::from_directory(&self.games, self.state.directory);
 
+        log::debug!("Games list: {:?}", games_list);
+
         Ok(MainGame {
             state: Interlude {
                 progress: Progress::new(),
@@ -1372,8 +1382,7 @@ impl MainGame<Interlude> {
             });
             Ok(next_step)
         } else {
-            let next_filename = if is_boss_game {
-                // TODO: What if no boss games in folder
+            let next_filename = if is_boss_game && !self.state.games_list.bosses.is_empty() {
                 self.state.games_list.choose_boss()
             } else {
                 self.state.games_list.choose_game()
@@ -1835,7 +1844,7 @@ fn window_conf() -> Conf {
         window_title: "Weegames".to_string(),
         window_width: 800,
         window_height: 450,
-        fullscreen: true,
+        fullscreen: false,
         ..Default::default()
     }
 }
