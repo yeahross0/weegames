@@ -614,23 +614,21 @@ impl GameOutput {
 // TODO: Temporary code to get around 144hz issue
 static mut LAST_MOUSE_STATE: ButtonState = ButtonState::Up;
 
-fn get_button_state() -> ButtonState {
-    unsafe {
-        LAST_MOUSE_STATE = if macroquad::input::is_mouse_button_down(MouseButton::Left) {
-            if LAST_MOUSE_STATE == ButtonState::Up || LAST_MOUSE_STATE == ButtonState::Release {
-                ButtonState::Press
-            } else {
-                ButtonState::Down
-            }
+unsafe fn get_button_state() -> ButtonState {
+    LAST_MOUSE_STATE = if macroquad::input::is_mouse_button_down(MouseButton::Left) {
+        if LAST_MOUSE_STATE == ButtonState::Up || LAST_MOUSE_STATE == ButtonState::Release {
+            ButtonState::Press
         } else {
-            if LAST_MOUSE_STATE == ButtonState::Down || LAST_MOUSE_STATE == ButtonState::Press {
-                ButtonState::Release
-            } else {
-                ButtonState::Up
-            }
-        };
-        LAST_MOUSE_STATE
-    }
+            ButtonState::Down
+        }
+    } else {
+        if LAST_MOUSE_STATE == ButtonState::Down || LAST_MOUSE_STATE == ButtonState::Press {
+            ButtonState::Release
+        } else {
+            ButtonState::Up
+        }
+    };
+    LAST_MOUSE_STATE
 }
 
 fn update_frame(
@@ -676,7 +674,7 @@ fn update_frame(
 
     let mouse = Mouse {
         position,
-        state: get_button_state(),
+        state: unsafe { get_button_state() },
     };
 
     let world_actions = game.update_frame(mouse, rng)?;
