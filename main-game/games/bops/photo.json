@@ -194,13 +194,6 @@
                   }
                 }
               }
-            },
-            {
-              "SetProperty": {
-                "Layer": {
-                  "Value": 1
-                }
-              }
             }
           ]
         }
@@ -233,7 +226,46 @@
       },
       "layer": 2,
       "switch": "Off",
-      "instructions": []
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "WinStatus": "HasBeenWon"
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Timer": {
+                  "time": 120
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Bg Left",
+                "check": "Timer"
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 2000.0,
+                    "y": 2000.0
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
     },
     {
       "name": "Bg Right",
@@ -262,7 +294,30 @@
       },
       "layer": 2,
       "switch": "Off",
-      "instructions": []
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Bg Left",
+                "check": "Timer"
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 2000.0,
+                    "y": 2000.0
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
     },
     {
       "name": "Left Control",
@@ -679,7 +734,6 @@
   "asset_files": {
     "images": {
       "dog2": "dog2.jpg",
-      "dog": "dog.jpg",
       "smartphone": "smartphone.png"
     },
     "audio": {},

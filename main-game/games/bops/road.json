@@ -658,11 +658,9 @@
     "images": {
       "car2": "car2.png",
       "yellow-car-blurry": "yellow-car-blurry.png",
-      "car": "car.jpg",
       "road": "road.jpg",
       "blue-car-blurry": "blue-car-blurry.png",
       "green-car-blurry": "green-car-blurry.png",
-      "green-car": "green-car.png",
       "car-blurry": "car-blurry.png"
     },
     "audio": {

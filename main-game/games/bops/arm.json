@@ -920,13 +920,8 @@
   "asset_files": {
     "images": {
       "bghmm": "bghmm.jpg",
-      "potential-arm4": "potential-arm4.png",
-      "horse": "horse.jpg",
       "potential-arm2": "potential-arm2.png",
-      "bluebg": "bluebg.jpg",
       "potential-arm11": "potential-arm11.png",
-      "bluebg2": "bluebg2.jpg",
-      "potential-arm5": "potential-arm5.png",
       "potential-arm6": "potential-arm6.png",
       "potential-arm3": "potential-arm3.png",
       "potential-arm1": "potential-arm1.png",

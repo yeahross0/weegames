@@ -1864,21 +1864,14 @@
   ],
   "asset_files": {
     "images": {
-      "top-bread": "top-bread.png",
       "meat-thing2": "meat-thing2.png",
-      "meat-thing": "meat-thing.png",
-      "sandwich-hand": "sandwich-hand.png",
       "bottom2": "bottom2.png",
       "top2": "top2.png",
-      "leaf-thing": "leaf-thing.png",
-      "bottom-bread": "bottom-bread.png",
       "leaf-thing2": "leaf-thing2.png",
       "sandwich-hand2": "sandwich-hand2.png"
     },
     "audio": {
-      "munch": "munch.ogg",
       "yum": "yum.ogg",
-      "munch2": "munch2.ogg",
       "do-not-want": "do-not-want.ogg"
     },
     "music": {
