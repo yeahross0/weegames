@@ -413,17 +413,14 @@
   "asset_files": {
     "images": {
       "cannon-3": "cannon-3.png",
-      "bg2": "bg2.png",
       "cannon-1": "cannon-1.png",
       "Idle": "Idle.png",
       "bg4": "bg4.png",
       "king-jump": "king-jump.png",
       "pig": "pig.png",
       "king-hit-1": "king-hit-1.png",
-      "bg": "bg.png",
       "cannon-2": "cannon-2.png",
       "diamond": "diamond.png",
-      "bg3": "bg3.png",
       "king-hit-2": "king-hit-2.png"
     },
     "audio": {
