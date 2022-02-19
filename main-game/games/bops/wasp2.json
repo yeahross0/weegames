@@ -1743,21 +1743,16 @@
   ],
   "asset_files": {
     "images": {
-      "laptop-closed5": "laptop-closed5.png",
-      "laptop-closed2": "laptop-closed2.png",
-      "wasp": "wasp.png",
-      "laptop-closed": "laptop-closed.png",
       "laptop-closed4": "laptop-closed4.png",
-      "laptop": "laptop.png",
       "blurry-wasp": "blurry-wasp.png",
-      "laptop-closed3": "laptop-closed3.png"
+      "wasp": "wasp.png",
+      "laptop": "laptop.png"
     },
     "audio": {
-      "squash3": "squash3.ogg",
-      "door-close": "door-close.ogg",
-      "squash1": "squash1.ogg",
       "squash2": "squash2.ogg",
+      "squash3": "squash3.ogg",
       "smack": "smack.ogg",
+      "squash1": "squash1.ogg",
       "yeah": "yeah.ogg"
     },
     "music": {
@@ -1770,5 +1765,5 @@
     "Seconds": 4.0
   },
   "intro_text": "Wasp 2 The Sequel",
-  "attribution": ""
+  "attribution": "wasp: https://www.pexels.com/photo/macro-photography-of-wasp-2617610/\nlaptop: https://www.pexels.com/photo/semi-opened-laptop-computer-turned-on-on-table-2047905/\n\nyeah: https://freesound.org/people/StormBat/sounds/406371/\n\n----\nsquash:\nhttps://freesound.org/people/zimbot/sounds/244486/\n'CrushAndGrind' by zimbot is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\nI trimmed the audio.\n----\n\n----\ndramatic increase\nhttps://freesound.org/people/tyops/sounds/415123/\n'Dramatic Increasing' by tyops is licensed under CC BY 3.0\nhttps://creativecommons.org/licenses/by/3.0/legalcode\nI have trimmed the audio.\n----\n"
 }
