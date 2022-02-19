@@ -1023,7 +1023,18 @@ impl MainGame<LoadingScreen> {
             .collect();
 
         #[cfg(target_arch = "wasm32")]
-        let played_games = HashSet::new();
+        let played_games: HashSet<String> = {
+            if let Ok(storage) = &mut quad_storage::STORAGE.lock() {
+                let json = storage.get("played_games");
+                if let Some(json) = json {
+                    json_from_str(&json)?
+                } else {
+                    HashSet::new()
+                }
+            } else {
+                HashSet::new()
+            }
+        };
 
         #[cfg(not(target_arch = "wasm32"))]
         let played_games: HashSet<String> = {
@@ -1790,11 +1801,22 @@ impl MainGame<GameOver> {
             }
         };
 
+        // TODO: Refactor
         #[cfg(target_arch = "wasm32")]
-        let mut high_scores = self
-            .high_scores
-            .entry(self.state.directory)
-            .or_insert((0, 0, 0));
+        let mut high_scores: (i32, i32, i32) = {
+            let path = Path::new(&self.state.directory).join("high-scores.json");
+            log::debug!("path: {:?}", path);
+            if let Ok(storage) = &mut quad_storage::STORAGE.lock() {
+                let json = storage.get(path.to_str().unwrap());
+                if let Some(json) = json {
+                    json_from_str(&json)?
+                } else {
+                    (0, 0, 0)
+                }
+            } else {
+                (0, 0, 0)
+            }
+        };
 
         let progress = self.state.progress;
         let score = progress.score;
@@ -1822,11 +1844,29 @@ impl MainGame<GameOver> {
             std::fs::write(&path, s).unwrap_or_else(|e| log::error!("{}", e));
         }
 
+        #[cfg(target_arch = "wasm32")]
+        {
+            let path = Path::new(&self.state.directory).join("high-scores.json");
+            log::debug!("path: {:?}", path);
+            if let Ok(storage) = &mut quad_storage::STORAGE.lock() {
+                let s = serde_json::to_string(&high_scores)?;
+                storage.set(path.to_str().unwrap(), &s);
+            }
+        }
+
         #[cfg(not(target_arch = "wasm32"))]
         {
             let path = Path::new("played-games.json");
             let s = serde_json::to_string(&self.played_games.played)?;
             std::fs::write(&path, s).unwrap_or_else(|e| log::error!("{}", e));
+        }
+
+        #[cfg(target_arch = "wasm32")]
+        {
+            if let Ok(storage) = &mut quad_storage::STORAGE.lock() {
+                let s = serde_json::to_string(&self.played_games.played)?;
+                storage.set("played_games", &s);
+            }
         }
 
         let text_replacements = vec![
