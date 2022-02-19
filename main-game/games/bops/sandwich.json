@@ -1044,7 +1044,7 @@
         {
           "triggers": [
             {
-              "WinStatus": "HasBeenWon"
+              "WinStatus": "JustWon"
             }
           ],
           "actions": [

@@ -1105,7 +1105,7 @@
         {
           "triggers": [
             {
-              "WinStatus": "HasBeenLost"
+              "WinStatus": "JustLost"
             },
             {
               "CheckProperty": {
@@ -1184,7 +1184,7 @@
         {
           "triggers": [
             {
-              "WinStatus": "HasBeenLost"
+              "WinStatus": "JustLost"
             },
             {
               "CheckProperty": {
@@ -1263,7 +1263,7 @@
         {
           "triggers": [
             {
-              "WinStatus": "HasBeenLost"
+              "WinStatus": "JustLost"
             },
             {
               "CheckProperty": {
@@ -1593,7 +1593,7 @@
         {
           "triggers": [
             {
-              "WinStatus": "HasBeenWon"
+              "WinStatus": "JustWon"
             }
           ],
           "actions": [

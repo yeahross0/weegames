@@ -141,7 +141,7 @@
         {
           "triggers": [
             {
-              "WinStatus": "HasBeenWon"
+              "WinStatus": "JustWon"
             }
           ],
           "actions": [
@@ -230,7 +230,7 @@
         {
           "triggers": [
             {
-              "WinStatus": "HasBeenWon"
+              "WinStatus": "JustWon"
             }
           ],
           "actions": [

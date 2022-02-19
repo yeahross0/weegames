@@ -870,7 +870,7 @@
         {
           "triggers": [
             {
-              "WinStatus": "HasBeenLost"
+              "WinStatus": "JustLost"
             }
           ],
           "actions": [

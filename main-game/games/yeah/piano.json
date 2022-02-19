@@ -1,5 +1,5 @@
 {
-  "format_version": "0.2",
+  "format_version": "0.3",
   "published": true,
   "game_type": "Minigame",
   "objects": [
@@ -785,7 +785,7 @@
         {
           "triggers": [
             {
-              "WinStatus": "HasBeenLost"
+              "WinStatus": "JustLost"
             },
             {
               "CheckProperty": {
@@ -1186,7 +1186,7 @@
         {
           "triggers": [
             {
-              "WinStatus": "HasBeenLost"
+              "WinStatus": "JustLost"
             },
             {
               "CheckProperty": {
