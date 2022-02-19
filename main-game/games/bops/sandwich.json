@@ -1864,15 +1864,15 @@
   ],
   "asset_files": {
     "images": {
-      "meat-thing2": "meat-thing2.png",
-      "bottom2": "bottom2.png",
-      "top2": "top2.png",
+      "sandwich-hand2": "sandwich-hand2.png",
       "leaf-thing2": "leaf-thing2.png",
-      "sandwich-hand2": "sandwich-hand2.png"
+      "top2": "top2.png",
+      "bottom2": "bottom2.png",
+      "meat-thing2": "meat-thing2.png"
     },
     "audio": {
-      "yum": "yum.ogg",
-      "do-not-want": "do-not-want.ogg"
+      "do-not-want": "do-not-want.ogg",
+      "yum": "yum.ogg"
     },
     "music": {
       "filename": "sandwich.ogg",
@@ -1881,8 +1881,8 @@
     "fonts": {}
   },
   "length": {
-    "Seconds": 5.0
+    "Seconds": 6.0
   },
   "intro_text": "Make this ->  ",
-  "attribution": ""
+  "attribution": "sandwich: https://www.pexels.com/photo/commercial-shot-of-sandwich-ingredients-in-air-10806112/\n\nyum: https://freesound.org/people/AudioRichter/sounds/169342/\ni don't want that: https://freesound.org/people/nuncaconoci/sounds/565009/\n\n----\nAnother Sandwich Please by Briareus (c) copyright 2010\nLicensed under a Creative Commons Noncommercial Sampling Plus license.\nhttp://dig.ccmixter.org/files/Briareus/27876\n----"
 }

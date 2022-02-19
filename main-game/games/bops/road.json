@@ -656,12 +656,11 @@
   "background": [],
   "asset_files": {
     "images": {
-      "car2": "car2.png",
-      "yellow-car-blurry": "yellow-car-blurry.png",
-      "road": "road.jpg",
-      "blue-car-blurry": "blue-car-blurry.png",
       "green-car-blurry": "green-car-blurry.png",
-      "car-blurry": "car-blurry.png"
+      "yellow-car-blurry": "yellow-car-blurry.png",
+      "car-blurry": "car-blurry.png",
+      "road": "road.jpg",
+      "blue-car-blurry": "blue-car-blurry.png"
     },
     "audio": {
       "car-crash-crop": "car-crash-crop.ogg"
@@ -676,5 +675,5 @@
     "Seconds": 7.5
   },
   "intro_text": "Switch Lanes!",
-  "attribution": ""
+  "attribution": "cars + road: https://www.pexels.com/photo/aerial-view-of-car-on-the-road-8356177/\n\n----\ncar crash:\nhttps://freesound.org/people/nsstudios/sounds/351513/\n'car crash' by nsstudios is licensed under CC BY-NC 3.0\nhttps://creativecommons.org/licenses/by-nc/3.0/\nI have trimmed the audio.\n----\n\n----\nMy Heart Beats So Fast by Loveshadow (c) copyright 2012\nLicensed under a Creative Commons Attribution Noncommercial  (3.0) license.\nhttp://dig.ccmixter.org/files/Loveshadow/39281\nFt: Royalarc305 & KCENTRIC\n----"
 }

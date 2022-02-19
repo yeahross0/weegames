@@ -969,11 +969,11 @@
   ],
   "asset_files": {
     "images": {
-      "hand-crisps": "hand-crisps.png",
-      "crisp": "crisp.png",
-      "crisp-cropped": "crisp-cropped.png",
       "table-colours": "table-colours.jpg",
-      "chutist": "chutist.png"
+      "chutist": "chutist.png",
+      "hand-crisps": "hand-crisps.png",
+      "crisp-cropped": "crisp-cropped.png",
+      "crisp": "crisp.png"
     },
     "audio": {
       "munch2": "munch2.ogg"
@@ -988,5 +988,5 @@
     "Seconds": 5.0
   },
   "intro_text": "catch crisps",
-  "attribution": ""
+  "attribution": "crisps: https://www.pexels.com/photo/man-taking-bowl-of-chips-placed-near-dried-fruits-6546165/\nparachute: https://www.pexels.com/photo/parachute-flying-in-the-air-9173502/\n\nmunch2: https://freesound.org/people/Lukeo135/sounds/518155/\n\n----\nCertain Death by Hans Atom (c) copyright 2018\nLicensed under a Creative Commons Attribution Noncommercial  (3.0) license.\nhttp://dig.ccmixter.org/files/hansatom/57190\nFt: Brad Sucks\n----"
 }

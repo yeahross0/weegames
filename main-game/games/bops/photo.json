@@ -203,9 +203,9 @@
       "name": "Bg Left",
       "sprite": {
         "Colour": {
-          "r": 0.84705883,
-          "g": 0.84705883,
-          "b": 0.84705883,
+          "r": 0.95686275,
+          "g": 0.9764706,
+          "b": 0.9882353,
           "a": 1.0
         }
       },
@@ -271,9 +271,9 @@
       "name": "Bg Right",
       "sprite": {
         "Colour": {
-          "r": 0.84705883,
-          "g": 0.84705883,
-          "b": 0.84705883,
+          "r": 0.95686275,
+          "g": 0.9764706,
+          "b": 0.9882353,
           "a": 1.0
         }
       },
@@ -747,5 +747,5 @@
     "Seconds": 6.5
   },
   "intro_text": "take a selfie",
-  "attribution": ""
+  "attribution": "phone: https://www.pexels.com/photo/person-holding-android-smartphone-2066896/\ndog: https://www.pexels.com/photo/a-pomeranian-on-a-white-couch-8473712/\n\n----\nMy Favourite Photograph - A Disturbed Miner (Reprise Mix) by Joel Frijters (c) copyright 2012\nLicensed under a Creative Commons Attribution Noncommercial  (3.0) license.\nhttp://dig.ccmixter.org/files/KungFuFrijters/38432\nFt: snowflake\n----"
 }

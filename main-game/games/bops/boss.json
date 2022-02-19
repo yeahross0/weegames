@@ -1636,6 +1636,201 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Text",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 340.0,
+        "y": 960.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 540
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "DrawText": {
+                "text": "Time: 3",
+                "font": "SquadaOne-Regular",
+                "colour": {
+                  "r": 0.019607844,
+                  "g": 0.019607844,
+                  "b": 0.019607844,
+                  "a": 1.0
+                },
+                "resize": "MatchText",
+                "justify": "Centre"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 600
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "DrawText": {
+                "text": "Time: 2",
+                "font": "SquadaOne-Regular",
+                "colour": {
+                  "r": 0.019607844,
+                  "g": 0.019607844,
+                  "b": 0.019607844,
+                  "a": 1.0
+                },
+                "resize": "MatchText",
+                "justify": "Centre"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 660
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "DrawText": {
+                "text": "Time: 1",
+                "font": "SquadaOne-Regular",
+                "colour": {
+                  "r": 0.019607844,
+                  "g": 0.019607844,
+                  "b": 0.019607844,
+                  "a": 1.0
+                },
+                "resize": "MatchText",
+                "justify": "Centre"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 720
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "DrawText": {
+                "text": "Time: 0",
+                "font": "SquadaOne-Regular",
+                "colour": {
+                  "r": 0.019607844,
+                  "g": 0.019607844,
+                  "b": 0.019607844,
+                  "a": 1.0
+                },
+                "resize": "MatchText",
+                "justify": "Centre"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 540
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "Target": {
+                  "target": {
+                    "Object": {
+                      "name": "Left Frame"
+                    }
+                  },
+                  "target_type": "StopWhenReached",
+                  "offset": {
+                    "x": -20.0,
+                    "y": 390.0
+                  },
+                  "speed": "Slow"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 780
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Down"
+                      ]
+                    }
+                  },
+                  "speed": "Slow"
+                }
+              }
+            }
+          ]
+        }
+      ]
     }
   ],
   "background": [
@@ -1659,32 +1854,37 @@
   ],
   "asset_files": {
     "images": {
-      "red": "red.png",
       "art": "art.png",
-      "flappy": "flappy.png",
-      "paper-leaf": "paper-leaf.png",
-      "wheel6": "wheel6.png",
-      "wheel4": "wheel4.png",
-      "frame8": "frame8.png",
-      "pink": "pink.png",
-      "wheel1": "wheel1.png",
-      "submit5": "submit5.png",
-      "wheel5": "wheel5.png",
-      "white-bg2": "white-bg2.jpg",
-      "wheel7": "wheel7.png",
-      "wheel3": "wheel3.png",
-      "frame-bg4": "frame-bg4.png",
       "submit7": "submit7.png",
+      "wheel4": "wheel4.png",
+      "paper-leaf": "paper-leaf.png",
+      "frame-bg4": "frame-bg4.png",
+      "wheel5": "wheel5.png",
+      "submit5": "submit5.png",
+      "pink": "pink.png",
+      "red": "red.png",
+      "wheel3": "wheel3.png",
+      "frame8": "frame8.png",
+      "wheel2": "wheel2.png",
+      "wheel6": "wheel6.png",
+      "wheel7": "wheel7.png",
+      "white-bg2": "white-bg2.jpg",
+      "flappy": "flappy.png",
       "white-bg3": "white-bg3.png",
-      "wheel2": "wheel2.png"
+      "wheel1": "wheel1.png"
     },
     "audio": {},
     "music": null,
-    "fonts": {}
+    "fonts": {
+      "SquadaOne-Regular": {
+        "filename": "SquadaOne-Regular.ttf",
+        "size": 128.0
+      }
+    }
   },
   "length": {
     "Seconds": 16.0
   },
-  "intro_text": null,
-  "attribution": ""
+  "intro_text": "r e c r e a t e",
+  "attribution": "Art from a collection of photographs by Artem Pordrez\nhttps://www.pexels.com/photo/colorful-artworks-on-white-table-6941453/"
 }

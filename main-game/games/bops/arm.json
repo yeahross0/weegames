@@ -919,13 +919,13 @@
   ],
   "asset_files": {
     "images": {
+      "potential-arm1": "potential-arm1.png",
       "bghmm": "bghmm.jpg",
       "potential-arm2": "potential-arm2.png",
       "potential-arm11": "potential-arm11.png",
-      "potential-arm6": "potential-arm6.png",
       "potential-arm3": "potential-arm3.png",
-      "potential-arm1": "potential-arm1.png",
-      "hand": "hand.png"
+      "hand": "hand.png",
+      "potential-arm6": "potential-arm6.png"
     },
     "audio": {
       "hello-hello": "hello-hello.ogg",
@@ -941,5 +941,5 @@
     "Seconds": 6.0
   },
   "intro_text": "Construct!              ",
-  "attribution": ""
+  "attribution": "horse: https://www.pexels.com/photo/horse-in-stable-petted-by-someone-10560152/\nparts: of arm\nhttps://www.pexels.com/photo/person-s-right-hand-1257770/\nhttps://www.pexels.com/photo/crop-unrecognizable-person-in-rubber-gloves-raising-arms-5218007/\nhttps://www.pexels.com/photo/crop-person-with-spikes-on-white-background-6912901/\nhttps://www.pexels.com/photo/young-hooded-guy-standing-with-outstretched-arms-in-mountains-10194798/\n\nman and wall: https://www.pexels.com/photo/man-wearing-red-sweatshirt-and-black-pants-leaning-on-the-wall-845434/\n\n----\n'PAINED OUCH MY LEG.wav' by HumanSolarian is licensed under CC BY 3.0\nhttps://freesound.org/people/HumanSolarian/sounds/457176/\nhttps://creativecommons.org/licenses/by/3.0/legalcode\n----\n'hello_hello' by golosiy is licensed under CC Sampling Plus 1.0\nhttps://freesound.org/people/golosiy/sounds/107932/\n----\nArms of Steel by Elaiceps (c) copyright 2006\nLicensed under a Creative Commons Attribution Noncommercial license.\nhttp://dig.ccmixter.org/files/Elaiceps/7088\nFt: DeBenedictis\n----"
 }

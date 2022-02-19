@@ -330,8 +330,8 @@
   ],
   "asset_files": {
     "images": {
-      "strawberry": "strawberry.png",
-      "flappy": "flappy.png"
+      "flappy": "flappy.png",
+      "strawberry": "strawberry.png"
     },
     "audio": {},
     "music": null,
@@ -346,5 +346,5 @@
     "Seconds": 2.0
   },
   "intro_text": null,
-  "attribution": ""
+  "attribution": "https://www.pexels.com/photo/colorful-artworks-on-white-table-6941453/"
 }
