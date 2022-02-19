@@ -1022,16 +1022,6 @@ impl MainGame<LoadingScreen> {
             .cloned()
             .collect();
 
-        let all_games: HashSet<String> = {
-            use std::iter::FromIterator;
-            let games_filenames: HashSet<&String> = HashSet::from_iter(game_filenames.iter());
-            let games_to_preload: HashSet<&String> = HashSet::from_iter(games_to_preload.iter());
-            games_filenames
-                .difference(&games_to_preload)
-                .map(|s| s.to_string())
-                .collect()
-        };
-
         #[cfg(target_arch = "wasm32")]
         let played_games = HashSet::new();
 
@@ -1134,6 +1124,15 @@ impl MainGame<LoadingScreen> {
 
         let (games, preloaded_assets) =
             dispenser::take::<WeeResult<(HashMap<String, GameData>, HashMap<String, Assets>)>>()?;
+
+        let all_games = games
+            .iter()
+            .filter(|(_, game)| {
+                game.published && game.game_type == GameType::Minigame
+                    || game.game_type == GameType::BossGame
+            })
+            .map(|(k, _)| k.to_string())
+            .collect();
 
         Ok(MainGame {
             state: Menu {},
