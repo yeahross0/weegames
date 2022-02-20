@@ -14,8 +14,8 @@
         }
       },
       "position": {
-        "x": 800.0,
-        "y": 550.0
+        "x": 2000.0,
+        "y": 2000.0
       },
       "size": {
         "width": 100.0,
@@ -94,19 +94,22 @@
       ]
     },
     {
-      "name": "1",
+      "name": "You",
       "sprite": {
-        "Image": {
-          "name": "strawberry"
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
         }
       },
       "position": {
-        "x": 200.0,
-        "y": 200.0
+        "x": 2000.0,
+        "y": 2000.0
       },
       "size": {
-        "width": 211.0,
-        "height": 280.5
+        "width": 100.0,
+        "height": 100.0
       },
       "angle": 0.0,
       "origin": null,
@@ -115,29 +118,72 @@
         "horizontal": false,
         "vertical": false
       },
-      "layer": 1,
+      "layer": 0,
       "switch": "Off",
       "instructions": [
         {
           "triggers": [
             {
               "CheckProperty": {
-                "name": "1",
+                "name": "1st",
                 "check": {
-                  "Switch": "Off"
+                  "Switch": "On"
                 }
               }
             }
           ],
           "actions": [
             {
-              "SetProperty": {
-                "Sprite": {
-                  "Colour": {
-                    "r": 0.0,
-                    "g": 0.0,
-                    "b": 0.0,
-                    "a": 0.0
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "1st"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "2nd",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "2nd"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "3rd",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "3rd"
                   }
                 }
               }
@@ -147,19 +193,19 @@
       ]
     },
     {
-      "name": "2",
+      "name": "Straw1",
       "sprite": {
         "Image": {
           "name": "strawberry"
         }
       },
       "position": {
-        "x": 600.0,
-        "y": 200.0
+        "x": 2000.0,
+        "y": 2000.0
       },
       "size": {
-        "width": 211.0,
-        "height": 280.5
+        "width": 168.8,
+        "height": 224.40001
       },
       "angle": 0.0,
       "origin": null,
@@ -168,29 +214,30 @@
         "horizontal": false,
         "vertical": false
       },
-      "layer": 1,
+      "layer": 2,
       "switch": "Off",
       "instructions": [
         {
-          "triggers": [
-            {
-              "CheckProperty": {
-                "name": "2",
-                "check": {
-                  "Switch": "Off"
-                }
-              }
-            }
-          ],
+          "triggers": [],
           "actions": [
             {
-              "SetProperty": {
-                "Sprite": {
-                  "Colour": {
-                    "r": 0.0,
-                    "g": 0.0,
-                    "b": 0.0,
-                    "a": 0.0
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "You"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": -450.0,
+                      "y": 0.0
+                    }
                   }
                 }
               }
@@ -200,19 +247,19 @@
       ]
     },
     {
-      "name": "3",
+      "name": "Straw2",
       "sprite": {
         "Image": {
           "name": "strawberry"
         }
       },
       "position": {
-        "x": 1000.0,
-        "y": 200.0
+        "x": 2000.0,
+        "y": 2000.0
       },
       "size": {
-        "width": 211.0,
-        "height": 280.5
+        "width": 168.8,
+        "height": 224.40001
       },
       "angle": 0.0,
       "origin": null,
@@ -221,29 +268,30 @@
         "horizontal": false,
         "vertical": false
       },
-      "layer": 1,
+      "layer": 2,
       "switch": "Off",
       "instructions": [
         {
-          "triggers": [
-            {
-              "CheckProperty": {
-                "name": "3",
-                "check": {
-                  "Switch": "Off"
-                }
-              }
-            }
-          ],
+          "triggers": [],
           "actions": [
             {
-              "SetProperty": {
-                "Sprite": {
-                  "Colour": {
-                    "r": 0.0,
-                    "g": 0.0,
-                    "b": 0.0,
-                    "a": 0.0
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "You"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 450.0,
+                      "y": 0.0
+                    }
                   }
                 }
               }
@@ -253,19 +301,22 @@
       ]
     },
     {
-      "name": "4",
+      "name": "1st",
       "sprite": {
-        "Image": {
-          "name": "strawberry"
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
         }
       },
       "position": {
-        "x": 1400.0,
-        "y": 200.0
+        "x": 800.0,
+        "y": 150.0
       },
       "size": {
-        "width": 211.0,
-        "height": 280.5
+        "width": 100.0,
+        "height": 100.0
       },
       "angle": 0.0,
       "origin": null,
@@ -280,25 +331,128 @@
         {
           "triggers": [
             {
-              "CheckProperty": {
-                "name": "4",
-                "check": {
-                  "Switch": "Off"
-                }
-              }
+              "Time": "Start"
             }
           ],
           "actions": [
             {
-              "SetProperty": {
-                "Sprite": {
-                  "Colour": {
-                    "r": 0.0,
-                    "g": 0.0,
-                    "b": 0.0,
-                    "a": 0.0
-                  }
-                }
+              "DrawText": {
+                "text": "1st: {1st}",
+                "font": "SquadaOne-Regular",
+                "colour": {
+                  "r": 0.019607844,
+                  "g": 0.019607844,
+                  "b": 0.019607844,
+                  "a": 1.0
+                },
+                "resize": "MatchText",
+                "justify": "Centre"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2nd",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 400.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "DrawText": {
+                "text": "2nd: {2nd}",
+                "font": "SquadaOne-Regular",
+                "colour": {
+                  "r": 0.019607844,
+                  "g": 0.019607844,
+                  "b": 0.019607844,
+                  "a": 1.0
+                },
+                "resize": "MatchText",
+                "justify": "Centre"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3rd",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 650.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "DrawText": {
+                "text": "3rd: {3rd}",
+                "font": "SquadaOne-Regular",
+                "colour": {
+                  "r": 0.019607844,
+                  "g": 0.019607844,
+                  "b": 0.019607844,
+                  "a": 1.0
+                },
+                "resize": "MatchText",
+                "justify": "Centre"
               }
             }
           ]
@@ -343,7 +497,7 @@
     }
   },
   "length": {
-    "Seconds": 2.0
+    "Seconds": 6.0
   },
   "intro_text": null,
   "attribution": "https://www.pexels.com/photo/colorful-artworks-on-white-table-6941453/"

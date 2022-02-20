@@ -35,12 +35,51 @@
           "triggers": [
             {
               "Time": "Start"
+            },
+            {
+              "CheckProperty": {
+                "name": "Boss",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
             }
           ],
           "actions": [
             {
               "DrawText": {
                 "text": "Score: {Score}",
+                "font": "SquadaOne-Regular",
+                "colour": {
+                  "r": 0.039215688,
+                  "g": 0.039215688,
+                  "b": 0.039215688,
+                  "a": 1.0
+                },
+                "resize": "MatchText",
+                "justify": "Centre"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            },
+            {
+              "CheckProperty": {
+                "name": "Boss",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "DrawText": {
+                "text": "Boss Level",
                 "font": "SquadaOne-Regular",
                 "colour": {
                   "r": 0.039215688,
@@ -116,10 +155,21 @@
         "vertical": false
       },
       "layer": 1,
-      "switch": "Off",
+      "switch": "On",
       "instructions": [
         {
           "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Won",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "Time": "Start"
+            },
             {
               "CheckProperty": {
                 "name": "1",
@@ -131,13 +181,17 @@
           ],
           "actions": [
             {
-              "SetProperty": {
-                "Sprite": {
-                  "Colour": {
-                    "r": 0.0,
-                    "g": 0.0,
-                    "b": 0.0,
-                    "a": 0.0
+              "Motion": {
+                "Accelerate": {
+                  "Continuous": {
+                    "direction": {
+                      "Direction": {
+                        "possible_directions": [
+                          "Down"
+                        ]
+                      }
+                    },
+                    "speed": "Fast"
                   }
                 }
               }
@@ -169,7 +223,7 @@
         "vertical": false
       },
       "layer": 1,
-      "switch": "Off",
+      "switch": "On",
       "instructions": [
         {
           "triggers": [
@@ -180,6 +234,9 @@
                   "Switch": "Off"
                 }
               }
+            },
+            {
+              "Time": "Start"
             }
           ],
           "actions": [
@@ -192,6 +249,127 @@
                     "b": 0.0,
                     "a": 0.0
                   }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Won",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "Time": "Start"
+            },
+            {
+              "CheckProperty": {
+                "name": "1",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "2",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "Accelerate": {
+                  "Continuous": {
+                    "direction": {
+                      "Direction": {
+                        "possible_directions": [
+                          "Down"
+                        ]
+                      }
+                    },
+                    "speed": "Fast"
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "strawberry"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Gained Life",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "Time": "Start"
+            },
+            {
+              "CheckProperty": {
+                "name": "2",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "3",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 0.0,
+                      "y": -400.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Target": {
+                  "target": {
+                    "Object": {
+                      "name": "1"
+                    }
+                  },
+                  "target_type": "StopWhenReached",
+                  "offset": {
+                    "x": 400.0,
+                    "y": 0.0
+                  },
+                  "speed": "Normal"
                 }
               }
             }
@@ -222,7 +400,7 @@
         "vertical": false
       },
       "layer": 1,
-      "switch": "Off",
+      "switch": "On",
       "instructions": [
         {
           "triggers": [
@@ -233,6 +411,9 @@
                   "Switch": "Off"
                 }
               }
+            },
+            {
+              "Time": "Start"
             }
           ],
           "actions": [
@@ -245,6 +426,127 @@
                     "b": 0.0,
                     "a": 0.0
                   }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Won",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "Time": "Start"
+            },
+            {
+              "CheckProperty": {
+                "name": "2",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "3",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "Accelerate": {
+                  "Continuous": {
+                    "direction": {
+                      "Direction": {
+                        "possible_directions": [
+                          "Down"
+                        ]
+                      }
+                    },
+                    "speed": "Fast"
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "strawberry"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Gained Life",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "Time": "Start"
+            },
+            {
+              "CheckProperty": {
+                "name": "3",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "4",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 0.0,
+                      "y": -400.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Target": {
+                  "target": {
+                    "Object": {
+                      "name": "2"
+                    }
+                  },
+                  "target_type": "StopWhenReached",
+                  "offset": {
+                    "x": 400.0,
+                    "y": 0.0
+                  },
+                  "speed": "Normal"
                 }
               }
             }
@@ -275,7 +577,7 @@
         "vertical": false
       },
       "layer": 1,
-      "switch": "Off",
+      "switch": "On",
       "instructions": [
         {
           "triggers": [
@@ -286,6 +588,9 @@
                   "Switch": "Off"
                 }
               }
+            },
+            {
+              "Time": "Start"
             }
           ],
           "actions": [
@@ -302,8 +607,208 @@
               }
             }
           ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Won",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "Time": "Start"
+            },
+            {
+              "CheckProperty": {
+                "name": "3",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "4",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "Accelerate": {
+                  "Continuous": {
+                    "direction": {
+                      "Direction": {
+                        "possible_directions": [
+                          "Down"
+                        ]
+                      }
+                    },
+                    "speed": "Fast"
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "strawberry"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Gained Life",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "Time": "Start"
+            },
+            {
+              "CheckProperty": {
+                "name": "4",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 0.0,
+                      "y": -400.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Target": {
+                  "target": {
+                    "Object": {
+                      "name": "3"
+                    }
+                  },
+                  "target_type": "StopWhenReached",
+                  "offset": {
+                    "x": 400.0,
+                    "y": 0.0
+                  },
+                  "speed": "Normal"
+                }
+              }
+            }
+          ]
         }
       ]
+    },
+    {
+      "name": "Won",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "Gained Life",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "Boss",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
     }
   ],
   "background": [

@@ -2149,30 +2149,6 @@ fn edit_instruction(
         *instruction_mode = InstructionMode::View;
     }
     ui.same_line(0.0);
-    if ui.small_button(im_str!("Up")) {
-        match focus {
-            InstructionFocus::Trigger { index } => {
-                move_back(&mut instruction.triggers, index);
-            }
-            InstructionFocus::Action { index } => {
-                move_back(&mut instruction.actions, index);
-            }
-            InstructionFocus::None => {}
-        }
-    }
-    ui.same_line(0.0);
-    if ui.small_button(im_str!("Down")) {
-        match focus {
-            InstructionFocus::Trigger { index } => {
-                move_forward(&mut instruction.triggers, index);
-            }
-            InstructionFocus::Action { index } => {
-                move_forward(&mut instruction.actions, index);
-            }
-            InstructionFocus::None => {}
-        }
-    }
-    ui.same_line(0.0);
     if ui.small_button(im_str!("Edit")) {
         match focus {
             InstructionFocus::Trigger { .. } => {
@@ -2201,6 +2177,30 @@ fn edit_instruction(
             }
             InstructionFocus::Action { index } => {
                 delete(&mut instruction.actions, index);
+            }
+            InstructionFocus::None => {}
+        }
+    }
+    ui.same_line(0.0);
+    if ui.small_button(im_str!("Up")) {
+        match focus {
+            InstructionFocus::Trigger { index } => {
+                move_back(&mut instruction.triggers, index);
+            }
+            InstructionFocus::Action { index } => {
+                move_back(&mut instruction.actions, index);
+            }
+            InstructionFocus::None => {}
+        }
+    }
+    ui.same_line(0.0);
+    if ui.small_button(im_str!("Down")) {
+        match focus {
+            InstructionFocus::Trigger { index } => {
+                move_forward(&mut instruction.triggers, index);
+            }
+            InstructionFocus::Action { index } => {
+                move_forward(&mut instruction.actions, index);
             }
             InstructionFocus::None => {}
         }
@@ -2271,30 +2271,33 @@ fn edit_instruction_list<'a>(
             }
             ui.same_line(0.0);
             if let Some(selected_index) = &mut editor.instruction_state.index {
-                if ui.small_button(im_str!("Edit")) {
-                    editor.instruction_state.mode = InstructionMode::Edit;
-                }
-                ui.same_line(0.0);
-                if ui.small_button(im_str!("Clone")) && !instructions.is_empty() {
-                    let ins = instructions[*selected_index].clone();
-                    instructions.push(ins);
-                }
-                ui.same_line(0.0);
-                if ui.small_button(im_str!("Delete")) && !instructions.is_empty() {
-                    instructions.remove(*selected_index);
-                    if *selected_index > 0 {
+                if !instructions.is_empty() {
+                    if ui.small_button(im_str!("Edit")) {
+                        editor.instruction_state.mode = InstructionMode::Edit;
+                    }
+                    ui.same_line(0.0);
+                    if ui.small_button(im_str!("Clone")) {
+                        let ins = instructions[*selected_index].clone();
+                        instructions.push(ins);
+                    }
+                    ui.same_line(0.0);
+                    if ui.small_button(im_str!("Delete")) {
+                        instructions.remove(*selected_index);
+                        if *selected_index > 0 {
+                            *selected_index -= 1;
+                        }
+                    }
+                    ui.same_line(0.0);
+                    if ui.small_button(im_str!("Up")) && *selected_index > 0 {
+                        instructions.swap(*selected_index, *selected_index - 1);
                         *selected_index -= 1;
                     }
-                }
-                ui.same_line(0.0);
-                if ui.small_button(im_str!("Up")) && *selected_index > 0 {
-                    instructions.swap(*selected_index, *selected_index - 1);
-                    *selected_index -= 1;
-                }
-                ui.same_line(0.0);
-                if ui.small_button(im_str!("Down")) && *selected_index + 1 < instructions.len() {
-                    instructions.swap(*selected_index, *selected_index + 1);
-                    *selected_index += 1;
+                    ui.same_line(0.0);
+                    if ui.small_button(im_str!("Down")) && *selected_index + 1 < instructions.len()
+                    {
+                        instructions.swap(*selected_index, *selected_index + 1);
+                        *selected_index += 1;
+                    }
                 }
             }
         }

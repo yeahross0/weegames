@@ -584,8 +584,8 @@
       "origin": null,
       "collision_area": {
         "min": {
-          "x": 30.0,
-          "y": 10.0
+          "x": 35.0,
+          "y": 15.0
         },
         "max": {
           "x": 150.0,
@@ -658,9 +658,9 @@
     "images": {
       "green-car-blurry": "green-car-blurry.png",
       "yellow-car-blurry": "yellow-car-blurry.png",
-      "car-blurry": "car-blurry.png",
       "road": "road.jpg",
-      "blue-car-blurry": "blue-car-blurry.png"
+      "blue-car-blurry": "blue-car-blurry.png",
+      "car-blurry": "car-blurry.png"
     },
     "audio": {
       "car-crash-crop": "car-crash-crop.ogg"

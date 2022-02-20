@@ -15,4 +15,9 @@ wee = { path = "../wee" }
 wee-common = { path = "../wee-common" }
 futures = "0.3.8"
 walkdir = "2.3.1"
+
+[target.'cfg(wasm32)'.dependencies]
 quad-storage = "0.1.3"
+
+[features]
+wasm_packaged = []

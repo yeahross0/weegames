@@ -919,7 +919,6 @@
   ],
   "asset_files": {
     "images": {
-      "potential-arm1": "potential-arm1.png",
       "bghmm": "bghmm.jpg",
       "potential-arm2": "potential-arm2.png",
       "potential-arm11": "potential-arm11.png",

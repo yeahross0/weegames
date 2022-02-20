@@ -66,7 +66,15 @@ async fn load_images<P: AsRef<Path>>(
         loading_images.push(texture::load_texture(path));
     }
 
-    let textures: Vec<_> = if loading_images.len() < 30 {
+    let mut textures = Vec::new();
+    let limit = 30;
+    let mut rest = loading_images.split_off(limit.min(loading_images.len()));
+    while !loading_images.is_empty() {
+        textures.append(&mut join_all(loading_images).await);
+        loading_images = rest.split_off((rest.len() as i64 - limit as i64).max(0) as usize);
+    }
+
+    /*let textures: Vec<_> = if loading_images.len() < 30 {
         join_all(loading_images).await
     } else {
         let mut textures = Vec::new();
@@ -74,7 +82,7 @@ async fn load_images<P: AsRef<Path>>(
             textures.push(loading_images.remove(0).await);
         }
         textures
-    };
+    };*/
 
     for (key, texture) in image_files.keys().zip(textures) {
         let texture = texture?;
@@ -823,6 +831,8 @@ impl FramesToRun for FrameInfo {
     fn to_run_at_rate(&mut self, playback_rate: f32) -> u32 {
         let frames_to_run = self.frames_to_run(playback_rate);
 
+        //log::debug!("{}", frames_to_run);
+
         match self.remaining() {
             FrameCount::Frames(remaining) => frames_to_run.min(remaining),
             FrameCount::Infinite => frames_to_run,
@@ -838,6 +848,7 @@ impl FramesToRun for FrameInfo {
             self.steps_taken = 1;
         }
         let time = macroquad::time::get_time();
+        //log::debug!("{}", time - self.previous_frame_time);
         self.total_time_elapsed += time - self.previous_frame_time;
         self.previous_frame_time = time;
         let total_ms_elapsed = self.total_time_elapsed * 1000.0;
@@ -968,10 +979,21 @@ impl MainGame<LoadingScreen> {
             "games/system/game-over.json",
             "games/system/choose-mode.json",
             "games/mine/bong.json",
-            "games/bops/cloud.json",
-            "games/bops/bowl.json",
+            "games/bops/arm.json",
             "games/bops/berry.json",
+            "games/bops/boss.json",
+            "games/bops/bowl.json",
+            "games/bops/cloud.json",
+            "games/bops/crisps.json",
             "games/bops/fruit.json",
+            "games/bops/photo.json",
+            "games/bops/road.json",
+            "games/bops/sandwich.json",
+            "games/bops/wasp2.json",
+            "games/bops/prelude.json",
+            "games/bops/interlude.json",
+            "games/bops/game-over.json",
+            "games/colours/green.json",
         ]
         .iter()
         .map(|s| s.to_string())
@@ -1056,18 +1078,24 @@ impl MainGame<LoadingScreen> {
                 game_filenames: Vec<String>,
                 games_to_preload: Vec<String>,
             ) -> WeeResult<(HashMap<String, GameData>, HashMap<String, Assets>)> {
-                let games: HashMap<String, GameData> = {
+                async fn load_individual_games(
+                    game_filenames: Vec<String>,
+                ) -> HashMap<String, GameData> {
                     let mut loaded_data = HashMap::new();
                     let mut waiting_data = Vec::new();
                     for filename in &game_filenames {
                         waiting_data.push(load_game_data(filename));
                     }
 
-                    // TODO: Use join_all again after finding source of error
+                    // TODO: Use a single join_all again after finding source of error
                     //let mut data = join_all(waiting_data).await;
                     let mut data = Vec::new();
-                    for _ in 0..waiting_data.len() {
-                        data.push(waiting_data.remove(0).await);
+                    let limit = 30;
+                    let mut rest = waiting_data.split_off(limit.min(waiting_data.len()));
+                    while !waiting_data.is_empty() {
+                        data.append(&mut join_all(waiting_data).await);
+                        waiting_data = rest;
+                        rest = waiting_data.split_off(limit.min(waiting_data.len()));
                     }
 
                     for filename in &game_filenames {
@@ -1084,7 +1112,22 @@ impl MainGame<LoadingScreen> {
                     }
 
                     loaded_data
+                }
+
+                #[cfg(wasm_packaged)]
+                let games: HashMap<String, GameData> = {
+                    let json = macroquad::file::load_string(path.to_str().unwrap()).await;
+
+                    if let Ok(json) = json {
+                        log::debug!("Loading from minified games file");
+                        json_from_str(&json)?
+                    } else {
+                        load_individual_games(game_filenames).await
+                    }
                 };
+
+                #[cfg(not(wasm_packaged))]
+                let games: HashMap<String, GameData> = load_individual_games(game_filenames).await;
 
                 let mut preloaded_assets = HashMap::new();
                 let mut waiting_data = Vec::new();
@@ -1221,6 +1264,23 @@ impl MainGame<Menu> {
             for _ in 0..game.frames.to_run_forever() {
                 update_frame(&mut game, &assets, DEFAULT_PLAYBACK_RATE, &mut self.rng)?
                     .add_drawn_text(&mut drawn_text);
+
+                for (key, object) in game.objects.iter() {
+                    if object.switch == SwitchState::SwitchedOn {
+                        let pattern = "OpenFolder:";
+                        if let Some(game_directory) = key.strip_prefix(pattern) {
+                            directory = game_directory.to_string();
+                            break 'choose_mode_running;
+                        }
+                        if key == "Shuffle" {
+                            directory = "games".to_string();
+                            break 'choose_mode_running;
+                        }
+                        if key == "Back" {
+                            std::process::exit(0)
+                        }
+                    }
+                }
             }
             draw_game(
                 &game,
@@ -1231,23 +1291,6 @@ impl MainGame<Menu> {
             );
 
             next_frame().await;
-
-            for (key, object) in game.objects.iter() {
-                if object.switch == SwitchState::SwitchedOn {
-                    let pattern = "OpenFolder:";
-                    if let Some(game_directory) = key.strip_prefix(pattern) {
-                        directory = game_directory.to_string();
-                        break 'choose_mode_running;
-                    }
-                    if key == "Shuffle" {
-                        directory = "games".to_string();
-                        break 'choose_mode_running;
-                    }
-                    if key == "Back" {
-                        std::process::exit(0)
-                    }
-                }
-            }
         }
 
         assets.stop_sounds();
@@ -1379,6 +1422,7 @@ impl MainGame<Interlude> {
                     set_switch("2", progress.lives >= 2);
                     set_switch("3", progress.lives >= 3);
                     set_switch("4", progress.lives >= 4);
+                    set_switch("Boss", false);
 
                     object.replace_text(&text_replacements);
                 }
@@ -1709,6 +1753,8 @@ impl MainGame<Play> {
         let mut drawn_text = HashMap::new();
         self.state.assets.music.play(playback_rate, VOLUME);
 
+        let mut avg_frames = Vec::new();
+
         'play_loop: while game.frames.remaining() != FrameCount::Frames(0) {
             if self.should_quit_play(&mut game.frames).await? {
                 return Ok(QuittableGame::Quit(MainGame {
@@ -1725,7 +1771,10 @@ impl MainGame<Play> {
                 }));
             }
 
-            for _ in 0..game.frames.to_run_at_rate(playback_rate) {
+            let temp = game.frames.to_run_at_rate(playback_rate);
+
+            avg_frames.push(temp);
+            for _ in 0..temp {
                 if update_frame(&mut game, &self.state.assets, playback_rate, &mut self.rng)?
                     .add_drawn_text(&mut drawn_text)
                     .should_end_early()
@@ -1744,6 +1793,16 @@ impl MainGame<Play> {
 
             next_frame().await;
         }
+
+        log::debug!(
+            "{}, {:?}",
+            game.frames.total_time_elapsed,
+            game.frames.total
+        );
+
+        let x = avg_frames.iter().sum::<u32>() as f32 / avg_frames.len() as f32;
+        log::debug!("{:?}", avg_frames);
+        log::debug!("{:?}", x);
 
         self.state.assets.stop_sounds();
 

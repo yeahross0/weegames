@@ -1,5 +1,5 @@
 {
-  "format_version": "0.3",
+  "format_version": "0.2",
   "published": false,
   "game_type": "Other",
   "objects": [
@@ -615,7 +615,7 @@
           "triggers": [
             {
               "CheckProperty": {
-                "name": "Shuffle Hovered",
+                "name": "bops Hovered",
                 "check": {
                   "Switch": "SwitchedOn"
                 }
@@ -1394,7 +1394,7 @@
       },
       "size": {
         "width": 286.0,
-        "height": 514.0
+        "height": 1028.0
       },
       "angle": -119.00001,
       "origin": {
@@ -1428,7 +1428,7 @@
                     "to": "CurrentPosition",
                     "distance": {
                       "x": 50.0,
-                      "y": 50.0
+                      "y": 250.0
                     }
                   }
                 }
@@ -1449,52 +1449,38 @@
   "background": [],
   "asset_files": {
     "images": {
-      "blender-grey": "blender-grey.png",
-      "shuffle-test-2": "shuffle-test-2.jpg",
-      "bird": "bird.png",
-      "shuffle-2": "shuffle-2.png",
-      "shuffle": "shuffle.png",
-<<<<<<< HEAD
-      "blender": "blender.png",
-=======
-      "television": "television.png",
-      "screen-rash-1": "screen-rash-1.jpg",
-      "screen-rash-4": "screen-rash-4.jpg",
-      "rash2-grey": "rash2-grey.png",
->>>>>>> quality/load-times
-      "static-2": "static-2.jpg",
-      "shuffle-test-4": "shuffle-test-4.jpg",
-      "rash2": "rash2.png",
-      "static-1": "static-1.jpg",
-      "screen4": "screen4.jpg",
-      "rash2-grey": "rash2-grey.png",
-      "screen2": "screen2.jpg",
-      "television": "television.png",
-      "shuffle-test-1": "shuffle-test-1.jpg",
-      "flappy": "flappy.png",
-      "screen1": "screen1.jpg",
-      "shuffle-test-3": "shuffle-test-3.jpg",
-      "remote": "remote.png",
-      "flappy-grey": "flappy-grey.png",
-      "screen-rash-1": "screen-rash-1.png",
-      "static-4": "static-4.jpg",
-      "screen-rash-3": "screen-rash-3.png",
-      "wasp-orange": "wasp-orange.png",
-      "rash": "rash.png",
-<<<<<<< HEAD
-      "static-3": "static-3.jpg",
-      "remote-dull": "remote-dull.png",
-      "wasp-grey": "wasp-grey.png",
-      "keyboard": "keyboard.jpg",
-      "screen-rash-2": "screen-rash-2.png",
-=======
-      "shuffle-test-2": "shuffle-test-2.jpg",
-      "screen-rash-2": "screen-rash-2.jpg",
       "screen-rash-3": "screen-rash-3.jpg",
-      "shuffle-2": "shuffle-2.png",
->>>>>>> quality/load-times
       "screen3": "screen3.jpg",
-      "screen-rash-4": "screen-rash-4.png"
+      "screen4": "screen4.jpg",
+      "shuffle-2": "shuffle-2.png",
+      "static-2": "static-2.jpg",
+      "rash": "rash.png",
+      "blender": "blender.png",
+      "screen-rash-1": "screen-rash-1.jpg",
+      "screen-rash-2": "screen-rash-2.png",
+      "screen1": "screen1.jpg",
+      "shuffle": "shuffle.png",
+      "remote-dull": "remote-dull.png",
+      "flappy": "flappy.png",
+      "wasp-grey": "wasp-grey.png",
+      "shuffle-test-1": "shuffle-test-1.jpg",
+      "rash2": "rash2.png",
+      "static-3": "static-3.jpg",
+      "bird": "bird.png",
+      "keyboard": "keyboard.jpg",
+      "shuffle-test-4": "shuffle-test-4.jpg",
+      "rash2-grey": "rash2-grey.png",
+      "shuffle-test-2": "shuffle-test-2.jpg",
+      "wasp-orange": "wasp-orange.png",
+      "flappy-grey": "flappy-grey.png",
+      "blender-grey": "blender-grey.png",
+      "static-1": "static-1.jpg",
+      "television": "television.png",
+      "screen-rash-4": "screen-rash-4.jpg",
+      "screen2": "screen2.jpg",
+      "static-4": "static-4.jpg",
+      "remote": "remote.png",
+      "shuffle-test-3": "shuffle-test-3.jpg"
     },
     "audio": {},
     "music": null,

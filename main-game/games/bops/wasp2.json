@@ -937,6 +937,32 @@
               }
             }
           ]
+        },
+        {
+          "triggers": [
+            {
+              "DifficultyLevel": {
+                "level": 1
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 2000.0,
+                    "y": 2000.0
+                  }
+                }
+              }
+            }
+          ]
         }
       ]
     },
@@ -1075,6 +1101,32 @@
                       "x": 1400.0,
                       "y": 700.0
                     }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "DifficultyLevel": {
+                "level": 1
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 2000.0,
+                    "y": 2000.0
                   }
                 }
               }
@@ -1223,6 +1275,58 @@
               }
             }
           ]
+        },
+        {
+          "triggers": [
+            {
+              "DifficultyLevel": {
+                "level": 1
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 2000.0,
+                    "y": 2000.0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "DifficultyLevel": {
+                "level": 2
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 2000.0,
+                    "y": 2000.0
+                  }
+                }
+              }
+            }
+          ]
         }
       ]
     },
@@ -1366,6 +1470,58 @@
               }
             }
           ]
+        },
+        {
+          "triggers": [
+            {
+              "DifficultyLevel": {
+                "level": 1
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 2000.0,
+                    "y": 2000.0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "DifficultyLevel": {
+                "level": 2
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 2000.0,
+                    "y": 2000.0
+                  }
+                }
+              }
+            }
+          ]
         }
       ]
     },
@@ -1504,6 +1660,58 @@
                       "x": 1400.0,
                       "y": 700.0
                     }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "DifficultyLevel": {
+                "level": 2
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 2000.0,
+                    "y": 2000.0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "DifficultyLevel": {
+                "level": 1
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 2000.0,
+                    "y": 2000.0
                   }
                 }
               }
@@ -1743,16 +1951,16 @@
   ],
   "asset_files": {
     "images": {
-      "laptop-closed4": "laptop-closed4.png",
-      "blurry-wasp": "blurry-wasp.png",
       "wasp": "wasp.png",
+      "blurry-wasp": "blurry-wasp.png",
+      "laptop-closed4": "laptop-closed4.png",
       "laptop": "laptop.png"
     },
     "audio": {
-      "squash2": "squash2.ogg",
-      "squash3": "squash3.ogg",
-      "smack": "smack.ogg",
       "squash1": "squash1.ogg",
+      "squash3": "squash3.ogg",
+      "squash2": "squash2.ogg",
+      "smack": "smack.ogg",
       "yeah": "yeah.ogg"
     },
     "music": {

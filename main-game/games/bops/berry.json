@@ -1084,16 +1084,16 @@
   ],
   "asset_files": {
     "images": {
-      "berry1": "berry1.png",
+      "berry-heart": "berry-heart.png",
       "glass": "glass.jpg",
       "berry2": "berry2.png",
-      "berry-heart": "berry-heart.png",
-      "raspberry-hand": "raspberry-hand.png"
+      "raspberry-hand": "raspberry-hand.png",
+      "berry1": "berry1.png"
     },
     "audio": {
-      "gulp": "gulp.ogg",
       "munch": "munch.ogg",
       "munch2": "munch2.ogg",
+      "gulp": "gulp.ogg",
       "mhm": "mhm.ogg"
     },
     "music": {

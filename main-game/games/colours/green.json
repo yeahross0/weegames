@@ -1792,17 +1792,9 @@
   "asset_files": {
     "images": {
       "blob3": "blob3.png",
-      "white-blob4": "white-blob4.png",
       "blob1": "blob1.png",
-      "white-blob1": "white-blob1.png",
-      "layerblob1": "layerblob1.png",
       "blob4": "blob4.png",
-      "layerblob3": "layerblob3.png",
-      "layerblob2": "layerblob2.png",
-      "blob2": "blob2.png",
-      "white-blob3": "white-blob3.png",
-      "white-blob2": "white-blob2.png",
-      "layerblob4": "layerblob4.png"
+      "blob2": "blob2.png"
     },
     "audio": {},
     "music": {

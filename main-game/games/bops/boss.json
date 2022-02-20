@@ -707,6 +707,13 @@
                   "name": "Bird Detector"
                 }
               }
+            },
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Left Frame"
+                }
+              }
             }
           ],
           "actions": [
@@ -813,6 +820,13 @@
                   "name": "Pink Detector"
                 }
               }
+            },
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Left Frame"
+                }
+              }
             }
           ],
           "actions": [
@@ -917,6 +931,13 @@
               "Collision": {
                 "Object": {
                   "name": "Leaf Detector"
+                }
+              }
+            },
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Left Frame"
                 }
               }
             }
@@ -1127,6 +1148,41 @@
               }
             }
           ]
+        },
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Art Bird"
+                }
+              }
+            },
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Right Frame"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
         }
       ]
     },
@@ -1206,6 +1262,41 @@
               }
             }
           ]
+        },
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Right Frame"
+                }
+              }
+            },
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Art Pink"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
         }
       ]
     },
@@ -1282,6 +1373,41 @@
                     "name": "red"
                   }
                 }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Art Leaf"
+                }
+              }
+            },
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Right Frame"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
               }
             }
           ]
@@ -1386,7 +1512,7 @@
             {
               "Time": {
                 "Exact": {
-                  "time": 720
+                  "time": 1680
                 }
               }
             }
@@ -1534,7 +1660,7 @@
                   }
                 ],
                 "speed": {
-                  "Value": 102.0
+                  "Value": 240.0
                 }
               }
             }
@@ -1670,7 +1796,7 @@
             {
               "Time": {
                 "Exact": {
-                  "time": 540
+                  "time": 1500
                 }
               }
             }
@@ -1697,7 +1823,7 @@
             {
               "Time": {
                 "Exact": {
-                  "time": 600
+                  "time": 1560
                 }
               }
             }
@@ -1724,7 +1850,7 @@
             {
               "Time": {
                 "Exact": {
-                  "time": 660
+                  "time": 1620
                 }
               }
             }
@@ -1751,7 +1877,7 @@
             {
               "Time": {
                 "Exact": {
-                  "time": 720
+                  "time": 1680
                 }
               }
             }
@@ -1778,7 +1904,15 @@
             {
               "Time": {
                 "Exact": {
-                  "time": 540
+                  "time": 1500
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Submit",
+                "check": {
+                  "Switch": "Off"
                 }
               }
             }
@@ -1806,10 +1940,9 @@
         {
           "triggers": [
             {
-              "Time": {
-                "Exact": {
-                  "time": 780
-                }
+              "CheckProperty": {
+                "name": "Text",
+                "check": "Timer"
               }
             }
           ],
@@ -1825,6 +1958,241 @@
                     }
                   },
                   "speed": "Slow"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Submit",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Timer": {
+                  "time": 60
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Nice try",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 2000.0,
+        "y": 2000.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "DrawText": {
+                "text": "nice try",
+                "font": "SquadaOne-Regular",
+                "colour": {
+                  "r": 0.039215688,
+                  "g": 0.039215688,
+                  "b": 0.039215688,
+                  "a": 1.0
+                },
+                "resize": "MatchText",
+                "justify": "Centre"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 2000.0,
+                    "y": 2000.0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Bird Detector",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Leaf Detector",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Pink Detector",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Right Frame"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Over here",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 2000.0,
+        "y": 2000.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "DrawText": {
+                "text": "over here",
+                "font": "SquadaOne-Regular",
+                "colour": {
+                  "r": 0.039215688,
+                  "g": 0.039215688,
+                  "b": 0.039215688,
+                  "a": 1.0
+                },
+                "resize": "MatchText",
+                "justify": "Centre"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 2000.0,
+                    "y": 2000.0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Bird Detector",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Leaf Detector",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Pink Detector",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Left Frame"
+                  }
                 }
               }
             }
@@ -1854,24 +2222,24 @@
   ],
   "asset_files": {
     "images": {
+      "red": "red.png",
       "art": "art.png",
+      "frame8": "frame8.png",
+      "paper-leaf": "paper-leaf.png",
+      "wheel3": "wheel3.png",
+      "submit5": "submit5.png",
+      "wheel7": "wheel7.png",
+      "flappy": "flappy.png",
+      "wheel1": "wheel1.png",
+      "wheel5": "wheel5.png",
+      "white-bg3": "white-bg3.png",
       "submit7": "submit7.png",
       "wheel4": "wheel4.png",
-      "paper-leaf": "paper-leaf.png",
-      "frame-bg4": "frame-bg4.png",
-      "wheel5": "wheel5.png",
-      "submit5": "submit5.png",
-      "pink": "pink.png",
-      "red": "red.png",
-      "wheel3": "wheel3.png",
-      "frame8": "frame8.png",
-      "wheel2": "wheel2.png",
       "wheel6": "wheel6.png",
-      "wheel7": "wheel7.png",
-      "white-bg2": "white-bg2.jpg",
-      "flappy": "flappy.png",
-      "white-bg3": "white-bg3.png",
-      "wheel1": "wheel1.png"
+      "pink": "pink.png",
+      "frame-bg4": "frame-bg4.png",
+      "wheel2": "wheel2.png",
+      "white-bg2": "white-bg2.jpg"
     },
     "audio": {},
     "music": null,
@@ -1883,7 +2251,7 @@
     }
   },
   "length": {
-    "Seconds": 16.0
+    "Seconds": 32.0
   },
   "intro_text": "r e c r e a t e",
   "attribution": "Art from a collection of photographs by Artem Pordrez\nhttps://www.pexels.com/photo/colorful-artworks-on-white-table-6941453/"
