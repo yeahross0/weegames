@@ -1,5 +1,5 @@
 {
-  "format_version": "0.2",
+  "format_version": "0.4",
   "published": true,
   "game_type": "Minigame",
   "objects": [
@@ -15,8 +15,37 @@
         "y": 450.0
       },
       "size": {
-        "width": 1920.0,
-        "height": 1080.0
+        "width": 1600.0,
+        "height": 900.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 2,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "keys",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 1000.0,
+        "height": 900.0
       },
       "angle": 0.0,
       "origin": null,
@@ -413,8 +442,8 @@
         "y": 450.0
       },
       "size": {
-        "width": 1920.0,
-        "height": 1080.0
+        "width": 1000.0,
+        "height": 900.0
       },
       "angle": 0.0,
       "origin": null,
@@ -756,7 +785,7 @@
         {
           "triggers": [
             {
-              "WinStatus": "HasBeenLost"
+              "WinStatus": "JustLost"
             },
             {
               "CheckProperty": {
@@ -781,6 +810,16 @@
                 "Sprite": {
                   "Image": {
                     "name": "piano-faces-inverted"
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Size": {
+                  "Value": {
+                    "width": 1600.0,
+                    "height": 900.0
                   }
                 }
               }
@@ -804,8 +843,8 @@
         "y": 450.0
       },
       "size": {
-        "width": 1920.0,
-        "height": 1080.0
+        "width": 1000.0,
+        "height": 900.00006
       },
       "angle": 0.0,
       "origin": null,
@@ -1147,7 +1186,7 @@
         {
           "triggers": [
             {
-              "WinStatus": "HasBeenLost"
+              "WinStatus": "JustLost"
             },
             {
               "CheckProperty": {
@@ -1172,6 +1211,16 @@
                 "Sprite": {
                   "Image": {
                     "name": "piano-faces-inverted"
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Size": {
+                  "Value": {
+                    "width": 1600.0,
+                    "height": 900.0
                   }
                 }
               }
@@ -1233,24 +1282,24 @@
   "background": [],
   "asset_files": {
     "images": {
-      "piano-faces-lady": "piano-faces-lady.jpg",
-      "piano-faces-inverted": "piano-faces-inverted.jpg",
-      "piano-faces-cow": "piano-faces-cow.jpg",
-      "piano-faces-hen": "piano-faces-hen.jpg",
-      "piano-faces": "piano-faces.jpg",
       "piano-faces-sheep": "piano-faces-sheep.jpg",
-      "piano-faces-all": "piano-faces-all.jpg"
+      "piano-faces": "piano-faces.jpg",
+      "piano-faces-cow": "piano-faces-cow.jpg",
+      "piano-faces-all": "piano-faces-all.jpg",
+      "piano-faces-hen": "piano-faces-hen.jpg",
+      "piano-faces-inverted": "piano-faces-inverted.jpg",
+      "piano-faces-lady": "piano-faces-lady.jpg"
     },
     "audio": {
       "groans-crop": "groans-crop.ogg",
-      "wie-gehts-crop": "wie-gehts-crop.ogg",
       "baa": "baa.ogg",
       "moo": "moo.ogg",
+      "cluck": "cluck-crop.ogg",
       "cheers": "cheers.ogg",
-      "cluck": "cluck-crop.ogg"
+      "wie-gehts-crop": "wie-gehts-crop.ogg"
     },
-    "fonts": {},
-    "music": null
+    "music": null,
+    "fonts": {}
   },
   "length": {
     "Seconds": 6.019293

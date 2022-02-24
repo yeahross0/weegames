@@ -1,0 +1,1002 @@
+{
+  "format_version": "0.4",
+  "published": true,
+  "game_type": "Minigame",
+  "objects": [
+    {
+      "name": "hand",
+      "sprite": {
+        "Image": {
+          "name": "hand-crisps"
+        }
+      },
+      "position": {
+        "x": 1220.0,
+        "y": 696.0
+      },
+      "size": {
+        "width": 451.0,
+        "height": 408.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 250.0,
+          "y": 250.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "hand",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": "Mouse"
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": -120.0,
+                      "y": -120.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Area": {
+                      "min": {
+                        "x": 995.0,
+                        "y": 496.0
+                      },
+                      "max": {
+                        "x": 1446.0,
+                        "y": 900.0
+                      }
+                    }
+                  },
+                  "interaction": "Hover"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "WinStatus": "JustWon"
+            }
+          ],
+          "actions": [
+            {
+              "PlaySound": {
+                "name": "munch2"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "crisp",
+      "sprite": {
+        "Image": {
+          "name": "crisp"
+        }
+      },
+      "position": {
+        "x": -100.0,
+        "y": -200.0
+      },
+      "size": {
+        "width": 205.5,
+        "height": 246.5
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 205.5,
+          "y": 90.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 60
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Angle": {
+                      "Degrees": 120.00001
+                    }
+                  },
+                  "speed": "VeryFast"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Random": {
+                "random_actions": [
+                  {
+                    "Motion": {
+                      "JumpTo": {
+                        "Area": {
+                          "min": {
+                            "x": -400.0,
+                            "y": -150.0
+                          },
+                          "max": {
+                            "x": 800.0,
+                            "y": -140.0
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "Motion": {
+                      "JumpTo": {
+                        "Area": {
+                          "min": {
+                            "x": -200.0,
+                            "y": 0.0
+                          },
+                          "max": {
+                            "x": -150.0,
+                            "y": 500.0
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "hand"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "Accelerate": {
+                  "Continuous": {
+                    "direction": {
+                      "Direction": {
+                        "possible_directions": [
+                          "Down"
+                        ]
+                      }
+                    },
+                    "speed": "VeryFast"
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "chutist"
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "crisp result",
+      "sprite": {
+        "Image": {
+          "name": "crisp-cropped"
+        }
+      },
+      "position": {
+        "x": 2000.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 204.0,
+        "height": 90.5
+      },
+      "angle": 31.000002,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "crisp",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "hand"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": -100.0,
+                      "y": -70.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "crisp 2",
+      "sprite": {
+        "Image": {
+          "name": "crisp"
+        }
+      },
+      "position": {
+        "x": -100.0,
+        "y": -200.0
+      },
+      "size": {
+        "width": 205.5,
+        "height": 246.5
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 205.5,
+          "y": 90.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 90
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "diff2",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Angle": {
+                      "Degrees": 120.00001
+                    }
+                  },
+                  "speed": "VeryFast"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Random": {
+                "random_actions": [
+                  {
+                    "Motion": {
+                      "JumpTo": {
+                        "Area": {
+                          "min": {
+                            "x": -400.0,
+                            "y": -150.0
+                          },
+                          "max": {
+                            "x": 800.0,
+                            "y": -140.0
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "Motion": {
+                      "JumpTo": {
+                        "Area": {
+                          "min": {
+                            "x": -200.0,
+                            "y": 0.0
+                          },
+                          "max": {
+                            "x": -150.0,
+                            "y": 500.0
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "hand"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "Accelerate": {
+                  "Continuous": {
+                    "direction": {
+                      "Direction": {
+                        "possible_directions": [
+                          "Down"
+                        ]
+                      }
+                    },
+                    "speed": "VeryFast"
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "chutist"
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "crisp result 2",
+      "sprite": {
+        "Image": {
+          "name": "crisp-cropped"
+        }
+      },
+      "position": {
+        "x": 2000.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 204.0,
+        "height": 90.5
+      },
+      "angle": -13.000001,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": true,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "crisp 2",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "hand"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": -90.0,
+                      "y": -80.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "diff2",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            },
+            {
+              "DifficultyLevel": {
+                "levels": [
+                  2
+                ]
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            },
+            {
+              "DifficultyLevel": {
+                "levels": [
+                  3
+                ]
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "crisp 3",
+      "sprite": {
+        "Image": {
+          "name": "crisp"
+        }
+      },
+      "position": {
+        "x": -100.0,
+        "y": -200.0
+      },
+      "size": {
+        "width": 205.5,
+        "height": 246.5
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 205.5,
+          "y": 90.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 120
+                }
+              }
+            },
+            {
+              "DifficultyLevel": {
+                "levels": [
+                  3
+                ]
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Angle": {
+                      "Degrees": 120.00001
+                    }
+                  },
+                  "speed": "VeryFast"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Random": {
+                "random_actions": [
+                  {
+                    "Motion": {
+                      "JumpTo": {
+                        "Area": {
+                          "min": {
+                            "x": -400.0,
+                            "y": -150.0
+                          },
+                          "max": {
+                            "x": 800.0,
+                            "y": -140.0
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "Motion": {
+                      "JumpTo": {
+                        "Area": {
+                          "min": {
+                            "x": -200.0,
+                            "y": 0.0
+                          },
+                          "max": {
+                            "x": -150.0,
+                            "y": 500.0
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "hand"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "Accelerate": {
+                  "Continuous": {
+                    "direction": {
+                      "Direction": {
+                        "possible_directions": [
+                          "Down"
+                        ]
+                      }
+                    },
+                    "speed": "VeryFast"
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "chutist"
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "crisp result 3",
+      "sprite": {
+        "Image": {
+          "name": "crisp-cropped"
+        }
+      },
+      "position": {
+        "x": 2000.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 204.0,
+        "height": 90.5
+      },
+      "angle": 13.000001,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": true
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "crisp 3",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "hand"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": -90.0,
+                      "y": -80.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Won",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "DifficultyLevel": {
+                "levels": [
+                  1
+                ]
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "crisp",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Win"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "DifficultyLevel": {
+                "levels": [
+                  2
+                ]
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "crisp",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "crisp 2",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Win"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "crisp",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "crisp 2",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "crisp 3",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Win"
+          ]
+        }
+      ]
+    }
+  ],
+  "background": [
+    {
+      "sprite": {
+        "Image": {
+          "name": "table-colours"
+        }
+      },
+      "area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 1600.0,
+          "y": 900.0
+        }
+      }
+    }
+  ],
+  "asset_files": {
+    "images": {
+      "table-colours": "table-colours.jpg",
+      "chutist": "chutist.png",
+      "hand-crisps": "hand-crisps.png",
+      "crisp-cropped": "crisp-cropped.png",
+      "crisp": "crisp.png"
+    },
+    "audio": {
+      "munch2": "munch2.ogg"
+    },
+    "music": {
+      "filename": "certain-death.ogg",
+      "looped": false
+    },
+    "fonts": {}
+  },
+  "length": {
+    "Seconds": 5.0
+  },
+  "intro_text": "catch crisps",
+  "attribution": "crisps: https://www.pexels.com/photo/man-taking-bowl-of-chips-placed-near-dried-fruits-6546165/\nparachute: https://www.pexels.com/photo/parachute-flying-in-the-air-9173502/\n\nmunch2: https://freesound.org/people/Lukeo135/sounds/518155/\n\n----\nCertain Death by Hans Atom (c) copyright 2018\nLicensed under a Creative Commons Attribution Noncommercial  (3.0) license.\nhttp://dig.ccmixter.org/files/hansatom/57190\nFt: Brad Sucks\n----"
+}

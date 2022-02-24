@@ -1,0 +1,679 @@
+{
+  "format_version": "0.4",
+  "published": true,
+  "game_type": "Minigame",
+  "objects": [
+    {
+      "name": "Road",
+      "sprite": {
+        "Image": {
+          "name": "road"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 2300.0
+      },
+      "size": {
+        "width": 1600.0,
+        "height": 4597.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 2,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Up"
+                      ]
+                    }
+                  },
+                  "speed": "Slow"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Car",
+      "sprite": {
+        "Image": {
+          "name": "car-blurry"
+        }
+      },
+      "position": {
+        "x": 700.0,
+        "y": 200.0
+      },
+      "size": {
+        "width": 159.0,
+        "height": 364.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 30.0,
+          "y": 10.0
+        },
+        "max": {
+          "x": 155.0,
+          "y": 300.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Down"
+                      ]
+                    }
+                  },
+                  "speed": {
+                    "Value": 1.0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Area": {
+                  "min": {
+                    "x": 0.0,
+                    "y": 0.0
+                  },
+                  "max": {
+                    "x": 620.0,
+                    "y": 900.0
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Car",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Down"
+                      ]
+                    }
+                  },
+                  "speed": {
+                    "Value": 1.0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Car",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Angle": {
+                      "Degrees": 99.0
+                    }
+                  },
+                  "speed": "Slow"
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Area": {
+                  "min": {
+                    "x": 1000.0,
+                    "y": 0.0
+                  },
+                  "max": {
+                    "x": 1600.0,
+                    "y": 900.0
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Down"
+                      ]
+                    }
+                  },
+                  "speed": {
+                    "Value": 1.0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Car",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Angle": {
+                      "Degrees": -99.0
+                    }
+                  },
+                  "speed": "Slow"
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Green Car"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Effect": "Freeze"
+            },
+            "Lose",
+            "StopMusic",
+            {
+              "PlaySound": {
+                "name": "car-crash-crop"
+              }
+            },
+            {
+              "SetProperty": {
+                "Timer": {
+                  "time": 60
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Blue Car"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Effect": "Freeze"
+            },
+            "Lose",
+            "StopMusic",
+            {
+              "PlaySound": {
+                "name": "car-crash-crop"
+              }
+            },
+            {
+              "SetProperty": {
+                "Timer": {
+                  "time": 60
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Yellow Car"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Effect": "Freeze"
+            },
+            "Lose",
+            "StopMusic",
+            {
+              "PlaySound": {
+                "name": "car-crash-crop"
+              }
+            },
+            {
+              "SetProperty": {
+                "Timer": {
+                  "time": 60
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Car",
+                "check": "Timer"
+              }
+            }
+          ],
+          "actions": [
+            "EndEarly"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "End"
+            }
+          ],
+          "actions": [
+            "Win"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Green Car",
+      "sprite": {
+        "Image": {
+          "name": "green-car-blurry"
+        }
+      },
+      "position": {
+        "x": 920.0,
+        "y": 650.0
+      },
+      "size": {
+        "width": 159.0,
+        "height": 364.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 25.0,
+          "y": 10.0
+        },
+        "max": {
+          "x": 150.0,
+          "y": 300.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 2,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Up"
+                      ]
+                    }
+                  },
+                  "speed": "VerySlow"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Car"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 5.0,
+                      "y": 0.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Blue Car",
+      "sprite": {
+        "Image": {
+          "name": "blue-car-blurry"
+        }
+      },
+      "position": {
+        "x": 690.0,
+        "y": 1000.0
+      },
+      "size": {
+        "width": 159.0,
+        "height": 364.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 30.0,
+          "y": 10.0
+        },
+        "max": {
+          "x": 150.0,
+          "y": 300.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Up"
+                      ]
+                    }
+                  },
+                  "speed": {
+                    "Value": 2.0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Car"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": -7.0,
+                      "y": 7.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Yellow Car",
+      "sprite": {
+        "Image": {
+          "name": "yellow-car-blurry"
+        }
+      },
+      "position": {
+        "x": 925.0,
+        "y": 3200.0
+      },
+      "size": {
+        "width": 159.0,
+        "height": 364.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 35.0,
+          "y": 15.0
+        },
+        "max": {
+          "x": 150.0,
+          "y": 300.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Up"
+                      ]
+                    }
+                  },
+                  "speed": {
+                    "Value": 6.0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Car"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 0.0,
+                      "y": 0.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "background": [],
+  "asset_files": {
+    "images": {
+      "green-car-blurry": "green-car-blurry.png",
+      "yellow-car-blurry": "yellow-car-blurry.png",
+      "road": "road.jpg",
+      "blue-car-blurry": "blue-car-blurry.png",
+      "car-blurry": "car-blurry.png"
+    },
+    "audio": {
+      "car-crash-crop": "car-crash-crop.ogg"
+    },
+    "music": {
+      "filename": "heart-beats-fast.ogg",
+      "looped": false
+    },
+    "fonts": {}
+  },
+  "length": {
+    "Seconds": 7.5
+  },
+  "intro_text": "Switch Lanes!",
+  "attribution": "cars + road: https://www.pexels.com/photo/aerial-view-of-car-on-the-road-8356177/\n\n----\ncar crash:\nhttps://freesound.org/people/nsstudios/sounds/351513/\n'car crash' by nsstudios is licensed under CC BY-NC 3.0\nhttps://creativecommons.org/licenses/by-nc/3.0/\nI have trimmed the audio.\n----\n\n----\nMy Heart Beats So Fast by Loveshadow (c) copyright 2012\nLicensed under a Creative Commons Attribution Noncommercial  (3.0) license.\nhttp://dig.ccmixter.org/files/Loveshadow/39281\nFt: Royalarc305 & KCENTRIC\n----"
+}

@@ -1,5 +1,5 @@
 {
-  "format_version": "0.2",
+  "format_version": "0.4",
   "published": true,
   "game_type": "Minigame",
   "objects": [
@@ -58,7 +58,7 @@
         {
           "triggers": [
             {
-              "WinStatus": "HasBeenWon"
+              "WinStatus": "JustWon"
             }
           ],
           "actions": [
@@ -171,7 +171,7 @@
         {
           "triggers": [
             {
-              "WinStatus": "HasBeenWon"
+              "WinStatus": "JustWon"
             }
           ],
           "actions": [

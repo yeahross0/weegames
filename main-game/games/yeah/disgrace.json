@@ -1,5 +1,5 @@
 {
-  "format_version": "0.2",
+  "format_version": "0.4",
   "published": true,
   "game_type": "Minigame",
   "objects": [
@@ -27,26 +27,7 @@
       },
       "layer": 1,
       "switch": "Off",
-      "instructions": [
-        {
-          "triggers": [
-            {
-              "WinStatus": "HasBeenWon"
-            }
-          ],
-          "actions": [
-            {
-              "SetProperty": {
-                "Sprite": {
-                  "Image": {
-                    "name": "notebook-uncovered-david-robot"
-                  }
-                }
-              }
-            }
-          ]
-        }
-      ]
+      "instructions": []
     },
     {
       "name": "leaf",
@@ -201,20 +182,68 @@
           ]
         }
       ]
+    },
+    {
+      "name": "David",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 1200.0,
+        "y": 675.0
+      },
+      "size": {
+        "width": 800.0,
+        "height": 450.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "WinStatus": "JustWon"
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "notebook-uncovered-david-robot"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
     }
   ],
   "background": [],
   "asset_files": {
     "images": {
-      "notebook-uncovered-david-robot": "notebook-uncovered-david-robot.jpg",
       "notebook-uncovered-david": "notebook-uncovered-david3.jpg",
-      "notebook-leaf-16-9": "notebook-leaf-16-9.png"
+      "notebook-leaf-16-9": "notebook-leaf-16-9.png",
+      "notebook-uncovered-david-robot": "notebook-uncovered-david-robot.jpg"
     },
     "audio": {
       "hey-crop": "hey-crop.ogg"
     },
-    "fonts": {},
-    "music": null
+    "music": null,
+    "fonts": {}
   },
   "length": {
     "Seconds": 3.0

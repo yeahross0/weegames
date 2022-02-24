@@ -1,0 +1,1898 @@
+{
+  "format_version": "0.4",
+  "published": true,
+  "game_type": "Minigame",
+  "objects": [
+    {
+      "name": "Hand",
+      "sprite": {
+        "Image": {
+          "name": "sandwich-hand2"
+        }
+      },
+      "position": {
+        "x": 250.0,
+        "y": 700.0
+      },
+      "size": {
+        "width": 508.5,
+        "height": 429.75
+      },
+      "angle": 0.0,
+      "origin": {
+        "x": 0.0,
+        "y": -2400.0
+      },
+      "collision_area": {
+        "min": {
+          "x": 110.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 500.0,
+          "y": 125.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Angle": {
+                  "Match": {
+                    "name": "Angle thing"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Angle thing",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.52156866,
+          "b": 0.0,
+          "a": 0.5137255
+        }
+      },
+      "position": {
+        "x": 0.0,
+        "y": -1800.0
+      },
+      "size": {
+        "width": 50.0,
+        "height": 200.0
+      },
+      "angle": -9.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Angle": "RotateToMouse"
+              }
+            },
+            {
+              "SetProperty": {
+                "Angle": {
+                  "Increase": 182.5
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "bottom",
+      "sprite": {
+        "Image": {
+          "name": "bottom2"
+        }
+      },
+      "position": {
+        "x": 1350.0,
+        "y": -200.0
+      },
+      "size": {
+        "width": 349.5,
+        "height": 129.75
+      },
+      "angle": 0.0,
+      "origin": {
+        "x": -170.0,
+        "y": -2340.0
+      },
+      "collision_area": {
+        "min": {
+          "x": 10.0,
+          "y": 10.0
+        },
+        "max": {
+          "x": 340.0,
+          "y": 120.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Random": {
+                  "start": 60,
+                  "end": 90
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Down"
+                      ]
+                    }
+                  },
+                  "speed": "Slow"
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Accelerate": {
+                  "SlowDown": {
+                    "speed": {
+                      "Value": 1.25
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Hand"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "bottom",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Hand"
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Angle": {
+                  "Match": {
+                    "name": "Hand"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 80.0,
+                      "y": -210.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "meat",
+      "sprite": {
+        "Image": {
+          "name": "meat-thing2"
+        }
+      },
+      "position": {
+        "x": 600.0,
+        "y": -200.0
+      },
+      "size": {
+        "width": 273.75,
+        "height": 88.5
+      },
+      "angle": 0.0,
+      "origin": {
+        "x": -180.0,
+        "y": -2250.0
+      },
+      "collision_area": {
+        "min": {
+          "x": 10.0,
+          "y": 10.0
+        },
+        "max": {
+          "x": 260.0,
+          "y": 80.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Random": {
+                  "start": 90,
+                  "end": 120
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Down"
+                      ]
+                    }
+                  },
+                  "speed": "Slow"
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Accelerate": {
+                  "SlowDown": {
+                    "speed": {
+                      "Value": 1.25
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "meat",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Hand"
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Angle": {
+                  "Match": {
+                    "name": "Hand"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 65.0,
+                      "y": -310.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "bottom"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "bottom",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "WinStatus": "NotYetWon"
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Hand"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "bottom",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "leaf",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "top",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "leaf",
+      "sprite": {
+        "Image": {
+          "name": "leaf-thing2"
+        }
+      },
+      "position": {
+        "x": 950.0,
+        "y": -200.0
+      },
+      "size": {
+        "width": 313.5,
+        "height": 105.0
+      },
+      "angle": 0.0,
+      "origin": {
+        "x": -180.0,
+        "y": -2200.0
+      },
+      "collision_area": {
+        "min": {
+          "x": 10.0,
+          "y": 10.0
+        },
+        "max": {
+          "x": 300.0,
+          "y": 95.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Random": {
+                  "start": 120,
+                  "end": 150
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Down"
+                      ]
+                    }
+                  },
+                  "speed": "Slow"
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Accelerate": {
+                  "SlowDown": {
+                    "speed": {
+                      "Value": 1.25
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "leaf",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Hand"
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Angle": {
+                  "Match": {
+                    "name": "Hand"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 70.0,
+                      "y": -390.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "meat"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "meat",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "WinStatus": "NotYetWon"
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "bottom"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "bottom",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "WinStatus": "NotYetWon"
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "meat"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "meat",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "WinStatus": "NotYetWon"
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Hand"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "bottom",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "leaf",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "top",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "top",
+      "sprite": {
+        "Image": {
+          "name": "top2"
+        }
+      },
+      "position": {
+        "x": 200.0,
+        "y": -200.0
+      },
+      "size": {
+        "width": 309.0,
+        "height": 82.5
+      },
+      "angle": 0.0,
+      "origin": {
+        "x": -190.0,
+        "y": -2180.0
+      },
+      "collision_area": {
+        "min": {
+          "x": 10.0,
+          "y": 10.0
+        },
+        "max": {
+          "x": 300.0,
+          "y": 70.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Random": {
+                  "start": 150,
+                  "end": 180
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Down"
+                      ]
+                    }
+                  },
+                  "speed": "Slow"
+                }
+              }
+            },
+            {
+              "Motion": {
+                "Accelerate": {
+                  "SlowDown": {
+                    "speed": {
+                      "Value": 1.25
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "top",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Hand"
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Angle": {
+                  "Match": {
+                    "name": "Hand"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 90.0,
+                      "y": -460.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "bottom"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "bottom",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "meat"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "meat",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "leaf"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "leaf",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Hand"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "bottom",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "meat",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "leaf",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Goal: Meat Leaf",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 1
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Selector",
+                "check": {
+                  "Sprite": {
+                    "Colour": {
+                      "r": 0.0,
+                      "g": 0.0,
+                      "b": 1.0,
+                      "a": 0.0
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Goal: Meat Leaf",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "bottom",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "meat",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "leaf",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "top",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Win"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "WinStatus": "JustWon"
+            }
+          ],
+          "actions": [
+            {
+              "PlaySound": {
+                "name": "yum"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "WinStatus": "Lost"
+            },
+            {
+              "CheckProperty": {
+                "name": "top",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "StopMusic",
+            {
+              "PlaySound": {
+                "name": "do-not-want"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Selector",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Random": {
+                "random_actions": [
+                  {
+                    "SetProperty": {
+                      "Sprite": {
+                        "Colour": {
+                          "r": 1.0,
+                          "g": 0.0,
+                          "b": 0.0,
+                          "a": 0.0
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "SetProperty": {
+                      "Sprite": {
+                        "Colour": {
+                          "r": 0.0,
+                          "g": 1.0,
+                          "b": 0.0,
+                          "a": 0.0
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "SetProperty": {
+                      "Sprite": {
+                        "Colour": {
+                          "r": 0.0,
+                          "g": 0.0,
+                          "b": 1.0,
+                          "a": 0.0
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            },
+            {
+              "DifficultyLevel": {
+                "levels": [
+                  1
+                ]
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Random": {
+                "random_actions": [
+                  {
+                    "SetProperty": {
+                      "Sprite": {
+                        "Colour": {
+                          "r": 1.0,
+                          "g": 0.0,
+                          "b": 0.0,
+                          "a": 0.0
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "SetProperty": {
+                      "Sprite": {
+                        "Colour": {
+                          "r": 0.0,
+                          "g": 1.0,
+                          "b": 0.0,
+                          "a": 0.0
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "SetProperty": {
+                      "Sprite": {
+                        "Colour": {
+                          "r": 0.0,
+                          "g": 0.0,
+                          "b": 1.0,
+                          "a": 0.0
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "SetProperty": {
+                      "Sprite": {
+                        "Colour": {
+                          "r": 0.0,
+                          "g": 0.0,
+                          "b": 1.0,
+                          "a": 0.0
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "SetProperty": {
+                      "Sprite": {
+                        "Colour": {
+                          "r": 0.0,
+                          "g": 0.0,
+                          "b": 1.0,
+                          "a": 0.0
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Mini Bottom",
+      "sprite": {
+        "Image": {
+          "name": "bottom2"
+        }
+      },
+      "position": {
+        "x": 1400.0,
+        "y": 575.0
+      },
+      "size": {
+        "width": 233.0,
+        "height": 86.5
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "DifficultyLevel": {
+                "levels": [
+                  3
+                ]
+              }
+            },
+            {
+              "Time": {
+                "Exact": {
+                  "time": 30
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Right"
+                      ]
+                    }
+                  },
+                  "speed": "Normal"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Mini Meat",
+      "sprite": {
+        "Image": {
+          "name": "meat-thing2"
+        }
+      },
+      "position": {
+        "x": 1800.0,
+        "y": 515.0
+      },
+      "size": {
+        "width": 182.5,
+        "height": 59.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Goal: Meat Leaf",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 1400.0,
+                    "y": 515.0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "DifficultyLevel": {
+                "levels": [
+                  3
+                ]
+              }
+            },
+            {
+              "Time": {
+                "Exact": {
+                  "time": 30
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Right"
+                      ]
+                    }
+                  },
+                  "speed": "Normal"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Goal: Meat",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 1400.0,
+                    "y": 515.0
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Mini Leaf",
+      "sprite": {
+        "Image": {
+          "name": "leaf-thing2"
+        }
+      },
+      "position": {
+        "x": 1800.0,
+        "y": 455.0
+      },
+      "size": {
+        "width": 209.0,
+        "height": 70.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Goal: Meat Leaf",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 1400.0,
+                    "y": 455.0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 30
+                }
+              }
+            },
+            {
+              "DifficultyLevel": {
+                "levels": [
+                  3
+                ]
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Right"
+                      ]
+                    }
+                  },
+                  "speed": "Normal"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Goal: Leaf",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 1400.0,
+                    "y": 455.0
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Mini Top",
+      "sprite": {
+        "Image": {
+          "name": "top2"
+        }
+      },
+      "position": {
+        "x": 1400.0,
+        "y": 375.0
+      },
+      "size": {
+        "width": 206.0,
+        "height": 55.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 30
+                }
+              }
+            },
+            {
+              "DifficultyLevel": {
+                "levels": [
+                  3
+                ]
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Right"
+                      ]
+                    }
+                  },
+                  "speed": "Normal"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Goal: Meat",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 1
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Selector",
+                "check": {
+                  "Sprite": {
+                    "Colour": {
+                      "r": 1.0,
+                      "g": 0.0,
+                      "b": 0.0,
+                      "a": 0.0
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Goal: Meat",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "bottom",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "meat",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "top",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "leaf",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Win"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "leaf",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Goal: Meat",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Goal: Leaf",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": {
+                "Exact": {
+                  "time": 1
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Selector",
+                "check": {
+                  "Sprite": {
+                    "Colour": {
+                      "r": 0.0,
+                      "g": 1.0,
+                      "b": 0.0,
+                      "a": 0.0
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "Goal: Leaf",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "bottom",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "leaf",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "top",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "meat",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Win"
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "meat",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "Goal: Leaf",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            "Lose"
+          ]
+        }
+      ]
+    }
+  ],
+  "background": [
+    {
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 1.0
+        }
+      },
+      "area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 1600.0,
+          "y": 900.0
+        }
+      }
+    }
+  ],
+  "asset_files": {
+    "images": {
+      "sandwich-hand2": "sandwich-hand2.png",
+      "leaf-thing2": "leaf-thing2.png",
+      "top2": "top2.png",
+      "bottom2": "bottom2.png",
+      "meat-thing2": "meat-thing2.png"
+    },
+    "audio": {
+      "do-not-want": "do-not-want.ogg",
+      "yum": "yum.ogg"
+    },
+    "music": {
+      "filename": "sandwich.ogg",
+      "looped": false
+    },
+    "fonts": {}
+  },
+  "length": {
+    "Seconds": 6.0
+  },
+  "intro_text": "Make this ->  ",
+  "attribution": "sandwich: https://www.pexels.com/photo/commercial-shot-of-sandwich-ingredients-in-air-10806112/\n\nyum: https://freesound.org/people/AudioRichter/sounds/169342/\ni don't want that: https://freesound.org/people/nuncaconoci/sounds/565009/\n\n----\nAnother Sandwich Please by Briareus (c) copyright 2010\nLicensed under a Creative Commons Noncommercial Sampling Plus license.\nhttp://dig.ccmixter.org/files/Briareus/27876\n----"
+}

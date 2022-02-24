@@ -1,0 +1,944 @@
+{
+  "format_version": "0.4",
+  "published": true,
+  "game_type": "Minigame",
+  "objects": [
+    {
+      "name": "Horse",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 1300.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 600.0,
+        "height": 900.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": []
+    },
+    {
+      "name": "arm5",
+      "sprite": {
+        "Image": {
+          "name": "potential-arm6"
+        }
+      },
+      "position": {
+        "x": 920.0,
+        "y": -200.0
+      },
+      "size": {
+        "width": 300.0,
+        "height": 250.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "arm3",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "Accelerate": {
+                  "Continuous": {
+                    "direction": {
+                      "Direction": {
+                        "possible_directions": [
+                          "Down"
+                        ]
+                      }
+                    },
+                    "speed": "Normal"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "arm1",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "arm2",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "arm3",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "arm5",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": "Stop"
+            },
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "arm3",
+                "check": {
+                  "Switch": "SwitchedOff"
+                }
+              }
+            },
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Glove Right"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Left"
+                      ]
+                    }
+                  },
+                  "speed": "Normal"
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "arm3",
+      "sprite": {
+        "Image": {
+          "name": "potential-arm3"
+        }
+      },
+      "position": {
+        "x": 600.0,
+        "y": -200.0
+      },
+      "size": {
+        "width": 367.0,
+        "height": 312.5
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 0.0,
+          "y": 5.0
+        },
+        "max": {
+          "x": 367.0,
+          "y": 312.5
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "arm2",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "Accelerate": {
+                  "Continuous": {
+                    "direction": {
+                      "Direction": {
+                        "possible_directions": [
+                          "Down"
+                        ]
+                      }
+                    },
+                    "speed": "Normal"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "arm1",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "arm2",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "arm3",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            },
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            },
+            {
+              "Motion": "Stop"
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "arm2",
+                "check": {
+                  "Switch": "SwitchedOff"
+                }
+              }
+            },
+            {
+              "Collision": {
+                "Object": {
+                  "name": "Wheat Right"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Left"
+                      ]
+                    }
+                  },
+                  "speed": "Normal"
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "arm2",
+      "sprite": {
+        "Image": {
+          "name": "potential-arm2"
+        }
+      },
+      "position": {
+        "x": 350.0,
+        "y": -200.0
+      },
+      "size": {
+        "width": 513.8,
+        "height": 300.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 0.0,
+          "y": 70.0
+        },
+        "max": {
+          "x": 513.8,
+          "y": 190.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 1,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "arm1",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "Accelerate": {
+                  "Continuous": {
+                    "direction": {
+                      "Direction": {
+                        "possible_directions": [
+                          "Down"
+                        ]
+                      }
+                    },
+                    "speed": "Normal"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "arm1",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "arm2",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": "Stop"
+            },
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "arm5",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            },
+            {
+              "Collision": {
+                "Object": {
+                  "name": "arm1"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Left"
+                      ]
+                    }
+                  },
+                  "speed": "Normal"
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "arm1",
+      "sprite": {
+        "Image": {
+          "name": "potential-arm11"
+        }
+      },
+      "position": {
+        "x": 100.0,
+        "y": -200.0
+      },
+      "size": {
+        "width": 300.0,
+        "height": 371.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 0.0,
+          "y": 43.0
+        },
+        "max": {
+          "x": 300.0,
+          "y": 275.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "Accelerate": {
+                  "Continuous": {
+                    "direction": {
+                      "Direction": {
+                        "possible_directions": [
+                          "Down"
+                        ]
+                      }
+                    },
+                    "speed": "Normal"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": "Anywhere",
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "CheckProperty": {
+                "name": "arm1",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": "Stop"
+            },
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "arm5",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Left"
+                      ]
+                    }
+                  },
+                  "speed": "Normal"
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Timer": {
+                  "time": 3
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Wheat Right",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.92941177,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 450.0,
+        "y": -210.0
+      },
+      "size": {
+        "width": 50.0,
+        "height": 260.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "arm2"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 100.0,
+                      "y": -10.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Glove Right",
+      "sprite": {
+        "Colour": {
+          "r": 0.74509805,
+          "g": 0.34901962,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 775.0,
+        "y": -180.0
+      },
+      "size": {
+        "width": 50.0,
+        "height": 260.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "arm3"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 175.0,
+                      "y": 20.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Arm Right",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.39215687,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 1050.0,
+        "y": -250.0
+      },
+      "size": {
+        "width": 50.0,
+        "height": 120.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "arm5"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 130.0,
+                      "y": -50.0
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Hand",
+      "sprite": {
+        "Image": {
+          "name": "hand"
+        }
+      },
+      "position": {
+        "x": 1184.0,
+        "y": 411.0
+      },
+      "size": {
+        "width": 368.0,
+        "height": 182.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": {
+        "min": {
+          "x": 0.0,
+          "y": 55.0
+        },
+        "max": {
+          "x": 368.0,
+          "y": 182.0
+        }
+      },
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "arm5",
+                "check": {
+                  "Switch": "SwitchedOff"
+                }
+              }
+            },
+            {
+              "Collision": {
+                "Object": {
+                  "name": "arm5"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "GoStraight": {
+                  "direction": {
+                    "Direction": {
+                      "possible_directions": [
+                        "Left"
+                      ]
+                    }
+                  },
+                  "speed": "Normal"
+                }
+              }
+            },
+            "Win",
+            {
+              "PlaySound": {
+                "name": "hello-hello"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "WinStatus": "JustLost"
+            }
+          ],
+          "actions": [
+            "StopMusic",
+            {
+              "PlaySound": {
+                "name": "ow-me-leg"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "arm1",
+                "check": "Timer"
+              }
+            }
+          ],
+          "actions": [
+            "Lose"
+          ]
+        }
+      ]
+    }
+  ],
+  "background": [
+    {
+      "sprite": {
+        "Image": {
+          "name": "bghmm"
+        }
+      },
+      "area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 1600.0,
+          "y": 900.0
+        }
+      }
+    }
+  ],
+  "asset_files": {
+    "images": {
+      "bghmm": "bghmm.jpg",
+      "potential-arm2": "potential-arm2.png",
+      "potential-arm11": "potential-arm11.png",
+      "potential-arm3": "potential-arm3.png",
+      "hand": "hand.png",
+      "potential-arm6": "potential-arm6.png"
+    },
+    "audio": {
+      "hello-hello": "hello-hello.ogg",
+      "ow-me-leg": "ow-me-leg.ogg"
+    },
+    "music": {
+      "filename": "arms-of-steel-crop.ogg",
+      "looped": false
+    },
+    "fonts": {}
+  },
+  "length": {
+    "Seconds": 6.0
+  },
+  "intro_text": "Construct!              ",
+  "attribution": "horse: https://www.pexels.com/photo/horse-in-stable-petted-by-someone-10560152/\nparts: of arm\nhttps://www.pexels.com/photo/person-s-right-hand-1257770/\nhttps://www.pexels.com/photo/crop-unrecognizable-person-in-rubber-gloves-raising-arms-5218007/\nhttps://www.pexels.com/photo/crop-person-with-spikes-on-white-background-6912901/\nhttps://www.pexels.com/photo/young-hooded-guy-standing-with-outstretched-arms-in-mountains-10194798/\n\nman and wall: https://www.pexels.com/photo/man-wearing-red-sweatshirt-and-black-pants-leaning-on-the-wall-845434/\n\n----\n'PAINED OUCH MY LEG.wav' by HumanSolarian is licensed under CC BY 3.0\nhttps://freesound.org/people/HumanSolarian/sounds/457176/\nhttps://creativecommons.org/licenses/by/3.0/legalcode\n----\n'hello_hello' by golosiy is licensed under CC Sampling Plus 1.0\nhttps://freesound.org/people/golosiy/sounds/107932/\n----\nArms of Steel by Elaiceps (c) copyright 2006\nLicensed under a Creative Commons Attribution Noncommercial license.\nhttp://dig.ccmixter.org/files/Elaiceps/7088\nFt: DeBenedictis\n----"
+}

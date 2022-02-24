@@ -10,6 +10,8 @@ high-scores.json
 played-games.json
 all-games.json
 
+autosave.json
+
 *.wasm
 webgames.zip
 

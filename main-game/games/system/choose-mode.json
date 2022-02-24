@@ -1,5 +1,5 @@
 {
-  "format_version": "0.2",
+  "format_version": "0.4",
   "published": false,
   "game_type": "Other",
   "objects": [
@@ -194,6 +194,101 @@
       ]
     },
     {
+      "name": "OpenFolder:games/bops",
+      "sprite": {
+        "Image": {
+          "name": "flappy-grey"
+        }
+      },
+      "position": {
+        "x": 1225.0,
+        "y": 725.0
+      },
+      "size": {
+        "width": 291.2,
+        "height": 166.40001
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "OpenFolder:games/bops"
+                    }
+                  },
+                  "interaction": {
+                    "Button": {
+                      "state": "Release"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "flappy-grey"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "OpenFolder:games/bops"
+                    }
+                  },
+                  "interaction": "Hover"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Image": {
+                    "name": "flappy"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "Shuffle",
       "sprite": {
         "Image": {
@@ -201,7 +296,7 @@
         }
       },
       "position": {
-        "x": 1300.0,
+        "x": 1450.0,
         "y": 725.0
       },
       "size": {
@@ -515,6 +610,38 @@
               }
             }
           ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "bops Hovered",
+                "check": {
+                  "Switch": "SwitchedOn"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Animate": {
+                "animation_type": "Loop",
+                "sprites": [
+                  {
+                    "Colour": {
+                      "r": 0.0,
+                      "g": 0.0,
+                      "b": 0.0,
+                      "a": 0.0
+                    }
+                  }
+                ],
+                "speed": {
+                  "Value": 60.0
+                }
+              }
+            }
+          ]
         }
       ]
     },
@@ -751,6 +878,25 @@
             {
               "CheckProperty": {
                 "name": "Shuffle Hovered",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "bops Hovered",
                 "check": {
                   "Switch": "On"
                 }
@@ -1083,39 +1229,258 @@
       "layer": 0,
       "switch": "Off",
       "instructions": []
+    },
+    {
+      "name": "bops Hovered",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 450.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "OpenFolder:games/bops",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "flappy"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "OpenFolder:games/bops",
+                "check": {
+                  "Sprite": {
+                    "Image": {
+                      "name": "flappy-grey"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "Off"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Keyboard",
+      "sprite": {
+        "Image": {
+          "name": "keyboard"
+        }
+      },
+      "position": {
+        "x": 2000.0,
+        "y": 460.0
+      },
+      "size": {
+        "width": 800.0,
+        "height": 450.0
+      },
+      "angle": -5.0000005,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 2,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "bops Hovered",
+                "check": {
+                  "Switch": "On"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 600.0,
+                    "y": 460.0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "CheckProperty": {
+                "name": "bops Hovered",
+                "check": {
+                  "Switch": "Off"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Point": {
+                    "x": 2000.0,
+                    "y": 2000.0
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Bird",
+      "sprite": {
+        "Image": {
+          "name": "bird"
+        }
+      },
+      "position": {
+        "x": 2000.0,
+        "y": 550.0
+      },
+      "size": {
+        "width": 286.0,
+        "height": 1028.0
+      },
+      "angle": -119.00001,
+      "origin": {
+        "x": 143.0,
+        "y": 500.0
+      },
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 2,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Object": {
+                    "name": "Keyboard"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentPosition",
+                    "distance": {
+                      "x": 50.0,
+                      "y": 250.0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "SetProperty": {
+                "Angle": {
+                  "Increase": 2.0
+                }
+              }
+            }
+          ]
+        }
+      ]
     }
   ],
   "background": [],
   "asset_files": {
     "images": {
-      "static-3": "static-3.jpg",
-      "shuffle": "shuffle.png",
-      "television": "television.png",
-      "screen-rash-1": "screen-rash-1.png",
-      "screen-rash-4": "screen-rash-4.png",
-      "rash2-grey": "rash2-grey.png",
-      "static-2": "static-2.jpg",
-      "shuffle-test-4": "shuffle-test-4.jpg",
-      "remote": "remote.png",
-      "wasp-orange": "wasp-orange.png",
-      "remote-dull": "remote-dull.png",
-      "static-4": "static-4.jpg",
-      "screen2": "screen2.jpg",
-      "blender-grey": "blender-grey.png",
-      "rash": "rash.png",
-      "shuffle-test-2": "shuffle-test-2.jpg",
-      "screen-rash-2": "screen-rash-2.png",
-      "screen-rash-3": "screen-rash-3.png",
-      "shuffle-2": "shuffle-2.png",
+      "screen-rash-3": "screen-rash-3.jpg",
       "screen3": "screen3.jpg",
-      "static-1": "static-1.jpg",
       "screen4": "screen4.jpg",
-      "rash2": "rash2.png",
-      "screen1": "screen1.jpg",
-      "shuffle-test-3": "shuffle-test-3.jpg",
-      "shuffle-test-1": "shuffle-test-1.jpg",
+      "shuffle-2": "shuffle-2.png",
+      "static-2": "static-2.jpg",
+      "rash": "rash.png",
       "blender": "blender.png",
-      "wasp-grey": "wasp-grey.png"
+      "screen-rash-1": "screen-rash-1.jpg",
+      "screen-rash-2": "screen-rash-2.png",
+      "screen1": "screen1.jpg",
+      "shuffle": "shuffle.png",
+      "remote-dull": "remote-dull.png",
+      "flappy": "flappy.png",
+      "wasp-grey": "wasp-grey.png",
+      "shuffle-test-1": "shuffle-test-1.jpg",
+      "rash2": "rash2.png",
+      "static-3": "static-3.jpg",
+      "bird": "bird.png",
+      "keyboard": "keyboard.jpg",
+      "shuffle-test-4": "shuffle-test-4.jpg",
+      "rash2-grey": "rash2-grey.png",
+      "shuffle-test-2": "shuffle-test-2.jpg",
+      "wasp-orange": "wasp-orange.png",
+      "flappy-grey": "flappy-grey.png",
+      "blender-grey": "blender-grey.png",
+      "static-1": "static-1.jpg",
+      "television": "television.png",
+      "screen-rash-4": "screen-rash-4.jpg",
+      "screen2": "screen2.jpg",
+      "static-4": "static-4.jpg",
+      "remote": "remote.png",
+      "shuffle-test-3": "shuffle-test-3.jpg"
     },
     "audio": {},
     "music": null,

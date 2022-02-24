@@ -1,0 +1,138 @@
+{
+  "format_version": "0.4",
+  "published": true,
+  "game_type": "Other",
+  "objects": [
+    {
+      "name": "Score",
+      "sprite": {
+        "Colour": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 550.0
+      },
+      "size": {
+        "width": 100.0,
+        "height": 100.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "DrawText": {
+                "text": "Welcome",
+                "font": "SquadaOne-Regular",
+                "colour": {
+                  "r": 0.039215688,
+                  "g": 0.039215688,
+                  "b": 0.039215688,
+                  "a": 1.0
+                },
+                "resize": "MatchText",
+                "justify": "Centre"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Bird",
+      "sprite": {
+        "Image": {
+          "name": "flappy"
+        }
+      },
+      "position": {
+        "x": 800.0,
+        "y": 500.0
+      },
+      "size": {
+        "width": 728.5,
+        "height": 416.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "Motion": {
+                "JumpTo": "Mouse"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "background": [
+    {
+      "sprite": {
+        "Colour": {
+          "r": 0.9411765,
+          "g": 0.9411765,
+          "b": 0.9411765,
+          "a": 1.0
+        }
+      },
+      "area": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "max": {
+          "x": 1600.0,
+          "y": 900.0
+        }
+      }
+    }
+  ],
+  "asset_files": {
+    "images": {
+      "flappy": "flappy.png",
+      "strawberry": "strawberry.png"
+    },
+    "audio": {},
+    "music": null,
+    "fonts": {
+      "SquadaOne-Regular": {
+        "filename": "SquadaOne-Regular.ttf",
+        "size": 200.0
+      }
+    }
+  },
+  "length": {
+    "Seconds": 2.0
+  },
+  "intro_text": null,
+  "attribution": "https://www.pexels.com/photo/colorful-artworks-on-white-table-6941453/"
+}

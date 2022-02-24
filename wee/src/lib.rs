@@ -150,7 +150,7 @@ mod tests {
             )
             .unwrap();
 
-        assert_eq!(game.status.next_frame, WinStatus::HasBeenWon);
+        assert_eq!(game.status.next_frame, WinStatus::JustWon);
     }
 
     #[test]
@@ -222,7 +222,7 @@ mod tests {
 
                 play_test_game(&mut game, &mut inputs, &mut rng).unwrap();
                 if (game.status.current == WinStatus::Won
-                    || game.status.current == WinStatus::HasBeenWon)
+                    || game.status.current == WinStatus::JustWon)
                     != saved_run.has_been_won
                 {
                     wrong_result_games.push(path.to_str().unwrap().to_string());
@@ -278,8 +278,8 @@ impl Game {
     fn update_win_status(&mut self) {
         self.status.current = self.status.next_frame;
         self.status.next_frame = match self.status.next_frame {
-            WinStatus::HasBeenWon => WinStatus::Won,
-            WinStatus::HasBeenLost => WinStatus::Lost,
+            WinStatus::JustWon => WinStatus::Won,
+            WinStatus::JustLost => WinStatus::Lost,
             _ => self.status.next_frame,
         };
     }
@@ -418,24 +418,23 @@ impl Trigger {
             }
             Trigger::WinStatus(win_status) => match win_status {
                 WinStatus::Won => {
-                    matches!(game.status.current, WinStatus::Won | WinStatus::HasBeenWon)
+                    matches!(game.status.current, WinStatus::Won | WinStatus::JustWon)
                 }
-                WinStatus::Lost => matches!(
-                    game.status.current,
-                    WinStatus::Lost | WinStatus::HasBeenLost
-                ),
+                WinStatus::Lost => {
+                    matches!(game.status.current, WinStatus::Lost | WinStatus::JustLost)
+                }
                 WinStatus::NotYetLost => matches!(
                     game.status.current,
                     WinStatus::NotYetLost
                         | WinStatus::NotYetWon
-                        | WinStatus::HasBeenWon
+                        | WinStatus::JustWon
                         | WinStatus::Won
                 ),
                 WinStatus::NotYetWon => matches!(
                     game.status.current,
                     WinStatus::NotYetWon
                         | WinStatus::NotYetLost
-                        | WinStatus::HasBeenLost
+                        | WinStatus::JustLost
                         | WinStatus::Lost
                 ),
                 _ => game.status.current == *win_status,
@@ -490,7 +489,7 @@ impl Trigger {
                 let roll = rng.random_in_range(0.0, 1.0);
                 roll < *chance
             }
-            Trigger::DifficultyLevel { level } => game.difficulty == *level,
+            Trigger::DifficultyLevel { levels } => levels.contains(&game.difficulty),
         };
         Ok(triggered)
     }
@@ -589,6 +588,8 @@ impl Default for FrameInfo {
             ran: 0,
             steps_taken: 0,
             to_run: 0,
+            total_time_elapsed: 0.0,
+            previous_frame_time: 0.0,
         }
     }
 }
@@ -605,6 +606,8 @@ impl FrameInfo {
             ran: 0,
             steps_taken: 0,
             to_run: 0,
+            total_time_elapsed: 0.0,
+            previous_frame_time: 0.0,
         }
     }
 
@@ -801,10 +804,10 @@ impl Action {
             };
         };
         let try_to_win = |status| {
-            try_to_set_status(status, WinStatus::HasBeenLost, WinStatus::HasBeenWon);
+            try_to_set_status(status, WinStatus::JustLost, WinStatus::JustWon);
         };
         let try_to_lose = |status| {
-            try_to_set_status(status, WinStatus::HasBeenWon, WinStatus::HasBeenLost);
+            try_to_set_status(status, WinStatus::JustWon, WinStatus::JustLost);
         };
         let mut world_actions = Vec::new();
         match self {
@@ -1807,8 +1810,8 @@ pub enum Input {
 pub enum WinStatus {
     Won,
     Lost,
-    HasBeenWon,
-    HasBeenLost,
+    JustWon,
+    JustLost,
     NotYetWon,
     NotYetLost,
 }
@@ -1837,7 +1840,7 @@ pub enum Trigger {
     WinStatus(WinStatus),
     Random { chance: f32 },
     CheckProperty { name: String, check: PropertyCheck },
-    DifficultyLevel { level: u32 },
+    DifficultyLevel { levels: HashSet<u32> },
 }
 
 #[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq)]
@@ -2196,6 +2199,8 @@ pub struct FrameInfo {
     pub ran: u32,
     pub steps_taken: u32,
     pub to_run: u32,
+    pub total_time_elapsed: f64,
+    pub previous_frame_time: f64,
 }
 
 pub struct Game {
@@ -2369,7 +2374,7 @@ impl SerialiseObject {
 impl Default for GameData {
     fn default() -> GameData {
         GameData {
-            format_version: "0.2".to_string(),
+            format_version: "0.4".to_string(),
             published: false,
             game_type: GameType::Minigame,
             objects: Vec::new(),
@@ -2433,8 +2438,8 @@ impl fmt::Display for Trigger {
                 WinStatus::Lost => write!(f, "While you have lost the game"),
                 WinStatus::NotYetWon => write!(f, "While you haven't won"),
                 WinStatus::NotYetLost => write!(f, "While you haven't lost"),
-                WinStatus::HasBeenWon => write!(f, "When you win the game"),
-                WinStatus::HasBeenLost => write!(f, "When you lose the game"),
+                WinStatus::JustWon => write!(f, "When you win the game"),
+                WinStatus::JustLost => write!(f, "When you lose the game"),
             },
             Trigger::Input(Input::Mouse { over, interaction }) => {
                 if let MouseOver::Anywhere = over {
@@ -2500,7 +2505,17 @@ impl fmt::Display for Trigger {
                 PropertyCheck::Timer => write!(f, "When {}'s timer hits zero", name),
             },
             Trigger::Random { chance } => write!(f, "With a {}% chance", chance * 100.0),
-            Trigger::DifficultyLevel { level } => write!(f, "If the difficulty is {}", level),
+            Trigger::DifficultyLevel { levels } => {
+                if levels.is_empty() {
+                    write!(f, "If the difficulty is any difficulty")
+                } else {
+                    let mut levels: Vec<String> =
+                        levels.iter().map(|level| level.to_string()).collect();
+                    levels.sort();
+                    let levels = levels.join(" or ");
+                    write!(f, "If the difficulty is {}", levels)
+                }
+            }
         }
     }
 }

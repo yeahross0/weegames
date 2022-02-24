@@ -67,6 +67,11 @@ impl Editor {
         self.instruction_state = InstructionState::default();
         self.animation_editor.reset();
     }
+
+    fn switch_to_object(&mut self, index: usize) {
+        self.reset();
+        self.object_state.index = Some(index);
+    }
 }
 
 impl Default for Editor {
@@ -346,7 +351,7 @@ pub fn run<'a, 'b>(
                         if clicked {
                             log::info!("{}", object.name);
 
-                            editor.object_state.index = Some(i);
+                            editor.switch_to_object(i);
 
                             break;
                         }
@@ -999,7 +1004,7 @@ impl<'a, 'b, 'c> GameContainer<'a, 'b, 'c> {
     fn has_been_won(&self) -> bool {
         matches!(
             self.game.status.next_frame,
-            WinStatus::Won | WinStatus::HasBeenWon
+            WinStatus::Won | WinStatus::JustWon
         )
     }
 }
@@ -1503,6 +1508,24 @@ fn main_window_show(
             .build(ui, || {
                 if ui.button(im_str!("Play"), NORMAL_BUTTON) {
                     play_game = true;
+
+                    {
+                        let old_published = game.published;
+                        game.published = false;
+                        let s = serde_json::to_string_pretty(&game);
+                        match s {
+                            Ok(s) => {
+                                std::fs::write("autosave.json", s)
+                                    .unwrap_or_else(|e| log::error!("{}", e));
+                                log::debug!("SAVED! {}", "autosave.json");
+                            }
+                            Err(error) => {
+                                log::error!("{}", error);
+                            }
+                        }
+
+                        game.published = old_published;
+                    }
                 }
 
                 {
@@ -2126,30 +2149,6 @@ fn edit_instruction(
         *instruction_mode = InstructionMode::View;
     }
     ui.same_line(0.0);
-    if ui.small_button(im_str!("Up")) {
-        match focus {
-            InstructionFocus::Trigger { index } => {
-                move_back(&mut instruction.triggers, index);
-            }
-            InstructionFocus::Action { index } => {
-                move_back(&mut instruction.actions, index);
-            }
-            InstructionFocus::None => {}
-        }
-    }
-    ui.same_line(0.0);
-    if ui.small_button(im_str!("Down")) {
-        match focus {
-            InstructionFocus::Trigger { index } => {
-                move_forward(&mut instruction.triggers, index);
-            }
-            InstructionFocus::Action { index } => {
-                move_forward(&mut instruction.actions, index);
-            }
-            InstructionFocus::None => {}
-        }
-    }
-    ui.same_line(0.0);
     if ui.small_button(im_str!("Edit")) {
         match focus {
             InstructionFocus::Trigger { .. } => {
@@ -2178,6 +2177,30 @@ fn edit_instruction(
             }
             InstructionFocus::Action { index } => {
                 delete(&mut instruction.actions, index);
+            }
+            InstructionFocus::None => {}
+        }
+    }
+    ui.same_line(0.0);
+    if ui.small_button(im_str!("Up")) {
+        match focus {
+            InstructionFocus::Trigger { index } => {
+                move_back(&mut instruction.triggers, index);
+            }
+            InstructionFocus::Action { index } => {
+                move_back(&mut instruction.actions, index);
+            }
+            InstructionFocus::None => {}
+        }
+    }
+    ui.same_line(0.0);
+    if ui.small_button(im_str!("Down")) {
+        match focus {
+            InstructionFocus::Trigger { index } => {
+                move_forward(&mut instruction.triggers, index);
+            }
+            InstructionFocus::Action { index } => {
+                move_forward(&mut instruction.actions, index);
             }
             InstructionFocus::None => {}
         }
@@ -2248,30 +2271,33 @@ fn edit_instruction_list<'a>(
             }
             ui.same_line(0.0);
             if let Some(selected_index) = &mut editor.instruction_state.index {
-                if ui.small_button(im_str!("Edit")) {
-                    editor.instruction_state.mode = InstructionMode::Edit;
-                }
-                ui.same_line(0.0);
-                if ui.small_button(im_str!("Clone")) && !instructions.is_empty() {
-                    let ins = instructions[*selected_index].clone();
-                    instructions.push(ins);
-                }
-                ui.same_line(0.0);
-                if ui.small_button(im_str!("Delete")) && !instructions.is_empty() {
-                    instructions.remove(*selected_index);
-                    if *selected_index > 0 {
+                if !instructions.is_empty() {
+                    if ui.small_button(im_str!("Edit")) {
+                        editor.instruction_state.mode = InstructionMode::Edit;
+                    }
+                    ui.same_line(0.0);
+                    if ui.small_button(im_str!("Clone")) {
+                        let ins = instructions[*selected_index].clone();
+                        instructions.push(ins);
+                    }
+                    ui.same_line(0.0);
+                    if ui.small_button(im_str!("Delete")) {
+                        instructions.remove(*selected_index);
+                        if *selected_index > 0 {
+                            *selected_index -= 1;
+                        }
+                    }
+                    ui.same_line(0.0);
+                    if ui.small_button(im_str!("Up")) && *selected_index > 0 {
+                        instructions.swap(*selected_index, *selected_index - 1);
                         *selected_index -= 1;
                     }
-                }
-                ui.same_line(0.0);
-                if ui.small_button(im_str!("Up")) && *selected_index > 0 {
-                    instructions.swap(*selected_index, *selected_index - 1);
-                    *selected_index -= 1;
-                }
-                ui.same_line(0.0);
-                if ui.small_button(im_str!("Down")) && *selected_index + 1 < instructions.len() {
-                    instructions.swap(*selected_index, *selected_index + 1);
-                    *selected_index += 1;
+                    ui.same_line(0.0);
+                    if ui.small_button(im_str!("Down")) && *selected_index + 1 < instructions.len()
+                    {
+                        instructions.swap(*selected_index, *selected_index + 1);
+                        *selected_index += 1;
+                    }
                 }
             }
         }
@@ -2319,15 +2345,17 @@ fn edit_instruction_list<'a>(
                 InstructionFocus::Action { index } => index,
                 _ => unreachable!(),
             };
-            edit_action(
-                ui,
-                &mut instruction.actions[action_index],
-                editor,
-                assets,
-                asset_files,
-                &game_notes.object_names,
-                ttf_context,
-            );
+            if let Some(action) = instruction.actions.get_mut(action_index) {
+                edit_action(
+                    ui,
+                    action,
+                    editor,
+                    assets,
+                    asset_files,
+                    &game_notes.object_names,
+                    ttf_context,
+                );
+            }
         }
     }
 }
@@ -2407,7 +2435,9 @@ fn edit_trigger(
                 name: first_name(),
                 check: PropertyCheck::Timer,
             },
-            9 => Trigger::DifficultyLevel { level: 1 },
+            9 => Trigger::DifficultyLevel {
+                levels: HashSet::new(),
+            },
             _ => unreachable!(),
         }
     }
@@ -2432,8 +2462,8 @@ fn edit_trigger(
             choose_object(name, ui, &game_notes.object_names);
             choose_property_check(check, ui, images, image_files, &editor.filename);
         }
-        Trigger::DifficultyLevel { level } => {
-            choose_difficulty_level(level, ui);
+        Trigger::DifficultyLevel { levels } => {
+            choose_difficulty_level_set(levels, ui);
         }
     }
     if ui.small_button(im_str!("Back")) {
@@ -2876,6 +2906,7 @@ fn edit_objects_list(
                         }
                     }
                     object_state.index = Some(index);
+                    *instruction_state = InstructionState::default();
                 }
                 ObjectOperation::Delete { index } => {
                     objects.remove(index);
@@ -2884,6 +2915,7 @@ fn edit_objects_list(
                     } else {
                         object_state.index = Some(index.max(1) - 1);
                     }
+                    *instruction_state = InstructionState::default();
                 }
                 _ => {}
             }
@@ -3470,7 +3502,7 @@ impl<'a> ImguiFrame<'a> {
 }
 
 fn show_image_tooltip(ui: &imgui::Ui, images: &Images, image_name: &str) {
-    if ui.is_item_hovered() {
+    if ui.is_item_hovered() && images.contains_key(image_name) {
         ui.tooltip(|| {
             // TODO: What if doesn't exist
             let texture_id = images[image_name].id;
@@ -4102,8 +4134,8 @@ impl Choose for WinStatus {
         let win_states = [
             im_str!("Won"),
             im_str!("Lost"),
-            im_str!("Has Been Won"),
-            im_str!("Has Been Lost"),
+            im_str!("Has Just Been Won"),
+            im_str!("Has Just Been Lost"),
             im_str!("Not Yet Won"),
             im_str!("Not Yet Lost"),
         ];
@@ -4117,8 +4149,8 @@ impl Choose for WinStatus {
             *self = match current_status {
                 0 => WinStatus::Won,
                 1 => WinStatus::Lost,
-                2 => WinStatus::HasBeenWon,
-                3 => WinStatus::HasBeenLost,
+                2 => WinStatus::JustWon,
+                3 => WinStatus::JustLost,
                 4 => WinStatus::NotYetWon,
                 5 => WinStatus::NotYetLost,
                 _ => unreachable!(),
@@ -4139,6 +4171,21 @@ fn choose_percent(percent: &mut f32, ui: &imgui::Ui) {
         .display_format(im_str!("%.01f%%"))
         .build();
     *percent = chance_percent / 100.0;
+}
+
+fn choose_difficulty_level_set(levels: &mut HashSet<u32>, ui: &imgui::Ui) {
+    for i in 1..=3 {
+        if ui.radio_button_bool(&ImString::from(i.to_string()), levels.contains(&i)) {
+            if levels.contains(&i) {
+                levels.remove(&i);
+            } else {
+                levels.insert(i);
+            }
+        }
+        if i < 3 {
+            ui.same_line(0.0);
+        }
+    }
 }
 
 fn choose_object(object: &mut String, ui: &imgui::Ui, object_names: &[&str]) {
