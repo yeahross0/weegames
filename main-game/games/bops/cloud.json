@@ -1,5 +1,5 @@
 {
-  "format_version": "0.3",
+  "format_version": "0.4",
   "published": true,
   "game_type": "Minigame",
   "objects": [
@@ -967,7 +967,9 @@
             },
             {
               "DifficultyLevel": {
-                "level": 2
+                "levels": [
+                  2
+                ]
               }
             },
             {
@@ -995,7 +997,9 @@
             },
             {
               "DifficultyLevel": {
-                "level": 2
+                "levels": [
+                  2
+                ]
               }
             }
           ],
@@ -1024,7 +1028,9 @@
             },
             {
               "DifficultyLevel": {
-                "level": 2
+                "levels": [
+                  2
+                ]
               }
             }
           ],
@@ -1052,7 +1058,9 @@
           "triggers": [
             {
               "DifficultyLevel": {
-                "level": 3
+                "levels": [
+                  3
+                ]
               }
             },
             {
@@ -1083,7 +1091,9 @@
           "triggers": [
             {
               "DifficultyLevel": {
-                "level": 3
+                "levels": [
+                  3
+                ]
               }
             },
             {
@@ -1265,7 +1275,9 @@
             },
             {
               "DifficultyLevel": {
-                "level": 3
+                "levels": [
+                  3
+                ]
               }
             },
             {
@@ -1286,7 +1298,9 @@
           "triggers": [
             {
               "DifficultyLevel": {
-                "level": 3
+                "levels": [
+                  3
+                ]
               }
             },
             {

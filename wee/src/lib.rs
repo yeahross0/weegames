@@ -489,7 +489,7 @@ impl Trigger {
                 let roll = rng.random_in_range(0.0, 1.0);
                 roll < *chance
             }
-            Trigger::DifficultyLevel { level } => game.difficulty == *level,
+            Trigger::DifficultyLevel { levels } => levels.contains(&game.difficulty),
         };
         Ok(triggered)
     }
@@ -1840,7 +1840,7 @@ pub enum Trigger {
     WinStatus(WinStatus),
     Random { chance: f32 },
     CheckProperty { name: String, check: PropertyCheck },
-    DifficultyLevel { level: u32 },
+    DifficultyLevel { levels: HashSet<u32> },
 }
 
 #[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq)]
@@ -2374,7 +2374,7 @@ impl SerialiseObject {
 impl Default for GameData {
     fn default() -> GameData {
         GameData {
-            format_version: "0.2".to_string(),
+            format_version: "0.4".to_string(),
             published: false,
             game_type: GameType::Minigame,
             objects: Vec::new(),
@@ -2505,7 +2505,17 @@ impl fmt::Display for Trigger {
                 PropertyCheck::Timer => write!(f, "When {}'s timer hits zero", name),
             },
             Trigger::Random { chance } => write!(f, "With a {}% chance", chance * 100.0),
-            Trigger::DifficultyLevel { level } => write!(f, "If the difficulty is {}", level),
+            Trigger::DifficultyLevel { levels } => {
+                if levels.is_empty() {
+                    write!(f, "If the difficulty is any difficulty")
+                } else {
+                    let mut levels: Vec<String> =
+                        levels.iter().map(|level| level.to_string()).collect();
+                    levels.sort();
+                    let levels = levels.join(" or ");
+                    write!(f, "If the difficulty is {}", levels)
+                }
+            }
         }
     }
 }

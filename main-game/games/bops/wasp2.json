@@ -1,5 +1,5 @@
 {
-  "format_version": "0.2",
+  "format_version": "0.4",
   "published": true,
   "game_type": "Minigame",
   "objects": [
@@ -942,7 +942,9 @@
           "triggers": [
             {
               "DifficultyLevel": {
-                "level": 1
+                "levels": [
+                  1
+                ]
               }
             }
           ],
@@ -1111,7 +1113,9 @@
           "triggers": [
             {
               "DifficultyLevel": {
-                "level": 1
+                "levels": [
+                  1
+                ]
               }
             }
           ],
@@ -1280,7 +1284,9 @@
           "triggers": [
             {
               "DifficultyLevel": {
-                "level": 1
+                "levels": [
+                  1
+                ]
               }
             }
           ],
@@ -1306,7 +1312,9 @@
           "triggers": [
             {
               "DifficultyLevel": {
-                "level": 2
+                "levels": [
+                  2
+                ]
               }
             }
           ],
@@ -1475,7 +1483,9 @@
           "triggers": [
             {
               "DifficultyLevel": {
-                "level": 1
+                "levels": [
+                  1
+                ]
               }
             }
           ],
@@ -1501,7 +1511,9 @@
           "triggers": [
             {
               "DifficultyLevel": {
-                "level": 2
+                "levels": [
+                  2
+                ]
               }
             }
           ],
@@ -1670,7 +1682,9 @@
           "triggers": [
             {
               "DifficultyLevel": {
-                "level": 2
+                "levels": [
+                  2
+                ]
               }
             }
           ],
@@ -1696,7 +1710,9 @@
           "triggers": [
             {
               "DifficultyLevel": {
-                "level": 1
+                "levels": [
+                  1
+                ]
               }
             }
           ],

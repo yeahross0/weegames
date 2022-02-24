@@ -1,5 +1,5 @@
 {
-  "format_version": "0.3",
+  "format_version": "0.4",
   "published": true,
   "game_type": "Minigame",
   "objects": [
@@ -184,9 +184,10 @@
         {
           "triggers": [
             {
-              "Collision": {
-                "Object": {
-                  "name": "Left Wall"
+              "CheckProperty": {
+                "name": "Left Wall",
+                "check": {
+                  "Switch": "On"
                 }
               }
             },
@@ -292,9 +293,10 @@
         {
           "triggers": [
             {
-              "Collision": {
-                "Object": {
-                  "name": "Right Wall"
+              "CheckProperty": {
+                "name": "Right Wall",
+                "check": {
+                  "Switch": "On"
                 }
               }
             },
@@ -766,22 +768,22 @@
   ],
   "asset_files": {
     "images": {
-      "Flight-3": "Flight-3.png",
-      "adventurer-fall-01": "adventurer-fall-01.png",
-      "Flight-6": "Flight-6.png",
-      "adventurer-wall-slide-01": "adventurer-wall-slide-01.png",
-      "Flight-2": "Flight-2.png",
-      "adventurer-crnr-jmp-01": "adventurer-crnr-jmp-01.png",
-      "Flight-5": "Flight-5.png",
-      "Flight-8": "Flight-8.png",
-      "final2": "final2.png",
-      "Flight-4": "Flight-4.png",
       "Flight-7": "Flight-7.png",
-      "adventurer-crnr-jmp-00": "adventurer-crnr-jmp-00.png",
+      "adventurer-crnr-jmp-01": "adventurer-crnr-jmp-01.png",
       "wall": "wall.png",
-      "Flight-1": "Flight-1.png",
       "adventurer-fall-00": "adventurer-fall-00.png",
-      "adventurer-wall-slide-00": "adventurer-wall-slide-00.png"
+      "adventurer-fall-01": "adventurer-fall-01.png",
+      "adventurer-wall-slide-01": "adventurer-wall-slide-01.png",
+      "Flight-8": "Flight-8.png",
+      "adventurer-crnr-jmp-00": "adventurer-crnr-jmp-00.png",
+      "adventurer-wall-slide-00": "adventurer-wall-slide-00.png",
+      "Flight-2": "Flight-2.png",
+      "Flight-3": "Flight-3.png",
+      "Flight-5": "Flight-5.png",
+      "Flight-6": "Flight-6.png",
+      "final2": "final2.png",
+      "Flight-1": "Flight-1.png",
+      "Flight-4": "Flight-4.png"
     },
     "audio": {
       "damage": "damage.ogg",

@@ -2435,7 +2435,9 @@ fn edit_trigger(
                 name: first_name(),
                 check: PropertyCheck::Timer,
             },
-            9 => Trigger::DifficultyLevel { level: 1 },
+            9 => Trigger::DifficultyLevel {
+                levels: HashSet::new(),
+            },
             _ => unreachable!(),
         }
     }
@@ -2460,8 +2462,8 @@ fn edit_trigger(
             choose_object(name, ui, &game_notes.object_names);
             choose_property_check(check, ui, images, image_files, &editor.filename);
         }
-        Trigger::DifficultyLevel { level } => {
-            choose_difficulty_level(level, ui);
+        Trigger::DifficultyLevel { levels } => {
+            choose_difficulty_level_set(levels, ui);
         }
     }
     if ui.small_button(im_str!("Back")) {
@@ -4169,6 +4171,21 @@ fn choose_percent(percent: &mut f32, ui: &imgui::Ui) {
         .display_format(im_str!("%.01f%%"))
         .build();
     *percent = chance_percent / 100.0;
+}
+
+fn choose_difficulty_level_set(levels: &mut HashSet<u32>, ui: &imgui::Ui) {
+    for i in 1..=3 {
+        if ui.radio_button_bool(&ImString::from(i.to_string()), levels.contains(&i)) {
+            if levels.contains(&i) {
+                levels.remove(&i);
+            } else {
+                levels.insert(i);
+            }
+        }
+        if i < 3 {
+            ui.same_line(0.0);
+        }
+    }
 }
 
 fn choose_object(object: &mut String, ui: &imgui::Ui, object_names: &[&str]) {

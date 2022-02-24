@@ -1,5 +1,5 @@
 {
-  "format_version": "0.3",
+  "format_version": "0.4",
   "published": true,
   "game_type": "Minigame",
   "objects": [
@@ -1161,68 +1161,6 @@
       ]
     },
     {
-      "name": "Difficulty 2",
-      "sprite": {
-        "Colour": {
-          "r": 0.0,
-          "g": 0.0,
-          "b": 0.0,
-          "a": 0.0
-        }
-      },
-      "position": {
-        "x": 800.0,
-        "y": 450.0
-      },
-      "size": {
-        "width": 100.0,
-        "height": 100.0
-      },
-      "angle": 0.0,
-      "origin": null,
-      "collision_area": null,
-      "flip": {
-        "horizontal": false,
-        "vertical": false
-      },
-      "layer": 0,
-      "switch": "Off",
-      "instructions": [
-        {
-          "triggers": [
-            {
-              "DifficultyLevel": {
-                "level": 2
-              }
-            }
-          ],
-          "actions": [
-            {
-              "SetProperty": {
-                "Switch": "On"
-              }
-            }
-          ]
-        },
-        {
-          "triggers": [
-            {
-              "DifficultyLevel": {
-                "level": 3
-              }
-            }
-          ],
-          "actions": [
-            {
-              "SetProperty": {
-                "Switch": "On"
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
       "name": "Pot 5",
       "sprite": {
         "Image": {
@@ -1253,11 +1191,11 @@
               "Time": "Start"
             },
             {
-              "CheckProperty": {
-                "name": "Difficulty 2",
-                "check": {
-                  "Switch": "SwitchedOn"
-                }
+              "DifficultyLevel": {
+                "levels": [
+                  2,
+                  3
+                ]
               }
             }
           ],
@@ -1373,7 +1311,9 @@
             },
             {
               "DifficultyLevel": {
-                "level": 3
+                "levels": [
+                  3
+                ]
               }
             }
           ],
@@ -1496,30 +1436,30 @@
   ],
   "asset_files": {
     "images": {
+      "pot-3": "pot-3.png",
+      "knight iso char_slice up_2": "knight iso char_slice up_2.png",
+      "knight iso char_slice left_1": "knight iso char_slice left_1.png",
+      "pot-2": "pot-2.png",
+      "grass": "grass.png",
+      "pot-1": "pot-1.png",
+      "knight iso char_slice down_2": "knight iso char_slice down_2.png",
+      "veget": "veget.png",
+      "knight iso char_slice left_2": "knight iso char_slice left_2.png",
+      "pot-4": "pot-4.png",
+      "knight iso char_slice down_1": "knight iso char_slice down_1.png",
       "knight iso char_slice left_0": "knight iso char_slice left_0.png",
       "knight iso char_slice right_1": "knight iso char_slice right_1.png",
       "knight iso char_slice down_0": "knight iso char_slice down_0.png",
-      "shadows": "shadows.png",
-      "knight iso char_slice up_2": "knight iso char_slice up_2.png",
-      "knight iso char_slice up_1": "knight iso char_slice up_1.png",
-      "knight iso char_slice down_1": "knight iso char_slice down_1.png",
-      "pot-2": "pot-2.png",
-      "grass": "grass.png",
-      "pot-3": "pot-3.png",
       "knight iso char_slice right_2": "knight iso char_slice right_2.png",
+      "shadows": "shadows.png",
       "knight iso char_slice right_0": "knight iso char_slice right_0.png",
-      "knight iso char_slice left_1": "knight iso char_slice left_1.png",
-      "pot-1": "pot-1.png",
-      "knight iso char_slice left_2": "knight iso char_slice left_2.png",
-      "knight iso char_slice down_2": "knight iso char_slice down_2.png",
+      "knight iso char_slice up_1": "knight iso char_slice up_1.png",
       "knight iso char_slice up_0": "knight iso char_slice up_0.png",
-      "veget": "veget.png",
-      "pot-4": "pot-4.png",
       "trees": "trees.png"
     },
     "audio": {
-      "weird-impact": "weird-impact.ogg",
-      "attack": "attack.ogg"
+      "attack": "attack.ogg",
+      "weird-impact": "weird-impact.ogg"
     },
     "music": {
       "filename": "fields-of-ice.ogg",

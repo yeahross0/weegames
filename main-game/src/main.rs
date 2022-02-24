@@ -1,4 +1,4 @@
-//#![windows_subsystem = "windows"]
+#![windows_subsystem = "windows"]
 
 use macroquad::logging as log;
 use macroquad::prelude::*;
@@ -43,6 +43,7 @@ const UP_TO_DIFFICULTY_THREE: i32 = 40;
 const BOSS_GAME_INTERVAL: i32 = 15;
 const INCREASE_SPEED_AFTER_GAMES: i32 = 5;
 const VOLUME: f32 = 0.5;
+const FUTURES_WORKAROUND_LIMIT: usize = 30;
 
 async fn load_images<P: AsRef<Path>>(
     image_files: &HashMap<String, String>,
@@ -67,22 +68,12 @@ async fn load_images<P: AsRef<Path>>(
     }
 
     let mut textures = Vec::new();
-    let limit = 30;
-    let mut rest = loading_images.split_off(limit.min(loading_images.len()));
+    let mut rest = loading_images.split_off(FUTURES_WORKAROUND_LIMIT.min(loading_images.len()));
     while !loading_images.is_empty() {
         textures.append(&mut join_all(loading_images).await);
-        loading_images = rest.split_off((rest.len() as i64 - limit as i64).max(0) as usize);
+        loading_images =
+            rest.split_off((rest.len() as i64 - FUTURES_WORKAROUND_LIMIT as i64).max(0) as usize);
     }
-
-    /*let textures: Vec<_> = if loading_images.len() < 30 {
-        join_all(loading_images).await
-    } else {
-        let mut textures = Vec::new();
-        for _ in 0..loading_images.len() {
-            textures.push(loading_images.remove(0).await);
-        }
-        textures
-    };*/
 
     for (key, texture) in image_files.keys().zip(textures) {
         let texture = texture?;
@@ -765,8 +756,6 @@ impl GamesList {
         let mut games = Vec::new();
         let mut bosses = Vec::new();
         for (filename, game) in all_games {
-            // TODO: Wiser way of doing this
-            // TODO: Unpublished games are included in list games to play
             if Path::new(&filename).starts_with(&directory) && game.published {
                 if game.game_type == GameType::Minigame {
                     games.push(filename.clone());
@@ -831,8 +820,6 @@ impl FramesToRun for FrameInfo {
     fn to_run_at_rate(&mut self, playback_rate: f32) -> u32 {
         let frames_to_run = self.frames_to_run(playback_rate);
 
-        //log::debug!("{}", frames_to_run);
-
         match self.remaining() {
             FrameCount::Frames(remaining) => frames_to_run.min(remaining),
             FrameCount::Infinite => frames_to_run,
@@ -843,13 +830,19 @@ impl FramesToRun for FrameInfo {
     }
 
     fn frames_to_run(&mut self, playback_rate: f32) -> u32 {
+        // TODO: steps_taken heldover from older code
         if self.steps_taken == 0 {
-            self.previous_frame_time = macroquad::time::get_time();
             self.steps_taken = 1;
+            return 1;
+        } else if self.steps_taken == 1 {
+            self.previous_frame_time = macroquad::time::get_time();
+            self.steps_taken = 2;
+            return playback_rate as u32;
         }
         let time = macroquad::time::get_time();
-        //log::debug!("{}", time - self.previous_frame_time);
-        self.total_time_elapsed += time - self.previous_frame_time;
+        let elapsed_this_frame = time - self.previous_frame_time;
+        // Don't run more than 1 second of frames
+        self.total_time_elapsed += elapsed_this_frame.min(1.0);
         self.previous_frame_time = time;
         let total_ms_elapsed = self.total_time_elapsed * 1000.0;
         let frame_time = (1000.0 / 60.0) / playback_rate as f64;
@@ -865,6 +858,12 @@ impl FramesToRun for FrameInfo {
         } else {
             frames_to_run as u32
         }
+    }
+}
+
+fn set_switch_if_has_name(object: &mut SerialiseObject, name: &str, pred: bool) {
+    if object.name == name {
+        object.switch = if pred { Switch::On } else { Switch::Off };
     }
 }
 
@@ -929,6 +928,187 @@ impl MainGame<LoadingScreen> {
 
         let intro_font = macroquad::text::load_ttf_font("fonts/Roboto-Medium.ttf").await?;
 
+        let game_filenames = Self::game_filenames()?;
+
+        let games_to_preload: Vec<String> = game_filenames
+            .iter()
+            .filter(|f| {
+                let enders = [
+                    "choose-mode.json",
+                    "prelude.json",
+                    "interlude.json",
+                    "game-over.json",
+                    "pause-menu.json",
+                    //"boss.json",
+                ];
+                enders.iter().any(|e| f.ends_with(e))
+            })
+            .cloned()
+            .collect();
+
+        let played_games = Self::played_games();
+
+        log::debug!("Declaring coroutine");
+        let resources_loading: Coroutine = start_coroutine(async move {
+            log::debug!("Starting coroutine");
+
+            async fn preload_games(
+                game_filenames: Vec<String>,
+                games_to_preload: Vec<String>,
+            ) -> WeeResult<(HashMap<String, GameData>, HashMap<String, Assets>)> {
+                async fn load_individual_games(
+                    game_filenames: &Vec<String>,
+                ) -> HashMap<String, GameData> {
+                    let mut loaded_data = HashMap::new();
+                    let mut waiting_data = Vec::new();
+                    for filename in game_filenames {
+                        waiting_data.push(load_game_data(filename));
+                    }
+
+                    // TODO: Use a single join_all again after finding source of error
+                    //let mut data = join_all(waiting_data).await;
+                    let mut data = Vec::new();
+                    let mut rest =
+                        waiting_data.split_off(FUTURES_WORKAROUND_LIMIT.min(waiting_data.len()));
+                    while !waiting_data.is_empty() {
+                        data.append(&mut join_all(waiting_data).await);
+                        waiting_data = rest;
+                        rest = waiting_data
+                            .split_off(FUTURES_WORKAROUND_LIMIT.min(waiting_data.len()));
+                    }
+
+                    for filename in game_filenames {
+                        log::debug!("{}", filename);
+                        let data = data.remove(0);
+                        match data {
+                            Ok(data) => {
+                                loaded_data.insert(filename.to_string(), data);
+                            }
+                            Err(error) => {
+                                log::error!("Error: Failed to load game {} - {}", filename, error);
+                            }
+                        }
+                    }
+
+                    loaded_data
+                }
+
+                #[cfg(feature = "wasm_packaged")]
+                let games: HashMap<String, GameData> = {
+                    log::debug!("In package mode");
+                    let json = macroquad::file::load_string("all-games.json").await;
+
+                    if let Ok(json) = json {
+                        log::debug!("Loading from minified games file");
+                        json_from_str(&json)?
+                    } else {
+                        load_individual_games(&game_filenames).await
+                    }
+                };
+
+                #[cfg(not(feature = "wasm_packaged"))]
+                let games: HashMap<String, GameData> = load_individual_games(&game_filenames).await;
+
+                let mut preloaded_assets = HashMap::new();
+                let mut waiting_data = Vec::new();
+                for filename in &games_to_preload {
+                    let path = Path::new(filename);
+                    let base_path = path.parent().unwrap();
+                    waiting_data.push(Assets::load(&games[filename].asset_files, base_path));
+                }
+
+                let mut data = join_all(waiting_data).await;
+
+                for filename in games_to_preload {
+                    let assets = data.remove(0).unwrap();
+                    preloaded_assets.insert(filename, assets);
+                }
+
+                log::debug!("Loaded games");
+
+                #[cfg(not(target_arch = "wasm32"))]
+                if let Some(arg) = std::env::args().nth(1) {
+                    if arg == "package" {
+                        log::debug!("Packaging games");
+                        let s = serde_json::to_string(&games).unwrap();
+                        std::fs::write("all-games.json", s)
+                            .unwrap_or_else(|e| log::error!("{}", e));
+                        std::process::exit(0);
+                    }
+
+                    if arg == "attribute" {
+                        log::debug!("Printing attribution");
+                        let mut sorted_filenames = game_filenames;
+                        sorted_filenames.sort();
+                        for filename in &sorted_filenames {
+                            println!("filename: {}", filename);
+                            println!("~~~~~~~~");
+                            println!("{}", games[filename].attribution);
+                            println!("~~~~~~~~\n");
+                        }
+
+                        std::process::exit(0);
+                    }
+                }
+
+                Ok((games, preloaded_assets))
+            }
+
+            dispenser::store(preload_games(game_filenames, games_to_preload).await);
+        });
+
+        clear_background(WHITE);
+
+        log::debug!("Started intro");
+
+        let mut drawn_text = HashMap::new();
+
+        assets.music.play(DEFAULT_PLAYBACK_RATE, VOLUME);
+
+        while !resources_loading.is_done() {
+            update_frame(&mut game, &assets, DEFAULT_PLAYBACK_RATE, &mut rng)?
+                .add_drawn_text(&mut drawn_text);
+
+            draw_game(
+                &game,
+                &assets.images,
+                &assets.fonts,
+                &intro_font,
+                &drawn_text,
+            );
+
+            next_frame().await;
+        }
+
+        assets.stop_sounds();
+
+        let (games, preloaded_assets) =
+            dispenser::take::<WeeResult<(HashMap<String, GameData>, HashMap<String, Assets>)>>()?;
+
+        let all_games = games
+            .iter()
+            .filter(|(_, game)| {
+                game.published && game.game_type == GameType::Minigame
+                    || game.game_type == GameType::BossGame
+            })
+            .map(|(k, _)| k.to_string())
+            .collect();
+
+        Ok(MainGame {
+            state: Menu {},
+            intro_font,
+            games,
+            preloaded_assets,
+            high_scores: HashMap::new(),
+            played_games: PlayedGames {
+                played: played_games,
+                all_games,
+            },
+            rng,
+        })
+    }
+
+    fn game_filenames() -> WeeResult<Vec<String>> {
         #[cfg(target_arch = "wasm32")]
         let game_filenames: Vec<String> = vec![
             "games/second/bike.json",
@@ -1028,26 +1208,14 @@ impl MainGame<LoadingScreen> {
             v
         };
 
-        let games_to_preload: Vec<String> = game_filenames
-            .iter()
-            .filter(|f| {
-                let enders = [
-                    "choose-mode.json",
-                    "prelude.json",
-                    "interlude.json",
-                    "game-over.json",
-                    "pause-menu.json",
-                    //"boss.json",
-                ];
-                enders.iter().any(|e| f.ends_with(e))
-            })
-            .cloned()
-            .collect();
+        Ok(game_filenames)
+    }
 
+    fn played_games() -> HashSet<String> {
         #[cfg(target_arch = "wasm32")]
         let played_games: HashSet<String> = {
             if let Ok(storage) = &mut quad_storage::STORAGE.lock() {
-                let json = storage.get("played_games");
+                let json = storage.get("weegames_played_games");
                 if let Some(json) = json {
                     json_from_str(&json)?
                 } else {
@@ -1064,142 +1232,13 @@ impl MainGame<LoadingScreen> {
             log::debug!("path: {:?}", path);
             let json = std::fs::read_to_string(&path);
             if let Ok(json) = json {
-                json_from_str(&json)?
+                json_from_str(&json).unwrap_or_else(|_| HashSet::new())
             } else {
                 HashSet::new()
             }
         };
 
-        log::debug!("Declaring coroutine");
-        let resources_loading: Coroutine = start_coroutine(async move {
-            log::debug!("Starting coroutine");
-
-            async fn preload_games(
-                game_filenames: Vec<String>,
-                games_to_preload: Vec<String>,
-            ) -> WeeResult<(HashMap<String, GameData>, HashMap<String, Assets>)> {
-                async fn load_individual_games(
-                    game_filenames: Vec<String>,
-                ) -> HashMap<String, GameData> {
-                    let mut loaded_data = HashMap::new();
-                    let mut waiting_data = Vec::new();
-                    for filename in &game_filenames {
-                        waiting_data.push(load_game_data(filename));
-                    }
-
-                    // TODO: Use a single join_all again after finding source of error
-                    //let mut data = join_all(waiting_data).await;
-                    let mut data = Vec::new();
-                    let limit = 30;
-                    let mut rest = waiting_data.split_off(limit.min(waiting_data.len()));
-                    while !waiting_data.is_empty() {
-                        data.append(&mut join_all(waiting_data).await);
-                        waiting_data = rest;
-                        rest = waiting_data.split_off(limit.min(waiting_data.len()));
-                    }
-
-                    for filename in &game_filenames {
-                        log::debug!("{}", filename);
-                        let data = data.remove(0);
-                        match data {
-                            Ok(data) => {
-                                loaded_data.insert(filename.to_string(), data);
-                            }
-                            Err(error) => {
-                                log::error!("Error: Failed to load game {} - {}", filename, error);
-                            }
-                        }
-                    }
-
-                    loaded_data
-                }
-
-                #[cfg(wasm_packaged)]
-                let games: HashMap<String, GameData> = {
-                    let json = macroquad::file::load_string(path.to_str().unwrap()).await;
-
-                    if let Ok(json) = json {
-                        log::debug!("Loading from minified games file");
-                        json_from_str(&json)?
-                    } else {
-                        load_individual_games(game_filenames).await
-                    }
-                };
-
-                #[cfg(not(wasm_packaged))]
-                let games: HashMap<String, GameData> = load_individual_games(game_filenames).await;
-
-                let mut preloaded_assets = HashMap::new();
-                let mut waiting_data = Vec::new();
-                for filename in &games_to_preload {
-                    waiting_data.push(LoadedGameData::load(filename));
-                }
-
-                let mut data = join_all(waiting_data).await;
-
-                for filename in games_to_preload {
-                    let loaded_data = data.remove(0).unwrap();
-                    let assets = loaded_data.assets;
-                    preloaded_assets.insert(filename, assets);
-                }
-
-                log::debug!("Loaded games");
-
-                Ok((games, preloaded_assets))
-            }
-
-            dispenser::store(preload_games(game_filenames, games_to_preload).await);
-        });
-
-        clear_background(WHITE);
-
-        log::debug!("Started intro");
-
-        let mut drawn_text = HashMap::new();
-
-        assets.music.play(DEFAULT_PLAYBACK_RATE, VOLUME);
-
-        while !resources_loading.is_done() {
-            update_frame(&mut game, &assets, DEFAULT_PLAYBACK_RATE, &mut rng)?
-                .add_drawn_text(&mut drawn_text);
-
-            draw_game(
-                &game,
-                &assets.images,
-                &assets.fonts,
-                &intro_font,
-                &drawn_text,
-            );
-
-            next_frame().await;
-        }
-
-        assets.stop_sounds();
-
-        let (games, preloaded_assets) =
-            dispenser::take::<WeeResult<(HashMap<String, GameData>, HashMap<String, Assets>)>>()?;
-
-        let all_games = games
-            .iter()
-            .filter(|(_, game)| {
-                game.published && game.game_type == GameType::Minigame
-                    || game.game_type == GameType::BossGame
-            })
-            .map(|(k, _)| k.to_string())
-            .collect();
-
-        Ok(MainGame {
-            state: Menu {},
-            intro_font,
-            games,
-            preloaded_assets,
-            high_scores: HashMap::new(),
-            played_games: PlayedGames {
-                played: played_games,
-                all_games,
-            },
-            rng,
-        })
+        played_games
     }
 }
 
@@ -1240,14 +1279,7 @@ impl MainGame<Menu> {
 
                 #[cfg(target_arch = "wasm32")]
                 {
-                    // TODO: Set switch code is repeated
-                    let mut set_switch = |name, pred| {
-                        if object.name == name {
-                            object.switch = if pred { Switch::On } else { Switch::Off };
-                        }
-                    };
-
-                    set_switch("Web", true);
+                    set_switch_if_has_name(object, "Web", true);
                 }
             }
         }
@@ -1414,9 +1446,7 @@ impl MainGame<Interlude> {
                 ];
                 for object in game_data.objects.iter_mut() {
                     let mut set_switch = |name, pred| {
-                        if object.name == name {
-                            object.switch = if pred { Switch::On } else { Switch::Off };
-                        }
+                        set_switch_if_has_name(object, name, pred);
                     };
                     set_switch("1", progress.lives >= 1);
                     set_switch("2", progress.lives >= 2);
@@ -1517,9 +1547,7 @@ impl MainGame<Interlude> {
                 ];
                 for object in game_data.objects.iter_mut() {
                     let mut set_switch = |name, pred| {
-                        if object.name == name {
-                            object.switch = if pred { Switch::On } else { Switch::Off };
-                        }
+                        set_switch_if_has_name(object, name, pred);
                     };
                     if let Some(last_game) = progress.last_game {
                         set_switch("Won", last_game.has_won);
@@ -1753,8 +1781,6 @@ impl MainGame<Play> {
         let mut drawn_text = HashMap::new();
         self.state.assets.music.play(playback_rate, VOLUME);
 
-        let mut avg_frames = Vec::new();
-
         'play_loop: while game.frames.remaining() != FrameCount::Frames(0) {
             if self.should_quit_play(&mut game.frames).await? {
                 return Ok(QuittableGame::Quit(MainGame {
@@ -1771,10 +1797,7 @@ impl MainGame<Play> {
                 }));
             }
 
-            let temp = game.frames.to_run_at_rate(playback_rate);
-
-            avg_frames.push(temp);
-            for _ in 0..temp {
+            for _ in 0..game.frames.to_run_at_rate(playback_rate) {
                 if update_frame(&mut game, &self.state.assets, playback_rate, &mut self.rng)?
                     .add_drawn_text(&mut drawn_text)
                     .should_end_early()
@@ -1793,16 +1816,6 @@ impl MainGame<Play> {
 
             next_frame().await;
         }
-
-        log::debug!(
-            "{}, {:?}",
-            game.frames.total_time_elapsed,
-            game.frames.total
-        );
-
-        let x = avg_frames.iter().sum::<u32>() as f32 / avg_frames.len() as f32;
-        log::debug!("{:?}", avg_frames);
-        log::debug!("{:?}", x);
 
         self.state.assets.stop_sounds();
 
@@ -1845,30 +1858,23 @@ impl MainGame<GameOver> {
             "game-over.json",
         );
 
-        #[cfg(not(target_arch = "wasm32"))]
+        fn high_scores_from_path<P: AsRef<Path>>(path: P) -> WeeResult<String> {
+            #[cfg(target_arch = "wasm32")]
+            return quad_storage::STORAGE.lock().get(
+                path.to_str()
+                    .ok_or("Can't convert high score path to string")?,
+            )?;
+
+            #[cfg(not(target_arch = "wasm32"))]
+            return Ok(std::fs::read_to_string(&path)?);
+        }
+
+        let high_score_path = Path::new(&self.state.directory).join("high-scores.json");
         let mut high_scores: (i32, i32, i32) = {
-            let path = Path::new(&self.state.directory).join("high-scores.json");
-            log::debug!("path: {:?}", path);
-            let json = std::fs::read_to_string(&path);
+            log::debug!("path: {:?}", high_score_path);
+            let json = high_scores_from_path(&high_score_path);
             if let Ok(json) = json {
                 json_from_str(&json)?
-            } else {
-                (0, 0, 0)
-            }
-        };
-
-        // TODO: Refactor
-        #[cfg(target_arch = "wasm32")]
-        let mut high_scores: (i32, i32, i32) = {
-            let path = Path::new(&self.state.directory).join("high-scores.json");
-            log::debug!("path: {:?}", path);
-            if let Ok(storage) = &mut quad_storage::STORAGE.lock() {
-                let json = storage.get(path.to_str().unwrap());
-                if let Some(json) = json {
-                    json_from_str(&json)?
-                } else {
-                    (0, 0, 0)
-                }
             } else {
                 (0, 0, 0)
             }
@@ -1893,37 +1899,49 @@ impl MainGame<GameOver> {
             None
         };
 
-        #[cfg(not(target_arch = "wasm32"))]
-        {
-            let path = Path::new(&self.state.directory).join("high-scores.json");
+        fn save_high_scores<P: AsRef<Path>>(
+            path: P,
+            high_scores: (i32, i32, i32),
+        ) -> WeeResult<()> {
             let s = serde_json::to_string(&high_scores)?;
-            std::fs::write(&path, s).unwrap_or_else(|e| log::error!("{}", e));
-        }
 
-        #[cfg(target_arch = "wasm32")]
-        {
-            let path = Path::new(&self.state.directory).join("high-scores.json");
-            log::debug!("path: {:?}", path);
+            #[cfg(not(target_arch = "wasm32"))]
+            std::fs::write(&path, s)?;
+
+            #[cfg(target_arch = "wasm32")]
             if let Ok(storage) = &mut quad_storage::STORAGE.lock() {
-                let s = serde_json::to_string(&high_scores)?;
-                storage.set(path.to_str().unwrap(), &s);
+                storage.set(
+                    path.to_str()
+                        .ok_or("Can't convert high score path to string")?,
+                    &s,
+                );
             }
+
+            Ok(())
         }
 
-        #[cfg(not(target_arch = "wasm32"))]
-        {
-            let path = Path::new("played-games.json");
-            let s = serde_json::to_string(&self.played_games.played)?;
-            std::fs::write(&path, s).unwrap_or_else(|e| log::error!("{}", e));
+        save_high_scores(high_score_path, high_scores)
+            .unwrap_or_else(|error| log::error!("Can't save high scores: {}", error));
+
+        fn save_played_games(played_games: &HashSet<String>) -> WeeResult<()> {
+            let s = serde_json::to_string(played_games)?;
+
+            #[cfg(not(target_arch = "wasm32"))]
+            {
+                let path = Path::new("played-games.json");
+                std::fs::write(&path, s)?;
+            }
+
+            #[cfg(target_arch = "wasm32")]
+            quad_storage::STORAGE
+                .lock()?
+                .set("weegames_played_games", &s);
+
+            Ok(())
         }
 
-        #[cfg(target_arch = "wasm32")]
-        {
-            if let Ok(storage) = &mut quad_storage::STORAGE.lock() {
-                let s = serde_json::to_string(&self.played_games.played)?;
-                storage.set("played_games", &s);
-            }
-        }
+        save_played_games(&self.played_games.played)
+            .unwrap_or_else(|error| log::error!("Can't save played games: {}", error));
 
         let text_replacements = vec![
             ("{Score}", progress.score.to_string()),
@@ -1936,9 +1954,7 @@ impl MainGame<GameOver> {
             object.replace_text(&text_replacements);
 
             let mut set_switch = |name, pred| {
-                if object.name == name {
-                    object.switch = if pred { Switch::On } else { Switch::Off };
-                }
+                set_switch_if_has_name(object, name, pred);
             };
             set_switch("1st", high_score_position == Some(1));
             set_switch("2nd", high_score_position == Some(2));
@@ -1989,10 +2005,24 @@ impl MainGame<GameOver> {
 fn window_conf() -> Conf {
     Conf {
         window_title: "Weegames".to_string(),
-        window_width: 800,
-        window_height: 450,
-        fullscreen: false,
+        window_width: 1600,
+        window_height: 900,
+        fullscreen: true,
         ..Default::default()
+    }
+}
+
+async fn write_error_message(error_msg: &str) {
+    let output_strings = textwrap::fill(error_msg, 55);
+    let output_strings: Vec<_> = output_strings.split("\n").collect();
+    let size = 64.0;
+    for _ in 0..500 {
+        clear_background(BLACK);
+        macroquad::text::draw_text("Error:", 0.0, size, size, WHITE);
+        for (i, s) in output_strings.iter().enumerate() {
+            macroquad::text::draw_text(s, 0.0, (i + 2) as f32 * size, size, WHITE);
+        }
+        next_frame().await;
     }
 }
 
@@ -2007,13 +2037,9 @@ async fn main() {
     let mut main_game = match main_game {
         Ok(main_game) => main_game,
         Err(error) => {
-            let error = format!("Failed to load game: {}", error);
-            for _ in 0..300 {
-                clear_background(BLACK);
-                macroquad::text::draw_text(&error, 0.0, 64.0, 64.0, WHITE);
-                next_frame().await;
-            }
-            panic!("Failed to load game");
+            let error_msg = error.to_string();
+            write_error_message(&error_msg).await;
+            panic!("Failed to load game: {}", error);
         }
     };
 
@@ -2022,12 +2048,8 @@ async fn main() {
         main_game = match result {
             Ok(main_game) => main_game,
             Err(error) => {
-                let error = format!("Failed to load game: {}", error);
-                for _ in 0..300 {
-                    clear_background(BLACK);
-                    macroquad::text::draw_text(&error, 0.0, 64.0, 64.0, WHITE);
-                    next_frame().await;
-                }
+                let error_msg = error.to_string();
+                write_error_message(&error_msg).await;
                 MainGame::<LoadingScreen>::load().await.unwrap()
             }
         }

@@ -1,5 +1,5 @@
 {
-  "format_version": "0.3",
+  "format_version": "0.4",
   "published": true,
   "game_type": "Minigame",
   "objects": [
@@ -294,6 +294,28 @@
               "SetProperty": {
                 "Switch": "Off"
               }
+            },
+            {
+              "SetProperty": {
+                "Angle": {
+                  "Match": {
+                    "name": "man"
+                  }
+                }
+              }
+            },
+            {
+              "Motion": {
+                "JumpTo": {
+                  "Relative": {
+                    "to": "CurrentAngle",
+                    "distance": {
+                      "x": 0.0,
+                      "y": -125.0
+                    }
+                  }
+                }
+              }
             }
           ]
         },
@@ -499,9 +521,9 @@
   ],
   "asset_files": {
     "images": {
+      "trifle": "trifle-crop.png",
       "man": "baby-blue-man.png",
       "baby": "baby-blue-baby.png",
-      "trifle": "trifle-crop.png",
       "venice": "venice.jpg"
     },
     "audio": {
