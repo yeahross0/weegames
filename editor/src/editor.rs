@@ -124,6 +124,7 @@ pub fn run<'a, 'b>(
 
     let mut scene = SceneLocation::default();
 
+    let mut mouse_button = ButtonState::Up;
     let mut minus_button = ButtonState::Up;
     let mut plus_button = ButtonState::Up;
     let mut show_collision_areas = false;
@@ -235,20 +236,22 @@ pub fn run<'a, 'b>(
 
         if windows.help {
             imgui::Window::new(im_str!("Help"))
-                .size([500.0, 250.0], imgui::Condition::FirstUseEver)
-                .position([60.0, 400.0], imgui::Condition::FirstUseEver)
+                .size([500.0, 275.0], imgui::Condition::FirstUseEver)
+                .position([60.0, 375.0], imgui::Condition::FirstUseEver)
                 .scroll_bar(true)
                 .scrollable(true)
                 .resizable(true)
                 .opened(&mut windows.help)
                 .build(ui, || {
                     ui.text_wrapped(im_str!("This editor is in maintenance mode while a new editor is in development.\n
-                    Save often.\n\n\
+                    An autosave file is saved as autosave.json each time you hit 'Play'.\n\n\
                     Open the json game files in the games directory to see how they were made and see the attribution. \
                     The game is strict with the directory structure: e.g. place images directly under the images directory.\n\n\
                     Controls:\n\
                     WASD: Move the scene around\n \
-                    + and - keys: zoom in/out"));
+                    + and - keys: zoom in/out\n \
+                    Click Object: Switch to object\n \
+                    Click + Z Key: Object jumps to mouse"));
                 });
         }
 
@@ -310,6 +313,7 @@ pub fn run<'a, 'b>(
         );
 
         let mouse_state = events.pump.mouse_state();
+        mouse_button.update(mouse_state.left());
         let window_size = renderer.window.size();
         if !ui.io().want_capture_mouse && mouse_state.left() {
             let calc_mouse_position =
@@ -329,31 +333,35 @@ pub fn run<'a, 'b>(
             let x = x / scene.scale - scene.position.x;
             let y = y / scene.scale - scene.position.y;
 
-            /*if let Some(i) = editor.object_state.index {
-                game.objects[i].position.x = x;
-                game.objects[i].position.y = y;
-            }*/
+            let is_pressed = |scancode| events.pump.keyboard_state().is_scancode_pressed(scancode);
 
-            let mut layers: Vec<u8> = game.objects.iter().map(|o| o.layer).collect();
-            layers.sort_unstable();
-            layers.dedup();
-            layers.reverse();
-            for layer in layers.into_iter() {
-                for (i, object) in game.objects.iter().enumerate() {
-                    if object.layer == layer {
-                        let poly = object.full_poly();
-                        let clicked = poly
-                            .gjk(&c2::Circle::new(c2::Vec2::new(x, y), 1.0))
-                            .use_radius(false)
-                            .run()
-                            .distance()
-                            == 0.0;
-                        if clicked {
-                            log::info!("{}", object.name);
+            if is_pressed(Scancode::P) || is_pressed(Scancode::Z) {
+                if let Some(i) = editor.object_state.index {
+                    game.objects[i].position.x = x.floor();
+                    game.objects[i].position.y = y.floor();
+                }
+            } else if mouse_button == ButtonState::Press {
+                let mut layers: Vec<u8> = game.objects.iter().map(|o| o.layer).collect();
+                layers.sort_unstable();
+                layers.dedup();
+                layers.reverse();
+                for layer in layers.into_iter() {
+                    for (i, object) in game.objects.iter().enumerate() {
+                        if object.layer == layer {
+                            let poly = object.full_poly();
+                            let clicked = poly
+                                .gjk(&c2::Circle::new(c2::Vec2::new(x, y), 1.0))
+                                .use_radius(false)
+                                .run()
+                                .distance()
+                                == 0.0;
+                            if clicked {
+                                //log::info!("{}", object.name);
 
-                            editor.switch_to_object(i);
+                                editor.switch_to_object(i);
 
-                            break;
+                                break;
+                            }
                         }
                     }
                 }
@@ -362,6 +370,65 @@ pub fn run<'a, 'b>(
 
         if let Some(i) = editor.object_state.index {
             let object = &game.objects[i];
+            let rect = object
+                .rect()
+                .move_position(scene.position)
+                .scale(scene.scale);
+            let model = Model::new(
+                rect,
+                Some(object.origin() * scene.scale),
+                object.angle,
+                object.flip,
+            );
+            editor.draw_tasks.push(DrawTask::Border(model));
+
+            if show_collision_areas {
+                // TODO: Remove into_object
+                let game_object = object
+                    .clone()
+                    .into_object(&mut EditorRng::from_rng(RandomNumberGenerator::new()));
+
+                let aabb = game_object.collision_aabb();
+                let mut origin = game_object.origin();
+                if let Some(area) = game_object.collision_area {
+                    let mut diff = area.min;
+                    if object.flip.horizontal {
+                        diff.x = object.size.width - area.max.x;
+                    }
+                    if object.flip.vertical {
+                        diff.y = object.size.height - area.max.y;
+                    }
+                    origin = Vec2::new(origin.x - diff.x, origin.y - diff.y);
+                }
+                let rect = aabb
+                    .to_rect()
+                    .move_position(scene.position)
+                    .scale(scene.scale);
+                let model = Model::new(
+                    rect,
+                    Some(origin * scene.scale),
+                    object.angle,
+                    Flip::default(),
+                );
+
+                editor
+                    .draw_tasks
+                    .push(DrawTask::Model(model, Colour::rgba(1.0, 0.0, 0.0, 0.5)));
+            }
+            if show_origins {
+                let origin = object.origin_in_world();
+
+                let rect = Rect::new(origin.x, origin.y, 10.0, 10.0)
+                    .move_position(scene.position)
+                    .scale(scene.scale);
+
+                let model = Model::new(rect, None, 0.0, Flip::default());
+
+                editor
+                    .draw_tasks
+                    .push(DrawTask::Model(model, Colour::rgba(1.0, 1.0, 0.0, 0.8)));
+            }
+
             let rect = object
                 .rect()
                 .move_position(scene.position)
@@ -384,13 +451,7 @@ pub fn run<'a, 'b>(
 
         renderer.draw_editor_background(&game.background, &assets.images, scene)?;
 
-        renderer.draw_editor_objects(
-            &game.objects,
-            &assets.images,
-            scene,
-            show_collision_areas,
-            show_origins,
-        )?;
+        renderer.draw_editor_objects(&game.objects, &assets.images, scene)?;
 
         renderer.draw_tasks(editor.draw_tasks, scene);
         editor.draw_tasks = Vec::new();
@@ -1297,8 +1358,6 @@ trait RenderEditor {
         objects: &[SerialiseObject],
         images: &Images,
         location: SceneLocation,
-        show_collision_areas: bool,
-        show_origins: bool,
     ) -> WeeResult<()>;
 
     fn draw_tasks(&self, draw_tasks: Vec<DrawTask>, location: SceneLocation);
@@ -1349,8 +1408,6 @@ impl RenderEditor for Renderer {
         objects: &[SerialiseObject],
         images: &Images,
         location: SceneLocation,
-        show_collision_areas: bool,
-        show_origins: bool,
     ) -> WeeResult<()> {
         let mut layers: Vec<u8> = objects.iter().map(|o| o.layer).collect();
         layers.sort_unstable();
@@ -1389,67 +1446,6 @@ impl RenderEditor for Renderer {
                             self.fill_rectangle(model, *colour);
                         }
                     }
-
-                    if show_collision_areas {
-                        let game_object = object
-                            .clone()
-                            .into_object(&mut EditorRng::from_rng(RandomNumberGenerator::new()));
-                        let poly = game_object.poly();
-
-                        for i in 0..poly.count() {
-                            let v = poly.get_vert(i);
-                            let rect = Rect::new(v.x(), v.y(), 10.0, 10.0)
-                                .move_position(location.position)
-                                .scale(location.scale);
-                            let model = Model::new(rect, None, 0.0, Flip::default());
-                            self.fill_rectangle(model, Colour::rgba(0.0, 1.0, 0.0, 0.5));
-                        }
-
-                        let aabb = game_object.collision_aabb();
-                        let mut origin = game_object.origin();
-                        if let Some(area) = game_object.collision_area {
-                            let mut diff = area.min;
-                            if object.flip.horizontal {
-                                diff.x = object.size.width - area.max.x;
-                            }
-                            if object.flip.vertical {
-                                diff.y = object.size.height - area.max.y;
-                            }
-                            origin = Vec2::new(origin.x - diff.x, origin.y - diff.y);
-                        }
-                        let rect = aabb
-                            .to_rect()
-                            .move_position(location.position)
-                            .scale(location.scale);
-                        let model = Model::new(
-                            rect,
-                            Some(origin * location.scale),
-                            object.angle,
-                            Flip::default(),
-                        );
-                        self.fill_rectangle(model, Colour::rgba(1.0, 0.0, 0.0, 0.5));
-
-                        let rect = Vec2::new(rect.x - rect.w / 2.0, rect.y - rect.h / 2.0)
-                            + (origin * location.scale);
-                        let model = Model::new(
-                            Rect::new(rect.x, rect.y, 10.0, 10.0),
-                            None,
-                            0.0,
-                            Flip::default(),
-                        );
-                        self.fill_rectangle(model, Colour::rgba(1.0, 1.0, 1.0, 0.8));
-                    }
-                    if show_origins {
-                        let origin = object.origin_in_world();
-
-                        let rect = Rect::new(origin.x, origin.y, 10.0, 10.0)
-                            .move_position(location.position)
-                            .scale(location.scale);
-
-                        let model = Model::new(rect, None, 0.0, Flip::default());
-
-                        self.fill_rectangle(model, Colour::rgba(1.0, 1.0, 0.0, 0.8));
-                    }
                 }
             }
         }
@@ -1469,6 +1465,9 @@ impl RenderEditor for Renderer {
                 }
                 DrawTask::Border(model) => {
                     self.draw_rectangle_lines(model, Colour::rgba(1.0, 0.5, 0.0, 0.5));
+                }
+                DrawTask::Model(model, colour) => {
+                    self.fill_rectangle(model, colour);
                 }
                 DrawTask::Point(point) => {
                     let rect = Rect::new(point.x, point.y, 20.0, 20.0)
@@ -3877,6 +3876,7 @@ impl ImguiDisplayAction for Action {
 enum DrawTask {
     AABB(AABB),
     Border(Model),
+    Model(Model, Colour),
     Point(Vec2),
 }
 
