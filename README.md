@@ -2,8 +2,7 @@
 Weegames is a collection of minigames written in Rust with macroquad. You can play the game on [itch.io](https://yeahross.itch.io/weegames).
 
 # Screenshots
-![baby](https://img.itch.zone/aW1hZ2UvNjYyNjQ3LzM1Njg1NjkuanBn/original/EjnlNA.jpg)
-![piano](https://img.itch.zone/aW1hZ2UvNjYyNjQ3LzM1Njg1NjguanBn/original/0LpPjA.jpg)
+![minigames](https://img.itch.zone/aW1nLzgyNDY5NzkuanBn/original/aE018L.jpg)
 
 # Video
 
