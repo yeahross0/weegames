@@ -569,20 +569,26 @@ fn draw_game(
     const INTRO_TEXT_TIME: u32 = 60;
     if game.frames.ran < INTRO_TEXT_TIME {
         let colour = BLACK;
-        let size = macroquad::text::measure_text(&game.intro_text, Some(*intro_font), 176, 1.01);
+        let size = macroquad::text::measure_text(&game.intro_text, Some(*intro_font), 174, 1.00);
         let params = macroquad::text::TextParams {
             font: *intro_font,
-            font_size: 178,
-            font_scale: 1.01,
+            font_size: 174,
+            font_scale: 1.00,
             font_scale_aspect: 1.0,
             color: colour,
         };
-        macroquad::text::draw_text_ex(
-            &game.intro_text,
-            PROJECTION_WIDTH / 2.0 - size.width / 2.0,
-            PROJECTION_HEIGHT / 2.0,
-            params,
-        );
+        let draw_text_border = |offset_x, offset_y| {
+            macroquad::text::draw_text_ex(
+                &game.intro_text,
+                PROJECTION_WIDTH / 2.0 - size.width / 2.0 + offset_x,
+                PROJECTION_HEIGHT / 2.0 + offset_y,
+                params,
+            );
+        };
+        draw_text_border(-2.0, 0.0);
+        draw_text_border(0.0, -2.0);
+        draw_text_border(2.0, 0.0);
+        draw_text_border(0.0, 2.0);
 
         let colour = WHITE;
         let size = macroquad::text::measure_text(&game.intro_text, Some(*intro_font), 174, 1.0);
@@ -1217,7 +1223,7 @@ impl MainGame<LoadingScreen> {
             if let Ok(storage) = &mut quad_storage::STORAGE.lock() {
                 let json = storage.get("weegames_played_games");
                 if let Some(json) = json {
-                    json_from_str(&json)?
+                    json_from_str(&json).unwrap_or_else(|_| HashSet::new())
                 } else {
                     HashSet::new()
                 }
@@ -1860,10 +1866,19 @@ impl MainGame<GameOver> {
 
         fn high_scores_from_path<P: AsRef<Path>>(path: P) -> WeeResult<String> {
             #[cfg(target_arch = "wasm32")]
-            return quad_storage::STORAGE.lock().get(
-                path.to_str()
-                    .ok_or("Can't convert high score path to string")?,
-            )?;
+            if let Ok(storage) = quad_storage::STORAGE.lock() {
+                let high_scores = storage
+                    .get(
+                        path.as_ref()
+                            .to_str()
+                            .ok_or("Can't convert high score path to string")?,
+                    )
+                    .ok_or("No existing high scores found")?;
+
+                return Ok(high_scores);
+            } else {
+                Err("Couldn't access web storage")?
+            }
 
             #[cfg(not(target_arch = "wasm32"))]
             return Ok(std::fs::read_to_string(&path)?);
@@ -1911,7 +1926,8 @@ impl MainGame<GameOver> {
             #[cfg(target_arch = "wasm32")]
             if let Ok(storage) = &mut quad_storage::STORAGE.lock() {
                 storage.set(
-                    path.to_str()
+                    path.as_ref()
+                        .to_str()
                         .ok_or("Can't convert high score path to string")?,
                     &s,
                 );
@@ -1933,9 +1949,9 @@ impl MainGame<GameOver> {
             }
 
             #[cfg(target_arch = "wasm32")]
-            quad_storage::STORAGE
-                .lock()?
-                .set("weegames_played_games", &s);
+            if let Ok(storage) = &mut quad_storage::STORAGE.lock() {
+                storage.set("weegames_played_games", &s);
+            }
 
             Ok(())
         }
