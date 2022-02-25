@@ -569,20 +569,26 @@ fn draw_game(
     const INTRO_TEXT_TIME: u32 = 60;
     if game.frames.ran < INTRO_TEXT_TIME {
         let colour = BLACK;
-        let size = macroquad::text::measure_text(&game.intro_text, Some(*intro_font), 176, 1.01);
+        let size = macroquad::text::measure_text(&game.intro_text, Some(*intro_font), 174, 1.00);
         let params = macroquad::text::TextParams {
             font: *intro_font,
-            font_size: 178,
-            font_scale: 1.01,
+            font_size: 174,
+            font_scale: 1.00,
             font_scale_aspect: 1.0,
             color: colour,
         };
-        macroquad::text::draw_text_ex(
-            &game.intro_text,
-            PROJECTION_WIDTH / 2.0 - size.width / 2.0,
-            PROJECTION_HEIGHT / 2.0,
-            params,
-        );
+        let draw_text_border = |offset_x, offset_y| {
+            macroquad::text::draw_text_ex(
+                &game.intro_text,
+                PROJECTION_WIDTH / 2.0 - size.width / 2.0 + offset_x,
+                PROJECTION_HEIGHT / 2.0 + offset_y,
+                params,
+            );
+        };
+        draw_text_border(-2.0, 0.0);
+        draw_text_border(0.0, -2.0);
+        draw_text_border(2.0, 0.0);
+        draw_text_border(0.0, 2.0);
 
         let colour = WHITE;
         let size = macroquad::text::measure_text(&game.intro_text, Some(*intro_font), 174, 1.0);
