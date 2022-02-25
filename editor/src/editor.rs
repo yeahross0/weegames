@@ -243,7 +243,7 @@ pub fn run<'a, 'b>(
                 .resizable(true)
                 .opened(&mut windows.help)
                 .build(ui, || {
-                    ui.text_wrapped(im_str!("This editor is in maintenance mode while a new editor is in development.\n
+                    ui.text_wrapped(im_str!("This editor is in maintenance mode while a new editor is in development.\n\n \
                     An autosave file is saved as autosave.json each time you hit 'Play'.\n\n\
                     Open the json game files in the games directory to see how they were made and see the attribution. \
                     The game is strict with the directory structure: e.g. place images directly under the images directory.\n\n\

@@ -1217,7 +1217,7 @@ impl MainGame<LoadingScreen> {
             if let Ok(storage) = &mut quad_storage::STORAGE.lock() {
                 let json = storage.get("weegames_played_games");
                 if let Some(json) = json {
-                    json_from_str(&json)?
+                    json_from_str(&json).unwrap_or_else(|_| HashSet::new())
                 } else {
                     HashSet::new()
                 }
@@ -1860,10 +1860,19 @@ impl MainGame<GameOver> {
 
         fn high_scores_from_path<P: AsRef<Path>>(path: P) -> WeeResult<String> {
             #[cfg(target_arch = "wasm32")]
-            return quad_storage::STORAGE.lock().get(
-                path.to_str()
-                    .ok_or("Can't convert high score path to string")?,
-            )?;
+            if let Ok(storage) = quad_storage::STORAGE.lock() {
+                let high_scores = storage
+                    .get(
+                        path.as_ref()
+                            .to_str()
+                            .ok_or("Can't convert high score path to string")?,
+                    )
+                    .ok_or("No existing high scores found")?;
+
+                return Ok(high_scores);
+            } else {
+                Err("Couldn't access web storage")?
+            }
 
             #[cfg(not(target_arch = "wasm32"))]
             return Ok(std::fs::read_to_string(&path)?);
@@ -1911,7 +1920,8 @@ impl MainGame<GameOver> {
             #[cfg(target_arch = "wasm32")]
             if let Ok(storage) = &mut quad_storage::STORAGE.lock() {
                 storage.set(
-                    path.to_str()
+                    path.as_ref()
+                        .to_str()
                         .ok_or("Can't convert high score path to string")?,
                     &s,
                 );
@@ -1933,9 +1943,9 @@ impl MainGame<GameOver> {
             }
 
             #[cfg(target_arch = "wasm32")]
-            quad_storage::STORAGE
-                .lock()?
-                .set("weegames_played_games", &s);
+            if let Ok(storage) = &mut quad_storage::STORAGE.lock() {
+                storage.set("weegames_played_games", &s);
+            }
 
             Ok(())
         }
