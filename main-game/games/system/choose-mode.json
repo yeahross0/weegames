@@ -1444,43 +1444,170 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Editor",
+      "sprite": {
+        "Colour": {
+          "r": 0.8627451,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.7058824
+        }
+      },
+      "position": {
+        "x": 899.0,
+        "y": 84.0
+      },
+      "size": {
+        "width": 150.0,
+        "height": 75.0
+      },
+      "angle": 0.0,
+      "origin": null,
+      "collision_area": null,
+      "flip": {
+        "horizontal": false,
+        "vertical": false
+      },
+      "layer": 0,
+      "switch": "Off",
+      "instructions": [
+        {
+          "triggers": [
+            {
+              "Time": "Start"
+            }
+          ],
+          "actions": [
+            {
+              "DrawText": {
+                "text": "Editor",
+                "font": "Fonty",
+                "colour": {
+                  "r": 0.0,
+                  "g": 0.0,
+                  "b": 0.0,
+                  "a": 1.0
+                },
+                "resize": "MatchText",
+                "justify": "Centre"
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Colour": {
+                    "r": 0.8627451,
+                    "g": 0.0,
+                    "b": 0.0,
+                    "a": 0.7058824
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "Editor"
+                    }
+                  },
+                  "interaction": "Hover"
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Sprite": {
+                  "Colour": {
+                    "r": 0.0,
+                    "g": 0.0,
+                    "b": 0.8627451,
+                    "a": 0.7058824
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "triggers": [
+            {
+              "Input": {
+                "Mouse": {
+                  "over": {
+                    "Object": {
+                      "name": "Editor"
+                    }
+                  },
+                  "interaction": {
+                    "Button": {
+                      "state": "Press"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "SetProperty": {
+                "Switch": "On"
+              }
+            }
+          ]
+        }
+      ]
     }
   ],
   "background": [],
   "asset_files": {
     "images": {
-      "screen-rash-3": "screen-rash-3.jpg",
-      "screen3": "screen3.jpg",
-      "screen4": "screen4.jpg",
-      "shuffle-2": "shuffle-2.png",
-      "static-2": "static-2.jpg",
-      "rash": "rash.png",
-      "blender": "blender.png",
-      "screen-rash-1": "screen-rash-1.jpg",
-      "screen-rash-2": "screen-rash-2.png",
-      "screen1": "screen1.jpg",
-      "shuffle": "shuffle.png",
-      "remote-dull": "remote-dull.png",
-      "flappy": "flappy.png",
-      "wasp-grey": "wasp-grey.png",
-      "shuffle-test-1": "shuffle-test-1.jpg",
-      "rash2": "rash2.png",
-      "static-3": "static-3.jpg",
-      "bird": "bird.png",
-      "keyboard": "keyboard.jpg",
       "shuffle-test-4": "shuffle-test-4.jpg",
-      "rash2-grey": "rash2-grey.png",
-      "shuffle-test-2": "shuffle-test-2.jpg",
-      "wasp-orange": "wasp-orange.png",
-      "flappy-grey": "flappy-grey.png",
-      "blender-grey": "blender-grey.png",
-      "static-1": "static-1.jpg",
+      "screen4": "screen4.jpg",
       "television": "television.png",
-      "screen-rash-4": "screen-rash-4.jpg",
-      "screen2": "screen2.jpg",
+      "screen3": "screen3.jpg",
+      "shuffle-test-3": "shuffle-test-3.jpg",
+      "screen-rash-2": "screen-rash-2.png",
+      "shuffle": "shuffle.png",
+      "shuffle-test-1": "shuffle-test-1.jpg",
+      "static-1": "static-1.jpg",
+      "screen-rash-1": "screen-rash-1.jpg",
+      "wasp-grey": "wasp-grey.png",
+      "bird": "bird.png",
+      "static-2": "static-2.jpg",
+      "blender-grey": "blender-grey.png",
       "static-4": "static-4.jpg",
+      "shuffle-test-2": "shuffle-test-2.jpg",
+      "keyboard": "keyboard.jpg",
+      "shuffle-2": "shuffle-2.png",
+      "rash2": "rash2.png",
       "remote": "remote.png",
-      "shuffle-test-3": "shuffle-test-3.jpg"
+      "flappy": "flappy.png",
+      "static-3": "static-3.jpg",
+      "flappy-grey": "flappy-grey.png",
+      "screen-rash-4": "screen-rash-4.jpg",
+      "wasp-orange": "wasp-orange.png",
+      "screen2": "screen2.jpg",
+      "blender": "blender.png",
+      "screen1": "screen1.jpg",
+      "rash2-grey": "rash2-grey.png",
+      "remote-dull": "remote-dull.png",
+      "screen-rash-3": "screen-rash-3.jpg",
+      "rash": "rash.png"
     },
     "audio": {},
     "music": null,

@@ -1,4 +1,6 @@
-#![windows_subsystem = "windows"]
+//#![windows_subsystem = "windows"]
+
+// TODO: Add window to editor then do if window not clicked then set choose object switch on
 
 use macroquad::logging as log;
 use macroquad::prelude::*;
@@ -23,9 +25,9 @@ use walkdir::WalkDir;
 
 use serde::Deserialize;
 
-use wee_common::{Vec2 as WeeVec2, *};
-
+use c2::prelude::*;
 use wee::*;
+use wee_common::{Vec2 as WeeVec2, *};
 
 const PROJECTION_WIDTH: f32 = 1600.0;
 const PROJECTION_HEIGHT: f32 = 900.0;
@@ -608,6 +610,513 @@ fn draw_game(
     }
 }
 
+fn draw_game_editor(
+    game: &Game,
+    images: &Images,
+    fonts: &Fonts,
+    edited_game: &GameData,
+    edited_assets: &Assets,
+    intro_font: &Font,
+    drawn_text: &HashMap<String, DrawnText>,
+) {
+    let screen_width = window::screen_width();
+    let screen_height = window::screen_height();
+    let ratio = screen_width / screen_height;
+    let intended_ratio = PROJECTION_WIDTH / PROJECTION_HEIGHT;
+    if ratio > WIDE_RATIO {
+        {
+            let scaled_projection_width = (PROJECTION_HEIGHT / screen_height) * screen_width;
+            let camera_x = (scaled_projection_width - PROJECTION_WIDTH) / 2.0;
+            let camera = Camera2D::from_display_rect(MacroRect::new(
+                -camera_x,
+                0.0,
+                scaled_projection_width,
+                PROJECTION_HEIGHT,
+            ));
+            camera::set_camera(&camera);
+        }
+
+        {
+            let game_area_rendered_width = screen_height * intended_ratio;
+            let blank_space = screen_width - game_area_rendered_width;
+            let letterbox_width = blank_space / 2.0;
+            unsafe {
+                let gl = window::get_internal_gl().quad_gl;
+                gl.scissor(Some((
+                    letterbox_width as i32,
+                    0,
+                    (screen_width - blank_space) as i32,
+                    screen_height as i32,
+                )));
+            }
+        }
+    } else if ratio < TALL_RATIO {
+        let scaled_projection_height = (PROJECTION_WIDTH / screen_width) * screen_height;
+        let camera_y = (scaled_projection_height - PROJECTION_HEIGHT) / 2.0;
+        let camera = macroquad::camera::Camera2D::from_display_rect(MacroRect::new(
+            0.0,
+            -camera_y,
+            PROJECTION_WIDTH,
+            scaled_projection_height,
+        ));
+        macroquad::camera::set_camera(&camera);
+
+        let game_area_rendered_height = screen_width / intended_ratio;
+        let blank_space = screen_height - game_area_rendered_height;
+        let letterbox_height = blank_space / 2.0;
+        unsafe {
+            let gl = window::get_internal_gl().quad_gl;
+            gl.scissor(Some((
+                0,
+                letterbox_height as i32,
+                screen_width as i32,
+                (screen_height - blank_space) as i32,
+            )));
+        }
+    } else {
+        let camera = macroquad::camera::Camera2D::from_display_rect(MacroRect::new(
+            0.0,
+            0.0,
+            PROJECTION_WIDTH,
+            PROJECTION_HEIGHT,
+        ));
+        macroquad::camera::set_camera(&camera);
+    }
+    clear_background(BLACK);
+    macroquad::shapes::draw_rectangle(0.0, 0.0, PROJECTION_WIDTH, PROJECTION_HEIGHT, WHITE);
+    // Draw background
+    for part in &game.background {
+        match &part.sprite {
+            Sprite::Image { name } => {
+                let params = macroquad::texture::DrawTextureParams {
+                    dest_size: Some(macroquad::math::Vec2::new(
+                        part.area.width(),
+                        part.area.height(),
+                    )),
+                    source: None,
+                    rotation: 0.0,
+                    pivot: None,
+                    flip_x: false,
+                    flip_y: false,
+                };
+                draw_texture_ex(
+                    images[name],
+                    part.area.min.x,
+                    part.area.min.y,
+                    macroquad::color::WHITE,
+                    params,
+                );
+            }
+            Sprite::Colour(colour) => macroquad::shapes::draw_rectangle(
+                part.area.min.x,
+                part.area.min.y,
+                part.area.max.x,
+                part.area.max.y,
+                macroquad::color::Color::new(colour.r, colour.g, colour.b, colour.a),
+            ),
+        }
+    }
+
+    // Draw Objects
+    let mut layers: Vec<u8> = game.objects.values().map(|o| o.layer).collect();
+    layers.sort_unstable();
+    layers.dedup();
+    layers.reverse();
+    for layer in layers.into_iter() {
+        for (key, object) in game.objects.iter() {
+            if object.layer == layer {
+                if key == "Screen" {
+                    draw_edited_game(
+                        &object,
+                        edited_game,
+                        &edited_assets.images,
+                        &edited_assets.fonts,
+                        intro_font,
+                    );
+
+                    // TODO: Refactor this into function - it's just resetting the camera + scissor
+                    if ratio > WIDE_RATIO {
+                        {
+                            let scaled_projection_width =
+                                (PROJECTION_HEIGHT / screen_height) * screen_width;
+                            let camera_x = (scaled_projection_width - PROJECTION_WIDTH) / 2.0;
+                            let camera = Camera2D::from_display_rect(MacroRect::new(
+                                -camera_x,
+                                0.0,
+                                scaled_projection_width,
+                                PROJECTION_HEIGHT,
+                            ));
+                            camera::set_camera(&camera);
+                        }
+
+                        {
+                            let game_area_rendered_width = screen_height * intended_ratio;
+                            let blank_space = screen_width - game_area_rendered_width;
+                            let letterbox_width = blank_space / 2.0;
+                            unsafe {
+                                let gl = window::get_internal_gl().quad_gl;
+                                gl.scissor(Some((
+                                    letterbox_width as i32,
+                                    0,
+                                    (screen_width - blank_space) as i32,
+                                    screen_height as i32,
+                                )));
+                            }
+                        }
+                    } else if ratio < TALL_RATIO {
+                        let scaled_projection_height =
+                            (PROJECTION_WIDTH / screen_width) * screen_height;
+                        let camera_y = (scaled_projection_height - PROJECTION_HEIGHT) / 2.0;
+                        let camera =
+                            macroquad::camera::Camera2D::from_display_rect(MacroRect::new(
+                                0.0,
+                                -camera_y,
+                                PROJECTION_WIDTH,
+                                scaled_projection_height,
+                            ));
+                        macroquad::camera::set_camera(&camera);
+
+                        let game_area_rendered_height = screen_width / intended_ratio;
+                        let blank_space = screen_height - game_area_rendered_height;
+                        let letterbox_height = blank_space / 2.0;
+                        unsafe {
+                            let gl = window::get_internal_gl().quad_gl;
+                            gl.scissor(Some((
+                                0,
+                                letterbox_height as i32,
+                                screen_width as i32,
+                                (screen_height - blank_space) as i32,
+                            )));
+                        }
+                    } else {
+                        let camera = macroquad::camera::Camera2D::from_display_rect(
+                            MacroRect::new(0.0, 0.0, PROJECTION_WIDTH, PROJECTION_HEIGHT),
+                        );
+                        macroquad::camera::set_camera(&camera);
+                    }
+                } else {
+                    match &object.sprite {
+                        Sprite::Image { name } => {
+                            let origin = object.origin_in_world();
+                            let origin = macroquad::math::Vec2::new(origin.x, origin.y);
+                            let params = macroquad::texture::DrawTextureParams {
+                                dest_size: Some(macroquad::math::Vec2::new(
+                                    object.size.width,
+                                    object.size.height,
+                                )),
+                                source: None,
+                                rotation: object.angle.to_radians(),
+                                pivot: Some(origin),
+                                flip_x: object.flip.horizontal,
+                                flip_y: object.flip.vertical,
+                            };
+                            if images.contains_key(name) {
+                                draw_texture_ex(
+                                    images[name],
+                                    object.position.x - object.size.width / 2.0,
+                                    object.position.y - object.size.height / 2.0,
+                                    macroquad::color::WHITE,
+                                    params,
+                                );
+                            } else {
+                                draw_texture_ex(
+                                    edited_assets.images[name],
+                                    object.position.x - object.size.width / 2.0,
+                                    object.position.y - object.size.height / 2.0,
+                                    macroquad::color::WHITE,
+                                    params,
+                                );
+                            }
+                        }
+                        Sprite::Colour(colour) => {
+                            let origin = object.origin_in_world();
+                            let origin = macroquad::math::Vec2::new(origin.x, origin.y);
+                            draw_rectangle_ex(
+                                Color::new(colour.r, colour.g, colour.b, colour.a),
+                                object.position.x - object.size.width / 2.0,
+                                object.position.y - object.size.height / 2.0,
+                                object.size.width,
+                                object.size.height,
+                                object.angle.to_radians(),
+                                Some(origin),
+                            );
+                        }
+                    }
+                }
+
+                if drawn_text.contains_key(key) {
+                    let colour = drawn_text[key].colour;
+                    let colour = Color::new(colour.r, colour.g, colour.b, colour.a);
+                    let size = macroquad::text::measure_text(
+                        &drawn_text[key].text,
+                        Some(fonts[&drawn_text[key].font].0),
+                        fonts[&drawn_text[key].font].1,
+                        1.0,
+                    );
+                    let position = match drawn_text[key].justify {
+                        JustifyText::Left => WeeVec2::new(
+                            object.position.x - object.half_width(),
+                            object.position.y + size.height / 2.0,
+                        ),
+                        JustifyText::Centre => WeeVec2::new(
+                            object.position.x - size.width / 2.0,
+                            object.position.y + size.height / 2.0,
+                        ),
+                    };
+                    let params = macroquad::text::TextParams {
+                        font: fonts[&drawn_text[key].font].0,
+                        font_size: fonts[&drawn_text[key].font].1,
+                        font_scale: 1.0,
+                        font_scale_aspect: 1.0,
+                        color: colour,
+                    };
+                    macroquad::text::draw_text_ex(
+                        &drawn_text[key].text,
+                        position.x,
+                        position.y,
+                        params,
+                    );
+                }
+            }
+        }
+    }
+
+    // Draw Intro Text
+    const INTRO_TEXT_TIME: u32 = 60;
+    if game.frames.ran < INTRO_TEXT_TIME {
+        let colour = BLACK;
+        let size = macroquad::text::measure_text(&game.intro_text, Some(*intro_font), 174, 1.00);
+        let params = macroquad::text::TextParams {
+            font: *intro_font,
+            font_size: 174,
+            font_scale: 1.00,
+            font_scale_aspect: 1.0,
+            color: colour,
+        };
+        let draw_text_border = |offset_x, offset_y| {
+            macroquad::text::draw_text_ex(
+                &game.intro_text,
+                PROJECTION_WIDTH / 2.0 - size.width / 2.0 + offset_x,
+                PROJECTION_HEIGHT / 2.0 + offset_y,
+                params,
+            );
+        };
+        draw_text_border(-2.0, 0.0);
+        draw_text_border(0.0, -2.0);
+        draw_text_border(2.0, 0.0);
+        draw_text_border(0.0, 2.0);
+
+        let colour = WHITE;
+        let size = macroquad::text::measure_text(&game.intro_text, Some(*intro_font), 174, 1.0);
+        let params = macroquad::text::TextParams {
+            font: *intro_font,
+            font_size: 174,
+            font_scale: 1.0,
+            font_scale_aspect: 1.0,
+            color: colour,
+        };
+        macroquad::text::draw_text_ex(
+            &game.intro_text,
+            PROJECTION_WIDTH / 2.0 - size.width / 2.0,
+            PROJECTION_HEIGHT / 2.0,
+            params,
+        );
+    }
+}
+
+fn draw_edited_game(
+    screen: &Object,
+    game: &GameData,
+    images: &Images,
+    fonts: &Fonts,
+    intro_font: &Font,
+) {
+    let screen_width = window::screen_width();
+    let screen_height = window::screen_height();
+    let ratio = screen_width / screen_height;
+    let intended_ratio = PROJECTION_WIDTH / PROJECTION_HEIGHT;
+    let wr = PROJECTION_WIDTH / screen.size.width;
+    let hr = PROJECTION_HEIGHT / screen.size.height;
+    let top_left = WeeVec2::new(
+        screen.position.x - screen.size.width / 2.0,
+        screen.position.y - screen.size.height / 2.0,
+    );
+    let w = PROJECTION_WIDTH * wr;
+    let h = PROJECTION_HEIGHT * hr; //let x_offset = 800 - screen.position.x - screen.size.width / 2.0;
+    let x = top_left.x * -wr; // - screen.size.width / wr;
+    let y = top_left.y * -hr; // - screen.size.height / hr;
+    if ratio > WIDE_RATIO {
+        let scaled_projection_width = (PROJECTION_HEIGHT / screen_height) * screen_width * wr;
+        let camera_x = (scaled_projection_width - PROJECTION_WIDTH);
+        log::debug!("x: {}", x);
+        log::debug!("Camera x: {}", camera_x);
+        //let scaled_projection_width = (PROJECTION_HEIGHT / screen_height) * screen_width;
+        let game_area_rendered_width = screen_height * intended_ratio;
+        let blank_space = screen_width - game_area_rendered_width;
+        let letterbox_width = blank_space / 2.0;
+        log::debug!("Letterbox width: {}", letterbox_width);
+        let camera_x = (scaled_projection_width - PROJECTION_WIDTH * wr) / 2.0;
+        let camera = Camera2D::from_display_rect(MacroRect::new(
+            x - camera_x,
+            y,
+            scaled_projection_width,
+            h,
+        ));
+        camera::set_camera(&camera);
+    } else if ratio < TALL_RATIO {
+        let scaled_projection_height = (PROJECTION_WIDTH / screen_width) * screen_height * hr;
+        let camera_y = (scaled_projection_height - PROJECTION_HEIGHT) / 2.0;
+        let game_area_rendered_height = screen_width / intended_ratio;
+        let blank_space = screen_height - game_area_rendered_height;
+        let letterbox_height = blank_space / 2.0;
+        log::debug!("Letterbox height: {}", letterbox_height);
+        let old_scaled_projection_height = (PROJECTION_WIDTH / screen_width) * screen_height;
+        log::debug!(
+            "old scaled_projection_height: {}",
+            old_scaled_projection_height
+        );
+        let camera_y = (scaled_projection_height - PROJECTION_HEIGHT * hr) / 2.0;
+        let camera = macroquad::camera::Camera2D::from_display_rect(MacroRect::new(
+            x,
+            y - camera_y, // -camera_y +
+            w,
+            scaled_projection_height,
+        ));
+        camera::set_camera(&camera);
+    } else {
+        // TODO: Ratios are wrong when not 16:9 window
+
+        let camera = camera::Camera2D::from_display_rect(MacroRect::new(x, y, w, h));
+
+        camera::set_camera(&camera);
+    }
+    //clear_background(BLACK);
+    macroquad::shapes::draw_rectangle(0.0, 0.0, PROJECTION_WIDTH, PROJECTION_HEIGHT, WHITE);
+    // Draw background
+    for part in &game.background {
+        match &part.sprite {
+            Sprite::Image { name } => {
+                let params = macroquad::texture::DrawTextureParams {
+                    dest_size: Some(macroquad::math::Vec2::new(
+                        part.area.width(),
+                        part.area.height(),
+                    )),
+                    source: None,
+                    rotation: 0.0,
+                    pivot: None,
+                    flip_x: false,
+                    flip_y: false,
+                };
+                draw_texture_ex(
+                    images[name],
+                    part.area.min.x,
+                    part.area.min.y,
+                    macroquad::color::WHITE,
+                    params,
+                );
+            }
+            Sprite::Colour(colour) => macroquad::shapes::draw_rectangle(
+                part.area.min.x,
+                part.area.min.y,
+                part.area.max.x,
+                part.area.max.y,
+                macroquad::color::Color::new(colour.r, colour.g, colour.b, colour.a),
+            ),
+        }
+    }
+
+    // Draw Objects
+    let mut layers: Vec<u8> = game.objects.iter().map(|o| o.layer).collect();
+    layers.sort_unstable();
+    layers.dedup();
+    layers.reverse();
+    for layer in layers.into_iter() {
+        for object in game.objects.iter() {
+            if object.layer == layer {
+                match &object.sprite {
+                    Sprite::Image { name } => {
+                        let origin = object.origin_in_world();
+                        let origin = macroquad::math::Vec2::new(origin.x, origin.y);
+                        let params = macroquad::texture::DrawTextureParams {
+                            dest_size: Some(macroquad::math::Vec2::new(
+                                object.size.width,
+                                object.size.height,
+                            )),
+                            source: None,
+                            rotation: object.angle.to_radians(),
+                            pivot: Some(origin),
+                            flip_x: object.flip.horizontal,
+                            flip_y: object.flip.vertical,
+                        };
+                        draw_texture_ex(
+                            images[name],
+                            object.position.x - object.size.width / 2.0,
+                            object.position.y - object.size.height / 2.0,
+                            macroquad::color::WHITE,
+                            params,
+                        );
+                    }
+                    Sprite::Colour(colour) => {
+                        let origin = object.origin_in_world();
+                        let origin = macroquad::math::Vec2::new(origin.x, origin.y);
+                        draw_rectangle_ex(
+                            Color::new(colour.r, colour.g, colour.b, colour.a),
+                            object.position.x - object.size.width / 2.0,
+                            object.position.y - object.size.height / 2.0,
+                            object.size.width,
+                            object.size.height,
+                            object.angle.to_radians(),
+                            Some(origin),
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+    /* Draw Intro Text
+    const INTRO_TEXT_TIME: u32 = 60;
+    if game.frames.ran < INTRO_TEXT_TIME {
+        let colour = BLACK;
+        let size = macroquad::text::measure_text(&game.intro_text, Some(*intro_font), 174, 1.00);
+        let params = macroquad::text::TextParams {
+            font: *intro_font,
+            font_size: 174,
+            font_scale: 1.00,
+            font_scale_aspect: 1.0,
+            color: colour,
+        };
+        let draw_text_border = |offset_x, offset_y| {
+            macroquad::text::draw_text_ex(
+                &game.intro_text,
+                PROJECTION_WIDTH / 2.0 - size.width / 2.0 + offset_x,
+                PROJECTION_HEIGHT / 2.0 + offset_y,
+                params,
+            );
+        };
+        draw_text_border(-2.0, 0.0);
+        draw_text_border(0.0, -2.0);
+        draw_text_border(2.0, 0.0);
+        draw_text_border(0.0, 2.0);
+
+        let colour = WHITE;
+        let size = macroquad::text::measure_text(&game.intro_text, Some(*intro_font), 174, 1.0);
+        let params = macroquad::text::TextParams {
+            font: *intro_font,
+            font_size: 174,
+            font_scale: 1.0,
+            font_scale_aspect: 1.0,
+            color: colour,
+        };
+        macroquad::text::draw_text_ex(
+            &game.intro_text,
+            PROJECTION_WIDTH / 2.0 - size.width / 2.0,
+            PROJECTION_HEIGHT / 2.0,
+            params,
+        );
+    }*/
+}
+
 struct GameOutput {
     drawn_text: HashMap<String, DrawnText>,
     end_early: bool,
@@ -945,7 +1454,7 @@ impl MainGame<LoadingScreen> {
                     "interlude.json",
                     "game-over.json",
                     "pause-menu.json",
-                    //"boss.json",
+                    "editor.json",
                 ];
                 enders.iter().any(|e| f.ends_with(e))
             })
@@ -1314,6 +1823,15 @@ impl MainGame<Menu> {
                             directory = "games".to_string();
                             break 'choose_mode_running;
                         }
+                        if key == "Editor" {
+                            editor(
+                                &mut self.games,
+                                &self.preloaded_assets,
+                                &self.intro_font,
+                                &mut self.rng,
+                            )
+                            .await?;
+                        }
                         if key == "Back" {
                             std::process::exit(0)
                         }
@@ -1343,6 +1861,512 @@ impl MainGame<Menu> {
             rng: self.rng,
         })
     }
+}
+
+async fn editor(
+    games: &mut HashMap<String, GameData>,
+    preloaded_assets: &HashMap<String, Assets>,
+    intro_font: &Font,
+    rng: &mut MacroRng,
+) -> WeeResult<()> {
+    let (mut game_data, assets) =
+        preloaded_game(games, preloaded_assets, "games/editor/", "editor.json");
+
+    let mut game = Game::from_data(game_data, rng)?;
+
+    let mut drawn_text = HashMap::new();
+
+    assets.music.play(DEFAULT_PLAYBACK_RATE, VOLUME);
+
+    //let edited_filename = "games/editor/editor.json";
+    let edited_filename = "games/yeah/baby.json";
+    let edited_game = games.get_mut(edited_filename).unwrap();
+    let base_path = Path::new(edited_filename).parent().unwrap();
+    let edited_assets = Assets::load(&edited_game.asset_files, base_path).await?;
+
+    let mut selected_index = 0;
+
+    let scale = game.objects["Screen"].size.width / PROJECTION_WIDTH;
+    let offset_x = game.objects["Screen"].position.x - game.objects["Screen"].size.width / 2.0;
+    let offset_y = game.objects["Screen"].position.y - game.objects["Screen"].size.height / 2.0;
+
+    let update_selected_object =
+        |game: &mut Game, edited_game: &mut GameData, selected_index: usize| {
+            game.objects["Selected Object"].position = edited_game.objects[selected_index].position;
+            game.objects["Selected Object"].position.x *= scale;
+            game.objects["Selected Object"].position.y *= scale;
+            //game.objects["Selected Object"].position.x -= 200.0;
+            game.objects["Selected Object"].position.x += offset_x;
+            game.objects["Selected Object"].position.y += offset_y;
+            game.objects["Selected Object"].size = edited_game.objects[selected_index].size;
+            game.objects["Selected Object"].size.width *= scale;
+            game.objects["Selected Object"].size.height *= scale;
+            game.objects["Selected Object"].angle = edited_game.objects[selected_index].angle;
+            game.objects["Selected Object"].flip = edited_game.objects[selected_index].flip;
+            game.objects["Selected Object"].layer = edited_game.objects[selected_index].layer;
+            game.objects["Selected Object"].switch =
+                if edited_game.objects[selected_index].switch == Switch::On {
+                    SwitchState::On
+                } else {
+                    SwitchState::Off
+                };
+            game.objects["Sprite?"].switch =
+                if let Sprite::Image { .. } = edited_game.objects[selected_index].sprite {
+                    SwitchState::On
+                } else {
+                    SwitchState::Off
+                };
+        };
+
+    update_selected_object(&mut game, edited_game, selected_index);
+
+    struct EditorData {
+        image_name: String,
+        colour: Colour,
+        image_page: usize,
+    }
+
+    let mut editor_data = EditorData {
+        image_name: "".to_string(),
+        colour: Colour::black(),
+        image_page: 0,
+    };
+
+    // TODO: Use match
+    if let Sprite::Image { name } = &edited_game.objects[selected_index].sprite {
+        editor_data.image_name = name.clone();
+    } else if let Sprite::Colour(colour) = edited_game.objects[selected_index].sprite {
+        editor_data.colour = colour;
+    }
+
+    fn set_colour_positions(game: &mut Game, selected_object: &SerialiseObject) {
+        if let Sprite::Colour(colour) = selected_object.sprite {
+            game.objects["Red:X"].position.x = colour.r * 255.0;
+            game.objects["Green:X"].position.x = colour.g * 255.0;
+            game.objects["Blue:X"].position.x = colour.b * 255.0;
+            game.objects["Alpha:X"].position.x = colour.a * 255.0;
+        }
+    }
+
+    set_colour_positions(&mut game, &edited_game.objects[selected_index]);
+
+    'editor_running: loop {
+        for _ in 0..game.frames.to_run_forever() {
+            update_frame(&mut game, &assets, DEFAULT_PLAYBACK_RATE, rng)?
+                .add_drawn_text(&mut drawn_text);
+
+            for text in drawn_text.values_mut() {
+                text.text = text
+                    .text
+                    .replace("{Object Number}", &(selected_index + 1).to_string());
+                text.text = text
+                    .text
+                    .replace("{Object Count}", &edited_game.objects.len().to_string());
+                text.text = text
+                    .text
+                    .replace("{Object Name}", &edited_game.objects[selected_index].name);
+                text.text = text.text.replace(
+                    "{Layer}",
+                    &edited_game.objects[selected_index].layer.to_string(),
+                );
+            }
+
+            // TODO: Offset_x might not always be constant
+            edited_game.objects[selected_index].position = game.objects["Selected Object"].position;
+            //edited_game.objects[selected_index].position.x += 1.0;
+            edited_game.objects[selected_index].position.x -= offset_x;
+            edited_game.objects[selected_index].position.x /= scale;
+            edited_game.objects[selected_index].position.y -= offset_y;
+            edited_game.objects[selected_index].position.y /= scale;
+            edited_game.objects[selected_index].size = game.objects["Selected Object"].size;
+            edited_game.objects[selected_index].size.width /= scale;
+            edited_game.objects[selected_index].size.height /= scale;
+            edited_game.objects[selected_index].angle = game.objects["Selected Object"].angle;
+            edited_game.objects[selected_index].flip = game.objects["Selected Object"].flip;
+            edited_game.objects[selected_index].layer = game.objects["Selected Object"].layer;
+            edited_game.objects[selected_index].switch = if game.objects["Selected Object"].switch
+                == SwitchState::On
+                || game.objects["Selected Object"].switch == SwitchState::SwitchedOn
+            {
+                Switch::On
+            } else {
+                Switch::Off
+            };
+
+            /*if game.objects["Sprite?"].switch == SwitchState::SwitchedOn
+                || game.objects["Sprite?"].switch == SwitchState::On
+            {
+                // TODO: ?
+                edited_game.objects[selected_index].sprite = Sprite::Image {
+                    name: editor_data.image_name.clone(),
+                };
+            } else {
+                edited_game.objects[selected_index].sprite = Sprite::Colour(editor_data.colour);
+            }*/
+
+            if game.objects["Sprite?"].switch == SwitchState::SwitchedOn {
+                if let Sprite::Colour(colour) = edited_game.objects[selected_index].sprite {
+                    editor_data.colour = colour;
+                }
+                if edited_assets.images.contains_key(&editor_data.image_name) {
+                    edited_game.objects[selected_index].sprite = Sprite::Image {
+                        name: editor_data.image_name.clone(),
+                    };
+                } else if let Some(image_name) = edited_assets.images.keys().next() {
+                    edited_game.objects[selected_index].sprite = Sprite::Image {
+                        name: image_name.to_string(),
+                    };
+                } else {
+                    unimplemented!();
+                }
+            } else if game.objects["Sprite?"].switch == SwitchState::SwitchedOff {
+                if let Sprite::Image { name } = &edited_game.objects[selected_index].sprite {
+                    editor_data.image_name = name.clone();
+                }
+                edited_game.objects[selected_index].sprite = Sprite::Colour(editor_data.colour);
+                set_colour_positions(&mut game, &edited_game.objects[selected_index]);
+            }
+
+            if let Sprite::Colour(colour) = &mut edited_game.objects[selected_index].sprite {
+                if game.objects.contains_key("Red:X") {
+                    colour.r = (game.objects["Red:X"].position.x / 255.0).min(1.0).max(0.0);
+                }
+                if game.objects.contains_key("Green:X") {
+                    colour.g = (game.objects["Green:X"].position.x / 255.0)
+                        .min(1.0)
+                        .max(0.0);
+                }
+                if game.objects.contains_key("Blue:X") {
+                    colour.b = (game.objects["Blue:X"].position.x / 255.0)
+                        .min(1.0)
+                        .max(0.0);
+                }
+                if game.objects.contains_key("Alpha:X") {
+                    colour.a = (game.objects["Alpha:X"].position.x / 255.0)
+                        .min(1.0)
+                        .max(0.0);
+                }
+                if game.objects.contains_key("Colour") {
+                    if let Sprite::Colour(colour_object) = &mut game.objects["Colour"].sprite {
+                        // TODO: MinMax
+                        *colour_object = *colour;
+                    }
+                }
+            }
+
+            fn is_on(objects: &Objects, name: &str) -> bool {
+                if let Some(obj) = objects.get(name) {
+                    obj.switch == SwitchState::SwitchedOn || obj.switch == SwitchState::On
+                } else {
+                    false
+                }
+            }
+
+            fn set_image_size(
+                game: &mut Game,
+                name: &str,
+                edited_assets: &Assets,
+                image_name: &str,
+            ) {
+                let width = edited_assets.images[image_name].width();
+                let height = edited_assets.images[image_name].height();
+                let max_side = width.max(height);
+                let max_display_size = game.objects[name]
+                    .size
+                    .width
+                    .max(game.objects[name].size.height);
+                let size = Size::new(
+                    (width / max_side * max_display_size).max(max_display_size / 5.0),
+                    (height / max_side * max_display_size).max(max_display_size / 5.0),
+                );
+                game.objects[name].size = size;
+            }
+
+            let images_per_page = {
+                let mut max = 0;
+                for key in game.objects.keys() {
+                    if let Some(s) = key.strip_prefix("Image N+") {
+                        if let Ok(n) = s.parse::<usize>() {
+                            max = n.max(max);
+                        }
+                    }
+                }
+                max + 1
+            };
+
+            let image_offset = editor_data.image_page * images_per_page;
+
+            if game.objects.contains_key("Image N+0") {
+                // TODO: Duplicate code
+                let image_name = edited_assets.images.keys().nth(image_offset + 0);
+                game.objects["Image N+0"].sprite = if let Some(image_name) = image_name {
+                    set_image_size(&mut game, "Image N+0", &edited_assets, &image_name);
+                    Sprite::Image {
+                        name: image_name.to_string(),
+                    }
+                } else {
+                    Sprite::Colour(Colour::rgba(0.0, 0.0, 0.0, 0.0))
+                };
+            }
+            if game.objects.contains_key("Image N+1") {
+                let image_name = edited_assets.images.keys().nth(image_offset + 1);
+                game.objects["Image N+1"].sprite = if let Some(image_name) = image_name {
+                    set_image_size(&mut game, "Image N+1", &edited_assets, &image_name);
+                    Sprite::Image {
+                        name: image_name.to_string(),
+                    }
+                } else {
+                    Sprite::Colour(Colour::rgba(0.0, 0.0, 0.0, 0.0))
+                };
+            }
+            if game.objects.contains_key("Image N+2") {
+                let image_name = edited_assets.images.keys().nth(image_offset + 2);
+                game.objects["Image N+2"].sprite = if let Some(image_name) = image_name {
+                    set_image_size(&mut game, "Image N+2", &edited_assets, &image_name);
+                    Sprite::Image {
+                        name: image_name.to_string(),
+                    }
+                } else {
+                    Sprite::Colour(Colour::rgba(0.0, 0.0, 0.0, 0.0))
+                };
+            }
+            if game.objects.contains_key("Image N+3") {
+                let image_name = edited_assets.images.keys().nth(image_offset + 3);
+                game.objects["Image N+3"].sprite = if let Some(image_name) = image_name {
+                    set_image_size(&mut game, "Image N+3", &edited_assets, &image_name);
+                    Sprite::Image {
+                        name: image_name.to_string(),
+                    }
+                } else {
+                    Sprite::Colour(Colour::rgba(0.0, 0.0, 0.0, 0.0))
+                };
+            }
+
+            let max_image_page = if edited_assets.images.len() == 0 {
+                0
+            } else {
+                (edited_assets.images.len() - 1) / images_per_page
+            };
+
+            if game.objects["Previous Images"].switch == SwitchState::On
+                || game.objects["Previous Images"].switch == SwitchState::SwitchedOn
+            {
+                if editor_data.image_page == 0 {
+                    editor_data.image_page = max_image_page;
+                } else {
+                    editor_data.image_page -= 1;
+                }
+            }
+
+            if game.objects["Next Images"].switch == SwitchState::On
+                || game.objects["Next Images"].switch == SwitchState::SwitchedOn
+            {
+                editor_data.image_page += 1;
+                editor_data.image_page %= max_image_page + 1;
+            }
+
+            if is_on(&game.objects, "Image N+0") {
+                edited_game.objects[selected_index].sprite = Sprite::Image {
+                    name: edited_assets
+                        .images
+                        .keys()
+                        .nth(image_offset + 0)
+                        .unwrap()
+                        .to_string(),
+                };
+            }
+            if is_on(&game.objects, "Image N+1") {
+                edited_game.objects[selected_index].sprite = Sprite::Image {
+                    name: edited_assets
+                        .images
+                        .keys()
+                        .nth(image_offset + 1)
+                        .unwrap()
+                        .to_string(),
+                };
+            }
+            if is_on(&game.objects, "Image N+2") {
+                edited_game.objects[selected_index].sprite = Sprite::Image {
+                    name: edited_assets
+                        .images
+                        .keys()
+                        .nth(image_offset + 2)
+                        .unwrap()
+                        .to_string(),
+                };
+            }
+            if is_on(&game.objects, "Image N+3") {
+                edited_game.objects[selected_index].sprite = Sprite::Image {
+                    name: edited_assets
+                        .images
+                        .keys()
+                        .nth(image_offset + 3)
+                        .unwrap()
+                        .to_string(),
+                };
+            }
+
+            if game.objects["Previous Object"].switch == SwitchState::On
+                || game.objects["Previous Object"].switch == SwitchState::SwitchedOn
+            {
+                if selected_index == 0 {
+                    selected_index = edited_game.objects.len() - 1;
+                } else {
+                    selected_index -= 1;
+                }
+                update_selected_object(&mut game, edited_game, selected_index);
+                if let Sprite::Image { name } = &edited_game.objects[selected_index].sprite {
+                    editor_data.image_name = name.clone();
+                } else if let Sprite::Colour(colour) = edited_game.objects[selected_index].sprite {
+                    editor_data.colour = colour;
+                }
+                set_colour_positions(&mut game, &edited_game.objects[selected_index]);
+            }
+
+            if game.objects["Next Object"].switch == SwitchState::On
+                || game.objects["Next Object"].switch == SwitchState::SwitchedOn
+            {
+                selected_index += 1;
+                selected_index %= edited_game.objects.len();
+                update_selected_object(&mut game, edited_game, selected_index);
+                if let Sprite::Image { name } = &edited_game.objects[selected_index].sprite {
+                    editor_data.image_name = name.clone();
+                } else if let Sprite::Colour(colour) = edited_game.objects[selected_index].sprite {
+                    editor_data.colour = colour;
+                }
+                set_colour_positions(&mut game, &edited_game.objects[selected_index]);
+            }
+
+            if game.objects["Choose Object"].switch == SwitchState::SwitchedOn
+                || game.objects["Choose Object"].switch == SwitchState::On
+            {
+                let scale = game.objects["Screen"].size.width / PROJECTION_WIDTH;
+                let offset_x =
+                    game.objects["Screen"].position.x - game.objects["Screen"].size.width / 2.0;
+                let offset_y =
+                    game.objects["Screen"].position.y - game.objects["Screen"].size.height / 2.0;
+
+                //let position = macroquad::input::mouse_position();
+                let position = macroquad::input::mouse_position();
+                let position = WeeVec2::new(position.0 as f32, position.1 as f32);
+
+                let screen_width = window::screen_width();
+                let screen_height = window::screen_height();
+
+                let ratio = screen_width / screen_height;
+                let intended_ratio = PROJECTION_WIDTH / PROJECTION_HEIGHT;
+
+                let position = if ratio > WIDE_RATIO {
+                    let scaled_projection_width =
+                        (PROJECTION_HEIGHT / screen_height) * screen_width;
+                    let game_area_rendered_width = screen_height * intended_ratio;
+                    let blank_space = screen_width - game_area_rendered_width;
+                    let letterbox_width = blank_space / 2.0;
+                    WeeVec2::new(
+                        (position.x - letterbox_width) / screen_width * scaled_projection_width,
+                        position.y / screen_height * PROJECTION_HEIGHT,
+                    )
+                } else if ratio < TALL_RATIO {
+                    let scaled_projection_height =
+                        (PROJECTION_WIDTH / screen_width) * screen_height;
+
+                    let game_area_rendered_height = screen_width / intended_ratio;
+                    let blank_space = screen_height - game_area_rendered_height;
+                    let letterbox_height = blank_space / 2.0;
+                    WeeVec2::new(
+                        position.x / screen_width * PROJECTION_WIDTH,
+                        (position.y - letterbox_height) / screen_height * scaled_projection_height,
+                    )
+                } else {
+                    WeeVec2::new(
+                        position.x / screen_width as f32 * PROJECTION_WIDTH,
+                        position.y / screen_height as f32 * PROJECTION_HEIGHT,
+                    )
+                };
+                let x = position.x / scale - (offset_x / scale); // / scale; // - offset_x;
+                let y = position.y / scale - (offset_y / scale); // / scale; // - offset_y;
+
+                log::debug!("A");
+                log::debug!("{}, {}", position.x, position.y);
+                log::debug!("{}, {}", position.x * scale, position.y * scale);
+                log::debug!(
+                    "{}, {}",
+                    position.x / scale - (offset_x / scale),
+                    position.y / scale - (offset_y / scale)
+                );
+
+                let mut layers: Vec<u8> = edited_game.objects.iter().map(|o| o.layer).collect();
+                layers.sort_unstable();
+                layers.dedup();
+                layers.reverse();
+                for layer in layers.into_iter() {
+                    for (i, object) in edited_game.objects.iter().enumerate() {
+                        if object.layer == layer {
+                            let poly = object.full_poly();
+                            let clicked = poly
+                                .gjk(&c2::Circle::new(c2::Vec2::new(x, y), 1.0))
+                                .use_radius(false)
+                                .run()
+                                .distance()
+                                == 0.0;
+                            if clicked {
+                                log::info!("{}", object.name);
+
+                                selected_index = i % edited_game.objects.len();
+
+                                update_selected_object(&mut game, edited_game, selected_index);
+
+                                if let Sprite::Image { name } =
+                                    &edited_game.objects[selected_index].sprite
+                                {
+                                    editor_data.image_name = name.clone();
+                                } else if let Sprite::Colour(colour) =
+                                    edited_game.objects[selected_index].sprite
+                                {
+                                    editor_data.colour = colour;
+                                }
+                                set_colour_positions(
+                                    &mut game,
+                                    &edited_game.objects[selected_index],
+                                );
+
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            {
+                game.objects["Selected Object"].position =
+                    edited_game.objects[selected_index].position;
+                game.objects["Selected Object"].position.x *= scale;
+                game.objects["Selected Object"].position.y *= scale;
+                game.objects["Selected Object"].position.x += offset_x;
+                game.objects["Selected Object"].position.y += offset_y;
+                game.objects["Selected Object"].size = edited_game.objects[selected_index].size;
+                game.objects["Selected Object"].size.width *= scale;
+                game.objects["Selected Object"].size.height *= scale;
+                game.objects["Selected Object"].angle = edited_game.objects[selected_index].angle;
+            }
+        }
+
+        draw_game_editor(
+            &game,
+            &assets.images,
+            &assets.fonts,
+            edited_game,
+            &edited_assets,
+            intro_font,
+            &drawn_text,
+        );
+
+        next_frame().await;
+    }
+
+    assets.stop_sounds();
+
+    log::debug!("{:?}", game_data);
 }
 
 struct Prelude {
@@ -2021,9 +3045,9 @@ impl MainGame<GameOver> {
 fn window_conf() -> Conf {
     Conf {
         window_title: "Weegames".to_string(),
-        window_width: 1600,
-        window_height: 900,
-        fullscreen: true,
+        window_width: 1200,
+        window_height: 675,
+        fullscreen: false,
         ..Default::default()
     }
 }
