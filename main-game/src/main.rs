@@ -1,6 +1,21 @@
 //#![windows_subsystem = "windows"]
 
 // TODO: Add window to editor then do if window not clicked then set choose object switch on
+// TODO: Modification of text object's size happens after they are drawn? Maybe not
+// TODO: Recalculate selected_object properties when zoom
+// TODO: Set text object size based on substituted text size
+// TODO: Stop the zoom from being 0%
+// TODO: Why does collision area jump a bit when rescaled when rotated?
+// TODO: What should Screen X and Y be displayed as with the zoom and everything?
+// TODO: Only preloads editor files that end with editor.json?
+// TODO: How does the preload code work with files that are called something like `cake-prelude.json`
+// TODO: Allow OpenFolder and OpenFile to work with space before folder/filename
+// TODO: Don't have instruction index move up when delete instruction in the old editor
+// TODO: Any errors when there are no objects and selected_index is meaningless :: Should only show object screen when there are objects
+// TODO: Check for errors when have no objects or backgrounds because of selected_index and background_index?
+// TODO: What would happen when have both Selected Object and Selected Background thingies?
+// TODO: Select background by mouse
+// TODO: Make the first case the usual case
 
 use macroquad::logging as log;
 use macroquad::prelude::*;
@@ -474,6 +489,7 @@ fn draw_game(
                     params,
                 );
             }
+            // TODO: Change max x and y to width and height?
             Sprite::Colour(colour) => macroquad::shapes::draw_rectangle(
                 part.area.min.x,
                 part.area.min.y,
@@ -542,11 +558,11 @@ fn draw_game(
                     let position = match drawn_text[key].justify {
                         JustifyText::Left => WeeVec2::new(
                             object.position.x - object.half_width(),
-                            object.position.y + size.height / 2.0,
+                            object.position.y - object.half_height() + size.offset_y,
                         ),
                         JustifyText::Centre => WeeVec2::new(
                             object.position.x - size.width / 2.0,
-                            object.position.y + size.height / 2.0,
+                            object.position.y - object.half_height() + size.offset_y,
                         ),
                     };
                     let params = macroquad::text::TextParams {
@@ -707,6 +723,7 @@ fn draw_game_editor(
                     params,
                 );
             }
+            // TODO: Change max x and y to width and height?
             Sprite::Colour(colour) => macroquad::shapes::draw_rectangle(
                 part.area.min.x,
                 part.area.min.y,
@@ -856,11 +873,11 @@ fn draw_game_editor(
                     let position = match drawn_text[key].justify {
                         JustifyText::Left => WeeVec2::new(
                             object.position.x - object.half_width(),
-                            object.position.y + size.height / 2.0,
+                            object.position.y - object.half_height() + size.offset_y,
                         ),
                         JustifyText::Centre => WeeVec2::new(
                             object.position.x - size.width / 2.0,
-                            object.position.y + size.height / 2.0,
+                            object.position.y - object.half_height() + size.offset_y,
                         ),
                     };
                     let params = macroquad::text::TextParams {
@@ -948,13 +965,13 @@ fn draw_edited_game(
     if ratio > WIDE_RATIO {
         let scaled_projection_width = (PROJECTION_HEIGHT / screen_height) * screen_width * wr;
         let camera_x = (scaled_projection_width - PROJECTION_WIDTH);
-        log::debug!("x: {}", x);
-        log::debug!("Camera x: {}", camera_x);
+        //log::debug!("x: {}", x);
+        //log::debug!("Camera x: {}", camera_x);
         //let scaled_projection_width = (PROJECTION_HEIGHT / screen_height) * screen_width;
         let game_area_rendered_width = screen_height * intended_ratio;
         let blank_space = screen_width - game_area_rendered_width;
         let letterbox_width = blank_space / 2.0;
-        log::debug!("Letterbox width: {}", letterbox_width);
+        //log::debug!("Letterbox width: {}", letterbox_width);
         let camera_x = (scaled_projection_width - PROJECTION_WIDTH * wr) / 2.0;
         let camera = Camera2D::from_display_rect(MacroRect::new(
             x - camera_x,
@@ -1018,8 +1035,8 @@ fn draw_edited_game(
             Sprite::Colour(colour) => macroquad::shapes::draw_rectangle(
                 part.area.min.x,
                 part.area.min.y,
-                part.area.max.x,
-                part.area.max.y,
+                part.area.width(),
+                part.area.height(),
                 macroquad::color::Color::new(colour.r, colour.g, colour.b, colour.a),
             ),
         }
@@ -1223,6 +1240,38 @@ fn update_frame(
                 end_early = true;
             }
             WorldAction::DrawText { name, text } => {
+                // TODO: Check if works
+                let left_before =
+                    game.objects[&name].position.x - game.objects[&name].size.width / 2.0;
+                let size = macroquad::text::measure_text(
+                    &text.text,
+                    Some(assets.fonts[&text.font].0),
+                    assets.fonts[&text.font].1,
+                    1.0,
+                );
+                game.objects[&name].size = Size {
+                    width: size.width,
+                    height: size.height,
+                };
+                if let JustifyText::Left = text.justify {
+                    let left_now =
+                        game.objects[&name].position.x - game.objects[&name].size.width / 2.0;
+                    //let position = game.objects[&name].position;
+                    let offset = WeeVec2::new(left_before - left_now, 0.0);
+                    //let motion = Motion::JumpTo(JumpLocation::Point(position + offset));
+                    //game.objects[&name].queued_motion.push(motion);
+                    game.objects[&name].position += offset;
+                }
+                /*let position = match drawn_text[key].justify {
+                    JustifyText::Left => WeeVec2::new(
+                        object.position.x - object.half_width(),
+                        object.position.y + size.height / 2.0,
+                    ),
+                    JustifyText::Centre => WeeVec2::new(
+                        object.position.x - size.width / 2.0,
+                        object.position.y + size.height / 2.0,
+                    ),
+                };*/
                 drawn_text.insert(name, text);
             }
         }
@@ -1862,6 +1911,132 @@ impl MainGame<Menu> {
         })
     }
 }
+fn key_code_from_primitive(value: u32) -> KeyCode {
+    match value {
+        0 => KeyCode::Space,
+        /*Apostrophe,
+        Comma,*/
+        3 => KeyCode::Minus,
+        4 => KeyCode::Period,
+        //Slash,
+        6 => KeyCode::Key0,
+        7 => KeyCode::Key1,
+        8 => KeyCode::Key2,
+        9 => KeyCode::Key3,
+        10 => KeyCode::Key4,
+        11 => KeyCode::Key5,
+        12 => KeyCode::Key6,
+        13 => KeyCode::Key7,
+        14 => KeyCode::Key8,
+        15 => KeyCode::Key9,
+        /*Semicolon,
+        Equal,
+        A,
+        B,
+        C,
+        D,
+        E,
+        F,
+        G,
+        H,
+        I,
+        J,
+        K,
+        L,
+        M,
+        N,
+        O,
+        P,
+        Q,
+        R,
+        S,
+        T,
+        U,
+        V,
+        W,
+        X,
+        Y,
+        Z,
+        LeftBracket,
+        Backslash,
+        RightBracket,
+        GraveAccent,
+        World1,
+        World2,
+        Escape,
+        Enter,
+        Tab,*/
+        53 => KeyCode::Backspace,
+        /*Insert,
+        Delete,
+        Right,
+        Left,
+        Down,
+        Up,
+        PageUp,
+        PageDown,
+        Home,
+        End,
+        CapsLock,
+        ScrollLock,
+        NumLock,
+        PrintScreen,
+        Pause,
+        F1,
+        F2,
+        F3,
+        F4,
+        F5,
+        F6,
+        F7,
+        F8,
+        F9,
+        F10,
+        F11,
+        F12,
+        F13,
+        F14,
+        F15,
+        F16,
+        F17,
+        F18,
+        F19,
+        F20,
+        F21,
+        F22,
+        F23,
+        F24,
+        F25,
+        Kp0,
+        Kp1,
+        Kp2,
+        Kp3,
+        Kp4,
+        Kp5,
+        Kp6,
+        Kp7,
+        Kp8,
+        Kp9,
+        KpDecimal,
+        KpDivide,
+        KpMultiply,
+        KpSubtract,
+        KpAdd,
+        KpEnter,
+        KpEqual,
+        LeftShift,
+        LeftControl,
+        LeftAlt,
+        LeftSuper,
+        RightShift,
+        RightControl,
+        RightAlt,
+        RightSuper,
+        Menu,
+        Unknown,*/
+        _ => KeyCode::Unknown,
+    }
+}
 
 async fn editor(
     games: &mut HashMap<String, GameData>,
@@ -1869,56 +2044,148 @@ async fn editor(
     intro_font: &Font,
     rng: &mut MacroRng,
 ) -> WeeResult<()> {
-    let (mut game_data, assets) =
-        preloaded_game(games, preloaded_assets, "games/editor/", "editor.json");
+    let (game_data, mut assets) = preloaded_game(
+        games,
+        preloaded_assets,
+        "games/editor/",
+        "object-editor.json",
+    );
+
+    assets.music.play(DEFAULT_PLAYBACK_RATE, VOLUME);
 
     let mut game = Game::from_data(game_data, rng)?;
 
     let mut drawn_text = HashMap::new();
 
-    assets.music.play(DEFAULT_PLAYBACK_RATE, VOLUME);
+    const KEY_CODE_COUNT: usize = macroquad::input::KeyCode::Unknown as usize;
+    let mut key_code_state: [ButtonState; KEY_CODE_COUNT] = [ButtonState::Up; KEY_CODE_COUNT];
 
     //let edited_filename = "games/editor/editor.json";
-    let edited_filename = "games/yeah/baby.json";
-    let edited_game = games.get_mut(edited_filename).unwrap();
+    let edited_filename = "games/yeah/puzzle.json";
+    // TODO: This used to be get_mut, changed to clone, need to write to this hashmap when saving file
+    let mut edited_game = games[edited_filename].clone();
     let base_path = Path::new(edited_filename).parent().unwrap();
     let edited_assets = Assets::load(&edited_game.asset_files, base_path).await?;
 
     let mut selected_index = 0;
+    let mut background_index = 0;
 
-    let scale = game.objects["Screen"].size.width / PROJECTION_WIDTH;
-    let offset_x = game.objects["Screen"].position.x - game.objects["Screen"].size.width / 2.0;
-    let offset_y = game.objects["Screen"].position.y - game.objects["Screen"].size.height / 2.0;
+    fn is_on(objects: &Objects, name: &str) -> bool {
+        if let Some(obj) = objects.get(name) {
+            obj.switch == SwitchState::SwitchedOn || obj.switch == SwitchState::On
+        } else {
+            false
+        }
+    }
+
+    #[derive(Debug, Copy, Clone)]
+    struct Scene {
+        position: WeeVec2,
+        scale: f32,
+    }
+
+    let mut scene = if let Some(screen_object) = game.objects.get_mut("Screen") {
+        Scene {
+            position: WeeVec2 {
+                x: screen_object.position.x - screen_object.size.width / 2.0,
+                y: screen_object.position.y - screen_object.size.height / 2.0,
+            },
+            scale: screen_object.size.width / PROJECTION_WIDTH,
+        }
+    } else {
+        Scene {
+            position: WeeVec2::zero(),
+            scale: 1.0,
+        }
+    };
 
     let update_selected_object =
-        |game: &mut Game, edited_game: &mut GameData, selected_index: usize| {
-            game.objects["Selected Object"].position = edited_game.objects[selected_index].position;
-            game.objects["Selected Object"].position.x *= scale;
-            game.objects["Selected Object"].position.y *= scale;
-            //game.objects["Selected Object"].position.x -= 200.0;
-            game.objects["Selected Object"].position.x += offset_x;
-            game.objects["Selected Object"].position.y += offset_y;
-            game.objects["Selected Object"].size = edited_game.objects[selected_index].size;
-            game.objects["Selected Object"].size.width *= scale;
-            game.objects["Selected Object"].size.height *= scale;
-            game.objects["Selected Object"].angle = edited_game.objects[selected_index].angle;
-            game.objects["Selected Object"].flip = edited_game.objects[selected_index].flip;
-            game.objects["Selected Object"].layer = edited_game.objects[selected_index].layer;
-            game.objects["Selected Object"].switch =
-                if edited_game.objects[selected_index].switch == Switch::On {
+        |game: &mut Game, edited_game: &mut GameData, selected_index: usize, scene: Scene| {
+            if let Some(selected_object) = game.objects.get_mut("Selected Object") {
+                let scale = scene.scale;
+                selected_object.position = edited_game.objects[selected_index].position;
+                selected_object.position.x *= scale;
+                selected_object.position.y *= scale;
+                selected_object.position.x += scene.position.x;
+                selected_object.position.y += scene.position.y;
+                selected_object.size = edited_game.objects[selected_index].size;
+                selected_object.size.width *= scale;
+                selected_object.size.height *= scale;
+                selected_object.angle = edited_game.objects[selected_index].angle;
+                // TODO: Scale origin?
+                selected_object.origin = edited_game.objects[selected_index].origin;
+                if let Some(origin) = &mut selected_object.origin {
+                    origin.x *= scene.scale;
+                    origin.y *= scene.scale;
+                }
+                selected_object.flip = edited_game.objects[selected_index].flip;
+                selected_object.layer = edited_game.objects[selected_index].layer;
+                selected_object.switch = if edited_game.objects[selected_index].switch == Switch::On
+                {
                     SwitchState::On
                 } else {
                     SwitchState::Off
                 };
-            game.objects["Sprite?"].switch =
-                if let Sprite::Image { .. } = edited_game.objects[selected_index].sprite {
-                    SwitchState::On
-                } else {
-                    SwitchState::Off
-                };
+            }
+
+            if is_on(&game.objects, "Set Object Sprite?") {
+                if let Some(sprite_object) = game.objects.get_mut("Image?") {
+                    // TODO: Should this be On/Off or SwitchedOn/SwitchedOff?
+                    sprite_object.switch =
+                        if let Sprite::Image { .. } = edited_game.objects[selected_index].sprite {
+                            SwitchState::On
+                        } else {
+                            SwitchState::Off
+                        };
+                }
+            }
         };
 
-    update_selected_object(&mut game, edited_game, selected_index);
+    update_selected_object(&mut game, &mut edited_game, selected_index, scene);
+
+    let update_selected_background =
+        |game: &mut Game, edited_game: &mut GameData, background_index: usize, scene: Scene| {
+            if let Some(selected_background) = game.objects.get_mut("Selected Background") {
+                let scale = scene.scale;
+                let mut rect = edited_game.background[background_index].area.to_rect();
+                rect.x *= scale;
+                rect.y *= scale;
+                rect.x += scene.position.x;
+                rect.y += scene.position.y;
+                rect.w *= scale;
+                rect.h *= scale;
+                selected_background.position.x = rect.x;
+                selected_background.position.y = rect.y;
+                selected_background.size.width = rect.w;
+                selected_background.size.height = rect.h;
+            }
+
+            log::debug!("THERE");
+
+            if is_on(&game.objects, "Set Background Sprite?") {
+                if let Some(sprite_object) = game.objects.get_mut("Image?") {
+                    // TODO: Should this be On/Off or SwitchedOn/SwitchedOff?
+                    sprite_object.switch = if let Sprite::Image { .. } =
+                        edited_game.background[background_index].sprite
+                    {
+                        SwitchState::On
+                    } else {
+                        SwitchState::Off
+                    };
+                    log::debug!("AAA: {:?}", sprite_object.switch);
+                }
+            }
+        };
+
+    update_selected_background(&mut game, &mut edited_game, background_index, scene);
+
+    if let Some(published_object) = game.objects.get_mut("Published") {
+        published_object.switch = if edited_game.published {
+            SwitchState::On
+        } else {
+            SwitchState::Off
+        };
+    }
 
     struct EditorData {
         image_name: String,
@@ -1939,29 +2206,202 @@ async fn editor(
         editor_data.colour = colour;
     }
 
-    fn set_colour_positions(game: &mut Game, selected_object: &SerialiseObject) {
-        if let Sprite::Colour(colour) = selected_object.sprite {
-            game.objects["Red:X"].position.x = colour.r * 255.0;
-            game.objects["Green:X"].position.x = colour.g * 255.0;
-            game.objects["Blue:X"].position.x = colour.b * 255.0;
-            game.objects["Alpha:X"].position.x = colour.a * 255.0;
+    fn set_colour_positions(
+        game: &mut Game,
+        edited_game: &GameData,
+        selected_index: usize,
+        selected_background: usize,
+    ) {
+        if is_on(&game.objects, "Set Object Sprite?") {
+            if let Sprite::Colour(colour) = edited_game.objects[selected_index].sprite {
+                game.objects["Red:X"].position.x = colour.r * 255.0;
+                game.objects["Green:X"].position.x = colour.g * 255.0;
+                game.objects["Blue:X"].position.x = colour.b * 255.0;
+                game.objects["Alpha:X"].position.x = colour.a * 255.0;
+            }
+        } else if is_on(&game.objects, "Set Background Sprite?") {
+            if let Sprite::Colour(colour) = edited_game.background[selected_background].sprite {
+                game.objects["Red:X"].position.x = colour.r * 255.0;
+                game.objects["Green:X"].position.x = colour.g * 255.0;
+                game.objects["Blue:X"].position.x = colour.b * 255.0;
+                game.objects["Alpha:X"].position.x = colour.a * 255.0;
+            }
         }
     }
 
-    set_colour_positions(&mut game, &edited_game.objects[selected_index]);
+    set_colour_positions(&mut game, &edited_game, selected_index, background_index);
+
+    let mut text_buffers: HashMap<String, String> = HashMap::new();
 
     'editor_running: loop {
         for _ in 0..game.frames.to_run_forever() {
+            let mut new_filename = None;
+            for (key, object) in game.objects.iter() {
+                if object.switch == SwitchState::SwitchedOn {
+                    let pattern = "OpenFile:";
+                    if let Some(editor_filename) = key.strip_prefix(pattern) {
+                        new_filename = Some(editor_filename.trim());
+                    }
+                }
+            }
+            if let Some(filename) = new_filename {
+                let data = preloaded_game(games, preloaded_assets, "games/editor/", filename);
+
+                assets = data.1;
+
+                assets.music.play(DEFAULT_PLAYBACK_RATE, VOLUME);
+
+                game = Game::from_data(data.0, rng)?;
+
+                scene = if let Some(screen_object) = game.objects.get_mut("Screen") {
+                    Scene {
+                        position: WeeVec2 {
+                            x: screen_object.position.x - screen_object.size.width / 2.0,
+                            y: screen_object.position.y - screen_object.size.height / 2.0,
+                        },
+                        scale: screen_object.size.width / PROJECTION_WIDTH,
+                    }
+                } else {
+                    Scene {
+                        position: WeeVec2::zero(),
+                        scale: 1.0,
+                    }
+                };
+
+                update_selected_object(&mut game, &mut edited_game, selected_index, scene);
+                log::debug!("HERE");
+                update_selected_background(&mut game, &mut edited_game, background_index, scene);
+
+                set_colour_positions(&mut game, &edited_game, selected_index, background_index);
+            }
+
+            if let Some(screen_object) = game.objects.get_mut("Screen") {
+                scene.scale = screen_object.size.width / PROJECTION_WIDTH;
+                scene.position.x = screen_object.position.x - screen_object.size.width / 2.0;
+                scene.position.y = screen_object.position.y - screen_object.size.height / 2.0;
+            }
+
+            for (i, key) in key_code_state.iter_mut().enumerate() {
+                key.update(macroquad::input::is_key_down(key_code_from_primitive(
+                    i as u32,
+                )))
+            }
+
             update_frame(&mut game, &assets, DEFAULT_PLAYBACK_RATE, rng)?
                 .add_drawn_text(&mut drawn_text);
 
+            // TODO: Is Screen the best name for this?
+            if let Some(screen_object) = game.objects.get_mut("Screen") {
+                scene.scale = screen_object.size.width / PROJECTION_WIDTH;
+                scene.position.x = screen_object.position.x - screen_object.size.width / 2.0;
+                scene.position.y = screen_object.position.y - screen_object.size.height / 2.0;
+            }
+
+            if is_on(&game.objects, "Rescale") {
+                log::debug!("Scale: {}", scene.scale);
+                update_selected_object(&mut game, &mut edited_game, selected_index, scene);
+                update_selected_background(&mut game, &mut edited_game, background_index, scene);
+            }
+
+            // TODO: Set selected_index collision area to "Selected Object"'s :: Other way round
+            {
+                /*log::debug!(
+                    "edited_game.objects[selected_index].collision_area: {:?}",
+                    edited_game.objects[selected_index].collision_area
+                );*/
+                // TODO: Is this the right place for this?
+
+                if let Some(selected_object) = game.objects.get_mut("Selected Object") {
+                    selected_object.collision_area =
+                        edited_game.objects[selected_index].collision_area;
+                    if let Some(aabb) = &mut selected_object.collision_area {
+                        aabb.min.x *= scene.scale;
+                        aabb.min.y *= scene.scale;
+                        aabb.max.x *= scene.scale;
+                        aabb.max.y *= scene.scale;
+                    }
+                    let object = &selected_object;
+
+                    let aabb = object.collision_aabb();
+                    let mut origin = object.origin();
+                    if let Some(area) = object.collision_area {
+                        let mut diff = area.min;
+                        if object.flip.horizontal {
+                            diff.x = object.size.width - area.max.x;
+                        }
+                        if object.flip.vertical {
+                            diff.y = object.size.height - area.max.y;
+                        }
+                        origin = WeeVec2::new(origin.x - diff.x, origin.y - diff.y);
+                    }
+                    let angle = object.angle;
+                    // TODO: Scale?
+                    game.objects["Selected Collision Area"].position.x = aabb.to_rect().x;
+                    game.objects["Selected Collision Area"].position.y = aabb.to_rect().y;
+                    game.objects["Selected Collision Area"].size.width = aabb.width();
+                    game.objects["Selected Collision Area"].size.height = aabb.height();
+                    game.objects["Selected Collision Area"].angle = angle;
+                    game.objects["Selected Collision Area"].origin = Some(origin);
+                }
+            }
+
+            let images_per_page = {
+                let mut max = 0;
+                for key in game.objects.keys() {
+                    if let Some(s) = key.strip_prefix("Image N+") {
+                        if let Ok(n) = s.parse::<usize>() {
+                            max = n.max(max);
+                        }
+                    }
+                }
+                max + 1
+            };
+
+            let image_offset = editor_data.image_page * images_per_page;
+
             for text in drawn_text.values_mut() {
+                text.text = text.text.replace("{Game Name}", "Placeholder");
+                text.text = text
+                    .text
+                    .replace("{Game Type}", &format!("{:?}", edited_game.game_type));
+                text.text = text
+                    .text
+                    .replace("{Length}", &format!("{:?}", edited_game.length));
+                // TODO: Better way of doing this
+                text.text = text.text.replace(
+                    "{Intro Text}",
+                    &edited_game
+                        .intro_text
+                        .clone()
+                        .unwrap_or_else(|| "".to_string()),
+                );
+                text.text = text
+                    .text
+                    .replace("{Playback Rate}", "Placeholder: Add playback var");
+                text.text = text
+                    .text
+                    .replace("{Difficulty}", "Placeholder: Add difficulty var");
+                text.text = text
+                    .text
+                    .replace("{Last Win Status}", "Placeholder: Add win status var");
+
                 text.text = text
                     .text
                     .replace("{Object Number}", &(selected_index + 1).to_string());
                 text.text = text
                     .text
                     .replace("{Object Count}", &edited_game.objects.len().to_string());
+                /*text.text = text.text.replace(
+                    "{Background Name}",
+                    &edited_game.objects[selected_index].name,
+                );*/
+                text.text = text
+                    .text
+                    .replace("{Background Number}", &(background_index + 1).to_string());
+                text.text = text.text.replace(
+                    "{Background Count}",
+                    &edited_game.background.len().to_string(),
+                );
                 text.text = text
                     .text
                     .replace("{Object Name}", &edited_game.objects[selected_index].name);
@@ -1969,96 +2409,455 @@ async fn editor(
                     "{Layer}",
                     &edited_game.objects[selected_index].layer.to_string(),
                 );
-            }
-
-            // TODO: Offset_x might not always be constant
-            edited_game.objects[selected_index].position = game.objects["Selected Object"].position;
-            //edited_game.objects[selected_index].position.x += 1.0;
-            edited_game.objects[selected_index].position.x -= offset_x;
-            edited_game.objects[selected_index].position.x /= scale;
-            edited_game.objects[selected_index].position.y -= offset_y;
-            edited_game.objects[selected_index].position.y /= scale;
-            edited_game.objects[selected_index].size = game.objects["Selected Object"].size;
-            edited_game.objects[selected_index].size.width /= scale;
-            edited_game.objects[selected_index].size.height /= scale;
-            edited_game.objects[selected_index].angle = game.objects["Selected Object"].angle;
-            edited_game.objects[selected_index].flip = game.objects["Selected Object"].flip;
-            edited_game.objects[selected_index].layer = game.objects["Selected Object"].layer;
-            edited_game.objects[selected_index].switch = if game.objects["Selected Object"].switch
-                == SwitchState::On
-                || game.objects["Selected Object"].switch == SwitchState::SwitchedOn
-            {
-                Switch::On
-            } else {
-                Switch::Off
-            };
-
-            /*if game.objects["Sprite?"].switch == SwitchState::SwitchedOn
-                || game.objects["Sprite?"].switch == SwitchState::On
-            {
-                // TODO: ?
-                edited_game.objects[selected_index].sprite = Sprite::Image {
-                    name: editor_data.image_name.clone(),
+                text.text = text.text.replace(
+                    "{Image N+0}",
+                    &edited_game
+                        .asset_files
+                        .images
+                        .keys()
+                        .nth(image_offset + 0)
+                        .map(|s| s.as_str())
+                        .unwrap_or(""),
+                );
+                text.text = text.text.replace(
+                    "{Image N+1}",
+                    &edited_game
+                        .asset_files
+                        .images
+                        .keys()
+                        .nth(image_offset + 1)
+                        .map(|s| s.as_str())
+                        .unwrap_or(""),
+                );
+                text.text = text.text.replace(
+                    "{Image N+2}",
+                    &edited_game
+                        .asset_files
+                        .images
+                        .keys()
+                        .nth(image_offset + 2)
+                        .map(|s| s.as_str())
+                        .unwrap_or(""),
+                );
+                text.text = text.text.replace(
+                    "{Image N+3}",
+                    &edited_game
+                        .asset_files
+                        .images
+                        .keys()
+                        .nth(image_offset + 3)
+                        .map(|s| s.as_str())
+                        .unwrap_or(""),
+                );
+                // TODO:
+                if let Some(screen_object) = game.objects.get_mut("Screen") {
+                    text.text = text.text.replace(
+                        "{Zoom}",
+                        &(screen_object.size.width / PROJECTION_WIDTH * 100.0).to_string(),
+                    );
+                    {
+                        let s = text_buffers
+                            .get("{Screen X}")
+                            .cloned()
+                            .map(|mut s| {
+                                s.push('|');
+                                s
+                            })
+                            .unwrap_or_else(|| screen_object.position.x.to_string());
+                        text.text = text.text.replace("{Screen X}", &s);
+                    }
+                    {
+                        let s = text_buffers
+                            .get("{Screen Y}")
+                            .cloned()
+                            .map(|mut s| {
+                                s.push('|');
+                                s
+                            })
+                            .unwrap_or_else(|| screen_object.position.y.to_string());
+                        text.text = text.text.replace("{Screen Y}", &s);
+                    }
+                }
+                let round_conversion = |value: f32| -> String {
+                    let s = format!("{:.1}", value);
+                    if s.ends_with(".0") {
+                        format!("{:.0}", value)
+                    } else {
+                        s
+                    }
                 };
-            } else {
-                edited_game.objects[selected_index].sprite = Sprite::Colour(editor_data.colour);
-            }*/
 
-            if game.objects["Sprite?"].switch == SwitchState::SwitchedOn {
-                if let Sprite::Colour(colour) = edited_game.objects[selected_index].sprite {
-                    editor_data.colour = colour;
+                {
+                    let s = text_buffers
+                        .get("{Object X}")
+                        .cloned()
+                        .map(|mut s| {
+                            s.push('|');
+                            s
+                        })
+                        .unwrap_or_else(|| {
+                            edited_game.objects[selected_index].position.x.to_string()
+                        });
+                    text.text = text.text.replace("{Object X}", &s);
                 }
-                if edited_assets.images.contains_key(&editor_data.image_name) {
-                    edited_game.objects[selected_index].sprite = Sprite::Image {
-                        name: editor_data.image_name.clone(),
-                    };
-                } else if let Some(image_name) = edited_assets.images.keys().next() {
-                    edited_game.objects[selected_index].sprite = Sprite::Image {
-                        name: image_name.to_string(),
-                    };
-                } else {
-                    unimplemented!();
+
+                {
+                    let s = text_buffers
+                        .get("{Object Y}")
+                        .cloned()
+                        .map(|mut s| {
+                            s.push('|');
+                            s
+                        })
+                        .unwrap_or_else(|| {
+                            edited_game.objects[selected_index].position.y.to_string()
+                        });
+                    text.text = text.text.replace("{Object Y}", &s);
                 }
-            } else if game.objects["Sprite?"].switch == SwitchState::SwitchedOff {
-                if let Sprite::Image { name } = &edited_game.objects[selected_index].sprite {
-                    editor_data.image_name = name.clone();
+
+                {
+                    let s = text_buffers
+                        .get("{Object Angle}")
+                        .cloned()
+                        .map(|mut s| {
+                            s.push('|');
+                            s
+                        })
+                        .unwrap_or_else(|| edited_game.objects[selected_index].angle.to_string());
+                    text.text = text.text.replace("{Object Angle}", &s);
                 }
-                edited_game.objects[selected_index].sprite = Sprite::Colour(editor_data.colour);
-                set_colour_positions(&mut game, &edited_game.objects[selected_index]);
+
+                {
+                    let s = text_buffers
+                        .get("{Object Width}")
+                        .cloned()
+                        .map(|mut s| {
+                            s.push('|');
+                            s
+                        })
+                        .unwrap_or_else(|| {
+                            edited_game.objects[selected_index].size.width.to_string()
+                        });
+                    text.text = text.text.replace("{Object Width}", &s);
+                }
+                {
+                    let s = text_buffers
+                        .get("{Object Height}")
+                        .cloned()
+                        .map(|mut s| {
+                            s.push('|');
+                            s
+                        })
+                        .unwrap_or_else(|| {
+                            round_conversion(edited_game.objects[selected_index].size.height)
+                        });
+                    text.text = text.text.replace("{Object Height}", &s);
+                }
+                {
+                    let s = text_buffers
+                        .get("{Origin X}")
+                        .cloned()
+                        .map(|mut s| {
+                            s.push('|');
+                            s
+                        })
+                        .unwrap_or_else(|| {
+                            round_conversion(edited_game.objects[selected_index].origin().x)
+                        });
+                    text.text = text.text.replace("{Origin X}", &s);
+                }
+                {
+                    let s = text_buffers
+                        .get("{Origin Y}")
+                        .cloned()
+                        .map(|mut s| {
+                            s.push('|');
+                            s
+                        })
+                        .unwrap_or_else(|| {
+                            round_conversion(edited_game.objects[selected_index].origin().y)
+                        });
+                    text.text = text.text.replace("{Origin Y}", &s);
+                }
+                {
+                    let s = text_buffers
+                        .get("{Collision Min X}")
+                        .cloned()
+                        .map(|mut s| {
+                            s.push('|');
+                            s
+                        })
+                        .unwrap_or_else(|| {
+                            round_conversion(
+                                edited_game.objects[selected_index].collision_area().min.x,
+                            )
+                        });
+                    text.text = text.text.replace("{Collision Min X}", &s);
+                }
+                {
+                    let s = text_buffers
+                        .get("{Collision Min Y}")
+                        .cloned()
+                        .map(|mut s| {
+                            s.push('|');
+                            s
+                        })
+                        .unwrap_or_else(|| {
+                            round_conversion(
+                                edited_game.objects[selected_index].collision_area().min.y,
+                            )
+                        });
+                    text.text = text.text.replace("{Collision Min Y}", &s);
+                }
+                {
+                    let s = text_buffers
+                        .get("{Collision Max X}")
+                        .cloned()
+                        .map(|mut s| {
+                            s.push('|');
+                            s
+                        })
+                        .unwrap_or_else(|| {
+                            round_conversion(
+                                edited_game.objects[selected_index].collision_area().max.x,
+                            )
+                        });
+                    text.text = text.text.replace("{Collision Max X}", &s);
+                }
+                {
+                    let s = text_buffers
+                        .get("{Collision Max Y}")
+                        .cloned()
+                        .map(|mut s| {
+                            s.push('|');
+                            s
+                        })
+                        .unwrap_or_else(|| {
+                            round_conversion(
+                                edited_game.objects[selected_index].collision_area().max.y,
+                            )
+                        });
+                    text.text = text.text.replace("{Collision Max Y}", &s);
+                }
+
+                {
+                    let s = text_buffers
+                        .get("{Background X}")
+                        .cloned()
+                        .map(|mut s| {
+                            s.push('|');
+                            s
+                        })
+                        .unwrap_or_else(|| {
+                            edited_game.background[background_index]
+                                .area
+                                .to_rect()
+                                .x
+                                .to_string()
+                        });
+                    text.text = text.text.replace("{Background X}", &s);
+                }
+
+                {
+                    let s = text_buffers
+                        .get("{Background Y}")
+                        .cloned()
+                        .map(|mut s| {
+                            s.push('|');
+                            s
+                        })
+                        .unwrap_or_else(|| {
+                            edited_game.background[background_index]
+                                .area
+                                .to_rect()
+                                .y
+                                .to_string()
+                        });
+                    text.text = text.text.replace("{Background Y}", &s);
+                }
+
+                // TODO: Background width and height
             }
 
-            if let Sprite::Colour(colour) = &mut edited_game.objects[selected_index].sprite {
-                if game.objects.contains_key("Red:X") {
-                    colour.r = (game.objects["Red:X"].position.x / 255.0).min(1.0).max(0.0);
+            if let Some(selected_object) = game.objects.get_mut("Selected Object") {
+                edited_game.objects[selected_index].position = selected_object.position;
+                edited_game.objects[selected_index].position.x -= scene.position.x;
+                edited_game.objects[selected_index].position.x /= scene.scale;
+                edited_game.objects[selected_index].position.y -= scene.position.y;
+                edited_game.objects[selected_index].position.y /= scene.scale;
+                edited_game.objects[selected_index].size = selected_object.size;
+                edited_game.objects[selected_index].size.width /= scene.scale;
+                edited_game.objects[selected_index].size.height /= scene.scale;
+                edited_game.objects[selected_index].angle = selected_object.angle;
+                edited_game.objects[selected_index].flip = selected_object.flip;
+                edited_game.objects[selected_index].layer = selected_object.layer;
+
+                edited_game.objects[selected_index].switch = if selected_object.switch
+                    == SwitchState::On
+                    || selected_object.switch == SwitchState::SwitchedOn
+                {
+                    Switch::On
+                } else {
+                    Switch::Off
+                };
+            }
+
+            if is_on(&game.objects, "Set Object Sprite?") {
+                if let Some(sprite_object) = game.objects.get_mut("Image?") {
+                    if sprite_object.switch == SwitchState::SwitchedOn {
+                        if let Sprite::Colour(colour) = edited_game.objects[selected_index].sprite {
+                            editor_data.colour = colour;
+                        }
+                        if edited_assets.images.contains_key(&editor_data.image_name) {
+                            edited_game.objects[selected_index].sprite = Sprite::Image {
+                                name: editor_data.image_name.clone(),
+                            };
+                        } else if let Some(image_name) = edited_assets.images.keys().next() {
+                            edited_game.objects[selected_index].sprite = Sprite::Image {
+                                name: image_name.to_string(),
+                            };
+                        } else {
+                            unimplemented!();
+                        }
+                    } else if sprite_object.switch == SwitchState::SwitchedOff {
+                        if let Sprite::Image { name } = &edited_game.objects[selected_index].sprite
+                        {
+                            editor_data.image_name = name.clone();
+                        }
+                        edited_game.objects[selected_index].sprite =
+                            Sprite::Colour(editor_data.colour);
+                        set_colour_positions(
+                            &mut game,
+                            &edited_game,
+                            selected_index,
+                            background_index,
+                        );
+                    }
                 }
-                if game.objects.contains_key("Green:X") {
-                    colour.g = (game.objects["Green:X"].position.x / 255.0)
-                        .min(1.0)
-                        .max(0.0);
-                }
-                if game.objects.contains_key("Blue:X") {
-                    colour.b = (game.objects["Blue:X"].position.x / 255.0)
-                        .min(1.0)
-                        .max(0.0);
-                }
-                if game.objects.contains_key("Alpha:X") {
-                    colour.a = (game.objects["Alpha:X"].position.x / 255.0)
-                        .min(1.0)
-                        .max(0.0);
-                }
-                if game.objects.contains_key("Colour") {
-                    if let Sprite::Colour(colour_object) = &mut game.objects["Colour"].sprite {
-                        // TODO: MinMax
-                        *colour_object = *colour;
+            } else if is_on(&game.objects, "Set Background Sprite?") {
+                if let Some(sprite_object) = game.objects.get_mut("Image?") {
+                    if sprite_object.switch == SwitchState::SwitchedOn {
+                        if let Sprite::Colour(colour) =
+                            edited_game.background[background_index].sprite
+                        {
+                            editor_data.colour = colour;
+                        }
+                        if edited_assets.images.contains_key(&editor_data.image_name) {
+                            edited_game.background[background_index].sprite = Sprite::Image {
+                                name: editor_data.image_name.clone(),
+                            };
+                        } else if let Some(image_name) = edited_assets.images.keys().next() {
+                            edited_game.background[background_index].sprite = Sprite::Image {
+                                name: image_name.to_string(),
+                            };
+                        } else {
+                            unimplemented!();
+                        }
+                    } else if sprite_object.switch == SwitchState::SwitchedOff {
+                        if let Sprite::Image { name } =
+                            &edited_game.background[background_index].sprite
+                        {
+                            editor_data.image_name = name.clone();
+                        }
+                        edited_game.background[background_index].sprite =
+                            Sprite::Colour(editor_data.colour);
+                        set_colour_positions(
+                            &mut game,
+                            &edited_game,
+                            selected_index,
+                            background_index,
+                        );
                     }
                 }
             }
 
-            fn is_on(objects: &Objects, name: &str) -> bool {
-                if let Some(obj) = objects.get(name) {
-                    obj.switch == SwitchState::SwitchedOn || obj.switch == SwitchState::On
+            if let Some(selected_object) = game.objects.get_mut("Selected Background") {
+                let mut rect = wee_common::Rect::new(
+                    selected_object.position.x,
+                    selected_object.position.y,
+                    selected_object.size.width,
+                    selected_object.size.height,
+                );
+                rect.x -= scene.position.x;
+                rect.x /= scene.scale;
+                rect.y -= scene.position.y;
+                rect.y /= scene.scale;
+
+                rect.w /= scene.scale;
+                rect.h /= scene.scale;
+
+                edited_game.background[background_index].area = rect.to_aabb();
+            }
+
+            {
+                let sprite = if is_on(&game.objects, "Set Object Sprite?") {
+                    Some(&mut edited_game.objects[selected_index].sprite)
+                } else if is_on(&game.objects, "Set Background Sprite?") {
+                    Some(&mut edited_game.background[background_index].sprite)
                 } else {
-                    false
+                    None
+                };
+                if let Some(Sprite::Colour(colour)) = sprite {
+                    if game.objects.contains_key("Red:X") {
+                        colour.r = (game.objects["Red:X"].position.x / 255.0).min(1.0).max(0.0);
+                    }
+                    if game.objects.contains_key("Green:X") {
+                        colour.g = (game.objects["Green:X"].position.x / 255.0)
+                            .min(1.0)
+                            .max(0.0);
+                    }
+                    if game.objects.contains_key("Blue:X") {
+                        colour.b = (game.objects["Blue:X"].position.x / 255.0)
+                            .min(1.0)
+                            .max(0.0);
+                    }
+                    if game.objects.contains_key("Alpha:X") {
+                        colour.a = (game.objects["Alpha:X"].position.x / 255.0)
+                            .min(1.0)
+                            .max(0.0);
+                    }
+                    if game.objects.contains_key("Colour") {
+                        if let Sprite::Colour(colour_object) = &mut game.objects["Colour"].sprite {
+                            // TODO: MinMax
+                            *colour_object = *colour;
+                        }
+                    }
+                }
+            }
+
+            // TODO: Should this code be ...
+            // TODO: Red:X exists but Background Red:X doesn't
+            // TODO: There's a Setting Object Image, and Setting Background Image, and Setting Check Sprite Image Objects
+            // TODO: When these are on then that particular game part is set
+            // TODO: if is_on(&game.objects, "Setting Background Image") { then something similar to the below
+            if let Sprite::Colour(colour) = &mut edited_game.background[background_index].sprite {
+                if game.objects.contains_key("Background Red:X") {
+                    colour.r = (game.objects["Background Red:X"].position.x / 255.0)
+                        .min(1.0)
+                        .max(0.0);
+                }
+                if game.objects.contains_key("Background Green:X") {
+                    colour.g = (game.objects["Background Green:X"].position.x / 255.0)
+                        .min(1.0)
+                        .max(0.0);
+                }
+                if game.objects.contains_key("Background Blue:X") {
+                    colour.b = (game.objects["Background Blue:X"].position.x / 255.0)
+                        .min(1.0)
+                        .max(0.0);
+                }
+                if game.objects.contains_key("Background Alpha:X") {
+                    colour.a = (game.objects["Background Alpha:X"].position.x / 255.0)
+                        .min(1.0)
+                        .max(0.0);
+                }
+                if game.objects.contains_key("Background Colour") {
+                    if let Sprite::Colour(colour_object) =
+                        &mut game.objects["Background Colour"].sprite
+                    {
+                        // TODO: MinMax
+                        *colour_object = *colour;
+                    }
                 }
             }
 
@@ -2081,20 +2880,6 @@ async fn editor(
                 );
                 game.objects[name].size = size;
             }
-
-            let images_per_page = {
-                let mut max = 0;
-                for key in game.objects.keys() {
-                    if let Some(s) = key.strip_prefix("Image N+") {
-                        if let Ok(n) = s.parse::<usize>() {
-                            max = n.max(max);
-                        }
-                    }
-                }
-                max + 1
-            };
-
-            let image_offset = editor_data.image_page * images_per_page;
 
             if game.objects.contains_key("Image N+0") {
                 // TODO: Duplicate code
@@ -2148,9 +2933,7 @@ async fn editor(
                 (edited_assets.images.len() - 1) / images_per_page
             };
 
-            if game.objects["Previous Images"].switch == SwitchState::On
-                || game.objects["Previous Images"].switch == SwitchState::SwitchedOn
-            {
+            if is_on(&game.objects, "Previous Images") {
                 if editor_data.image_page == 0 {
                     editor_data.image_page = max_image_page;
                 } else {
@@ -2158,93 +2941,491 @@ async fn editor(
                 }
             }
 
-            if game.objects["Next Images"].switch == SwitchState::On
-                || game.objects["Next Images"].switch == SwitchState::SwitchedOn
-            {
+            if is_on(&game.objects, "Next Images") {
                 editor_data.image_page += 1;
                 editor_data.image_page %= max_image_page + 1;
             }
 
-            if is_on(&game.objects, "Image N+0") {
-                edited_game.objects[selected_index].sprite = Sprite::Image {
-                    name: edited_assets
-                        .images
-                        .keys()
-                        .nth(image_offset + 0)
-                        .unwrap()
-                        .to_string(),
+            {
+                let sprite = if is_on(&game.objects, "Set Object Sprite?") {
+                    Some(&mut edited_game.objects[selected_index].sprite)
+                } else if is_on(&game.objects, "Set Background Sprite?") {
+                    Some(&mut edited_game.background[background_index].sprite)
+                } else {
+                    None
                 };
-            }
-            if is_on(&game.objects, "Image N+1") {
-                edited_game.objects[selected_index].sprite = Sprite::Image {
-                    name: edited_assets
-                        .images
-                        .keys()
-                        .nth(image_offset + 1)
-                        .unwrap()
-                        .to_string(),
-                };
-            }
-            if is_on(&game.objects, "Image N+2") {
-                edited_game.objects[selected_index].sprite = Sprite::Image {
-                    name: edited_assets
-                        .images
-                        .keys()
-                        .nth(image_offset + 2)
-                        .unwrap()
-                        .to_string(),
-                };
-            }
-            if is_on(&game.objects, "Image N+3") {
-                edited_game.objects[selected_index].sprite = Sprite::Image {
-                    name: edited_assets
-                        .images
-                        .keys()
-                        .nth(image_offset + 3)
-                        .unwrap()
-                        .to_string(),
-                };
+                if let Some(sprite) = sprite {
+                    if is_on(&game.objects, "Image N+0") {
+                        *sprite = Sprite::Image {
+                            name: edited_assets
+                                .images
+                                .keys()
+                                .nth(image_offset + 0)
+                                .unwrap()
+                                .to_string(),
+                        };
+                    }
+                    if is_on(&game.objects, "Image N+1") {
+                        *sprite = Sprite::Image {
+                            name: edited_assets
+                                .images
+                                .keys()
+                                .nth(image_offset + 1)
+                                .unwrap()
+                                .to_string(),
+                        };
+                    }
+                    if is_on(&game.objects, "Image N+2") {
+                        *sprite = Sprite::Image {
+                            name: edited_assets
+                                .images
+                                .keys()
+                                .nth(image_offset + 2)
+                                .unwrap()
+                                .to_string(),
+                        };
+                    }
+                    if is_on(&game.objects, "Image N+3") {
+                        *sprite = Sprite::Image {
+                            name: edited_assets
+                                .images
+                                .keys()
+                                .nth(image_offset + 3)
+                                .unwrap()
+                                .to_string(),
+                        };
+                    }
+                }
             }
 
-            if game.objects["Previous Object"].switch == SwitchState::On
-                || game.objects["Previous Object"].switch == SwitchState::SwitchedOn
-            {
+            // TODO: A Buffer object for each edited text object
+            // TODO: Refactor code to pull out common code
+            let mut screen = game
+                .objects
+                .get("Screen")
+                .map(|screen| screen.position)
+                .unwrap_or_else(WeeVec2::zero);
+            for (key, object) in game.objects.iter() {
+                let pattern = "Edit:";
+                if let Some(var) = key.strip_prefix(pattern) {
+                    let var = var.trim();
+
+                    if object.switch == SwitchState::On || object.switch == SwitchState::SwitchedOn
+                    {
+                        fn edit_text(s: &mut String, key_code_state: &[ButtonState]) {
+                            if key_code_state[KeyCode::Backspace as usize] == ButtonState::Press
+                                && !s.is_empty()
+                            {
+                                *s = s[..s.len() - 1].to_string();
+                                log::debug!("Removing character");
+                            }
+                            if key_code_state[KeyCode::Minus as usize] == ButtonState::Press {
+                                if s.is_empty() {
+                                    s.push('-');
+                                } else {
+                                    let first_character = s.chars().next().unwrap();
+                                    if first_character == '-' {
+                                        *s = s[1..s.len()].to_string();
+                                    } else {
+                                        s.insert(0, '-');
+                                    }
+                                }
+                            }
+                            let mut x = HashMap::new();
+                            x.insert(KeyCode::Key0, '0');
+                            x.insert(KeyCode::Key1, '1');
+                            x.insert(KeyCode::Key2, '2');
+                            x.insert(KeyCode::Key3, '3');
+                            x.insert(KeyCode::Key4, '4');
+                            x.insert(KeyCode::Key5, '5');
+                            x.insert(KeyCode::Key6, '6');
+                            x.insert(KeyCode::Key7, '7');
+                            x.insert(KeyCode::Key8, '8');
+                            x.insert(KeyCode::Key9, '9');
+                            x.insert(KeyCode::Period, '.');
+                            for (k, n) in x {
+                                let k = k as usize;
+                                if key_code_state[k as usize] == ButtonState::Press {
+                                    if s == "0" && k >= 6 && k <= 15 {
+                                        *s = n.to_string()
+                                    } else {
+                                        s.push(n);
+                                    }
+                                    log::debug!("Adding character: {}", n);
+                                }
+                            }
+                        }
+
+                        match var {
+                            "{Object X}" => {
+                                if !text_buffers.contains_key(var) {
+                                    text_buffers.insert(
+                                        var.to_string(),
+                                        edited_game.objects[selected_index].position.x.to_string(),
+                                    );
+                                }
+                                let s = text_buffers.get_mut(var).unwrap();
+                                edit_text(s, &key_code_state);
+
+                                edited_game.objects[selected_index].position.x =
+                                    s.parse().unwrap_or(0.);
+                            }
+                            "{Object Y}" => {
+                                if !text_buffers.contains_key(var) {
+                                    text_buffers.insert(
+                                        var.to_string(),
+                                        edited_game.objects[selected_index].position.y.to_string(),
+                                    );
+                                }
+
+                                let s = text_buffers.get_mut(var).unwrap();
+                                edit_text(s, &key_code_state);
+
+                                edited_game.objects[selected_index].position.y =
+                                    s.parse().unwrap_or(0.);
+                            }
+                            "{Object Angle}" => {
+                                if !text_buffers.contains_key(var) {
+                                    text_buffers.insert(
+                                        var.to_string(),
+                                        edited_game.objects[selected_index].angle.to_string(),
+                                    );
+                                }
+
+                                let s = text_buffers.get_mut(var).unwrap();
+                                edit_text(s, &key_code_state);
+
+                                edited_game.objects[selected_index].angle = s.parse().unwrap_or(0.);
+                            }
+                            "{Object Width}" => {
+                                if !text_buffers.contains_key(var) {
+                                    text_buffers.insert(
+                                        var.to_string(),
+                                        edited_game.objects[selected_index].size.width.to_string(),
+                                    );
+                                }
+
+                                let s = text_buffers.get_mut(var).unwrap();
+                                edit_text(s, &key_code_state);
+
+                                edited_game.objects[selected_index].size.width =
+                                    s.parse().unwrap_or(0.);
+                            }
+                            "{Object Height}" => {
+                                if !text_buffers.contains_key(var) {
+                                    text_buffers.insert(
+                                        var.to_string(),
+                                        edited_game.objects[selected_index].size.height.to_string(),
+                                    );
+                                }
+
+                                let s = text_buffers.get_mut(var).unwrap();
+                                edit_text(s, &key_code_state);
+
+                                edited_game.objects[selected_index].size.height =
+                                    s.parse().unwrap_or(0.);
+                            }
+                            "{Screen X}" => {
+                                if !text_buffers.contains_key(var) {
+                                    text_buffers.insert(var.to_string(), screen.x.to_string());
+                                }
+                                let s = text_buffers.get_mut(var).unwrap();
+                                edit_text(s, &key_code_state);
+
+                                screen.x = s.parse().unwrap_or(0.);
+                            }
+                            "{Screen Y}" => {
+                                if !text_buffers.contains_key(var) {
+                                    text_buffers.insert(var.to_string(), screen.y.to_string());
+                                }
+                                let s = text_buffers.get_mut(var).unwrap();
+                                edit_text(s, &key_code_state);
+
+                                screen.y = s.parse().unwrap_or(0.);
+                            }
+                            "{Origin X}" => {
+                                if !text_buffers.contains_key(var) {
+                                    text_buffers.insert(
+                                        var.to_string(),
+                                        edited_game.objects[selected_index].origin().x.to_string(),
+                                    );
+                                }
+                                let s = text_buffers.get_mut(var).unwrap();
+                                edit_text(s, &key_code_state);
+
+                                let value = s.parse().unwrap_or(0.);
+                                edited_game.objects[selected_index].origin =
+                                    match edited_game.objects[selected_index].origin {
+                                        Some(origin) => Some(WeeVec2::new(value, origin.y)),
+                                        None => {
+                                            let origin =
+                                                edited_game.objects[selected_index].origin();
+                                            if value == origin.x {
+                                                None
+                                            } else {
+                                                Some(WeeVec2::new(value, origin.y))
+                                            }
+                                        }
+                                    };
+                            }
+                            "{Origin Y}" => {
+                                if !text_buffers.contains_key(var) {
+                                    text_buffers.insert(
+                                        var.to_string(),
+                                        edited_game.objects[selected_index].origin().y.to_string(),
+                                    );
+                                }
+                                let s = text_buffers.get_mut(var).unwrap();
+                                edit_text(s, &key_code_state);
+
+                                let value = s.parse().unwrap_or(0.);
+                                edited_game.objects[selected_index].origin =
+                                    match edited_game.objects[selected_index].origin {
+                                        Some(origin) => Some(WeeVec2::new(origin.x, value)),
+                                        None => {
+                                            let origin =
+                                                edited_game.objects[selected_index].origin();
+                                            if value == origin.y {
+                                                None
+                                            } else {
+                                                Some(WeeVec2::new(origin.x, value))
+                                            }
+                                        }
+                                    };
+                            }
+                            "{Collision Min X}" => {
+                                if !text_buffers.contains_key(var) {
+                                    text_buffers.insert(
+                                        var.to_string(),
+                                        edited_game.objects[selected_index]
+                                            .collision_area()
+                                            .min
+                                            .x
+                                            .to_string(),
+                                    );
+                                }
+                                let s = text_buffers.get_mut(var).unwrap();
+                                edit_text(s, &key_code_state);
+
+                                let value = s.parse().unwrap_or(0.);
+                                edited_game.objects[selected_index].collision_area =
+                                    match edited_game.objects[selected_index].collision_area {
+                                        Some(aabb) => Some(AABB {
+                                            min: WeeVec2::new(value, aabb.min.y),
+                                            max: WeeVec2::new(aabb.max.x, aabb.max.y),
+                                        }),
+                                        None => {
+                                            let aabb = edited_game.objects[selected_index]
+                                                .collision_area();
+                                            if value == aabb.min.x {
+                                                log::debug!("HERE");
+                                                None
+                                            } else {
+                                                log::debug!("THERE");
+                                                Some(AABB {
+                                                    min: WeeVec2::new(value, aabb.min.y),
+                                                    max: WeeVec2::new(aabb.max.x, aabb.max.y),
+                                                })
+                                            }
+                                        }
+                                    };
+                                log::debug!(
+                                    "NOW!: {:?}",
+                                    edited_game.objects[selected_index].collision_area
+                                );
+                            }
+                            "{Collision Min Y}" => {
+                                if !text_buffers.contains_key(var) {
+                                    text_buffers.insert(
+                                        var.to_string(),
+                                        edited_game.objects[selected_index]
+                                            .collision_area()
+                                            .min
+                                            .y
+                                            .to_string(),
+                                    );
+                                }
+                                let s = text_buffers.get_mut(var).unwrap();
+                                edit_text(s, &key_code_state);
+
+                                let value = s.parse().unwrap_or(0.);
+                                edited_game.objects[selected_index].collision_area =
+                                    match edited_game.objects[selected_index].collision_area {
+                                        Some(aabb) => Some(AABB {
+                                            min: WeeVec2::new(aabb.min.x, value),
+                                            max: WeeVec2::new(aabb.max.x, aabb.max.y),
+                                        }),
+                                        None => {
+                                            let aabb = edited_game.objects[selected_index]
+                                                .collision_area();
+                                            if value == aabb.min.y {
+                                                None
+                                            } else {
+                                                Some(AABB {
+                                                    min: WeeVec2::new(aabb.min.x, value),
+                                                    max: WeeVec2::new(aabb.max.x, aabb.max.y),
+                                                })
+                                            }
+                                        }
+                                    };
+                            }
+                            "{Collision Max X}" => {
+                                if !text_buffers.contains_key(var) {
+                                    text_buffers.insert(
+                                        var.to_string(),
+                                        edited_game.objects[selected_index]
+                                            .collision_area()
+                                            .max
+                                            .x
+                                            .to_string(),
+                                    );
+                                }
+                                let s = text_buffers.get_mut(var).unwrap();
+                                edit_text(s, &key_code_state);
+
+                                let value = s.parse().unwrap_or(0.);
+                                edited_game.objects[selected_index].collision_area =
+                                    match edited_game.objects[selected_index].collision_area {
+                                        Some(aabb) => Some(AABB {
+                                            min: WeeVec2::new(aabb.min.x, aabb.min.y),
+                                            max: WeeVec2::new(value, aabb.max.y),
+                                        }),
+                                        None => {
+                                            let aabb = edited_game.objects[selected_index]
+                                                .collision_area();
+                                            if value == aabb.max.x {
+                                                None
+                                            } else {
+                                                Some(AABB {
+                                                    min: WeeVec2::new(aabb.min.x, aabb.min.y),
+                                                    max: WeeVec2::new(value, aabb.max.y),
+                                                })
+                                            }
+                                        }
+                                    };
+                            }
+                            "{Collision Max Y}" => {
+                                if !text_buffers.contains_key(var) {
+                                    text_buffers.insert(
+                                        var.to_string(),
+                                        edited_game.objects[selected_index]
+                                            .collision_area()
+                                            .max
+                                            .y
+                                            .to_string(),
+                                    );
+                                }
+                                let s = text_buffers.get_mut(var).unwrap();
+                                edit_text(s, &key_code_state);
+
+                                let value = s.parse().unwrap_or(0.);
+                                edited_game.objects[selected_index].collision_area =
+                                    match edited_game.objects[selected_index].collision_area {
+                                        Some(aabb) => Some(AABB {
+                                            min: WeeVec2::new(aabb.min.x, aabb.min.y),
+                                            max: WeeVec2::new(aabb.max.x, value),
+                                        }),
+                                        None => {
+                                            let aabb = edited_game.objects[selected_index]
+                                                .collision_area();
+                                            if value == aabb.max.y {
+                                                None
+                                            } else {
+                                                Some(AABB {
+                                                    min: WeeVec2::new(aabb.min.x, aabb.min.y),
+                                                    max: WeeVec2::new(aabb.max.x, value),
+                                                })
+                                            }
+                                        }
+                                    };
+                            }
+                            "{Background X}" => {
+                                if !text_buffers.contains_key(var) {
+                                    text_buffers.insert(
+                                        var.to_string(),
+                                        edited_game.background[background_index]
+                                            .area
+                                            .to_rect()
+                                            .x
+                                            .to_string(),
+                                    );
+                                }
+                                let s = text_buffers.get_mut(var).unwrap();
+                                edit_text(s, &key_code_state);
+
+                                let mut rect =
+                                    edited_game.background[background_index].area.to_rect();
+
+                                rect.x = s.parse().unwrap_or(0.);
+
+                                edited_game.background[background_index].area = rect.to_aabb();
+                            }
+                            "{Background Y}" => {
+                                if !text_buffers.contains_key(var) {
+                                    text_buffers.insert(
+                                        var.to_string(),
+                                        edited_game.background[background_index]
+                                            .area
+                                            .to_rect()
+                                            .y
+                                            .to_string(),
+                                    );
+                                }
+                                let s = text_buffers.get_mut(var).unwrap();
+                                edit_text(s, &key_code_state);
+
+                                let mut rect =
+                                    edited_game.background[background_index].area.to_rect();
+
+                                rect.y = s.parse().unwrap_or(0.);
+
+                                edited_game.background[background_index].area = rect.to_aabb();
+                            }
+
+                            _ => {}
+                        }
+                    } else if object.switch == SwitchState::SwitchedOff {
+                        text_buffers.remove(var);
+                    }
+                }
+            }
+            game.objects
+                .get_mut("Screen")
+                .map(|screen_object| screen_object.position = screen);
+
+            if is_on(&game.objects, "Previous Object") {
                 if selected_index == 0 {
                     selected_index = edited_game.objects.len() - 1;
                 } else {
                     selected_index -= 1;
                 }
-                update_selected_object(&mut game, edited_game, selected_index);
+                update_selected_object(&mut game, &mut edited_game, selected_index, scene);
                 if let Sprite::Image { name } = &edited_game.objects[selected_index].sprite {
                     editor_data.image_name = name.clone();
                 } else if let Sprite::Colour(colour) = edited_game.objects[selected_index].sprite {
                     editor_data.colour = colour;
                 }
-                set_colour_positions(&mut game, &edited_game.objects[selected_index]);
+                set_colour_positions(&mut game, &edited_game, selected_index, background_index);
             }
 
-            if game.objects["Next Object"].switch == SwitchState::On
-                || game.objects["Next Object"].switch == SwitchState::SwitchedOn
-            {
+            if is_on(&game.objects, "Next Object") {
                 selected_index += 1;
                 selected_index %= edited_game.objects.len();
-                update_selected_object(&mut game, edited_game, selected_index);
+                update_selected_object(&mut game, &mut edited_game, selected_index, scene);
                 if let Sprite::Image { name } = &edited_game.objects[selected_index].sprite {
                     editor_data.image_name = name.clone();
                 } else if let Sprite::Colour(colour) = edited_game.objects[selected_index].sprite {
                     editor_data.colour = colour;
                 }
-                set_colour_positions(&mut game, &edited_game.objects[selected_index]);
+                set_colour_positions(&mut game, &edited_game, selected_index, background_index);
             }
 
-            if game.objects["Choose Object"].switch == SwitchState::SwitchedOn
-                || game.objects["Choose Object"].switch == SwitchState::On
-            {
-                let scale = game.objects["Screen"].size.width / PROJECTION_WIDTH;
+            if is_on(&game.objects, "Choose Object") {
+                /*let scale = screen_object.size.width / PROJECTION_WIDTH;
                 let offset_x =
-                    game.objects["Screen"].position.x - game.objects["Screen"].size.width / 2.0;
+                    screen_object.position.x - screen_object.size.width / 2.0;
                 let offset_y =
-                    game.objects["Screen"].position.y - game.objects["Screen"].size.height / 2.0;
+                    screen_object.position.y - screen_object.size.height / 2.0;*/
 
                 //let position = macroquad::input::mouse_position();
                 let position = macroquad::input::mouse_position();
@@ -2283,17 +3464,17 @@ async fn editor(
                         position.y / screen_height as f32 * PROJECTION_HEIGHT,
                     )
                 };
-                let x = position.x / scale - (offset_x / scale); // / scale; // - offset_x;
-                let y = position.y / scale - (offset_y / scale); // / scale; // - offset_y;
+                let x = position.x / scene.scale - (scene.position.x / scene.scale); // / scale; // - offset_x;
+                let y = position.y / scene.scale - (scene.position.y / scene.scale); // / scale; // - offset_y;
 
-                log::debug!("A");
+                /*log::debug!("A");
                 log::debug!("{}, {}", position.x, position.y);
                 log::debug!("{}, {}", position.x * scale, position.y * scale);
                 log::debug!(
                     "{}, {}",
                     position.x / scale - (offset_x / scale),
                     position.y / scale - (offset_y / scale)
-                );
+                );*/
 
                 let mut layers: Vec<u8> = edited_game.objects.iter().map(|o| o.layer).collect();
                 layers.sort_unstable();
@@ -2314,7 +3495,12 @@ async fn editor(
 
                                 selected_index = i % edited_game.objects.len();
 
-                                update_selected_object(&mut game, edited_game, selected_index);
+                                update_selected_object(
+                                    &mut game,
+                                    &mut edited_game,
+                                    selected_index,
+                                    scene,
+                                );
 
                                 if let Sprite::Image { name } =
                                     &edited_game.objects[selected_index].sprite
@@ -2327,7 +3513,9 @@ async fn editor(
                                 }
                                 set_colour_positions(
                                     &mut game,
-                                    &edited_game.objects[selected_index],
+                                    &edited_game,
+                                    selected_index,
+                                    background_index,
                                 );
 
                                 break;
@@ -2337,17 +3525,88 @@ async fn editor(
                 }
             }
 
-            {
-                game.objects["Selected Object"].position =
-                    edited_game.objects[selected_index].position;
-                game.objects["Selected Object"].position.x *= scale;
-                game.objects["Selected Object"].position.y *= scale;
-                game.objects["Selected Object"].position.x += offset_x;
-                game.objects["Selected Object"].position.y += offset_y;
-                game.objects["Selected Object"].size = edited_game.objects[selected_index].size;
-                game.objects["Selected Object"].size.width *= scale;
-                game.objects["Selected Object"].size.height *= scale;
-                game.objects["Selected Object"].angle = edited_game.objects[selected_index].angle;
+            if is_on(&game.objects, "Previous Background") {
+                if background_index == 0 {
+                    background_index = edited_game.background.len() - 1;
+                } else {
+                    background_index -= 1;
+                }
+                update_selected_background(&mut game, &mut edited_game, background_index, scene);
+                if let Sprite::Image { name } = &edited_game.background[background_index].sprite {
+                    editor_data.image_name = name.clone();
+                } else if let Sprite::Colour(colour) =
+                    edited_game.background[background_index].sprite
+                {
+                    editor_data.colour = colour;
+                }
+                // TODO: Should there be the possibility of setting edited_game.objects[selected_index].sprite when background changes?
+                set_colour_positions(&mut game, &edited_game, selected_index, background_index);
+            }
+
+            if is_on(&game.objects, "Next Background") {
+                background_index += 1;
+                background_index %= edited_game.background.len();
+                update_selected_background(&mut game, &mut edited_game, background_index, scene);
+                if let Sprite::Image { name } = &edited_game.background[background_index].sprite {
+                    editor_data.image_name = name.clone();
+                } else if let Sprite::Colour(colour) =
+                    edited_game.background[background_index].sprite
+                {
+                    editor_data.colour = colour;
+                }
+                set_colour_positions(&mut game, &edited_game, selected_index, background_index);
+            }
+
+            if is_on(&game.objects, "Move Background Down") {
+                log::debug!("DOWN");
+                if background_index != 0 {
+                    edited_game
+                        .background
+                        .swap(background_index, background_index - 1);
+                    background_index -= 1;
+                    update_selected_background(
+                        &mut game,
+                        &mut edited_game,
+                        background_index,
+                        scene,
+                    );
+                    //
+                    // set_colour_positions(&mut game, &edited_game, selected_index, background_index);
+                }
+            }
+
+            if is_on(&game.objects, "Move Background Up") {
+                log::debug!("UP");
+                if background_index + 1 < edited_game.background.len() {
+                    edited_game
+                        .background
+                        .swap(background_index, background_index + 1);
+                    background_index += 1;
+                    // update_selected_background(&mut game, &mut edited_game, background_index, scene);
+                    // set_colour_positions(&mut game, &edited_game, selected_index, background_index);
+                }
+            }
+
+            // TODO: Should this be updated_selected_object()?
+            if let Some(selected_object) = game.objects.get_mut("Selected Object") {
+                selected_object.position = edited_game.objects[selected_index].position;
+                selected_object.position.x *= scene.scale;
+                selected_object.position.y *= scene.scale;
+                selected_object.position.x += scene.position.x;
+                selected_object.position.y += scene.position.y;
+                selected_object.size = edited_game.objects[selected_index].size;
+                selected_object.size.width *= scene.scale;
+                selected_object.size.height *= scene.scale;
+                selected_object.angle = edited_game.objects[selected_index].angle;
+                selected_object.origin = edited_game.objects[selected_index].origin;
+                if let Some(origin) = &mut selected_object.origin {
+                    origin.x *= scene.scale;
+                    origin.y *= scene.scale;
+                }
+            }
+
+            if game.objects.contains_key("Published") {
+                edited_game.published = is_on(&game.objects, "Published");
             }
         }
 
@@ -2355,7 +3614,7 @@ async fn editor(
             &game,
             &assets.images,
             &assets.fonts,
-            edited_game,
+            &edited_game,
             &edited_assets,
             intro_font,
             &drawn_text,

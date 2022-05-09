@@ -2271,17 +2271,17 @@ pub struct SerialiseObject {
 // For editor
 
 impl ButtonState {
-    pub fn update(&mut self, pressed: bool) {
+    pub fn update(&mut self, is_down: bool) {
         *self = match *self {
             ButtonState::Up | ButtonState::Release => {
-                if pressed {
+                if is_down {
                     ButtonState::Press
                 } else {
                     ButtonState::Up
                 }
             }
             ButtonState::Down | ButtonState::Press => {
-                if pressed {
+                if is_down {
                     ButtonState::Down
                 } else {
                     ButtonState::Release
@@ -2313,6 +2313,11 @@ impl SerialiseObject {
     pub fn origin(&self) -> Vec2 {
         self.origin
             .unwrap_or_else(|| Vec2::new(self.half_width(), self.half_height()))
+    }
+
+    pub fn collision_area(&self) -> AABB {
+        self.collision_area
+            .unwrap_or_else(|| AABB::new(0.0, 0.0, self.size.width, self.size.height))
     }
 
     fn half_width(&self) -> f32 {

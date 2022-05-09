@@ -2912,7 +2912,11 @@ fn edit_objects_list(
                     if objects.is_empty() {
                         object_state.index = None;
                     } else {
-                        object_state.index = Some(index.max(1) - 1);
+                        object_state.index = Some(if index >= objects.len() {
+                            index - 1
+                        } else {
+                            index
+                        });
                     }
                     *instruction_state = InstructionState::default();
                 }

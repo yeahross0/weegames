@@ -158,6 +158,13 @@ impl Rect {
     pub fn move_position(self, position: Vec2) -> Rect {
         Rect::new(self.x + position.x, self.y + position.y, self.w, self.h)
     }
+
+    pub fn to_aabb(self) -> AABB {
+        AABB {
+            min: Vec2::new(self.x - self.w / 2.0, self.y - self.h / 2.0),
+            max: Vec2::new(self.x + self.w / 2.0, self.y + self.h / 2.0),
+        }
+    }
 }
 
 #[derive(Copy, Clone, Debug, Serialize, Deserialize, PartialEq)]
